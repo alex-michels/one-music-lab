@@ -1,6 +1,14 @@
-# OML — Open Music Lab
+# OML — One Music Lab
 
 A bilingual English/Russian prototype of a music and sound learning workspace.
+
+The project was renamed from Open Music Lab to **One Music Lab** in September
+2026. The owner has registered **onemusiclab.org** as the future public address;
+DNS, HTTPS, and deployment there are still pending. The page metadata uses
+`https://onemusiclab.org/` as its canonical URL. The GitHub repository remains
+`alex-michels/open-music-lab`; clone commands below still use that repository.
+The OML abbreviation, saved language preference, and WAV filename prefix remain
+compatible with the existing prototype.
 
 Original code is **Apache-2.0**; original educational content is **CC BY 4.0**.
 See [LICENSE](LICENSE), [CONTENT-LICENSE.md](CONTENT-LICENSE.md) and
@@ -59,6 +67,25 @@ not coverage of the whole app. UI and actual browser audio tests are still neede
 The audit found **24 existing lint errors**; see P00 in [ROADMAP.md](ROADMAP.md).
 The Baseline checks GitHub workflow reproduces tests/types/build and reports that
 lint debt explicitly. It is not a publication gate until P00 is completed.
+
+To check the rendered site identity, keep `npm run dev` (or `npm start` for the
+built Worker) running and use its printed URL in a second terminal:
+
+```powershell
+# Windows PowerShell
+$env:OML_TEST_BASE_URL = 'http://localhost:3000'
+npm run test:site
+```
+
+```sh
+# macOS / Linux
+OML_TEST_BASE_URL=http://localhost:3000 npm run test:site
+```
+
+Replace the port with the one printed by your server. This read-only HTTP test
+checks the rendered document title, canonical URL, and accessible lab home link.
+It requires an explicit target so it does not accidentally test a public site;
+it does not configure DNS, start playback, or replace browser interaction tests.
 
 To try the built Worker locally after a successful build:
 

@@ -1,6 +1,6 @@
-# Contributing to Open Music Lab
+# Contributing to One Music Lab
 
-Open Music Lab connects theory, experimentation, practice, and an encyclopedia
+One Music Lab connects theory, experimentation, practice, and an encyclopedia
 in English and Russian. Start with [ROADMAP.md](ROADMAP.md), choose one small
 unfinished outcome, and explain its scope in a pull request. Large regional or
 historical topics must first be split into named, reviewable releases.

@@ -39,6 +39,26 @@ jobs:
         run: npm run typecheck
       - name: Build
         run: npm run build
+      - name: Rendered site identity from the built Worker
+        env:
+          OML_TEST_BASE_URL: http://127.0.0.1:8787
+        run: |
+          npm start -- --ip 127.0.0.1 --port 8787 > outputs/site-server.txt 2>&1 &
+          site_pid=$!
+          trap 'kill "$site_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for attempt in {1..60}; do
+            if curl --fail --silent --output /dev/null --max-time 2 "$OML_TEST_BASE_URL/"; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" != 1 ]; then
+            cat outputs/site-server.txt
+            exit 1
+          fi
+          npm run test:site
       - name: Audit existing lint debt (P00)
         id: lint
         continue-on-error: true
