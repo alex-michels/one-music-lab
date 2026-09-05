@@ -12,6 +12,7 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "test:site": "node --test tests/site-http.mjs",
     "test:coverage": "node --experimental-strip-types --experimental-test-coverage --test --test-coverage-include=lib/*.ts tests/*.test.mjs",
     "typecheck": "tsc --noEmit"
   },

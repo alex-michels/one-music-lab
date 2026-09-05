@@ -13,7 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'OML — Open Music Lab',
+  title: 'OML — One Music Lab',
+  metadataBase: new URL('https://onemusiclab.org'),
+  alternates: { canonical: '/' },
   description: 'Explore sound, tuning and music theory. A bilingual laboratory with a tone generator, adjustable A4, musical notes and practical exercises.',
 };
 

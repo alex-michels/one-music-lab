@@ -4,12 +4,12 @@ Copyright 2026 Open Music Lab contributors.
 
 Unless an item is explicitly marked otherwise, original educational prose,
 glossary definitions, exercise descriptions, and original musical examples
-created for Open Music Lab are licensed under **Creative Commons Attribution
+created for One Music Lab (formerly Open Music Lab) are licensed under **Creative Commons Attribution
 4.0 International (CC BY 4.0)**.
 
 - [License summary](https://creativecommons.org/licenses/by/4.0/)
 - [Full legal text](LICENSES/CC-BY-4.0.txt)
-- Suggested attribution: “Open Music Lab contributors, Open Music Lab,
+- Suggested attribution: “Open Music Lab contributors, One Music Lab (formerly Open Music Lab),
   https://github.com/alex-michels/open-music-lab, CC BY 4.0”; also identify
   the item, version, and changes where applicable.
 

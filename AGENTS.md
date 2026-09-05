@@ -1,4 +1,4 @@
-# Open Music Lab development rules
+# One Music Lab development rules
 
 These rules apply to this repository. Read `ROADMAP.md`, `CONTRIBUTING.md`, and
 the relevant code before changing a feature. The roadmap is the only completion
