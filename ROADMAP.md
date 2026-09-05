@@ -104,6 +104,7 @@
 **Режим до публичного запуска: private staging.** Владелец разрешил закрытое размещение на существующем VPS; публичный доступ запрещён до P10 и отдельного решения о запуске. Секреты и фактические данные сервера остаются локально. Инструкция и границы проверки: [private staging](docs/private-staging.md).
 
 - [ ] Принять через PR отдельный static target, тесты артефакта/HTTP и конфигурацию Caddy только для loopback; закрытый стенд не закрывает G или готовность F01.
+- [x] Проверочный Linux static export текущего прототипа: [CI](https://github.com/alex-michels/one-music-lab/actions/runs/33995456612), `d285548`; страницы и browser assets сформированы, тесты прошли. Windows CLI shutdown и browser/audio проверки остаются открытыми.
 
 - [x] Владелец выбрал название **One Music Lab** и сообщил о покупке **onemusiclab.org** (2026-09-05). Сокращение OML сохраняется; GitHub-репозиторий — `alex-michels/one-music-lab`. Покупка домена не означает готовность или публикацию сайта.
 - [ ] Проверить static export текущего Vinext проекта, устойчивые URL уроков, refresh deep links, build без Sites credentials и browser audio. Сначала этот небольшой проверочный PR; не менять framework без доказанной необходимости [S24].

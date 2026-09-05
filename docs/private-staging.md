@@ -21,6 +21,11 @@ fallback. Future lesson paths need their own export and refresh tests. This
 target skips Sites and Cloudflare plugins and needs no hosting credentials.
 Build modes share `dist`; run them sequentially, never concurrently.
 
+The Linux build, Worker HTTP checks and static artifact checks passed in
+[CI run 33995456612](https://github.com/alex-michels/one-music-lab/actions/runs/33995456612)
+for commit `d285548`. This validates portability for the present single-page
+prototype, not future routes or full browser/audio behavior.
+
 On Windows with Node 24.18.0 / Vinext 1.0.0-beta.5, static prerender currently
 finishes writing files but the CLI crashes during native process shutdown
 (`UV_HANDLE_CLOSING`), both inside and outside the sandbox. That is a failed

@@ -95,6 +95,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: baseline-audit-reports
-          path: outputs/*.txt
+          path: |
+            outputs/partial-coverage.txt
+            outputs/lint-report.txt
+            outputs/site-server.txt
           if-no-files-found: warn
           retention-days: 14

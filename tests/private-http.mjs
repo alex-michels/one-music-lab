@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { request as httpRequest } from 'node:http';
 
 assert.ok(process.env.OML_TEST_BASE_URL, 'Set OML_TEST_BASE_URL to an explicit SSH tunnel URL.');
 const base = new URL(process.env.OML_TEST_BASE_URL);
@@ -44,10 +45,25 @@ test('Unknown paths and unshipped internal files return 404 instead of app HTML'
   }
 });
 
-test('The file server cannot accept uploads or serve another Host', async () => {
-  for (const options of [{ method: 'POST', body: 'not-an-upload' }, { headers: { host: 'unrelated.invalid' } }]) {
-    const response = await request('/', options);
-    assert.ok(response.status >= 400 && response.status < 500);
-    await response.arrayBuffer();
-  }
+test('The file server cannot accept uploads', async () => {
+  const response = await request('/', { method: 'POST', body: 'not-an-upload' });
+  assert.equal(response.status, 405);
+  await response.arrayBuffer();
+});
+
+test('An unrelated HTTP Host is rejected', async () => {
+  // Fetch can replace a supplied Host header. Send the real wire header here.
+  const status = await new Promise((resolve, reject) => {
+    const req = httpRequest(base, {
+      headers: { Host: 'unrelated.invalid' }, timeout: 10_000,
+    }, (res) => {
+      res.resume();
+      res.on('end', () => resolve(res.statusCode));
+      res.on('error', reject);
+    });
+    req.on('error', reject);
+    req.on('timeout', () => req.destroy(new Error('HTTP Host test timed out')));
+    req.end();
+  });
+  assert.equal(status, 421);
 });
