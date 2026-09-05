@@ -1,11 +1,15 @@
 # OML — Open Music Lab
 
-A bilingual English/Russian first release of a music and sound learning workspace.
+A bilingual English/Russian prototype of a music and sound learning workspace.
 
 Original code is **Apache-2.0**; original educational content is **CC BY 4.0**.
 See [LICENSE](LICENSE), [CONTENT-LICENSE.md](CONTENT-LICENSE.md) and
 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Paid hosted services or optional
 features may be offered without withdrawing the rights granted by these licenses.
+
+The [single roadmap and critical audit](ROADMAP.md) maps all 511 proposed topics
+to 128 modules, with dependencies, sources, and separate readiness/publication
+checkboxes. Each topic requires theory, lab, practice, and encyclopedia coverage.
 
 ## Included
 
@@ -21,9 +25,65 @@ This is the first product slice, not an exhaustive encyclopedia or a universal i
 
 ## Development
 
-Use Node 24 and npm. Run `npm install`, `npm run dev`, and `npm run build`. The application uses the generated Vinext/Sites stack, React, the bundled accessible Base UI/Shadcn controls, and browser Web Audio. No account, external database or audio upload is required for the application itself. The hosting service controls private site access.
+Install **Node.js 24** (including npm) and Git. These commands work in PowerShell,
+macOS Terminal, and Linux shells:
 
-`node --experimental-strip-types --test tests/*.test.mjs` exercises tuning identities and inverse note mapping, cents, WAV encoding, and audio scheduling/cancellation with a mocked AudioContext. `npx tsc --noEmit` checks application types.
+```sh
+git clone https://github.com/alex-michels/open-music-lab.git
+cd open-music-lab
+npm ci
+npm run dev
+```
+
+Open the URL printed by the development server (normally `http://localhost:3000`).
+Keep that terminal running; stop it with Ctrl+C. Changes to React/CSS reload in
+development. Start audio with an explicit click/key gesture. The application
+does not require an account, API key, database, or audio upload for local use.
+Do not create or commit credentials. The existing Sites service controls access
+to its hosted preview, independently of the application.
+
+In a second terminal in the repository:
+
+```sh
+npm test
+npm run test:coverage
+npm run typecheck
+npm run lint
+npm run build
+```
+
+`npm test` covers tuning identities, inverse note mapping, cents, WAV structure,
+audio scheduling/cancellation with a mocked AudioContext, and roadmap integrity.
+`test:coverage` is currently a **partial loaded-module report** for `lib/*.ts`,
+not coverage of the whole app. UI and actual browser audio tests are still needed.
+The audit found **24 existing lint errors**; see P00 in [ROADMAP.md](ROADMAP.md).
+The Baseline checks GitHub workflow reproduces tests/types/build and reports that
+lint debt explicitly. It is not a publication gate until P00 is completed.
+
+To try the built Worker locally after a successful build:
+
+```sh
+npm start
+```
+
+Open the URL Wrangler prints. **This runs a local Wrangler development emulator;
+it is not a production command for a Linux VPS.** The generated stack uses
+Vinext, React, Vite, Sites/Cloudflare plugins, Base UI/Shadcn, and Web Audio.
+The self-hosting plan is in P04 of the roadmap: verify static export, then serve
+the confirmed artifact with Caddy and deploy it through GitHub Actions. No VPS
+deployment workflow or production server has been configured yet.
+
+If installation fails, verify `node --version` reports v24, ensure registry access,
+and rerun `npm ci`; do not delete or regenerate the lockfile to bypass errors.
+If PowerShell blocks `npm.ps1`, use `npm.cmd` for these commands. If a port is
+busy, stop your previous server or use the alternative URL/port printed by the
+tool. If sound is suspended, use the explicit play control and check browser/OS
+output settings. An out-of-range note may be unavailable at the current tuning.
+
+Use a feature branch and PR for further changes. Every code change needs tests
+and documentation, with a target of 100% meaningful coverage across all
+first-party code. Read [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md)
+for the rule, current gaps, source checks, and the four-layer release criteria.
 
 The persistent oscillator and previews stop on navigation, page hiding, page exit, or Escape. Playback requires an explicit gesture; the initial volume is 18% of a gain-limited output. Browser volume does not measure acoustic loudness. Waveforms above the device's Nyquist limit cannot be synthesized; notes outside the lab's frequency range are unavailable on its keyboard.
 

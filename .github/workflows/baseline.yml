@@ -1,0 +1,64 @@
+name: Baseline checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: baseline-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  baseline:
+    name: Tests, types, build; lint debt report
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Unit tests and roadmap integrity
+        run: npm test
+      - name: Partial loaded-module coverage (not a release gate)
+        run: |
+          mkdir -p outputs
+          npm run test:coverage 2>&1 | tee outputs/partial-coverage.txt
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Build
+        run: npm run build
+      - name: Audit existing lint debt (P00)
+        id: lint
+        continue-on-error: true
+        run: npm run lint 2>&1 | tee outputs/lint-report.txt
+      - name: Explain validation limits
+        if: always()
+        env:
+          LINT_OUTCOME: ${{ steps.lint.outcome }}
+        run: |
+          printf '%s\n' '## Baseline only — not publication readiness' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' 'Coverage is limited to loaded lib modules; UI/browser paths are not yet included. ROADMAP P00 and gate G remain open.' >> "$GITHUB_STEP_SUMMARY"
+          printf 'Lint outcome: %s. Known failures are reported, not certified as passing.\n' "$LINT_OUTCOME" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$LINT_OUTCOME" = failure ]; then
+            echo '::warning::Known lint debt remains. This workflow is not the full release gate; see ROADMAP P00.'
+          fi
+      - name: Attach audit reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: baseline-audit-reports
+          path: outputs/*.txt
+          if-no-files-found: warn
+          retention-days: 14
