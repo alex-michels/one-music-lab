@@ -4,9 +4,12 @@ A bilingual English/Russian prototype of a music and sound learning workspace.
 
 The project was renamed from Open Music Lab to **One Music Lab** in September
 2026. The owner has registered **onemusiclab.org** as the future public address;
-DNS, HTTPS, and deployment there are still pending. The page metadata uses
-`https://onemusiclab.org/` as its canonical URL. The GitHub repository remains
-`alex-michels/open-music-lab`; clone commands below still use that repository.
+**Public launch is blocked** until the Germany/EU compliance and rights review
+in ROADMAP P10 is complete and the owner explicitly authorizes publication.
+Private VPS staging uses loopback and an SSH tunnel. DNS and public HTTPS remain
+pending. The page metadata uses
+`https://onemusiclab.org/` as its canonical URL. The GitHub repository is
+`alex-michels/one-music-lab`.
 The OML abbreviation, saved language preference, and WAV filename prefix remain
 compatible with the existing prototype.
 
@@ -37,8 +40,8 @@ Install **Node.js 24** (including npm) and Git. These commands work in PowerShel
 macOS Terminal, and Linux shells:
 
 ```sh
-git clone https://github.com/alex-michels/open-music-lab.git
-cd open-music-lab
+git clone https://github.com/alex-michels/one-music-lab.git
+cd one-music-lab
 npm ci
 npm run dev
 ```
@@ -96,9 +99,17 @@ npm start
 Open the URL Wrangler prints. **This runs a local Wrangler development emulator;
 it is not a production command for a Linux VPS.** The generated stack uses
 Vinext, React, Vite, Sites/Cloudflare plugins, Base UI/Shadcn, and Web Audio.
-The self-hosting plan is in P04 of the roadmap: verify static export, then serve
-the confirmed artifact with Caddy and deploy it through GitHub Actions. No VPS
-deployment workflow or production server has been configured yet.
+For the separate portable target, see [private staging](docs/private-staging.md):
+`npm run build:static` and `npm run test:static`. GitHub Actions builds a static
+artifact for private review; it does not deploy or receive VPS credentials.
+The documented Windows static-build shutdown failure must not be treated as a
+successful build. Use a successful Linux CI artifact for the private Caddy setup.
+The shared public web server is not part of that setup.
+
+The [prelaunch review](docs/prelaunch-review.md) records current findings on
+storage, data protection, German provider information, accessibility, brand and
+content/software rights. It is a preliminary audit, not legal clearance. Device
+fonts replace external Google Fonts requests; app storage still needs review.
 
 If installation fails, verify `node --version` reports v24, ensure registry access,
 and rerun `npm ci`; do not delete or regenerate the lockfile to bypass errors.

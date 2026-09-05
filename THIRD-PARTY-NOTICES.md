@@ -21,6 +21,11 @@ tools, and the Sites Vite plugin. This list is descriptive, not a complete
 software bill of materials. A machine-generated license inventory and bundled
 notice audit are required before the first independent public release.
 
+The preliminary findings and per-material evidence still needed are in
+[prelaunch review](docs/prelaunch-review.md). The portable archive carries the
+existing license/notice files, but a complete audit of shipped dependency notices
+is still pending. System font selection does not bundle font binaries.
+
 ## Research and learning sources
 
 Current lessons link to UNSW, Open Music Theory and the University of Puget

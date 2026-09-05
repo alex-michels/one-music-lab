@@ -34,6 +34,13 @@ register; do not create a competing roadmap or silently drop original topic IDs.
 - Keep sound generation gesture-initiated, bounded, cancellable, and testable.
   Browser gain is not calibrated sound pressure. Keep microphone/file processing
   local by default and document any explicit upload flow.
-- The current build targets Sites/Workers. `npm start` is a local Wrangler
-  emulator, not a production VPS process. Complete the portability milestone
-  before adding server deployment; do not invent a successful self-hosted setup.
+- `npm run build` targets Sites/Workers; `npm start` is a local Wrangler emulator,
+  not a production VPS process. `npm run build:static` is the separate portable
+  target. Follow `docs/private-staging.md`; only the allowlisted artifact is served.
+- The owner has authorized private VPS staging only. Keep it bound to loopback
+  behind SSH. Do not add public listeners, DNS/proxy routes, public Sites access,
+  or automatic public deployment before P10 and explicit public-launch approval.
+  A merge or a successful build is not permission to publish the website.
+- Keep VPS audits, actual host/IP/user details, keys, contracts and personal data
+  in ignored local storage, never in Git, PR text or uploaded CI reports. Generic
+  deployment examples may be committed; preserve existing VPS services and bots.

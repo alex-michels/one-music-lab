@@ -59,6 +59,22 @@ jobs:
             exit 1
           fi
           npm run test:site
+      - name: Build portable static staging artifact (no deployment)
+        run: |
+          npm run build:static
+          npm run test:static
+          tar -czf outputs/one-music-lab-static.tgz -C dist/client index.html index.rsc 404.html favicon.svg _next -C ../.. LICENSE NOTICE CONTENT-LICENSE.md THIRD-PARTY-NOTICES.md LICENSES
+          cd outputs
+          sha256sum one-music-lab-static.tgz > one-music-lab-static.tgz.sha256
+      - name: Attach portable artifact for private staging review
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: static-staging
+          path: |
+            outputs/one-music-lab-static.tgz
+            outputs/one-music-lab-static.tgz.sha256
+          if-no-files-found: error
+          retention-days: 7
       - name: Audit existing lint debt (P00)
         id: lint
         continue-on-error: true

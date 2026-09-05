@@ -1,5 +1,5 @@
 {
-  "name": "sites-project",
+  "name": "one-music-lab",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -8,6 +8,9 @@
   "scripts": {
     "dev": "vinext dev",
     "build": "vinext build",
+    "build:static": "vinext build --mode static",
+    "test:static": "node --test tests/static-export.mjs",
+    "test:private": "node --test tests/private-http.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint",
     "format": "oxfmt",

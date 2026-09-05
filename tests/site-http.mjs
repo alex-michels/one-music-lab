@@ -35,3 +35,13 @@ test('The lab home link presents the chosen name visually and accessibly', () =>
   assert.match(brand, /<small>ONE MUSIC LAB<\/small>/);
   assert.doesNotMatch(brand, /OPEN MUSIC LAB/);
 });
+
+test('The rendered page does not load fonts, scripts or styles from third parties', () => {
+  const resourceTags = html.match(/<(?:link|script|iframe)\b[^>]*>/g) ?? [];
+  for (const tag of resourceTags) {
+    if (/\brel="canonical"/.test(tag)) continue;
+    const url = tag.match(/\b(?:src|href)="([^"]+)"/)?.[1];
+    if (url) assert.equal(new URL(url, target).origin, target.origin, tag);
+  }
+  assert.doesNotMatch(html, /fonts\.(?:googleapis|gstatic)\.com/);
+});
