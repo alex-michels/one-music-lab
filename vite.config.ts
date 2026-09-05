@@ -1,8 +1,8 @@
-import { sites } from '@openai/sites-vite-plugin';
 import tailwindcss from '@tailwindcss/postcss';
 import vinext from 'vinext';
 import { defineConfig } from 'vite';
 import hostingConfig from './.openai/hosting.json';
+import nextConfig from './next.config';
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   '00000000-0000-4000-8000-000000000000';
@@ -34,7 +34,16 @@ const localBindingConfig = {
     : [],
 };
 
-export default defineConfig(async () => {
+export default defineConfig(async ({ mode }) => {
+  // The portable artifact contains only prerendered pages and browser assets.
+  // Do not load Sites/Workers plugins or their credentials for this target.
+  if (mode === 'static') {
+    return {
+      css: { postcss: { plugins: [tailwindcss()] } },
+      plugins: [vinext({ nextConfig: { ...nextConfig, output: 'export' } })],
+    };
+  }
+
   // Keep Wrangler and Miniflare state project-local. These are non-secret tool
   // settings; application environment belongs in ignored `.env*` files.
   process.env.WRANGLER_WRITE_LOGS ??= 'false';
@@ -43,6 +52,7 @@ export default defineConfig(async () => {
 
   // Wrangler snapshots its log path while the Cloudflare plugin is imported.
   const { cloudflare } = await import('@cloudflare/vite-plugin');
+  const { sites } = await import('@openai/sites-vite-plugin');
 
   return {
     css: { postcss: { plugins: [tailwindcss()] } },

@@ -97,3 +97,10 @@ coverage denominator/gaps, documentation, source/rights changes, and remaining
 risks. Only tick checkboxes that are true. Link the accepted PR/commit in the
 roadmap when closing a topic. Public deployment is separately recorded by the
 owner with the version, URL, date, and rollback evidence.
+
+Private VPS staging is authorized separately from public launch. Follow
+[private staging](docs/private-staging.md); keep it reachable only through SSH.
+ROADMAP P10 records the Germany/EU compliance and rights gate. Never include
+server inventories, personal operator/provider data or credentials in commits,
+PR bodies, or CI artifacts. Public launch needs the owner's explicit approval
+after the applicable release gates are closed.

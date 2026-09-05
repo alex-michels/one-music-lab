@@ -10,7 +10,7 @@ created for One Music Lab (formerly Open Music Lab) are licensed under **Creativ
 - [License summary](https://creativecommons.org/licenses/by/4.0/)
 - [Full legal text](LICENSES/CC-BY-4.0.txt)
 - Suggested attribution: “Open Music Lab contributors, One Music Lab (formerly Open Music Lab),
-  https://github.com/alex-michels/open-music-lab, CC BY 4.0”; also identify
+  https://github.com/alex-michels/one-music-lab, CC BY 4.0”; also identify
   the item, version, and changes where applicable.
 
 This includes original learning prose embedded in `lib/learning.ts` and
