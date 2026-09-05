@@ -2,6 +2,11 @@
 
 A bilingual English/Russian first release of a music and sound learning workspace.
 
+Original code is **Apache-2.0**; original educational content is **CC BY 4.0**.
+See [LICENSE](LICENSE), [CONTENT-LICENSE.md](CONTENT-LICENSE.md) and
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Paid hosted services or optional
+features may be offered without withdrawing the rights granted by these licenses.
+
 ## Included
 
 - Continuous 20–20,000 Hz oscillator, four waveforms, logarithmic frequency control, cents readout and live analyser waveform.

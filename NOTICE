@@ -1,0 +1,15 @@
+Open Music Lab
+Copyright 2026 Open Music Lab contributors
+
+Original application code, tests, configuration and developer documentation
+are licensed under the Apache License, Version 2.0. See LICENSE.
+
+Original educational prose and learning examples are licensed under Creative
+Commons Attribution 4.0 International. See CONTENT-LICENSE.md and
+LICENSES/CC-BY-4.0.txt. In files containing both program code and educational
+prose, these licenses apply to their respective portions.
+
+Third-party dependencies, copied UI components, excerpts, scores, recordings,
+source inventories, and other external assets retain their own copyrights
+and licenses. These project licenses do not relicense third-party material.
+See THIRD-PARTY-NOTICES.md.
