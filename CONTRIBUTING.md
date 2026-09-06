@@ -20,6 +20,20 @@ Infrastructure and migration changes also need automated validation and, where
 appropriate, a tested dry run or rollback. Documentation-only changes need link,
 structure, and factual review; avoid artificial tests for prose wording.
 
+### Localized music notation
+
+User-visible pitch and scale names must follow the active locale's professional
+standard. English uses letter names with accidentals and scientific octaves;
+Russian uses note names such as `до`, `ми-бемоль`, and `си-диез`, with Russian
+octave names; future German localization must use forms such as `c-Moll` and
+German pitch-letter conventions. Scale cards must preserve diatonic degree
+letters (for example, C minor is C–D–E♭–F–G–A♭–B♭) instead of choosing a
+chromatic alias from the keyboard. The rule currently binds the “A little
+experiment” lab; the keyboard and the ear-training panels still show English
+scientific pitch in the Russian interface, which ROADMAP P05 records as open. Keep the scope and sources in
+[music-notation.md](docs/music-notation.md), and add regression tests when a
+scale, locale, or notation rule changes.
+
 Run:
 
 ```sh

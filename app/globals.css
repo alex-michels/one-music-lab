@@ -1224,6 +1224,7 @@ h1 {
 }
 .experiment-controls > div {
   min-width: 100px;
+  max-width: 100%;
 }
 .experiment-controls > div:nth-child(2) {
   flex: 1;
@@ -1236,9 +1237,15 @@ h1 {
   margin-bottom: 7px;
 }
 .experiment-controls [data-slot='select-trigger'] {
-  height: 42px;
+  min-height: 42px;
+  height: auto;
   width: 100%;
   font-size: 14px;
+  white-space: normal;
+}
+.experiment-controls [data-slot='select-value'] {
+  display: block;
+  overflow-wrap: anywhere;
 }
 .experiment-controls .primary-button {
   margin: 0;
@@ -1249,7 +1256,7 @@ h1 {
 }
 .note-sequence {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(125px, 100%), 1fr));
   gap: 8px;
   margin-top: 21px;
 }
@@ -1261,7 +1268,8 @@ h1 {
   text-align: center;
 }
 .note-sequence > div > span {
-  font-size: 19px;
+  font-size: 16px;
+  overflow-wrap: anywhere;
   display: block;
   font-weight: 500;
   color: #3e6240;
@@ -1276,6 +1284,11 @@ h1 {
 }
 .note-sequence small {
   font-size: 10px;
+}
+.note-sequence .note-octave {
+  display: block;
+  font-size: 12px;
+  margin-top: 4px;
 }
 .note-sequence em {
   font-style: normal;
@@ -1897,7 +1910,7 @@ h1 {
     height: auto;
   }
   .note-sequence {
-    grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(125px, 100%), 1fr));
   }
   .soft-badge {
     font-size: 12px;

@@ -27,9 +27,10 @@ checkboxes. Each topic requires theory, lab, practice, and encyclopedia coverage
 - Continuous 20–20,000 Hz oscillator, four waveforms, logarithmic frequency control, cents readout and live analyser waveform.
 - Editable A4 reference from 20–2,000 Hz, presets, and 12-TET plus specific A-anchored just and Pythagorean chromatic ratio maps.
 - Two-octave keyboard with register controls; computer keys A W S E D F T G Y H U J K play a chromatic octave. Space toggles continuous sound, Escape stops all audio, and arrows adjust frequency.
-- Intervals, seven scale collections and seven chord types with sequential/simultaneous playback. All notes are calculated from the selected tuning.
+- Intervals, ten scale collections and seven chord types with sequential/simultaneous playback. All notes are calculated from the selected tuning.
 - Band-limited Web Audio rendering of five-second mono PCM WAV files with attack/release ramps.
 - Six bilingual introductory lessons with sources and linked experiments, a searchable bilingual glossary, and interval ear training with feedback and session scoring.
+- The scale lab spells pitches by scale degree in the active locale (for example, C minor is C–D–E♭–F–G–A♭–B♭), and includes natural, harmonic, and ascending/descending melodic minor forms. See [localized notation](docs/music-notation.md).
 - An explicitly marked curriculum roadmap covering early music, European traditions 1600–1900, blues/jazz/pop, world traditions and contemporary musical languages.
 
 This is the first product slice, not an exhaustive encyclopedia or a universal instrument synthesizer. Real instrument synthesis, additive synthesis, noise, arbitrary temperament imports, detailed rhythmic training, notation, historical courses and culturally contextualized world-music modules are future work. No medical or special-health claims are made for alternate concert pitches.
