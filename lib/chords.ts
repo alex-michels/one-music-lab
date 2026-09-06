@@ -430,6 +430,45 @@ export function paletteChord(
     beats: 4,
   };
 }
+/**
+ * Every chord re-qualified to the type the palette gives on its degree, so a
+ * progression written in one scale can be made to belong to another. Degree,
+ * bass position, length and register are kept: this changes what each chord
+ * is, not where it is or how long it lasts.
+ *
+ * The chord's size is preserved rather than the palette's switch position — a
+ * triad becomes the diatonic triad, a seventh the diatonic seventh — because
+ * the reader asked for the chords to fit the scale, not to change density. A
+ * ninth has no diatonic equivalent in this palette and becomes the seventh on
+ * its degree, which is the closest the model can offer and is undoable.
+ *
+ * A bass position that the new chord is too small for moves to its lowest
+ * available one, and a register that no longer fits is clamped, because a
+ * seventh needs more room than the triad it replaced.
+ */
+export function fitToScale(key: ChordKey, chords: ChordStep[]): ChordStep[] {
+  validateKey(key);
+  return chords.map((chord) => {
+    validateChord(chord);
+    const size = chordQualities[chord.quality].steps.length;
+    const wanted = paletteChord(key.mode, chord.degree, size > 3).quality;
+    if (wanted === chord.quality) return chord;
+    return clampChord(key, {
+      ...chord,
+      quality: wanted,
+      inversion: Math.min(
+        chord.inversion,
+        chordQualities[wanted].steps.length - 1,
+      ),
+    });
+  });
+}
+
+/** Whether any chord is not the type its own scale degree would give. */
+export function fitsScale(key: ChordKey, chords: ChordStep[]) {
+  return fitToScale(key, chords).every((chord, i) => chord === chords[i]);
+}
+
 export function commonToneNames(
   key: ChordKey,
   a: ChordStep,

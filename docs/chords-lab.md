@@ -66,14 +66,26 @@ experiment**, or open `/#chords`.
    changing back does not restore the register the card had, only Undo does.
    Changing the palette scale also changes
    the progression's degree roots, retaining custom chord qualities. Edited
-   chords can therefore lie outside the palette. The minor palette is natural
+   chords can therefore lie outside the palette. Only three of the seven
+   degrees differ between major and natural minor, so a progression built on
+   the others — I–IV–V among them — sounds identical in both; the lab says so
+   when that happens rather than leaving the reader to wonder whether the
+   control worked. **Fit chords to the scale** is how a progression joins the
+   new palette: it re-qualifies every chord to the type its own degree gives,
+   keeping degree, bass, length and register. A chord's size is preserved, so a
+   triad becomes the diatonic triad and a seventh the diatonic seventh; a ninth
+   has no diatonic equivalent in this palette and becomes its degree's seventh.
+   It is one undoable edit, and the control reads as unavailable while every
+   chord already matches. The minor palette is natural
    minor; choose major V or V7 to compare the raised leading tone.
 6. Move the selected chord up or down with the octave buttons on its card.
    They move that chord alone: a chord in a high bass position already sits
    well above its root position — a ninth chord's top note rises 21 semitones
    between root position and its highest bass — so bringing one card back down
-   is how a phrase is evened out. The buttons stop where the chord would leave
-   the keyboard, and a card that has been moved is marked in the timeline.
+   is how a phrase is evened out. The top stop is where the chord would leave
+   the keyboard; the bottom one is as low as this lab goes, since the derived
+   floor is the lowest offered register for every chord. A card that has been
+   moved is marked in the timeline.
 7. Choose tempo, one/two/four passes, and one of eight accompaniment figures:
    held chords, repeated quarters or eighths, arpeggios rising or falling, the
    Alberti low–high–middle–high pattern, a bass note answered by afterbeat
@@ -96,7 +108,11 @@ experiment**, or open `/#chords`.
 бы за пределы клавиатуры. **Отменить и Вернуть охватывают любое изменение
 последовательности**, включая загрузку другого примера. Тоника транспонирует
 последовательность. Смена гаммы меняет высоты ступеней, сохраняя выбранные виды
-аккордов. Для вводного тона в миноре сравните мажорный V7 с минорным v7.
+аккордов: мажор и натуральный минор различаются лишь тремя ступенями из семи,
+поэтому последовательность на I–IV–V звучит в обеих одинаково — лаборатория
+сообщает об этом, а кнопка «Подогнать аккорды под гамму» приводит виды аккордов
+к новой гамме одним отменяемым действием. Для вводного тона в миноре сравните
+мажорный V7 с минорным v7.
 Вкладка **Проверьте себя** объясняет отличие основного тона от баса;
 **Термины и источники** содержит определения и ссылки.
 

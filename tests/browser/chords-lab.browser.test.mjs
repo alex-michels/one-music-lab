@@ -626,3 +626,56 @@ test('A chord added from the palette joins the register being worked in', async 
   await button('Duplicate chord').click();
   expect(markers()).toEqual(['↓1', '↓1', '', '', '', '↓1']);
 });
+
+test('Changing the scale says when it changed nothing, and can fit the chords to it', async () => {
+  mount();
+  const fit = 'Fit chords to the scale';
+  const matches = 'Chords match the scale';
+  const note = () =>
+    [...container.querySelectorAll('output.chord-message')]
+      .map((n) => n.textContent)
+      .join(' ');
+
+  // I-IV-V7-I is built on the degrees both scales share, so switching to minor
+  // moves nothing. That is correct, and it is exactly what confused the owner.
+  expect(cards()).toEqual(['C', 'F', 'G7', 'C']);
+  await expect.element(button(matches)).toBeDisabled();
+  await choose('Palette scale', 'Natural minor');
+  expect(cards()).toEqual(['C', 'F', 'G7', 'C']);
+  expect(note()).toContain('sounds exactly as it did');
+  expect(note()).toContain('Fit chords to the scale');
+
+  // The palette did change, and this is how the progression joins it.
+  await button(fit).click();
+  expect(cards()).toEqual(['Cm', 'Fm', 'Gm7', 'Cm']);
+  expect(note()).not.toContain('sounds exactly as it did');
+  await expect.element(button(matches)).toBeDisabled();
+
+  // Now the same silent change again, but with chords that already belong to
+  // the scale they land in: the note must not name a button sitting disabled.
+  await choose('Palette scale', 'Major');
+  expect(note()).toContain('Fit chords to the scale');
+  await choose('Palette scale', 'Natural minor');
+  // The note explains why nothing moved and stops there: the disabled button
+  // beside it already says the chords fit, and saying it twice is noise.
+  expect(note()).toContain('sounds exactly as it did');
+  expect(note()).not.toContain('Fit chords to the scale');
+  expect(note().trim()).toMatch(/degrees the two scales share.$/);
+  await expect.element(button(matches)).toBeDisabled();
+
+  // Fitting is an edit like any other.
+  await button('Undo').click();
+  await button('Undo').click();
+  await button('Undo').click();
+  expect(cards()).toEqual(['C', 'F', 'G7', 'C']);
+
+  // A progression that does move says nothing, because nothing needs saying.
+  await choose(
+    'Starting point',
+    'Turnaround · back to the top · iii7–vi7–ii7–V7',
+  );
+  expect(cards()).toEqual(['Em7', 'Am7', 'Dm7', 'G7']);
+  await choose('Palette scale', 'Natural minor');
+  expect(cards()).toEqual(['E♭m7', 'A♭m7', 'Dm7', 'G7']);
+  expect(note()).not.toContain('sounds exactly as it did');
+});

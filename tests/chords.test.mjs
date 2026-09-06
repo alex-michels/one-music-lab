@@ -10,6 +10,8 @@ import {
   keyTonics,
   MAX_CHORDS,
   clampChord,
+  fitsScale,
+  fitToScale,
   MAX_MIDI,
   MIN_MIDI,
   OCTAVES,
@@ -831,4 +833,86 @@ describe('Invalid inputs never create a phrase', () => {
       ),
     ).toThrow('180 seconds');
   });
+});
+
+test('Fitting to the scale re-qualifies each chord and keeps everything else', () => {
+  // The case the owner hit: I-IV-V7-I is built on degrees both scales share,
+  // so changing the palette scale moves nothing. This is what makes it minor.
+  const cadence = progressionTemplates.find((p) => p.id === 'authentic').steps;
+  const Cm = { tonic: 0, mode: 'minor' };
+  expect(cadence.map((c) => chordSymbol(C, c))).toEqual(['C', 'F', 'G7', 'C']);
+  expect(cadence.map((c) => chordSymbol(Cm, c))).toEqual(['C', 'F', 'G7', 'C']);
+  expect(fitsScale(C, cadence)).toBe(true);
+  expect(fitsScale(Cm, cadence)).toBe(false);
+  expect(fitToScale(Cm, cadence).map((c) => chordSymbol(Cm, c))).toEqual([
+    'Cm',
+    'Fm',
+    'Gm7',
+    'Cm',
+  ]);
+  // Everything that is not the chord's type survives: degree, bass, length.
+  expect(fitToScale(Cm, cadence).map((c) => [c.degree, c.beats])).toEqual(
+    cadence.map((c) => [c.degree, c.beats]),
+  );
+  // Fitting twice changes nothing more, and a fitted phrase reports as fitted.
+  const fitted = fitToScale(Cm, cadence);
+  expect(fitsScale(Cm, fitted)).toBe(true);
+  expect(fitToScale(Cm, fitted)).toEqual(fitted);
+
+  // Size is preserved rather than the palette's switch: a triad becomes the
+  // diatonic triad and a seventh the diatonic seventh.
+  expect(
+    fitToScale(C, [chord('minor'), chord('maj7', { degree: 4 })]).map((c) =>
+      chordSymbol(C, c),
+    ),
+  ).toEqual(['C', 'G7']);
+  // A ninth has no diatonic equivalent here and becomes its degree's seventh.
+  expect(
+    fitToScale(C, [chord('min9', { degree: 1 })]).map((c) => chordSymbol(C, c)),
+  ).toEqual(['Dm7']);
+
+  // Size is preserved, so a four-note chord keeps its bass position too.
+  expect(fitToScale(C, [chord('seventh', { inversion: 3 })])[0]).toMatchObject({
+    quality: 'maj7',
+    inversion: 3,
+  });
+  // Only a ninth shrinks, and its bass moves to the lowest the seventh has.
+  expect(
+    fitToScale(C, [chord('min9', { degree: 1, inversion: 4 })])[0],
+  ).toMatchObject({ quality: 'min7', inversion: 3 });
+  // A chord already of the right type is returned by identity, so an unchanged
+  // phrase does not churn the undo history.
+  const already = chord();
+  expect(fitToScale(C, [already])[0]).toBe(already);
+
+  // The seventh degree of a major scale carries the diminished triad, and a
+  // chord parked at the top of its range stays playable after the change.
+  const high = {
+    degree: 6,
+    quality: 'major',
+    inversion: 0,
+    beats: 4,
+    octave: 6,
+  };
+  const B = { tonic: 11, mode: 'major' };
+  expect(fitsScale(B, [high])).toBe(false);
+  const fixed = fitToScale(B, [high])[0];
+  expect(fixed.quality).toBe('diminished');
+  expect(chordSymbol(B, fixed)).toBe('A♯dim');
+  expect(
+    Math.max(...chordNotes(B, fixed).map((p) => p.midi)),
+  ).toBeLessThanOrEqual(MAX_MIDI);
+
+  // Every template, in either scale, fits cleanly and stays playable.
+  for (const template of progressionTemplates)
+    for (const mode of ['major', 'minor']) {
+      const key = { tonic: 0, mode };
+      const result = fitToScale(key, template.steps);
+      expect(fitsScale(key, result), template.id).toBe(true);
+      for (const step of result)
+        for (const pitch of chordNotes(key, step)) {
+          expect(pitch.midi, template.id).toBeGreaterThanOrEqual(MIN_MIDI);
+          expect(pitch.midi, template.id).toBeLessThanOrEqual(MAX_MIDI);
+        }
+    }
 });

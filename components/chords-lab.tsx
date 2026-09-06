@@ -40,6 +40,8 @@ import {
   chordSymbol,
   clampChord,
   commonToneNames,
+  fitsScale,
+  fitToScale,
   keyName,
   keyPitch,
   MAX_CHORDS,
@@ -175,6 +177,8 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
   // Undo, redo and deletion can shorten the phrase under the selection.
   const selected = Math.min(selectedCard, chords.length - 1);
   const [replaced, setReplaced] = useState(false);
+  // Set when a scale change left the progression sounding exactly as it did.
+  const [scaleWasSilent, setScaleWasSilent] = useState(false);
   const [sevenths, setSevenths] = useState(false);
   const [tone, setTone] = useState<ChordTone>('triangle');
   const [volume, setVolume] = useState(40);
@@ -297,6 +301,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
     if (nextSelected !== undefined) setSelected(nextSelected);
     setAnswer(null);
     setReplaced(false);
+    setScaleWasSilent(false);
   }
   function undo() {
     stop();
@@ -311,6 +316,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
     );
     setAnswer(null);
     setReplaced(false);
+    setScaleWasSilent(false);
   }
   function redo() {
     stop();
@@ -325,6 +331,8 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
     );
     setAnswer(null);
     setReplaced(false);
+    setScaleWasSilent(false);
+    setScaleWasSilent(false);
   }
   /**
    * Every edit to one chord, the register included. A change to the degree,
@@ -338,6 +346,32 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
       chords: d.chords.map((c, i) =>
         i === selected ? clampChord(d.key, { ...c, ...changes }) : c,
       ),
+    }));
+  /**
+   * Only three of the seven degrees differ between major and natural minor, so
+   * a progression built on the others — I-IV-V among them — sounds identical
+   * in both. That is correct and confusing at once: the palette visibly
+   * changes and the phrase does not. When that happens, say so.
+   */
+  function changeMode(mode: ChordKey['mode']) {
+    const sounds = (at: ChordKey) =>
+      chords
+        .map((c) =>
+          chordNotes(at, c)
+            .map((p) => p.midi)
+            .join(),
+        )
+        .join('|');
+    const silent = sounds(key) === sounds({ ...key, mode });
+    commit((d) => reregister({ ...d, edited: true, key: { ...d.key, mode } }));
+    setScaleWasSilent(silent);
+  }
+  /** Re-qualifies every chord to the type its own degree gives in this scale. */
+  const fitChords = () =>
+    commit((d) => ({
+      ...d,
+      edited: true,
+      chords: fitToScale(d.key, d.chords),
     }));
   function loadTemplate(index: number) {
     const wasEdited = draft.edited;
@@ -481,27 +515,50 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
               label: pitchName(keyPitch({ ...key, tonic }), lang),
             }))}
           />
-          <Choice
-            label={t('Palette scale', 'Гамма палитры')}
-            value={key.mode}
-            onChange={(v) =>
-              commit((d) =>
-                reregister({
-                  ...d,
-                  edited: true,
-                  key: { ...d.key, mode: v as ChordKey['mode'] },
-                }),
-              )
-            }
-            options={[
-              { value: 'major', label: t('Major', 'Мажор') },
-              {
-                value: 'minor',
-                label: t('Natural minor', 'Натуральный минор'),
-              },
-            ]}
-          />
+          <div className="chord-scale-field">
+            <Choice
+              label={t('Palette scale', 'Гамма палитры')}
+              value={key.mode}
+              onChange={(v) => changeMode(v as ChordKey['mode'])}
+              options={[
+                { value: 'major', label: t('Major', 'Мажор') },
+                {
+                  value: 'minor',
+                  label: t('Natural minor', 'Натуральный минор'),
+                },
+              ]}
+            />
+            {/* Changing the scale deliberately keeps every chord's type, so a
+                progression can stay as written. This is the way to give that
+                up on purpose. */}
+            <button
+              className="chord-fit"
+              disabled={fitsScale(key, chords)}
+              onClick={fitChords}
+            >
+              {fitsScale(key, chords)
+                ? t('Chords match the scale', 'Аккорды уже по гамме')
+                : t('Fit chords to the scale', 'Подогнать аккорды под гамму')}
+            </button>
+          </div>
         </div>
+        {scaleWasSilent && (
+          <output className="chord-message">
+            {t(
+              'The scale changed, but this progression sounds exactly as it did: it is built on degrees the two scales share.',
+              'Гамма изменилась, но последовательность звучит точно так же: она построена на ступенях, общих для обеих гамм.',
+            )}
+            {/* Only when there is something to do. Naming the button while it
+                sits disabled would contradict it, and saying the chords
+                already fit would repeat what the button itself says. */}
+            {!fitsScale(key, chords) &&
+              ' ' +
+                t(
+                  'The palette has changed, and “Fit chords to the scale” will make these chords belong to it.',
+                  'Палитра обновилась, а кнопка «Подогнать аккорды под гамму» сделает эти аккорды диатоническими.',
+                )}
+          </output>
+        )}
         <fieldset
           className="chord-timeline"
           aria-label={t('Progression chords', 'Аккорды последовательности')}
