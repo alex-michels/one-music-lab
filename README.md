@@ -57,6 +57,7 @@ In a second terminal in the repository:
 
 ```sh
 npm test
+npm run test:browser
 npm run test:coverage
 npm run typecheck
 npm run lint
@@ -71,9 +72,18 @@ It also checks copied UI provenance, rendered `ItemGroup` list semantics and
 the narrow lint allowance for explicit native-list roles. See the
 [UI provenance boundary](docs/ui-provenance.md) before editing catalog copies.
 `test:coverage` reports **every authored file**, including files no test loads
-yet, so an untested module appears at 0% instead of disappearing. Component
-tests run against a real DOM. The current figure is about 24% of statements:
-the measurement is complete, the coverage itself is not. UI and actual browser audio tests are still needed.
+yet, so an untested module appears at 0% instead of disappearing. The current
+figure is about 25% of statements: the measurement is complete, the coverage
+itself is not.
+
+`npm run test:browser` runs the audio and component suites in real Chromium,
+Firefox and WebKit, so run `npx playwright install` once first. The audio tests
+render the oscillator graph through `OfflineAudioContext` and measure the
+result — frequency, attack, fade-out, the Nyquist limit, sequence timing and a
+decoded WAV export — because a mocked `AudioContext` cannot show what would be
+heard. Playwright's WebKit ships without Web Audio, so those tests report as
+skipped there and real Safari, iOS and Android checks on devices stay open in
+ROADMAP P00. UI and actual browser audio tests are still needed.
 The 24 lint errors found by the audit are fixed (ROADMAP P00); `npm run lint`
 and `npm run format:check` must pass, and the Baseline checks GitHub workflow
 fails on a lint or formatting error. `npm run format` rewrites the authored
