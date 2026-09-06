@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   baseline:
-    name: Tests, types, build; lint debt report
+    name: Tests, types, lint, build
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -37,6 +37,8 @@ jobs:
           npm run test:coverage 2>&1 | tee outputs/partial-coverage.txt
       - name: Typecheck
         run: npm run typecheck
+      - name: Lint
+        run: npm run lint
       - name: Build
         run: npm run build
       - name: Rendered site identity from the built Worker
@@ -75,21 +77,12 @@ jobs:
             outputs/one-music-lab-static.tgz.sha256
           if-no-files-found: error
           retention-days: 7
-      - name: Audit existing lint debt (P00)
-        id: lint
-        continue-on-error: true
-        run: npm run lint 2>&1 | tee outputs/lint-report.txt
       - name: Explain validation limits
         if: always()
-        env:
-          LINT_OUTCOME: ${{ steps.lint.outcome }}
         run: |
           printf '%s\n' '## Baseline only — not publication readiness' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' 'Coverage is limited to loaded lib modules; UI/browser paths are not yet included. ROADMAP P00 and gate G remain open.' >> "$GITHUB_STEP_SUMMARY"
-          printf 'Lint outcome: %s. Known failures are reported, not certified as passing.\n' "$LINT_OUTCOME" >> "$GITHUB_STEP_SUMMARY"
-          if [ "$LINT_OUTCOME" = failure ]; then
-            echo '::warning::Known lint debt remains. This workflow is not the full release gate; see ROADMAP P00.'
-          fi
+          printf '%s\n' 'Lint is a required step; the run fails on any lint error.' >> "$GITHUB_STEP_SUMMARY"
       - name: Attach audit reports
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -97,7 +90,6 @@ jobs:
           name: baseline-audit-reports
           path: |
             outputs/partial-coverage.txt
-            outputs/lint-report.txt
             outputs/site-server.txt
           if-no-files-found: warn
           retention-days: 14

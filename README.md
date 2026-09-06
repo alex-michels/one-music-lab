@@ -64,12 +64,14 @@ npm run build
 ```
 
 `npm test` covers tuning identities, inverse note mapping, cents, WAV structure,
-audio scheduling/cancellation with a mocked AudioContext, and roadmap integrity.
-`test:coverage` is currently a **partial loaded-module report** for `lib/*.ts`,
-not coverage of the whole app. UI and actual browser audio tests are still needed.
-The audit found **24 existing lint errors**; see P00 in [ROADMAP.md](ROADMAP.md).
-The Baseline checks GitHub workflow reproduces tests/types/build and reports that
-lint debt explicitly. It is not a publication gate until P00 is completed.
+audio scheduling/cancellation with a mocked AudioContext, roadmap integrity, the
+URL-hash/localStorage client store, and the viewport (`useIsMobile`) store.
+`test:coverage` is currently a **partial loaded-module report** for `lib/*.ts`
+and `hooks/*.ts`, not coverage of the whole app. UI and actual browser audio tests are still needed.
+The 24 lint errors found by the audit are fixed (ROADMAP P00); `npm run lint`
+must pass, and the Baseline checks GitHub workflow fails on any lint error.
+The workflow reproduces tests/types/lint/build, the Worker HTTP check and the
+static export check; it is not a publication gate until P00 is completed.
 
 To check the rendered site identity, keep `npm run dev` (or `npm start` for the
 built Worker) running and use its printed URL in a second terminal:

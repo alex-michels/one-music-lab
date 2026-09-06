@@ -55,8 +55,9 @@ website as automatically in scope. [BFSG §3(3)](https://www.gesetze-im-internet
 exempts qualifying microenterprises providing services; eligibility must be
 documented, not presumed. Keyboard control, focus, screen-reader labels, 200%
 zoom, contrast and accessible alternatives to hearing tests remain product
-release criteria regardless of exemptions. The existing 24 lint errors include
-accessibility issues; they are not a passed accessibility audit.
+release criteria regardless of exemptions. The 24 lint errors found by the
+audit, including accessibility rules, are fixed; a passing linter is not a
+passed accessibility audit.
 
 **Future commercial and platform features.** Before checkout/subscriptions,
 review consumer information, withdrawal/cancellation, pricing, digital-service
