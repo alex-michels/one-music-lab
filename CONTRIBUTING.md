@@ -46,6 +46,12 @@ excluded to improve a number, and `tests/coverage-boundary.test.mjs` fails if a
 new authored file is left out of the denominator. Instrumentation is not
 coverage: every authored file is now measured, but most are still at 0%.
 
+On Windows the very first `npm test` after `npm ci` can fail with
+"Timeout waiting for worker to respond" while the DOM suite starts: the
+runner allows sixty seconds for a worker, which a cold cache on a freshly
+installed tree can exceed. The limit is fixed in the runner, so run the
+command again; a warm run takes about twenty seconds.
+
 `npm run test:browser` runs the suites under `tests/browser/` in real
 Chromium, Firefox and WebKit through Playwright; install the engines once with
 `npx playwright install`. Audio is verified by rendering the real graph with
