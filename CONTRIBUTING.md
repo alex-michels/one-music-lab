@@ -34,6 +34,12 @@ scientific pitch in the Russian interface, which ROADMAP P05 records as open. Ke
 [music-notation.md](docs/music-notation.md), and add regression tests when a
 scale, locale, or notation rule changes.
 
+The Chords lab also follows this rule. Its letter chord symbols use explicitly
+identified international lead-sheet notation beside localized pitch names and
+chord-type explanations. Preserve degree spelling when transposing and distinguish
+chord quality from harmonic function. Its sources, audio bounds and supported
+model are recorded in [chords-lab.md](docs/chords-lab.md).
+
 Run:
 
 ```sh

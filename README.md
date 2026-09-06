@@ -24,6 +24,7 @@ checkboxes. Each topic requires theory, lab, practice, and encyclopedia coverage
 
 ## Included
 
+- **Chords lab** (`/#chords`): editable and transposable progressions, 16 chord types through ninths, inversions, EN/RU pitch spelling, a visual keyboard, classical/minor/blues/jazz/pop examples, bounded playback textures and root-identification feedback. See the [user guide, research and limitations](docs/chords-lab.md).
 - Continuous 20–20,000 Hz oscillator, four waveforms, logarithmic frequency control, cents readout and live analyser waveform.
 - Editable A4 reference from 20–2,000 Hz, presets, and 12-TET plus specific A-anchored just and Pythagorean chromatic ratio maps.
 - Two-octave keyboard with register controls; computer keys A W S E D F T G Y H U J K play a chromatic octave. Space toggles continuous sound, Escape stops all audio, and arrows adjust frequency.

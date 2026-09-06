@@ -7,7 +7,13 @@
  * sides and avoids a state update inside an effect right after mount.
  */
 
-export const PAGES = ['lab', 'theory', 'practice', 'encyclopedia'] as const;
+export const PAGES = [
+  'lab',
+  'chords',
+  'theory',
+  'practice',
+  'encyclopedia',
+] as const;
 export type Page = (typeof PAGES)[number];
 
 export const LANGUAGES = ['en', 'ru'] as const;

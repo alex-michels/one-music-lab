@@ -76,6 +76,14 @@ is still pending. System font selection does not bundle font binaries.
 
 ## Research and learning sources
 
+The original Chords lab takes product inspiration from OneMotion Chord Player;
+no OneMotion code, assets, audio, compositions or embedded runtime are included.
+[Chords lab provenance and source sections](docs/chords-lab.md) records the
+verified Hutchinson, DeBenedetti and Фролов readings. Their rights remain with
+their respective owners; original concise educational explanations remain
+CC BY 4.0 and original implementation remains Apache-2.0. No textbook notation
+images, musical examples or sound recordings are redistributed.
+
 Current lessons link to UNSW, Open Music Theory and the University of Puget
 Sound. External recordings, book scans, or extracted score images are not
 bundled in this first version. Availability online does not imply reuse rights.

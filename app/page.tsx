@@ -7,6 +7,7 @@ import {
   Encyclopedia,
 } from '@/components/learning';
 import { NumberField } from '@/components/number-field';
+import { ChordsLab } from '@/components/chords-lab';
 import { exportTone } from '@/lib/wav';
 import { registerLabTools, type LabState } from '@/lib/webmcp';
 import { Download } from 'lucide-react';
@@ -126,6 +127,11 @@ function Navigation({
   const { setOpenMobile } = useSidebar();
   const items = [
     { id: 'lab', icon: FlaskConical, label: t('Sound lab', 'Лаборатория') },
+    {
+      id: 'chords',
+      icon: Music2,
+      label: t('Chords lab', 'Лаборатория аккордов'),
+    },
     { id: 'theory', icon: BookOpen, label: t('Music theory', 'Теория музыки') },
     { id: 'practice', icon: Headphones, label: t('Practice', 'Практика') },
     {
@@ -169,7 +175,11 @@ function Navigation({
               >
                 <Icon />
                 <span>{label}</span>
-                {id === 'lab' && <span className="nav-count">01</span>}
+                {id === 'lab' && (
+                  <span className="nav-count" aria-hidden="true">
+                    01
+                  </span>
+                )}
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
@@ -571,11 +581,13 @@ export default function Home() {
             <strong>
               {page === 'lab'
                 ? t('Sound lab', 'Лаборатория')
-                : page === 'theory'
-                  ? t('Music theory', 'Теория музыки')
-                  : page === 'practice'
-                    ? t('Practice', 'Практика')
-                    : t('Encyclopedia', 'Энциклопедия')}
+                : page === 'chords'
+                  ? t('Chords lab', 'Лаборатория аккордов')
+                  : page === 'theory'
+                    ? t('Music theory', 'Теория музыки')
+                    : page === 'practice'
+                      ? t('Practice', 'Практика')
+                      : t('Encyclopedia', 'Энциклопедия')}
             </strong>
           </div>
           <div className="topbar-right">
@@ -618,17 +630,19 @@ export default function Home() {
               <h1>
                 {page === 'lab'
                   ? t('Sound, at your fingertips.', 'Звук в ваших руках.')
-                  : page === 'theory'
-                    ? t(
-                        'The ideas behind the music.',
-                        'Идеи, из которых звучит музыка.',
-                      )
-                    : page === 'practice'
+                  : page === 'chords'
+                    ? t('Chords, connected.', 'Аккорды в движении.')
+                    : page === 'theory'
                       ? t(
-                          'Make listening a skill.',
-                          'Превратите слушание в навык.',
+                          'The ideas behind the music.',
+                          'Идеи, из которых звучит музыка.',
                         )
-                      : t('The language of music.', 'Язык музыки.')}
+                      : page === 'practice'
+                        ? t(
+                            'Make listening a skill.',
+                            'Превратите слушание в навык.',
+                          )
+                        : t('The language of music.', 'Язык музыки.')}
               </h1>
               <p>
                 {page === 'lab'
@@ -636,10 +650,15 @@ export default function Home() {
                       'A space to play with sound and discover the music inside it.',
                       'Пространство для экспериментов со звуком и открытий в музыке.',
                     )
-                  : t(
-                      'Connected ideas. Audible examples. A little discovery every day.',
-                      'Связанные понятия. Звучащие примеры. Новые открытия каждый день.',
-                    )}
+                  : page === 'chords'
+                    ? t(
+                        'Build a chord. Shape a progression. Hear what changes.',
+                        'Соберите аккорд. Создайте последовательность. Услышьте изменения.',
+                      )
+                    : t(
+                        'Connected ideas. Audible examples. A little discovery every day.',
+                        'Связанные понятия. Звучащие примеры. Новые открытия каждый день.',
+                      )}
               </p>
             </div>
             <div className="heading-icon">
@@ -1032,6 +1051,17 @@ export default function Home() {
                 tuning={tuning}
                 play={playSequence}
               />
+              <button
+                className="secondary-button chord-lab-link"
+                onClick={() => navigate('chords')}
+              >
+                <Music2 size={18} />
+                {t(
+                  'Open Chords lab · build a progression',
+                  'Лаборатория аккордов · создайте последовательность',
+                )}
+                <ArrowUpRight size={16} />
+              </button>
               <div className="export-row">
                 <button
                   className="secondary-button"
@@ -1066,6 +1096,8 @@ export default function Home() {
                 </span>
               </div>
             </>
+          ) : page === 'chords' ? (
+            <ChordsLab lang={lang} />
           ) : page === 'theory' ? (
             <Theory
               lang={lang}
