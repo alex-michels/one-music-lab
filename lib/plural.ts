@@ -1,8 +1,9 @@
 import type { MusicLanguage } from './notation';
 
 /**
- * Counted nouns take different forms in the two interface languages. English
- * has two; Russian has three, selected by the last digits of the number, so
+ * Counted nouns take different forms in the three interface languages. English
+ * and German each have two, chosen by whether the count is exactly one; Russian
+ * has three, selected by the last digits of the number, so
  * `1 доля`, `2 доли` and `5 долей` are each correct and `2 долей` is not.
  * Every visible counter goes through this helper so that none of them has to
  * repeat the rule, and so that a wrong form is a test failure rather than a
@@ -32,28 +33,34 @@ export function counted(
   lang: MusicLanguage,
   en: EnglishForms,
   ru: RussianForms,
+  de: EnglishForms = en,
 ): string {
   if (lang === 'ru') return `${count} ${russianForm(count, ru)}`;
   if (!Number.isInteger(count) || count < 0)
     throw new RangeError('A counted noun needs a whole, non-negative count');
-  return `${count} ${count === 1 ? en.one : en.other}`;
+  const forms = lang === 'de' ? de : en;
+  return `${count} ${count === 1 ? forms.one : forms.other}`;
 }
 
 /** The counters this interface shows, so that a caller cannot invent a form. */
 export const nouns = {
   beats: {
+    de: { one: 'Zählzeit', other: 'Zählzeiten' },
     en: { one: 'beat', other: 'beats' },
     ru: { one: 'доля', few: 'доли', many: 'долей' },
   },
   chords: {
+    de: { one: 'Akkord', other: 'Akkorde' },
     en: { one: 'chord', other: 'chords' },
     ru: { one: 'аккорд', few: 'аккорда', many: 'аккордов' },
   },
   octaves: {
+    de: { one: 'Oktave', other: 'Oktaven' },
     en: { one: 'octave', other: 'octaves' },
     ru: { one: 'октаву', few: 'октавы', many: 'октав' },
   },
   semitones: {
+    de: { one: 'Halbton', other: 'Halbtöne' },
     en: { one: 'semitone', other: 'semitones' },
     ru: { one: 'полутон', few: 'полутона', many: 'полутонов' },
   },
@@ -65,5 +72,5 @@ export function count(
   lang: MusicLanguage,
   noun: keyof typeof nouns,
 ): string {
-  return counted(amount, lang, nouns[noun].en, nouns[noun].ru);
+  return counted(amount, lang, nouns[noun].en, nouns[noun].ru, nouns[noun].de);
 }

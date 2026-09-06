@@ -15,7 +15,7 @@ Commands/results and remaining risks:
 
 ## Content and release status
 
-- [ ] Sources were read and recorded with exact references; EN/RU parity checked.
+- [ ] Sources were read and recorded with exact references; EN/RU/DE parity checked.
 - [ ] Rights and attribution were checked for text, code, scores, and media.
 - [ ] Topic closures have all four layers and complete ROADMAP gate G evidence.
 - [ ] Roadmap status reflects only verified work; publication is recorded separately.

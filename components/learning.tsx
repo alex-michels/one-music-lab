@@ -1,4 +1,8 @@
 'use client';
+import { localNumber, translator } from '@/lib/i18n';
+import { intervalLabels } from '@/lib/notation';
+import { german } from '@/lib/german';
+
 import { useState } from 'react';
 import { count } from '@/lib/plural';
 import {
@@ -17,7 +21,7 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { curriculum, lessons, terms } from '@/lib/learning';
 import { frequencyForMidi, noteName, type Wave } from '@/lib/music';
-type Lang = 'en' | 'ru';
+type Lang = import('@/lib/client-store').Lang;
 type PlaySequence = (
   frequencies: number[],
   spacing?: number,
@@ -39,7 +43,7 @@ export function Theory({
   openLab: (hz: number, wave: Wave) => void;
   openPractice: () => void;
 }) {
-  const t = (en: string, ru: string) => (lang === 'ru' ? ru : en);
+  const t = translator(lang);
   const lesson = lessons.find((l) => l.id === lessonId);
   if (lesson)
     return (
@@ -55,7 +59,7 @@ export function Theory({
             {lesson.paragraphs.map((p, i) => (
               <p key={i}>{p[lang]}</p>
             ))}
-            <div className="formula">{lesson.formula}</div>
+            <div className="formula">{lesson.formula[lang]}</div>
             <a
               className="source-link"
               href={lesson.source}
@@ -175,9 +179,9 @@ export function Encyclopedia({
   openLesson: (id: string) => void;
 }) {
   const [query, setQuery] = useState('');
-  const t = (en: string, ru: string) => (lang === 'ru' ? ru : en);
+  const t = translator(lang);
   const filtered = terms.filter((term) =>
-    (term.title.en + ' ' + term.title.ru + ' ' + term.body[lang])
+    (Object.values(term.title).join(' ') + ' ' + term.body[lang])
       .toLowerCase()
       .includes(query.toLowerCase()),
   );
@@ -201,8 +205,8 @@ export function Encyclopedia({
         <input
           aria-label={t('Search musical terms', 'Найти музыкальный термин')}
           placeholder={t(
-            'Search a term in English or Russian…',
-            'Найти термин на русском или английском…',
+            'Search a term in English, Russian or German…',
+            'Найти термин на русском, английском или немецком…',
           )}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -213,7 +217,7 @@ export function Encyclopedia({
         {filtered.map((term) => (
           <article className="panel term-card" key={term.title.en}>
             <h3>{term.title[lang]}</h3>
-            <span className="alternate-term">
+            <span className="alternate-term" lang={lang === 'en' ? 'ru' : 'en'}>
               {term.title[lang === 'en' ? 'ru' : 'en']}
             </span>
             <p>{term.body[lang]}</p>
@@ -247,10 +251,28 @@ export function Encyclopedia({
 }
 
 const quizIntervals = [
-  { en: 'Minor third', ru: 'Малая терция', step: 3 },
-  { en: 'Major third', ru: 'Большая терция', step: 4 },
-  { en: 'Perfect fifth', ru: 'Чистая квинта', step: 7 },
-  { en: 'Octave', ru: 'Октава', step: 12 },
+  {
+    de: german['Minor third'],
+    en: 'Minor third',
+    ru: 'Малая терция',
+    step: 3,
+    degree: 2,
+  },
+  {
+    de: german['Major third'],
+    en: 'Major third',
+    ru: 'Большая терция',
+    step: 4,
+    degree: 2,
+  },
+  {
+    de: german['Perfect fifth'],
+    en: 'Perfect fifth',
+    ru: 'Чистая квинта',
+    step: 7,
+    degree: 4,
+  },
+  { de: german['Octave'], en: 'Octave', ru: 'Октава', step: 12, degree: 7 },
 ];
 export function Practice({
   lang,
@@ -261,7 +283,7 @@ export function Practice({
   reference: number;
   play: PlaySequence;
 }) {
-  const t = (en: string, ru: string) => (lang === 'ru' ? ru : en);
+  const t = translator(lang);
   const [question, setQuestion] = useState<{
     index: number;
     root: number;
@@ -382,9 +404,16 @@ export function Practice({
                 {quizIntervals[question.index][lang]} ·{' '}
                 {count(quizIntervals[question.index].step, lang, 'semitones')}.
                 <span className="answer-detail">
-                  {noteName(question.root)} →{' '}
-                  {noteName(question.root + quizIntervals[question.index].step)}{' '}
-                  · A4 = {question.reference} Hz
+                  {lang === 'de'
+                    ? intervalLabels(
+                        question.root,
+                        quizIntervals[question.index].step,
+                        quizIntervals[question.index].degree,
+                        lang,
+                      ).join(' → ')
+                    : `${noteName(question.root)} → ${noteName(question.root + quizIntervals[question.index].step)}`}{' '}
+                  · {lang === 'de' ? 'a′' : 'A4'} ={' '}
+                  {localNumber(question.reference, lang)} Hz
                 </span>
               </output>
             )}

@@ -1,3 +1,4 @@
+import { german } from './german';
 import {
   pitchName,
   spellPattern,
@@ -17,13 +18,13 @@ const scaleSteps = {
 };
 const naturalSteps = [0, 2, 4, 5, 7, 9, 11];
 const quality = (
-  en: string,
+  en: import('./german').GermanKey,
   ru: string,
   symbol: string,
   steps: number[],
   degrees: number[],
   formula: string,
-) => ({ en, ru, symbol, steps, degrees, formula });
+) => ({ en, ru, de: german[en], symbol, steps, degrees, formula });
 export const chordQualities = {
   major: quality(
     'Major triad',
@@ -227,6 +228,10 @@ export function keyPitch(key: ChordKey) {
   )[0];
 }
 export function keyName(key: ChordKey, lang: MusicLanguage) {
+  if (lang === 'de') {
+    const name = pitchName(keyPitch(key), lang);
+    return key.mode === 'major' ? `${name}-Dur` : `${name.toLowerCase()}-Moll`;
+  }
   return `${pitchName(keyPitch(key), lang)} ${lang === 'ru' ? (key.mode === 'major' ? 'мажор' : 'минор') : key.mode}`;
 }
 export function chordNotes(key: ChordKey, chord: ChordStep): SpelledPitch[] {
@@ -306,13 +311,17 @@ export function clampChord(key: ChordKey, chord: ChordStep): ChordStep {
   // redundant field every time an unrelated edit passes through here.
   return octave === at ? chord : { ...chord, octave };
 }
-export function chordSymbol(key: ChordKey, chord: ChordStep) {
+export function chordSymbol(
+  key: ChordKey,
+  chord: ChordStep,
+  lang: MusicLanguage = 'en',
+) {
   const root = chordNotes(key, { ...chord, inversion: 0 })[0];
   const bass = chordNotes(key, chord)[0];
   return (
-    pitchName(root, 'en') +
+    pitchName(root, lang === 'de' ? 'de' : 'en') +
     chordQualities[chord.quality].symbol +
-    (chord.inversion ? '/' + pitchName(bass, 'en') : '')
+    (chord.inversion ? '/' + pitchName(bass, lang === 'de' ? 'de' : 'en') : '')
   );
 }
 /** The bare degree numeral: case from the chord's third, flats from the mode. */
@@ -608,13 +617,43 @@ export type TemplateSource = keyof typeof templateSources;
 
 /** Families in the picker, in the order they are offered. */
 export const templateGroups = [
-  { id: 'start', en: 'Start here', ru: 'С чего начать' },
-  { id: 'cadence', en: 'Cadences', ru: 'Каденции' },
-  { id: 'schema', en: 'Classical schemas', ru: 'Классические схемы' },
-  { id: 'pop', en: 'Pop and rock loops', ru: 'Поп- и рок-петли' },
-  { id: 'jazz', en: 'Jazz turnarounds', ru: 'Джазовые обороты' },
-  { id: 'blues', en: 'Blues forms', ru: 'Блюзовые формы' },
-  { id: 'colour', en: 'Colour and chromatics', ru: 'Краски и хроматика' },
+  {
+    id: 'start',
+    de: german['Start here'],
+    en: 'Start here',
+    ru: 'С чего начать',
+  },
+  { id: 'cadence', de: german['Cadences'], en: 'Cadences', ru: 'Каденции' },
+  {
+    id: 'schema',
+    de: german['Classical schemas'],
+    en: 'Classical schemas',
+    ru: 'Классические схемы',
+  },
+  {
+    id: 'pop',
+    de: german['Pop and rock loops'],
+    en: 'Pop and rock loops',
+    ru: 'Поп- и рок-петли',
+  },
+  {
+    id: 'jazz',
+    de: german['Jazz turnarounds'],
+    en: 'Jazz turnarounds',
+    ru: 'Джазовые обороты',
+  },
+  {
+    id: 'blues',
+    de: german['Blues forms'],
+    en: 'Blues forms',
+    ru: 'Блюзовые формы',
+  },
+  {
+    id: 'colour',
+    de: german['Colour and chromatics'],
+    en: 'Colour and chromatics',
+    ru: 'Краски и хроматика',
+  },
 ] as const;
 export type TemplateGroup = (typeof templateGroups)[number]['id'];
 
@@ -623,13 +662,14 @@ export type ProgressionTemplate = {
   group: TemplateGroup;
   en: string;
   ru: string;
+  de: string;
   /** Roman numerals as written in the reading, shown beside the name. */
   pattern: string;
   mode: KeyMode;
   tempo: number;
   texture: Texture;
   steps: ChordStep[];
-  note: { en: string; ru: string };
+  note: Record<MusicLanguage, string>;
   source: TemplateSource;
 };
 
@@ -646,6 +686,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'blank',
     group: 'start',
+    de: german['One chord · build your own'],
     en: 'One chord · build your own',
     ru: 'Один аккорд · соберите своё',
     pattern: 'I',
@@ -654,6 +695,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
     texture: 'held',
     steps: [step(0, 'major')],
     note: {
+      de: german[
+        'An empty page: one tonic chord. Add from the palette, then change each chord’s type, bass and length. Nothing here is fixed, and every edit can be undone.'
+      ],
       en: 'An empty page: one tonic chord. Add from the palette, then change each chord’s type, bass and length. Nothing here is fixed, and every edit can be undone.',
       ru: 'Чистый лист: одна тоника. Добавляйте аккорды из палитры, затем меняйте вид, бас и длительность каждого. Ничто не закреплено, и любое изменение можно отменить.',
     },
@@ -662,6 +706,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'authentic',
     group: 'cadence',
+    de: german['Authentic cadence · a return home'],
     en: 'Authentic cadence · a return home',
     ru: 'Автентическая каденция · возвращение к тонике',
     pattern: 'I–IV–V7–I',
@@ -675,6 +720,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(0, 'major'),
     ],
     note: {
+      de: german[
+        'Tonic, preparation, dominant, return. Hutchinson defines an authentic cadence as a phrase ending V–I. Compare it with the other three endings in this group; a cadence also depends on rhythm, melody and phrase position, so a chord pair alone does not settle it.'
+      ],
       en: 'Tonic, preparation, dominant, return. Hutchinson defines an authentic cadence as a phrase ending V–I. Compare it with the other three endings in this group; a cadence also depends on rhythm, melody and phrase position, so a chord pair alone does not settle it.',
       ru: 'Тоника, подготовка, доминанта, возвращение. У Хатчинсона автентическая каденция — окончание фразы V–I. Сравните её с тремя другими окончаниями этой группы: каденция зависит также от ритма, мелодии и положения во фразе, поэтому одна пара аккордов её не определяет.',
     },
@@ -683,6 +731,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'half',
     group: 'cadence',
+    de: german['Half cadence · stopping on V'],
     en: 'Half cadence · stopping on V',
     ru: 'Половинная каденция · остановка на V',
     pattern: 'I–vi–ii–V',
@@ -696,6 +745,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(4, 'major', 8),
     ],
     note: {
+      de: german[
+        'A half cadence ends on V rather than resolving to it. Listen to the last chord and notice how unfinished it sounds — then paste the authentic cadence after it and hear the answer arrive.'
+      ],
       en: 'A half cadence ends on V rather than resolving to it. Listen to the last chord and notice how unfinished it sounds — then paste the authentic cadence after it and hear the answer arrive.',
       ru: 'Половинная каденция заканчивается на V, а не разрешается в неё. Послушайте последний аккорд: он звучит незавершённо. Затем добавьте после него автентическую каденцию — и ответ придёт.',
     },
@@ -704,6 +756,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'deceptive',
     group: 'cadence',
+    de: german['Deceptive cadence · V7 goes elsewhere'],
     en: 'Deceptive cadence · V7 goes elsewhere',
     ru: 'Прерванная каденция · V7 уходит в сторону',
     pattern: 'I–IV–V7–vi',
@@ -717,6 +770,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(5, 'minor', 8),
     ],
     note: {
+      de: german[
+        'The same first three chords as the authentic cadence, with vi in place of I. Hutchinson notes that the term covers V resolving to anything other than I, of which V–vi is only the commonest case. Change the last chord back to I and compare.'
+      ],
       en: 'The same first three chords as the authentic cadence, with vi in place of I. Hutchinson notes that the term covers V resolving to anything other than I, of which V–vi is only the commonest case. Change the last chord back to I and compare.',
       ru: 'Первые три аккорда те же, что и в автентической каденции, но вместо I стоит vi. Хатчинсон отмечает, что термин охватывает разрешение V в любой аккорд, кроме I, а V–vi — лишь самый частый случай. Верните последний аккорд к I и сравните.',
     },
@@ -725,6 +781,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'plagal',
     group: 'cadence',
+    de: german['Plagal ending · IV–I after the close'],
     en: 'Plagal ending · IV–I after the close',
     ru: 'Плагальный оборот · IV–I после окончания',
     pattern: 'I–V–I · IV–I',
@@ -739,6 +796,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(0, 'major', 8),
     ],
     note: {
+      de: german[
+        'An authentic close followed by the IV–I gesture often added after it. Hutchinson’s harmonic-function chapter treats a IV that moves to I as a prolongation of the tonic rather than a preparation for the dominant, which is why this feels like an afterword and not a new departure.'
+      ],
       en: 'An authentic close followed by the IV–I gesture often added after it. Hutchinson’s harmonic-function chapter treats a IV that moves to I as a prolongation of the tonic rather than a preparation for the dominant, which is why this feels like an afterword and not a new departure.',
       ru: 'Автентическое окончание, за которым следует оборот IV–I, часто добавляемый после него. В главе о гармонических функциях Хатчинсон рассматривает IV, идущий в I, как продление тоники, а не подготовку доминанты, — поэтому оборот воспринимается как послесловие, а не новый уход.',
     },
@@ -747,6 +807,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'minorDominant',
     group: 'schema',
+    de: german['Minor key · the leading tone'],
     en: 'Minor key · the leading tone',
     ru: 'Минор · вводный тон',
     pattern: 'i–iv–V7–i',
@@ -760,6 +821,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(0, 'minor'),
     ],
     note: {
+      de: german[
+        'The major third of V7 raises the seventh degree of the minor scale. Change the third chord’s type to a minor seventh and hear ♭VII in its place: which ending points more firmly at the tonic?'
+      ],
       en: 'The major third of V7 raises the seventh degree of the minor scale. Change the third chord’s type to a minor seventh and hear ♭VII in its place: which ending points more firmly at the tonic?',
       ru: 'Большая терция V7 — повышенная VII ступень минора. Смените вид третьего аккорда на малый минорный септаккорд и услышьте на его месте ♭VII: какое окончание тверже указывает на тонику?',
     },
@@ -768,6 +832,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'lament',
     group: 'schema',
+    de: german['Lament · a descending minor tetrachord'],
     en: 'Lament · a descending minor tetrachord',
     ru: 'Ламенто · нисходящий минорный тетрахорд',
     pattern: 'i–♭VII–♭VI–V',
@@ -781,6 +846,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(4, 'major'),
     ],
     note: {
+      de: german[
+        'The bass walks down the first four degrees of the minor scale. Open Music Theory names this the lament schema after its use as a ground bass in early laments, and shows it running just as happily through rock. The last chord is major, so the leading tone returns just before the loop repeats.'
+      ],
       en: 'The bass walks down the first four degrees of the minor scale. Open Music Theory names this the lament schema after its use as a ground bass in early laments, and shows it running just as happily through rock. The last chord is major, so the leading tone returns just before the loop repeats.',
       ru: 'Бас спускается по первым четырём ступеням минора. В Open Music Theory эта схема названа ламенто — по использованию в качестве basso ostinato в старинных плачах — и там же показано, что она столь же естественна в роке. Последний аккорд мажорный, поэтому вводный тон возвращается перед повторением петли.',
     },
@@ -789,6 +857,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'circleFifths',
     group: 'schema',
+    de: german['Circle of fifths · roots falling by fifths'],
     en: 'Circle of fifths · roots falling by fifths',
     ru: 'Круг квинт · корни по нисходящим квинтам',
     pattern: 'iii–vi–ii–V–I',
@@ -803,6 +872,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(0, 'major', 8),
     ],
     note: {
+      de: german[
+        'Every root falls a perfect fifth to the next. Hutchinson gives iii–vi–ii–V as a circle segment and ii–V–I as its shortest form; the chain can be lengthened, rotated or started anywhere. Try switching every chord to its seventh to hear the jazz version of the same motion.'
+      ],
       en: 'Every root falls a perfect fifth to the next. Hutchinson gives iii–vi–ii–V as a circle segment and ii–V–I as its shortest form; the chain can be lengthened, rotated or started anywhere. Try switching every chord to its seventh to hear the jazz version of the same motion.',
       ru: 'Каждый корень опускается на чистую квинту. Хатчинсон приводит iii–vi–ii–V как отрезок круга, а ii–V–I — как его кратчайшую форму; цепочку можно удлинять, поворачивать и начинать с любого места. Смените все аккорды на септаккорды, чтобы услышать джазовый вариант того же движения.',
     },
@@ -811,6 +883,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'singerSongwriter',
     group: 'pop',
+    de: german['Singer/songwriter · four chords'],
     en: 'Singer/songwriter · four chords',
     ru: 'Сингер-сонграйтер · четыре аккорда',
     pattern: 'I–V–vi–IV',
@@ -824,6 +897,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(3, 'major'),
     ],
     note: {
+      de: german[
+        'Open Music Theory groups the common pop loops by which chord the major tonic is approached from; here it is IV, a plagal approach. Move the first chord to the end and listen again: the same four chords can suggest a different centre through order and emphasis.'
+      ],
       en: 'Open Music Theory groups the common pop loops by which chord the major tonic is approached from; here it is IV, a plagal approach. Move the first chord to the end and listen again: the same four chords can suggest a different centre through order and emphasis.',
       ru: 'В Open Music Theory популярные петли различают по тому, откуда подходит мажорная тоника; здесь это IV — плагальный подход. Переставьте первый аккорд в конец и послушайте снова: те же четыре аккорда могут создавать ощущение другого центра благодаря порядку и акцентам.',
     },
@@ -832,6 +908,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'singerSongwriterMinor',
     group: 'pop',
+    de: german['Singer/songwriter, rotated · minor or major?'],
     en: 'Singer/songwriter, rotated · minor or major?',
     ru: 'Сингер-сонграйтер, поворот · минор или мажор?',
     pattern: 'vi–IV–I–V',
@@ -845,6 +922,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(4, 'major'),
     ],
     note: {
+      de: german[
+        'The same cycle begun on vi. Open Music Theory calls this rotation tonally ambiguous: it can be heard as vi–IV–I–V in the major key or i–♭VI–♭III–♭VII in the relative minor, because neither reading gets an authentic cadence. Decide for yourself which chord sounds like home.'
+      ],
       en: 'The same cycle begun on vi. Open Music Theory calls this rotation tonally ambiguous: it can be heard as vi–IV–I–V in the major key or i–♭VI–♭III–♭VII in the relative minor, because neither reading gets an authentic cadence. Decide for yourself which chord sounds like home.',
       ru: 'Тот же цикл, начатый с vi. В Open Music Theory этот поворот назван тонально неоднозначным: его можно услышать как vi–IV–I–V в мажоре или как i–♭VI–♭III–♭VII в параллельном миноре, потому что ни в одном прочтении нет автентической каденции. Решите сами, какой аккорд звучит как дом.',
     },
@@ -853,6 +933,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'dooWop',
     group: 'pop',
+    de: german['Doo-wop · the ballad cycle'],
     en: 'Doo-wop · the ballad cycle',
     ru: 'Ду-воп · балладный цикл',
     pattern: 'I–vi–IV–V',
@@ -866,6 +947,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(4, 'major'),
     ],
     note: {
+      de: german[
+        'Named for its use in rock ballads of the 1950s and early 1960s. Of the common four-chord cycles this is the one that approaches the tonic from V, the traditional authentic motion — which is what makes it sound the most classical of the three.'
+      ],
       en: 'Named for its use in rock ballads of the 1950s and early 1960s. Of the common four-chord cycles this is the one that approaches the tonic from V, the traditional authentic motion — which is what makes it sound the most classical of the three.',
       ru: 'Назван по применению в рок-балладах 1950-х и начала 1960-х. Из распространённых четырёхаккордовых циклов именно здесь тоника достигается от V — традиционным автентическим движением, из-за чего цикл звучит наиболее «классически».',
     },
@@ -874,6 +958,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'dooWopTwo',
     group: 'pop',
+    de: german['Doo-wop with ii · one chord swapped'],
     en: 'Doo-wop with ii · one chord swapped',
     ru: 'Ду-воп с ii · один аккорд заменён',
     pattern: 'I–vi–ii–V',
@@ -887,6 +972,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(4, 'major'),
     ],
     note: {
+      de: german[
+        'ii replaces IV. Open Music Theory explains the swap by shared function: both prepare the dominant, so the cycle keeps its shape while changing colour. Play this against the previous template and listen only to the third chord.'
+      ],
       en: 'ii replaces IV. Open Music Theory explains the swap by shared function: both prepare the dominant, so the cycle keeps its shape while changing colour. Play this against the previous template and listen only to the third chord.',
       ru: 'ii заменяет IV. В Open Music Theory замена объясняется общей функцией: оба аккорда готовят доминанту, поэтому цикл сохраняет форму и меняет краску. Сыграйте его рядом с предыдущим примером, слушая только третий аккорд.',
     },
@@ -895,6 +983,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'hopscotch',
     group: 'pop',
+    de: german['Hopscotch · step, step, skip'],
     en: 'Hopscotch · step, step, skip',
     ru: 'Хопскотч · шаг, шаг, скачок',
     pattern: 'IV–V–vi–I',
@@ -908,6 +997,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(0, 'major'),
     ],
     note: {
+      de: german[
+        'Open Music Theory names this recent cycle after its root motion: two steps up, then a skip. The major tonic arrives from vi, an approach belonging to no traditional cadence, which is why the loop can turn without ever sounding closed.'
+      ],
       en: 'Open Music Theory names this recent cycle after its root motion: two steps up, then a skip. The major tonic arrives from vi, an approach belonging to no traditional cadence, which is why the loop can turn without ever sounding closed.',
       ru: 'В Open Music Theory этот недавний цикл назван по движению корней: два шага вверх, затем скачок. Мажорная тоника приходит от vi — такой подход не принадлежит ни одной традиционной каденции, поэтому петля вращается, ни разу не звуча завершённой.',
     },
@@ -916,6 +1008,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'jazzTwoFive',
     group: 'jazz',
+    de: german['ii–V–I · the shortest circle'],
     en: 'ii–V–I · the shortest circle',
     ru: 'ii–V–I · кратчайший отрезок круга',
     pattern: 'ii7–V7–Imaj7',
@@ -924,6 +1017,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
     texture: 'held',
     steps: [step(1, 'min7'), step(4, 'seventh'), step(0, 'maj7', 8)],
     note: {
+      de: german[
+        'Hutchinson calls this one of the most common progressions in jazz. The roots fall by fifths; listen for the thirds and sevenths, which move by step between the chords. Try ninths or a bass change — this is a harmonic sketch, not an arrangement.'
+      ],
       en: 'Hutchinson calls this one of the most common progressions in jazz. The roots fall by fifths; listen for the thirds and sevenths, which move by step between the chords. Try ninths or a bass change — this is a harmonic sketch, not an arrangement.',
       ru: 'Хатчинсон называет этот оборот одним из самых распространённых в джазе. Корни движутся по нисходящим квинтам; вслушайтесь в терции и септимы — между аккордами они переходят по полутонам и тонам. Попробуйте ноны или смену баса: это гармонический эскиз, а не аранжировка.',
     },
@@ -932,6 +1028,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'jazzMinorTwoFive',
     group: 'jazz',
+    de: german['Minor ii–V–i · half-diminished start'],
     en: 'Minor ii–V–i · half-diminished start',
     ru: 'Минорный ii–V–i · с полууменьшённого',
     pattern: 'iiø7–V7–i(maj7)',
@@ -940,6 +1037,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
     texture: 'held',
     steps: [step(1, 'halfDim7'), step(4, 'seventh'), step(0, 'minMaj7', 8)],
     note: {
+      de: german[
+        'The minor form of the same motion. The second degree carries a half-diminished seventh, and the dominant keeps its major third. The tonic here is a minor triad with a major seventh — a chord Hutchinson describes as characteristic of jazz. Change it to a plain minor seventh and compare.'
+      ],
       en: 'The minor form of the same motion. The second degree carries a half-diminished seventh, and the dominant keeps its major third. The tonic here is a minor triad with a major seventh — a chord Hutchinson describes as characteristic of jazz. Change it to a plain minor seventh and compare.',
       ru: 'Минорная форма того же движения. На второй ступени стоит полууменьшённый септаккорд, доминанта сохраняет большую терцию. Тоника здесь — минорное трезвучие с большой септимой; Хатчинсон описывает этот аккорд как характерный для джаза. Смените его на малый минорный септаккорд и сравните.',
     },
@@ -948,6 +1048,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'turnaround',
     group: 'jazz',
+    de: german['Turnaround · back to the top'],
     en: 'Turnaround · back to the top',
     ru: 'Тёрнэраунд · возвращение к началу',
     pattern: 'iii7–vi7–ii7–V7',
@@ -961,6 +1062,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(4, 'seventh'),
     ],
     note: {
+      de: german[
+        'Four links of the circle of fifths, ending on the dominant so the form can start again. Set the repeat count to two or four and hear why it is called a turnaround: it never lands.'
+      ],
       en: 'Four links of the circle of fifths, ending on the dominant so the form can start again. Set the repeat count to two or four and hear why it is called a turnaround: it never lands.',
       ru: 'Четыре звена квинтового круга, оканчивающиеся на доминанте, чтобы форма началась заново. Поставьте два или четыре повтора и услышите, почему оборот так называется: он не приземляется.',
     },
@@ -969,6 +1073,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'blues',
     group: 'blues',
+    de: german['Twelve-bar blues · the basic frame'],
     en: 'Twelve-bar blues · the basic frame',
     ru: 'Двенадцать тактов блюза · основа',
     pattern: 'I7 · IV7 · V7',
@@ -979,6 +1084,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(degree, 'seventh'),
     ),
     note: {
+      de: german[
+        'Three four-bar phrases on I7, IV7 and V7. In the blues a dominant-seventh chord can carry any function, so I7 is home rather than a chord needing resolution. These even pulses show the changes; they are not blues phrasing, swing or blue-note intonation.'
+      ],
       en: 'Three four-bar phrases on I7, IV7 and V7. In the blues a dominant-seventh chord can carry any function, so I7 is home rather than a chord needing resolution. These even pulses show the changes; they are not blues phrasing, swing or blue-note intonation.',
       ru: 'Три четырёхтактовые фразы на I7, IV7 и V7. В блюзе малый мажорный септаккорд может выполнять любую функцию, поэтому I7 — это дом, а не аккорд, требующий разрешения. Ровная пульсация показывает смену гармоний, но не блюзовую фразировку, свинг и интонацию blue notes.',
     },
@@ -987,6 +1095,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'bluesQuickChange',
     group: 'blues',
+    de: german['Twelve bars, quick change · IV in bar two'],
     en: 'Twelve bars, quick change · IV in bar two',
     ru: 'Двенадцать тактов, быстрая смена · IV во втором такте',
     pattern: 'I7–IV7–I7 … V7',
@@ -997,6 +1106,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(degree, 'seventh'),
     ),
     note: {
+      de: german[
+        'Two of the commonest alterations at once: IV in the second bar, and a dominant in the last bar to turn the form around. Open Music Theory describes the twelve-bar blues as a frame that survives such changes — it is hard to find a blues that alters nothing.'
+      ],
       en: 'Two of the commonest alterations at once: IV in the second bar, and a dominant in the last bar to turn the form around. Open Music Theory describes the twelve-bar blues as a frame that survives such changes — it is hard to find a blues that alters nothing.',
       ru: 'Сразу два самых частых изменения: IV во втором такте и доминанта в последнем, возвращающая форму к началу. В Open Music Theory 12-тактовый блюз описан как рамка, выдерживающая такие изменения: блюз, в котором не изменено ничего, найти трудно.',
     },
@@ -1005,6 +1117,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'minorBlues',
     group: 'blues',
+    de: german['Minor blues · sevenths turn minor'],
     en: 'Minor blues · sevenths turn minor',
     ru: 'Минорный блюз · септаккорды становятся минорными',
     pattern: 'i7 · iv7 · iiø7–V7',
@@ -1020,6 +1133,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       ...repeat(2, 0, 'min7'),
     ],
     note: {
+      de: german[
+        'The tonic and subdominant become minor sevenths while the dominant keeps its major third. Because the major V falling to a minor iv sounds anticlimactic, the last phrase replaces V–IV–i with the minor ii–V–i.'
+      ],
       en: 'The tonic and subdominant become minor sevenths while the dominant keeps its major third. Because the major V falling to a minor iv sounds anticlimactic, the last phrase replaces V–IV–i with the minor ii–V–i.',
       ru: 'Тоника и субдоминанта становятся малыми минорными септаккордами, а доминанта сохраняет большую терцию. Поскольку переход мажорной V в минорную iv звучит спадом, в последней фразе вместо V–IV–i стоит минорный ii–V–i.',
     },
@@ -1028,6 +1144,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'jazzBlues',
     group: 'blues',
+    de: german['Jazz blues · ii–V inside the form'],
     en: 'Jazz blues · ii–V inside the form',
     ru: 'Джазовый блюз · ii–V внутри формы',
     pattern: 'I7 … VI7–ii7–V7',
@@ -1049,6 +1166,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(5, 'seventh'),
     ],
     note: {
+      de: german[
+        'The blues frame with jazz motion added: bar eight turns vi into a dominant that leads to ii, and the last phrase uses ii–V–I in place of the plagal V–IV–I. Watch for the V7/ii label on the eighth chord — the lab marks it only because the next chord confirms it.'
+      ],
       en: 'The blues frame with jazz motion added: bar eight turns vi into a dominant that leads to ii, and the last phrase uses ii–V–I in place of the plagal V–IV–I. Watch for the V7/ii label on the eighth chord — the lab marks it only because the next chord confirms it.',
       ru: 'Блюзовая рамка с добавленным джазовым движением: в восьмом такте vi превращается в доминанту, ведущую к ii, а в последней фразе вместо плагального V–IV–I звучит ii–V–I. Обратите внимание на отметку V7/ii у восьмого аккорда: лаборатория ставит её только потому, что следующий аккорд её подтверждает.',
     },
@@ -1057,6 +1177,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'borrowedFour',
     group: 'colour',
+    de: german['Borrowed iv · a minor chord in a major key'],
     en: 'Borrowed iv · a minor chord in a major key',
     ru: 'Заимствованная iv · минорный аккорд в мажоре',
     pattern: 'I–IV–iv–I',
@@ -1070,6 +1191,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(0, 'major', 8),
     ],
     note: {
+      de: german[
+        'The same subdominant twice, major then minor. Hutchinson calls borrowing from the parallel minor mode mixture, and names the lowered sixth degree as its commonest carrier — that is the one note that changes here. Nothing in the key signature moves; only the chord’s third.'
+      ],
       en: 'The same subdominant twice, major then minor. Hutchinson calls borrowing from the parallel minor mode mixture, and names the lowered sixth degree as its commonest carrier — that is the one note that changes here. Nothing in the key signature moves; only the chord’s third.',
       ru: 'Одна и та же субдоминанта дважды: мажорная, затем минорная. Хатчинсон называет заимствование из одноимённого минора модальным обменом и указывает пониженную VI ступень как его самый частый носитель — именно этот звук здесь и меняется. Ключевые знаки остаются прежними; меняется только терция аккорда.',
     },
@@ -1078,6 +1202,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
   {
     id: 'appliedDominant',
     group: 'colour',
+    de: german['Applied dominant · a dominant of the dominant'],
     en: 'Applied dominant · a dominant of the dominant',
     ru: 'Побочная доминанта · доминанта к доминанте',
     pattern: 'I–V7/V–V–I',
@@ -1091,6 +1216,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(0, 'major', 8),
     ],
     note: {
+      de: german[
+        'The second chord is the scale’s ii turned major and given a seventh, so it points at V the way V points at I. The lab writes V7/V above it only while the next chord is a fifth below; change the third chord and the label disappears, because an applied dominant is defined by where it goes.'
+      ],
       en: 'The second chord is the scale’s ii turned major and given a seventh, so it points at V the way V points at I. The lab writes V7/V above it only while the next chord is a fifth below; change the third chord and the label disappears, because an applied dominant is defined by where it goes.',
       ru: 'Второй аккорд — ii ступень, ставшая мажорной и получившая септиму, поэтому он указывает на V так же, как V указывает на I. Лаборатория подписывает V7/V только пока следующий аккорд лежит квинтой ниже; смените третий аккорд — и подпись исчезнет, потому что побочная доминанта определяется тем, куда она ведёт.',
     },

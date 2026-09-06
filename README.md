@@ -1,6 +1,6 @@
 # OML — One Music Lab
 
-A bilingual English/Russian prototype of a music and sound learning workspace.
+A music and sound learning workspace prototype in English, Russian and German.
 
 The project was renamed from Open Music Lab to **One Music Lab** in September
 2026. The owner has registered **onemusiclab.org** as the future public address;
@@ -24,17 +24,24 @@ checkboxes. Each topic requires theory, lab, practice, and encyclopedia coverage
 
 ## Included
 
-- **Chords lab** (`/#chords`): editable and transposable progressions with full undo and redo, 16 chord types through ninths, inversions, EN/RU pitch spelling, a visual keyboard, applied-dominant marking, and a sourced library of 22 starting points — cadences, classical schemas, pop and rock loops, jazz turnarounds, blues forms and mode mixture — with a per-chord register control, one-click fitting of a progression to its scale, eight accompaniment figures (block chords, arpeggios, Alberti bass, afterbeats, offbeats) and root-identification feedback. See the [user guide, research and limitations](docs/chords-lab.md).
+- **Chords lab** (`/#chords`): editable and transposable progressions with full undo and redo, 16 chord types through ninths, inversions, EN/RU/DE pitch spelling, a visual keyboard, applied-dominant marking, and a sourced library of 22 starting points — cadences, classical schemas, pop and rock loops, jazz turnarounds, blues forms and mode mixture — with a per-chord register control, one-click fitting of a progression to its scale, eight accompaniment figures (block chords, arpeggios, Alberti bass, afterbeats, offbeats) and root-identification feedback. See the [user guide, research and limitations](docs/chords-lab.md).
 - Continuous 20–20,000 Hz oscillator, four waveforms, logarithmic frequency control, cents readout and live analyser waveform.
 - Editable A4 reference from 20–2,000 Hz, presets, and 12-TET plus specific A-anchored just and Pythagorean chromatic ratio maps.
 - Two-octave keyboard with register controls; computer keys A W S E D F T G Y H U J K play a chromatic octave. Space toggles continuous sound, Escape stops all audio, and arrows adjust frequency.
 - Intervals, ten scale collections and seven chord types with sequential/simultaneous playback. All notes are calculated from the selected tuning.
 - Band-limited Web Audio rendering of five-second mono PCM WAV files with attack/release ramps.
-- Six bilingual introductory lessons with sources and linked experiments, a searchable bilingual glossary, and interval ear training with feedback and session scoring.
+- Six introductory lessons in EN/RU/DE with sources and linked experiments, a glossary searchable in all three languages, and interval ear training with feedback and session scoring.
 - The scale lab spells pitches by scale degree in the active locale (for example, C minor is C–D–E♭–F–G–A♭–B♭), and includes natural, harmonic, and ascending/descending melodic minor forms. See [localized notation](docs/music-notation.md).
 - An explicitly marked curriculum roadmap covering early music, European traditions 1600–1900, blues/jazz/pop, world traditions and contemporary musical languages.
 
 This is the first product slice, not an exhaustive encyclopedia or a universal instrument synthesizer. Real instrument synthesis, additive synthesis, noise, arbitrary temperament imports, detailed rhythmic training, notation, historical courses and culturally contextualized world-music modules are future work. No medical or special-health claims are made for alternate concert pitches.
+
+## Deutsch
+
+Choose **DE** in the header. All five areas, lessons, chord examples and
+feedback are translated. German notation uses H/B, C-Dur/c-Moll and classical
+octave labels such as a′. The language preference stays in this browser. See the
+[German guide and verified sources](docs/german-localization.md).
 
 ## Development
 

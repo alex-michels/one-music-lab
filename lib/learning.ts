@@ -1,7 +1,8 @@
+import { german } from './german';
 import { scales } from './scales';
 import type { SpelledPattern } from './notation';
-export type LocalText = { en: string; ru: string };
-const b = (en: string, ru: string): LocalText => ({ en, ru });
+import { localText as b } from './i18n';
+export type { LocalText } from './i18n';
 export const lessons = [
   {
     id: 'sound',
@@ -11,7 +12,7 @@ export const lessons = [
       'Why some sounds feel higher than others.',
       'Почему одни звуки выше других.',
     ),
-    formula: 'T = 1 / f',
+    formula: b('T = 1 / f', 'T = 1 / f'),
     paragraphs: [
       b(
         'Sound is a changing pressure that travels through a medium. For a periodic tone, frequency counts how many cycles repeat each second. The unit is the hertz (Hz). A 440 Hz tone repeats 440 times in one second.',
@@ -38,7 +39,10 @@ export const lessons = [
       'Change A4 without changing the names of the notes.',
       'Меняйте A4, сохраняя названия нот.',
     ),
-    formula: 'f(n) = A4 × 2^((n − 69) / 12)',
+    formula: b(
+      'f(n) = A4 × 2^((n − 69) / 12)',
+      'f(n) = A4 × 2^((n − 69) / 12)',
+    ),
     paragraphs: [
       b(
         'A reference pitch assigns a frequency to a named note. In this lab, that note is A4. If you change A4 from 440 to 432 Hz, the other frequencies shift by the same factor. The interval relationships stay the same.',
@@ -65,7 +69,7 @@ export const lessons = [
       'Hear the building blocks of melody and harmony.',
       'Услышьте основу мелодии и гармонии.',
     ),
-    formula: 'cents = 1200 × log₂(f₂ / f₁)',
+    formula: b('cents = 1200 × log₂(f₂ / f₁)', 'Центы = 1200 × log₂(f₂ / f₁)'),
     paragraphs: [
       b(
         'An interval describes the relationship between two pitches. Play them one after another to hear a melodic interval, or together to hear a harmonic interval. In equal temperament, an octave spans twelve semitones, or 1,200 cents.',
@@ -93,7 +97,7 @@ export const lessons = [
       'Explore the partials inside a sound.',
       'Исследуйте составляющие звука.',
     ),
-    formula: 'fₖ = k × f₁',
+    formula: b('fₖ = k × f₁', 'fₖ = k × f₁'),
     paragraphs: [
       b(
         'A sine wave contains a single frequency. More complex periodic waves contain harmonics: frequencies at whole-number multiples of the fundamental. Their balance changes the waveform and the sound’s colour.',
@@ -121,7 +125,10 @@ export const lessons = [
       'A collection of notes becomes a musical landscape.',
       'Как набор нот становится музыкальной средой.',
     ),
-    formula: 'Major: 2 – 2 – 1 – 2 – 2 – 2 – 1',
+    formula: b(
+      'Major: 2 – 2 – 1 – 2 – 2 – 2 – 1',
+      'Мажор: 2 – 2 – 1 – 2 – 2 – 2 – 1',
+    ),
     paragraphs: [
       b(
         'A scale orders a collection of pitches. A major scale follows a repeating pattern of whole tones and semitones. A mode also concerns how a tonal centre and characteristic notes are heard; it is more than starting a familiar scale on another key.',
@@ -148,7 +155,10 @@ export const lessons = [
       'Stack intervals and hear a new identity.',
       'Соединяйте интервалы и слушайте результат.',
     ),
-    formula: 'Major: 0 · 4 · 7   /   Minor: 0 · 3 · 7',
+    formula: b(
+      'Major: 0 · 4 · 7   /   Minor: 0 · 3 · 7',
+      'Мажор: 0 · 4 · 7   /   Минор: 0 · 3 · 7',
+    ),
     paragraphs: [
       b(
         'A triad contains three pitch classes arranged in thirds. A major triad has a major third and a perfect fifth above its root. Lower its third by a semitone to make a minor triad. Doubling a note in another octave does not create a new chord member.',
@@ -324,74 +334,109 @@ export const patterns: Record<
   SpelledPattern[]
 > = {
   intervals: [
-    { en: 'Minor second', ru: 'Малая секунда', steps: [0, 1], degrees: [0, 1] },
     {
+      de: german['Minor second'],
+      en: 'Minor second',
+      ru: 'Малая секунда',
+      steps: [0, 1],
+      degrees: [0, 1],
+    },
+    {
+      de: german['Major second'],
       en: 'Major second',
       ru: 'Большая секунда',
       steps: [0, 2],
       degrees: [0, 1],
     },
-    { en: 'Minor third', ru: 'Малая терция', steps: [0, 3], degrees: [0, 2] },
-    { en: 'Major third', ru: 'Большая терция', steps: [0, 4], degrees: [0, 2] },
     {
+      de: german['Minor third'],
+      en: 'Minor third',
+      ru: 'Малая терция',
+      steps: [0, 3],
+      degrees: [0, 2],
+    },
+    {
+      de: german['Major third'],
+      en: 'Major third',
+      ru: 'Большая терция',
+      steps: [0, 4],
+      degrees: [0, 2],
+    },
+    {
+      de: german['Perfect fourth'],
       en: 'Perfect fourth',
       ru: 'Чистая кварта',
       steps: [0, 5],
       degrees: [0, 3],
     },
     {
+      de: german['Tritone (augmented fourth)'],
       en: 'Tritone (augmented fourth)',
       ru: 'Тритон (увеличенная кварта)',
       steps: [0, 6],
       degrees: [0, 3],
     },
     {
+      de: german['Perfect fifth'],
       en: 'Perfect fifth',
       ru: 'Чистая квинта',
       steps: [0, 7],
       degrees: [0, 4],
     },
-    { en: 'Octave', ru: 'Октава', steps: [0, 12], degrees: [0, 7] },
+    {
+      de: german['Octave'],
+      en: 'Octave',
+      ru: 'Октава',
+      steps: [0, 12],
+      degrees: [0, 7],
+    },
   ],
   scales,
   chords: [
     {
+      de: german['Major triad'],
       en: 'Major triad',
       ru: 'Мажорное трезвучие',
       steps: [0, 4, 7],
       degrees: [0, 2, 4],
     },
     {
+      de: german['Minor triad'],
       en: 'Minor triad',
       ru: 'Минорное трезвучие',
       steps: [0, 3, 7],
       degrees: [0, 2, 4],
     },
     {
+      de: german['Diminished'],
       en: 'Diminished',
       ru: 'Уменьшённое',
       steps: [0, 3, 6],
       degrees: [0, 2, 4],
     },
     {
+      de: german['Augmented'],
       en: 'Augmented',
       ru: 'Увеличенное',
       steps: [0, 4, 8],
       degrees: [0, 2, 4],
     },
     {
+      de: german['Dominant seventh'],
       en: 'Dominant seventh',
       ru: 'Малый мажорный септаккорд',
       steps: [0, 4, 7, 10],
       degrees: [0, 2, 4, 6],
     },
     {
+      de: german['Major seventh'],
       en: 'Major seventh',
       ru: 'Большой мажорный септаккорд',
       steps: [0, 4, 7, 11],
       degrees: [0, 2, 4, 6],
     },
     {
+      de: german['Minor seventh'],
       en: 'Minor seventh',
       ru: 'Малый минорный септаккорд',
       steps: [0, 3, 7, 10],

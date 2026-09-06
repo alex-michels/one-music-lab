@@ -34,7 +34,8 @@ test('The saved language is honoured only when it is a supported value', () => {
   assert.equal(langFromStorage(storage('en')), 'en');
   assert.equal(langFromStorage(storage(null)), 'en');
   assert.equal(langFromStorage(storage('')), 'en');
-  assert.equal(langFromStorage(storage('de')), 'en');
+  assert.equal(langFromStorage(storage('de')), 'de');
+  assert.equal(langFromStorage(storage('fr')), 'en');
   assert.equal(langFromStorage(storage('RU')), 'en');
   assert.equal(langFromStorage(null), 'en');
   assert.equal(langFromStorage(undefined), 'en');

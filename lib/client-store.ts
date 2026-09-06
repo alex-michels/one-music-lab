@@ -16,7 +16,7 @@ export const PAGES = [
 ] as const;
 export type Page = (typeof PAGES)[number];
 
-export const LANGUAGES = ['en', 'ru'] as const;
+export const LANGUAGES = ['en', 'ru', 'de'] as const;
 export type Lang = (typeof LANGUAGES)[number];
 
 export const LANGUAGE_STORAGE_KEY = 'oml-language';

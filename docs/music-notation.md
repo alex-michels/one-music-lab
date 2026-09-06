@@ -12,9 +12,10 @@ professional note names with hyphens for accidentals, as prescribed by the
 Russian orthography reference: `до`, `ми-бемоль`, `си-диез`. Russian octave
 names are shown in words (for example, `первая октава`) because Russian
 professional pitch notation does not use the English scientific octave suffix
-as its default display. German is reserved for a later localization; when
-added, tonic and key names must use the German standard, for example `c-Moll`,
-with German pitch-letter conventions.
+as its default display. German uses H/B, Cis/Des/Es/As, `C-Dur`/`c-Moll`, and
+classical octave labels such as `c′`. The keyboard, interval training and chord
+symbols also follow German notation when DE is active. Exact sources and
+examples are recorded in [german-localization.md](german-localization.md).
 
 The octave number and the Russian octave word follow the **written** letter,
 not the sounding pitch: in G♭ major the fourth degree is shown as `C♭5` and

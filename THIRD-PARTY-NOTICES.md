@@ -24,7 +24,7 @@ and applicable license when updating a copy; do not blindly overwrite files.
 [UI provenance boundary](docs/ui-provenance.md) records the decision to retain
 the current catalog, the coverage policy for modified copies, and the import
 evidence. [The machine-readable inventory](docs/ui-provenance.json) classifies
-all 62 imported UI/helper files: 12 modified, 50 unchanged relative to the
+all 62 imported UI/helper files: 13 modified, 49 unchanged relative to the
 initial import. Tests detect an unregistered file or an edited copy incorrectly
 labelled unchanged. This is provenance bookkeeping, not full license clearance.
 
@@ -52,6 +52,9 @@ labelled unchanged. This is provenance bookkeeping, not full license clearance.
   (`render={<li />}`) for a valid list. The explicit list role is retained for
   WebKit when CSS hides list markers. Oxlint permits only the additional
   `ul`/`ol` + `list` pairs; redundant button/article/listitem roles remain errors.
+- `components/ui/sidebar.tsx`: accepts translated mobile dialog titles and
+  descriptions while preserving default labels. The entire MIT copy is included
+  in maintained-code coverage.
 - `components/ui/label.tsx`: `htmlFor` is passed explicitly.
 - `components/ui/pagination.tsx`: `PaginationLink` renders its children inside
   the anchor explicitly.
@@ -75,6 +78,12 @@ existing license/notice files, but a complete audit of shipped dependency notice
 is still pending. System font selection does not bundle font binaries.
 
 ## Research and learning sources
+
+German terminology was checked against Beck/Bauser (BBMV/VBSM), Gorski, Helke
+and Feilen/Schnauß/Gotham. See [exact sources and
+scope](docs/german-localization.md). German teaching text is independently
+phrased original CC BY 4.0 content; no third-party paragraphs, notation images
+or recordings are copied.
 
 The original Chords lab takes product inspiration from OneMotion Chord Player;
 no OneMotion code, assets, audio, compositions or embedded runtime are included.

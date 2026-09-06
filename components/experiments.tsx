@@ -1,4 +1,6 @@
 'use client';
+import { translator, fixedNumber } from '@/lib/i18n';
+
 import { useState } from 'react';
 import { Play, Sparkles, Volume2 } from 'lucide-react';
 import { count } from '@/lib/plural';
@@ -21,7 +23,7 @@ import {
   spellPattern,
 } from '@/lib/notation';
 import { frequencyForMidi, type Tuning, type Wave } from '@/lib/music';
-type Lang = 'en' | 'ru';
+type Lang = import('@/lib/client-store').Lang;
 type PlaySequence = (
   frequencies: number[],
   spacing?: number,
@@ -41,7 +43,7 @@ export function Experiments({
   const [kind, setKind] = useState<keyof typeof patterns>('intervals');
   const [selected, setSelected] = useState(3);
   const [root, setRoot] = useState('A');
-  const t = (en: string, ru: string) => (lang === 'ru' ? ru : en);
+  const t = translator(lang);
   const pattern = patterns[kind][Math.min(selected, patterns[kind].length - 1)];
   const tonic = spellPattern(root, { steps: [0], degrees: [0] })[0];
   const notes = spellPattern(root, pattern).map((pitch) => ({
@@ -188,7 +190,7 @@ export function Experiments({
                     <small className="note-octave">{octaveName(n, lang)}</small>
                   )}
                   <strong>
-                    {n.hz.toFixed(2)}
+                    {fixedNumber(n.hz, 2, lang)}
                     <small> Hz</small>
                   </strong>
                   <em>{count(pattern.steps[i], lang, 'semitones')}</em>
