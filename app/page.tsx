@@ -8,9 +8,16 @@ import {
 } from '@/components/learning';
 import { NumberField } from '@/components/number-field';
 import { exportTone } from '@/lib/wav';
-import { registerLabTools } from '@/lib/webmcp';
+import { registerLabTools, type LabState } from '@/lib/webmcp';
 import { Download } from 'lucide-react';
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import {
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+} from 'react';
 import {
   Activity,
   ArrowDown,
@@ -22,7 +29,6 @@ import {
   CircleHelp,
   FlaskConical,
   Globe2,
-  GraduationCap,
   Headphones,
   Library,
   Music2,
@@ -55,15 +61,32 @@ import {
 } from '@/components/ui/select';
 import { AudioEngine } from '@/lib/audio';
 import {
+  LANGUAGE_STORAGE_KEY,
+  createClientStore,
+  langFromStorage,
+  localStorageOrNull,
+  pageFromHash,
+  type Lang,
+  type Page,
+} from '@/lib/client-store';
+import {
   frequencyForMidi,
   nearestNote,
   noteName,
   type Tuning,
   type Wave,
 } from '@/lib/music';
-type Lang = 'en' | 'ru';
-type Page = 'lab' | 'theory' | 'practice' | 'encyclopedia';
 const waveTypes: Wave[] = ['sine', 'triangle', 'square', 'sawtooth'];
+// The selected page and language live in browser state the server cannot see.
+// Each is read once on the client and changes only through setPage/setLang.
+const pageStore = createClientStore<Page>(
+  () => pageFromHash(window.location.hash),
+  'lab',
+);
+const langStore = createClientStore<Lang>(
+  () => langFromStorage(localStorageOrNull()),
+  'en',
+);
 function WaveIcon({ wave }: { wave: Wave }) {
   const d =
     wave === 'sine'
@@ -190,8 +213,18 @@ function Navigation({
 export default function Home() {
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
-  const [lang, setLang] = useState<Lang>('en');
-  const [page, setPage] = useState<Page>('lab');
+  const lang = useSyncExternalStore(
+    langStore.subscribe,
+    langStore.getSnapshot,
+    langStore.getServerSnapshot,
+  );
+  const page = useSyncExternalStore(
+    pageStore.subscribe,
+    pageStore.getSnapshot,
+    pageStore.getServerSnapshot,
+  );
+  const setLang = langStore.set;
+  const setPage = pageStore.set;
   const [frequency, setFrequency] = useState(440);
   const [reference, setReference] = useState(440);
   const [tuning, setTuning] = useState<Tuning>('equal');
@@ -313,23 +346,19 @@ export default function Home() {
       );
     }
   }
-  useEffect(() => {
-    const current = location.hash.slice(1);
-    if (['lab', 'theory', 'practice', 'encyclopedia'].includes(current))
-      setPage(current as Page);
-    try {
-      const saved = localStorage.getItem('oml-language');
-      if (saved === 'ru' || saved === 'en') setLang(saved);
-    } catch {}
-    return () => {
+  useEffect(
+    () => () => {
       audio.current?.dispose();
       audio.current = null;
-    };
-  }, []);
+    },
+    [],
+  );
+  // Keep this effect below the langStore hook: React runs passive effects in
+  // hook order, so the store reads the saved language before this write.
   useEffect(() => {
     document.documentElement.lang = lang;
     try {
-      localStorage.setItem('oml-language', lang);
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
     } catch {}
   }, [lang]);
   useEffect(() => {
@@ -424,120 +453,94 @@ export default function Home() {
     frame = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(frame);
   }, [wave, playing, page]);
-  const actions = useRef({
-    frequency,
-    reference,
-    tuning,
-    wave,
-    playing,
-    toggle,
-    playNote,
-    setHz,
-    octave,
-  });
-  actions.current = {
-    frequency,
-    reference,
-    tuning,
-    wave,
-    playing,
-    toggle,
-    playNote,
-    setHz,
-    octave,
-  };
-  useEffect(() => {
-    const keydown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        audio.current?.stopAll();
-        setPlaying(false);
-        return;
-      }
-      if (e.repeat || e.ctrlKey || e.metaKey || e.altKey || page !== 'lab')
-        return;
-      const target = e.target as HTMLElement;
-      if (
-        target.closest(
-          'input,textarea,select,button,[role="slider"],[role="combobox"],[role="tab"],[contenteditable="true"]',
-        )
+  // Effect events read the latest state and handlers without re-subscribing,
+  // replacing the ref that used to be written during render.
+  const onKeydown = useEffectEvent((e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      audio.current?.stopAll();
+      setPlaying(false);
+      return;
+    }
+    if (e.repeat || e.ctrlKey || e.metaKey || e.altKey || page !== 'lab')
+      return;
+    const target = e.target as HTMLElement;
+    if (
+      target.closest(
+        'input,textarea,select,button,[role="slider"],[role="combobox"],[role="tab"],[contenteditable="true"]',
       )
-        return;
-      const a = actions.current;
-      if (e.code === 'Space') {
+    )
+      return;
+    if (e.code === 'Space') {
+      e.preventDefault();
+      void toggle();
+    } else if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
+      e.preventDefault();
+      setHz(
+        frequency + (e.code === 'ArrowRight' ? 1 : -1) * (e.shiftKey ? 0.1 : 1),
+      );
+    } else {
+      const key = [
+        'KeyA',
+        'KeyW',
+        'KeyS',
+        'KeyE',
+        'KeyD',
+        'KeyF',
+        'KeyT',
+        'KeyG',
+        'KeyY',
+        'KeyH',
+        'KeyU',
+        'KeyJ',
+        'KeyK',
+      ].indexOf(e.code);
+      if (key >= 0) {
         e.preventDefault();
-        void a.toggle();
-      } else if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
-        e.preventDefault();
-        a.setHz(
-          a.frequency +
-            (e.code === 'ArrowRight' ? 1 : -1) * (e.shiftKey ? 0.1 : 1),
-        );
-      } else {
-        const key = [
-          'KeyA',
-          'KeyW',
-          'KeyS',
-          'KeyE',
-          'KeyD',
-          'KeyF',
-          'KeyT',
-          'KeyG',
-          'KeyY',
-          'KeyH',
-          'KeyU',
-          'KeyJ',
-          'KeyK',
-        ].indexOf(e.code);
-        if (key >= 0) {
-          e.preventDefault();
-          void a.playNote(12 * (a.octave + 1) + key);
-        }
+        void playNote(12 * (octave + 1) + key);
       }
-    };
+    }
+  });
+  useEffect(() => {
+    const keydown = (e: KeyboardEvent) => onKeydown(e);
     window.addEventListener('keydown', keydown);
     return () => window.removeEventListener('keydown', keydown);
-  }, [page]);
+  }, []);
+  const readLab = useEffectEvent(
+    (): LabState => ({ frequency, reference, tuning, wave, playing }),
+  );
+  const configureLab = useEffectEvent((values: Partial<LabState>) => {
+    audio.current?.stopAll();
+    flushSync(() => {
+      setPlaying(false);
+      setPage('lab');
+      const ref = values.reference ?? reference;
+      const tune = (values.tuning ?? tuning) as Tuning;
+      const pitch =
+        values.frequency ??
+        (values.tuning
+          ? frequencyForMidi(
+              nearestNote(frequency, reference, tuning).midi,
+              ref,
+              tune,
+            )
+          : (frequency * ref) / reference);
+      setReference(ref);
+      setTuning(tune);
+      setWave((values.wave ?? wave) as Wave);
+      setHz(pitch);
+    });
+    history.replaceState(null, '', '#lab');
+  });
+  const stopLab = useEffectEvent(() => {
+    audio.current?.stopAll();
+    flushSync(() => setPlaying(false));
+  });
   useEffect(
     () =>
       registerLabTools(
-        () => {
-          const a = actions.current;
-          return {
-            frequency: a.frequency,
-            reference: a.reference,
-            tuning: a.tuning,
-            wave: a.wave,
-            playing: a.playing,
-          };
-        },
-        (values) => {
-          audio.current?.stopAll();
-          flushSync(() => {
-            const a = actions.current;
-            setPlaying(false);
-            setPage('lab');
-            const ref = values.reference ?? a.reference;
-            const tune = (values.tuning ?? a.tuning) as Tuning;
-            const pitch =
-              values.frequency ??
-              (values.tuning
-                ? frequencyForMidi(
-                    nearestNote(a.frequency, a.reference, a.tuning).midi,
-                    ref,
-                    tune,
-                  )
-                : (a.frequency * ref) / a.reference);
-            setReference(ref);
-            setTuning(tune);
-            setWave((values.wave ?? a.wave) as Wave);
-            setHz(pitch);
-          });
-          history.replaceState(null, '', '#lab');
-        },
-        () => {
-          audio.current?.stopAll();
-          flushSync(() => setPlaying(false));
-        },
+        () => readLab(),
+        (values) => configureLab(values),
+        () => stopLab(),
       ),
     [],
   );
@@ -751,9 +754,8 @@ export default function Home() {
                       <RotateCcw size={17} />
                     </button>
                   </div>
-                  <div
+                  <fieldset
                     className="wave-picker"
-                    role="group"
                     aria-label={t('Waveform', 'Форма волны')}
                   >
                     {waveTypes.map((w, i) => (
@@ -767,7 +769,7 @@ export default function Home() {
                         {waveNames[i]}
                       </button>
                     ))}
-                  </div>
+                  </fieldset>
                   <div className="scope">
                     <div className="scope-header">
                       <span>

@@ -531,12 +531,11 @@ export function Practice({
               ))}
             </div>
             {answer !== null && (
-              <div
+              <output
                 className={
                   'answer-feedback ' +
                   (answer === question.index ? 'correct' : 'incorrect')
                 }
-                role="status"
               >
                 <strong>
                   {answer === question.index
@@ -546,12 +545,12 @@ export function Practice({
                 {quizIntervals[question.index][lang]} ·{' '}
                 {quizIntervals[question.index].step}{' '}
                 {t('semitones', 'полутонов')}.
-                <p>
+                <span className="answer-detail">
                   {noteName(question.root)} →{' '}
                   {noteName(question.root + quizIntervals[question.index].step)}{' '}
                   · A4 = {question.reference} Hz
-                </p>
-              </div>
+                </span>
+              </output>
             )}
             {answer !== null && (
               <button className="primary-button" onClick={next}>
