@@ -30,7 +30,10 @@ catalog can still be used; removing them is a separate boundary decision.
 - `components/ui/button-group.tsx`, `components/ui/field.tsx`,
   `components/ui/input-group.tsx`: `<fieldset>` (implicit group role) instead
   of `<div role="group">`; `min-w-0` is added to button-group and field
-  (input-group already had it); the input-group addon is `role="presentation"`.
+  (input-group already had it); the input-group addon is `role="presentation"`
+  because its click-to-focus handler is not allowed on a non-interactive group
+  element, so the addon is no longer announced as a group (its buttons stay
+  interactive).
 - `components/ui/carousel.tsx`: `useSyncExternalStore` for the scroll state;
   a `<section aria-roledescription="carousel">` root whose props require an
   accessible name; `<fieldset aria-roledescription="slide">` items.
