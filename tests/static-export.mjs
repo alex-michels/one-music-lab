@@ -6,14 +6,14 @@ import { resolve, join } from 'node:path';
 const root = resolve('dist/client');
 const html = await readFile(join(root, 'index.html'), 'utf8');
 
-test('Static export includes the page, RSC navigation payload and not-found page', async () => {
+await test('Static export includes the page, RSC navigation payload and not-found page', async () => {
   assert.match(html, /<title>OML — One Music Lab<\/title>/);
   for (const file of ['index.rsc', '404.html', 'favicon.svg']) {
     assert.ok((await stat(join(root, file))).size > 0, file);
   }
 });
 
-test('All initial executable and styling resources exist in the portable directory', async () => {
+await test('All initial executable and styling resources exist in the portable directory', async () => {
   const tags = html.match(/<(?:script|link)\b[^>]*>/g) ?? [];
   let scripts = 0;
   let styles = 0;
@@ -33,7 +33,7 @@ test('All initial executable and styling resources exist in the portable directo
   assert.ok(styles > 0, 'Styles must be emitted');
 });
 
-test('Browser assets contain no font CDN fallback or source maps', async () => {
+await test('Browser assets contain no font CDN fallback or source maps', async () => {
   assert.doesNotMatch(html, /fonts\.(?:googleapis|gstatic)\.com/);
   const assets = join(root, '_next');
   const entries = await readdir(assets, { recursive: true, withFileTypes: true });

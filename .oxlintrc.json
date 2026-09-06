@@ -32,6 +32,10 @@
     "next-env.d.ts"
   ],
   "rules": {
+    "jsx-a11y/no-redundant-roles": [
+      "error",
+      { "ul": ["list"], "ol": ["list"] }
+    ],
     "no-array-constructor": "error",
     "no-var": "error",
     "prefer-const": "error",

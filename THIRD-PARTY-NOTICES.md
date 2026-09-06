@@ -14,14 +14,19 @@ The canonical upstream MIT text is included in `LICENSES/shadcn-MIT.txt`.
 
 ### Local modifications to copied components
 
-Copied files are linted with the same rules as first-party code; suppressing a
-rule is not accepted as a fix (ROADMAP P00). The copies below therefore diverge
-from the Shadcn registry by the smallest change that satisfies the rule while
-keeping every `data-slot` attribute and exported name; any change to a class
-list or props type is listed below. Re-adding a
-component from the registry (`shadcn add --overwrite`) restores the original
-error; re-apply the change and update this list. Unused copies are kept so the
-catalog can still be used; removing them is a separate boundary decision.
+Copied files are linted with the same required rules as first-party code. The
+list-role compatibility setting documented below is shared by both; no file
+or rule is disabled to hide an error. The changes listed here are measured
+against the initial repository import, not an independently verified current
+upstream registry. Preserve each change's behavior, public exports, attributes
+and applicable license when updating a copy; do not blindly overwrite files.
+
+[UI provenance boundary](docs/ui-provenance.md) records the decision to retain
+the current catalog, the coverage policy for modified copies, and the import
+evidence. [The machine-readable inventory](docs/ui-provenance.json) classifies
+all 62 imported UI/helper files: 12 modified, 50 unchanged relative to the
+initial import. Tests detect an unregistered file or an edited copy incorrectly
+labelled unchanged. This is provenance bookkeeping, not full license clearance.
 
 - `hooks/use-mobile.ts`: `useSyncExternalStore` instead of setting state
   inside an effect; exports the viewport store for tests.
@@ -42,11 +47,11 @@ catalog can still be used; removing them is a separate boundary decision.
 - `components/ui/input-otp.tsx`: a native `<hr>` separator
   (`mx-[3px] h-px w-2.5 shrink-0 border-0 bg-current`) replaces the `MinusIcon`
   glyph with a 10×1px bar of the same footprint.
-- `components/ui/item.tsx`: `ItemGroup` renders a plain `<ul>`; `Item` still
+- `components/ui/item.tsx`: `ItemGroup` renders `<ul role="list">`; `Item` still
   defaults to a `<div>`, so render items inside a group as `<li>`
-  (`render={<li />}`) for a valid list. The explicit `role="list"` WebKit
-  workaround for `list-style: none` is rejected by `no-redundant-roles`, so
-  Safari may announce the list as a generic container.
+  (`render={<li />}`) for a valid list. The explicit list role is retained for
+  WebKit when CSS hides list markers. Oxlint permits only the additional
+  `ul`/`ol` + `list` pairs; redundant button/article/listitem roles remain errors.
 - `components/ui/label.tsx`: `htmlFor` is passed explicitly.
 - `components/ui/pagination.tsx`: `PaginationLink` renders its children inside
   the anchor explicitly.

@@ -12,12 +12,12 @@ assert.equal(response.status, 200, 'The home page must render successfully.');
 assert.match(response.headers.get('content-type') ?? '', /text\/html/);
 const html = await response.text();
 
-test('The document title identifies One Music Lab', () => {
+await test('The document title identifies One Music Lab', () => {
   assert.match(html, /<title>OML — One Music Lab<\/title>/);
   assert.doesNotMatch(html, /<title>[^<]*Open Music Lab/);
 });
 
-test('The canonical URL uses the chosen public domain rather than the local host', () => {
+await test('The canonical URL uses the chosen public domain rather than the local host', () => {
   const links = html.match(/<link\b[^>]*>/g) ?? [];
   const canonicals = links.filter((link) => /\brel="canonical"/.test(link));
   assert.equal(canonicals.length, 1, 'Exactly one canonical link must be emitted.');
@@ -26,7 +26,7 @@ test('The canonical URL uses the chosen public domain rather than the local host
   assert.equal(new URL(href).href, 'https://onemusiclab.org/');
 });
 
-test('The lab home link presents the chosen name visually and accessibly', () => {
+await test('The lab home link presents the chosen name visually and accessibly', () => {
   const anchors = html.match(/<a\b[^>]*>[\s\S]*?<\/a>/g) ?? [];
   const brand = anchors.find((anchor) => /\bclass="brand"/.test(anchor));
   assert.ok(brand, 'The brand link must be rendered in navigation.');
@@ -36,7 +36,7 @@ test('The lab home link presents the chosen name visually and accessibly', () =>
   assert.doesNotMatch(brand, /OPEN MUSIC LAB/);
 });
 
-test('The rendered page does not load fonts, scripts or styles from third parties', () => {
+await test('The rendered page does not load fonts, scripts or styles from third parties', () => {
   const resourceTags = html.match(/<(?:link|script|iframe)\b[^>]*>/g) ?? [];
   for (const tag of resourceTags) {
     if (/\brel="canonical"/.test(tag)) continue;

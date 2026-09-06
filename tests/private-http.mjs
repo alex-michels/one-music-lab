@@ -11,7 +11,7 @@ const request = (path, options = {}) => fetch(new URL(path, base), {
   ...options, redirect: 'error', signal: AbortSignal.timeout(10_000),
 });
 
-test('Private staging serves the app with no cookies and privacy headers', async () => {
+await test('Private staging serves the app with no cookies and privacy headers', async () => {
   const response = await request('/');
   assert.equal(response.status, 200);
   assert.equal(response.headers.get('set-cookie'), null);
@@ -37,7 +37,7 @@ test('Private staging serves the app with no cookies and privacy headers', async
   }
 });
 
-test('Unknown paths and unshipped internal files return 404 instead of app HTML', async () => {
+await test('Unknown paths and unshipped internal files return 404 instead of app HTML', async () => {
   for (const path of ['/not-a-route', '/.git/config', '/.env', '/.vite/manifest.json', '/server/index.js', '/outputs/vps-deployment-audit.md']) {
     const response = await request(path);
     assert.equal(response.status, 404, path);
@@ -45,13 +45,13 @@ test('Unknown paths and unshipped internal files return 404 instead of app HTML'
   }
 });
 
-test('The file server cannot accept uploads', async () => {
+await test('The file server cannot accept uploads', async () => {
   const response = await request('/', { method: 'POST', body: 'not-an-upload' });
   assert.equal(response.status, 405);
   await response.arrayBuffer();
 });
 
-test('An unrelated HTTP Host is rejected', async () => {
+await test('An unrelated HTTP Host is rejected', async () => {
   // Fetch can replace a supplied Host header. Send the real wire header here.
   const status = await new Promise((resolve, reject) => {
     const req = httpRequest(base, {

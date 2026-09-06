@@ -9,7 +9,7 @@ import {
   pageFromHash,
 } from '../lib/client-store.ts';
 
-test('The page comes from the URL hash and unknown hashes open the lab', () => {
+await test('The page comes from the URL hash and unknown hashes open the lab', () => {
   for (const page of PAGES) {
     assert.equal(pageFromHash('#' + page), page);
     assert.equal(pageFromHash(page), page);
@@ -19,7 +19,7 @@ test('The page comes from the URL hash and unknown hashes open the lab', () => {
   }
 });
 
-test('The saved language is honoured only when it is a supported value', () => {
+await test('The saved language is honoured only when it is a supported value', () => {
   const storage = (value) => ({
     getItem(key) {
       assert.equal(key, LANGUAGE_STORAGE_KEY);
@@ -44,7 +44,7 @@ test('The saved language is honoured only when it is a supported value', () => {
   );
 });
 
-test('Storage access that is absent or throws degrades to null', () => {
+await test('Storage access that is absent or throws degrades to null', () => {
   const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
   try {
     Object.defineProperty(globalThis, 'localStorage', {
@@ -73,7 +73,7 @@ test('Storage access that is absent or throws degrades to null', () => {
   }
 });
 
-test('A client store reads the browser once and changes only through set', () => {
+await test('A client store reads the browser once and changes only through set', () => {
   let reads = 0;
   const store = createClientStore(() => {
     reads += 1;
@@ -99,7 +99,7 @@ test('A client store reads the browser once and changes only through set', () =>
   assert.equal(reads, 1);
 });
 
-test('Setting a value before the first snapshot skips the browser read', () => {
+await test('Setting a value before the first snapshot skips the browser read', () => {
   let reads = 0;
   const store = createClientStore(() => {
     reads += 1;
@@ -113,7 +113,7 @@ test('Setting a value before the first snapshot skips the browser read', () => {
   assert.equal(reads, 0);
 });
 
-test('Every subscriber is notified and unsubscribing one leaves the others active', () => {
+await test('Every subscriber is notified and unsubscribing one leaves the others active', () => {
   const store = createClientStore(() => 1, 0);
   const calls = [];
   const unsubscribeA = store.subscribe(() => calls.push('a'));

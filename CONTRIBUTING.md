@@ -30,7 +30,11 @@ npm run lint
 npm run build
 ```
 
-The current tests use Node's test runner. `test:coverage` measures **loaded**
+The current tests use Node's test runner. Await top-level `test()` calls so their
+returned promises are handled explicitly; keep the existing sequential tests
+within each file. The TSX rendering test loads the real component with Vite,
+which also exposes Node test types to whole-repository type-aware lint.
+`test:coverage` measures **loaded**
 `lib/*.ts` and `hooks/*.ts` modules and is a temporary partial report, not
 repository-wide coverage.
 The baseline has nine audio/math/WAV tests, roadmap integrity tests, and tests
@@ -86,6 +90,13 @@ images, fonts, text, and datasets. An old composition or an educational purpose
 does not grant recording rights. Preserve MIT notices on scaffold UI. CC BY-SA
 adaptations require their applicable license and attribution, not relabeling as
 our original CC BY text. Do not copy chapters, unlicensed scores, or audio files.
+
+Follow the [UI provenance boundary](docs/ui-provenance.md) when changing a copied
+component. Update its inventory classification and modification notice in the
+same PR. The entire modified copy belongs in the future full maintained-code
+coverage report, even when currently unused. The catalog is retained; the
+documented `ul`/`ol` list-role allowance preserves WebKit list semantics while
+keeping the lint rule required. It is not permission to disable other rules.
 
 Paid hosting, synchronization, support, or optional future services can coexist
 with the open licenses; existing recipients retain their licensed rights. Pricing,
