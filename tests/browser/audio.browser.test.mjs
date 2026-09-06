@@ -15,6 +15,13 @@ const OfflineContext =
   globalThis.OfflineAudioContext ?? globalThis.webkitOfflineAudioContext;
 const audioTest = OfflineContext ? test : test.skip;
 
+// Firefox does not implement OfflineAudioContext.suspend, so a stop cannot be
+// made to happen part way through a render there. The portable half of that
+// behaviour is checked for every engine below.
+const canStopMidRender =
+  typeof OfflineContext?.prototype?.suspend === 'function';
+const midRenderTest = canStopMidRender ? audioTest : test.skip;
+
 /**
  * Builds the engine on an OfflineAudioContext of the given length. Rendering
  * is deterministic and needs no audio device, so the same assertions hold on
@@ -111,7 +118,34 @@ audioTest('The attack ramps in instead of starting with a click', async () => {
   expect(jump).toBeLessThan(0.2);
 });
 
-audioTest('Stopping fades the tone out and leaves silence', async () => {
+audioTest(
+  'Starting and stopping at once decays quickly instead of sounding a note',
+  async () => {
+    // Toggling twice in quick succession is a real race: the cancelled attack
+    // leaves the gain at its resting value, so a short quiet decay is heard.
+    // It must stay well below a played note and end promptly.
+    const engine = offlineEngine(0.4);
+    await engine.start(440, 'sine', 1);
+    engine.stop();
+    const channel = (await engine.context.render()).getChannelData(0);
+
+    const reference = offlineEngine(0.4);
+    await reference.start(440, 'sine', 1);
+    const sustained = peak(
+      (await reference.context.render()).getChannelData(0),
+      seconds(0.1),
+      seconds(0.3),
+    );
+
+    expect(peak(channel)).toBeLessThan(sustained / 2);
+    expect(peak(channel, seconds(0.05), seconds(0.1))).toBeLessThan(
+      peak(channel, 0, seconds(0.05)) / 2,
+    );
+    expect(peak(channel, seconds(0.15))).toBeLessThan(0.001);
+  },
+);
+
+midRenderTest('Stopping fades the tone out and leaves silence', async () => {
   const engine = offlineEngine(0.6);
   await engine.start(440, 'sine', 1);
   const rendering = engine.context.render();
