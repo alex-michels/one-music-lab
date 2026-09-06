@@ -39,6 +39,26 @@ afterEach(async () => {
 });
 const click = (name) =>
   act(async () => page.getByRole('button', { name, exact: true }).click());
+// Typing filters the list through React state, and the cards are counted
+// synchronously right afterwards; naming the box keeps it unambiguous once the
+// page grows a second one.
+const search = (text) =>
+  act(async () =>
+    page
+      .getByRole('textbox', { name: 'Musikalische Begriffe suchen' })
+      .fill(text),
+  );
+// Switching a tab is a state change like any other here, so it has to be
+// flushed before the next query runs. Both experiment panels label their root
+// select `Grundton`, so while the previous panel is still exposed the query
+// matches two elements and waits for an ambiguity that never resolves.
+const openTab = async (name) => {
+  const tab = page.getByRole('tab', { name, exact: true });
+  await act(async () => tab.click());
+  await expect
+    .poll(() => tab.element().getAttribute('aria-selected'))
+    .toBe('true');
+};
 async function choose(label, option) {
   const box = page.getByRole('combobox', { name: label, exact: true });
   await act(async () => box.click());
@@ -147,14 +167,12 @@ test('All six German lessons include translated prose, experiments and formulas,
   expect(container.querySelectorAll('.lesson-tile')).toHaveLength(6);
   expect(container.textContent).toContain('Alte Musik & Mehrstimmigkeit');
   render(Encyclopedia, { lang: 'de', openLesson: vi.fn() });
-  await page
-    .getByRole('textbox', { name: 'Musikalische Begriffe suchen' })
-    .fill('Stimmführung');
+  await search('Stimmführung');
   expect(container.querySelectorAll('.term-card')).toHaveLength(1);
   expect(container.querySelector('.term-card h3').textContent).toBe(
     'Stimmführung',
   );
-  await page.getByRole('textbox').fill('xyzkeinbegriff');
+  await search('xyzkeinbegriff');
   expect(container.textContent).toContain('Noch kein passender Begriff');
   await click('Alle Begriffe anzeigen');
   expect(container.querySelectorAll('.term-card')).toHaveLength(12);
@@ -163,9 +181,7 @@ test('All six German lessons include translated prose, experiments and formulas,
 test('German minor scales spell Es/As/B and raise H only in the appropriate forms; playback keeps its pitches', async () => {
   const play = vi.fn().mockResolvedValue();
   render(Experiments, { lang: 'de', reference: 440, tuning: 'equal', play });
-  await page
-    .getByRole('tab', { name: 'Tonleitern & Modi', exact: true })
-    .click();
+  await openTab('Tonleitern & Modi');
   await choose('Grundton', 'c′');
   const names = () =>
     [...container.querySelectorAll('.note-sequence > div > span')].map(
@@ -223,14 +239,10 @@ test('The German chord lab transposes H/B, spells inversions, counts beats and g
   expect(container.textContent).toContain(
     'Die Wiedergabe konnte nicht starten',
   );
-  await page
-    .getByRole('tab', { name: 'Eine Aufgabe ausprobieren', exact: true })
-    .click();
+  await openTab('Eine Aufgabe ausprobieren');
   await click('B');
   expect(container.textContent).toContain('Ja. Der Grundton bleibt');
-  await page
-    .getByRole('tab', { name: 'Begriffe & Quellen', exact: true })
-    .click();
+  await openTab('Begriffe & Quellen');
   expect(container.textContent).toContain('Zwischendominanten');
   expect(container.textContent).toContain(
     'in der deutschen Fassung mit H und B',
