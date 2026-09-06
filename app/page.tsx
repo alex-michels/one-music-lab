@@ -1,4 +1,15 @@
 'use client';
+import {
+  translator,
+  fixedNumber,
+  localNumber,
+  localText,
+  siteDescription,
+  type LocalText,
+  type Translate,
+} from '@/lib/i18n';
+import { localizedNoteName, keyboardPitch, octaveName } from '@/lib/notation';
+
 import { flushSync } from 'react-dom';
 import {
   Experiments,
@@ -142,7 +153,7 @@ function SidebarResizer({
 }: {
   width: number;
   setWidth: (value: number) => void;
-  t: (en: string, ru: string) => string;
+  t: Translate;
 }) {
   return (
     <button
@@ -196,7 +207,7 @@ function Navigation({
 }: {
   page: Page;
   navigate: (p: Page) => void;
-  t: (en: string, ru: string) => string;
+  t: Translate;
   width: number;
   setWidth: (value: number) => void;
 }) {
@@ -217,7 +228,14 @@ function Navigation({
     },
   ] as const;
   return (
-    <Sidebar className="lab-sidebar">
+    <Sidebar
+      className="lab-sidebar"
+      mobileTitle={t('Navigation', 'Навигация')}
+      mobileDescription={t(
+        'Navigate between the music laboratories and learning pages.',
+        'Переходите между музыкальными лабораториями и учебными страницами.',
+      )}
+    >
       <SidebarHeader>
         <a
           href="#lab"
@@ -324,10 +342,13 @@ export default function Home() {
   const [volume, setVolume] = useState(18);
   const [playing, setPlaying] = useState(false);
   const [octave, setOctave] = useState(4);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<LocalText | null>(null);
   const audio = useRef<AudioEngine | null>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
-  const t = (en: string, ru: string) => (lang === 'ru' ? ru : en);
+  const t = translator(lang);
+  const displayNote = (midi: number) =>
+    lang === 'de' ? localizedNoteName(midi, lang) : noteName(midi);
+  const referenceLabel = lang === 'de' ? 'a′' : 'A4';
   const note = nearestNote(frequency, reference, tuning);
   const waveNames = [
     t('Sine', 'Синус'),
@@ -338,7 +359,7 @@ export default function Home() {
   function navigate(p: Page) {
     audio.current?.stopAll();
     setPlaying(false);
-    setError('');
+    setError(null);
     setPage(p);
     window.history.replaceState(null, '', '#' + p);
   }
@@ -351,7 +372,7 @@ export default function Home() {
   }
   async function toggle() {
     try {
-      setError('');
+      setError(null);
       if (playing) {
         audio.current?.stopAll();
         setPlaying(false);
@@ -361,7 +382,7 @@ export default function Home() {
       }
     } catch {
       setError(
-        t(
+        localText(
           'Audio could not start. Check your browser audio settings and try again.',
           'Звук не запустился. Проверьте настройки звука браузера и попробуйте снова.',
         ),
@@ -375,7 +396,7 @@ export default function Home() {
   ) {
     audio.current?.stopAll();
     setPlaying(false);
-    setError('');
+    setError(null);
     try {
       await engine().preview(
         frequencies,
@@ -386,7 +407,7 @@ export default function Home() {
       );
     } catch {
       setError(
-        t(
+        localText(
           'Audio could not start. Please try again.',
           'Звук не запустился. Попробуйте ещё раз.',
         ),
@@ -400,7 +421,7 @@ export default function Home() {
       await exportTone(frequency, wave, volume / 100);
     } catch {
       setError(
-        t(
+        localText(
           'The audio file could not be created. Please try again.',
           'Не удалось создать звуковой файл. Попробуйте ещё раз.',
         ),
@@ -431,7 +452,7 @@ export default function Home() {
       if (!playing) await engine().preview([hz], wave, volume / 100);
     } catch {
       setError(
-        t(
+        localText(
           'Audio is unavailable in this browser.',
           'Звук недоступен в этом браузере.',
         ),
@@ -449,6 +470,9 @@ export default function Home() {
   // hook order, so the store reads the saved language before this write.
   useEffect(() => {
     document.documentElement.lang = lang;
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute('content', siteDescription[lang]);
     try {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
     } catch {}
@@ -694,7 +718,11 @@ export default function Home() {
                 'ВСЁ НАЧИНАЕТСЯ С ЛЮБОПЫТСТВА',
               )}
             </span>
-            <div className="language-switch" aria-label="Language">
+            <fieldset
+              className="language-switch"
+
+              aria-label={t('Language', 'Язык')}
+            >
               <Globe2 size={16} />
               <button
                 className={lang === 'en' ? 'selected' : ''}
@@ -711,7 +739,17 @@ export default function Home() {
               >
                 RU
               </button>
-            </div>
+              <span>/</span>
+              <button
+                className={lang === 'de' ? 'selected' : ''}
+                aria-pressed={lang === 'de'}
+                onClick={() => setLang('de')}
+                title="Deutsch"
+                lang="de"
+              >
+                DE
+              </button>
+            </fieldset>
           </div>
         </header>
         <main id="main-content" className="main-content">
@@ -808,10 +846,10 @@ export default function Home() {
                       <span>Hz</span>
                     </div>
                     <div className="note-pill">
-                      {note.name}
+                      {displayNote(note.midi)}
                       <span>·</span>
                       {note.cents > 0 ? '+' : ''}
-                      {note.cents.toFixed(1)} {t('cents', 'цента')}
+                      {fixedNumber(note.cents, 1, lang)} {t('cents', 'цента')}
                     </div>
                   </div>
                   <div className="frequency-slider">
@@ -860,7 +898,7 @@ export default function Home() {
                       {playing
                         ? t('Stop tone', 'Остановить')
                         : t('Play tone', 'Слушать тон')}
-                      <kbd>Space</kbd>
+                      <kbd>{t('Space', 'Пробел')}</kbd>
                     </button>
                     <button
                       className="icon-button"
@@ -907,7 +945,7 @@ export default function Home() {
                     />
                     <div className="scope-footer">
                       <span>{waveNames[waveTypes.indexOf(wave)]}</span>
-                      <span>{frequency.toFixed(2)} Hz</span>
+                      <span>{fixedNumber(frequency, 2, lang)} Hz</span>
                     </div>
                   </div>
                   <div className="volume-row">
@@ -935,10 +973,10 @@ export default function Home() {
                     </div>
                     <label className="field-label" htmlFor="reference">
                       {t('Reference pitch', 'Опорная частота')}
-                      <span>A4</span>
+                      <span>{referenceLabel}</span>
                     </label>
                     <div className="reference-input">
-                      <span>A4 =</span>
+                      <span>{referenceLabel} =</span>
                       <NumberField
                         id="reference"
                         aria-label={t(
@@ -1012,18 +1050,24 @@ export default function Home() {
                       )}
                     </div>
                     <div className="current-note">
-                      {note.name.replace(/-?\d+$/, '')}
-                      <span>{Math.floor(note.midi / 12) - 1}</span>
+                      {lang === 'de'
+                        ? displayNote(note.midi)
+                        : note.name.replace(/-?\d+$/, '')}
+                      {lang !== 'de' && (
+                        <span>{Math.floor(note.midi / 12) - 1}</span>
+                      )}
                       <Music2 size={29} strokeWidth={1.2} />
                     </div>
                     <div className="note-data">
                       <div>
                         <span>{t('Frequency', 'Частота')}</span>
-                        <strong>{frequency.toFixed(2)} Hz</strong>
+                        <strong>{fixedNumber(frequency, 2, lang)} Hz</strong>
                       </div>
                       <div>
                         <span>{t('Period', 'Период')}</span>
-                        <strong>{(1000 / frequency).toFixed(3)} ms</strong>
+                        <strong>
+                          {fixedNumber(1000 / frequency, 3, lang)} ms
+                        </strong>
                       </div>
                       <div>
                         <span>{t('MIDI note', 'Нота MIDI')}</span>
@@ -1044,7 +1088,9 @@ export default function Home() {
                     {t('Explore the notes', 'Исследуйте ноты')}
                   </span>
                   <div className="keyboard-controls">
-                    <span>A4 = {reference} Hz</span>
+                    <span>
+                      {referenceLabel} = {localNumber(reference, lang)} Hz
+                    </span>
                     <button
                       aria-label={t(
                         'Lower keyboard octave',
@@ -1055,7 +1101,9 @@ export default function Home() {
                       −
                     </button>
                     <span>
-                      {t('Octave', 'Октава')} {octave}
+                      {lang === 'de'
+                        ? octaveName(keyboardPitch((octave + 1) * 12), lang)
+                        : `${t('Octave', 'Октава')} ${octave}`}
                     </span>
                     <button
                       aria-label={t(
@@ -1082,11 +1130,17 @@ export default function Home() {
                             (note.midi === midi ? 'active-key' : '')
                           }
                           onClick={() => playNote(midi)}
-                          aria-label={`${noteName(midi)}, ${frequencyForMidi(midi, reference, tuning).toFixed(2)} Hz`}
+                          aria-label={`${displayNote(midi)}, ${fixedNumber(frequencyForMidi(midi, reference, tuning), 2, lang)} Hz`}
                         >
                           <span>
-                            {['C', 'D', 'E', 'F', 'G', 'A', 'B'][i % 7]}
-                            <small>{Math.floor(midi / 12) - 1}</small>
+                            {lang === 'de' ? (
+                              displayNote(midi)
+                            ) : (
+                              <>
+                                {['C', 'D', 'E', 'F', 'G', 'A', 'B'][i % 7]}
+                                <small>{Math.floor(midi / 12) - 1}</small>
+                              </>
+                            )}
                           </span>
                         </button>
                         {[0, 2, 5, 7, 9].includes(midi % 12) && i < 14 && (
@@ -1097,7 +1151,7 @@ export default function Home() {
                               frequencyForMidi(midi + 1, reference, tuning) >
                                 20000
                             }
-                            aria-label={noteName(midi + 1)}
+                            aria-label={displayNote(midi + 1)}
                             className={
                               'black-key ' +
                               (note.midi === midi + 1 ? 'active-key' : '')
@@ -1105,20 +1159,20 @@ export default function Home() {
                             onClick={() => playNote(midi + 1)}
                           >
                             <span>
-                              {
-                                [
-                                  'C♯',
-                                  '',
-                                  'D♯',
-                                  '',
-                                  '',
-                                  'F♯',
-                                  '',
-                                  'G♯',
-                                  '',
-                                  'A♯',
-                                ][midi % 12]
-                              }
+                              {lang === 'de'
+                                ? displayNote(midi + 1)
+                                : [
+                                    'C♯',
+                                    '',
+                                    'D♯',
+                                    '',
+                                    '',
+                                    'F♯',
+                                    '',
+                                    'G♯',
+                                    '',
+                                    'A♯',
+                                  ][midi % 12]}
                             </span>
                           </button>
                         )}
@@ -1217,7 +1271,7 @@ export default function Home() {
 
           {error && (
             <div className="error-message" role="alert">
-              {error}
+              {error[lang]}
             </div>
           )}
         </main>

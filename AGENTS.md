@@ -22,7 +22,7 @@ register; do not create a competing roadmap or silently drop original topic IDs.
   must pass.
 - Keep setup instructions reproducible on Windows, macOS, and Linux. Update the
   README and relevant developer/user documentation in the same PR as changes.
-- A topic is complete only after ROADMAP gate G: sourced EN/RU theory, working
+- A topic is complete only after ROADMAP gate G: sourced EN/RU/DE theory, working
   laboratory, meaningful practice with feedback, encyclopedia, tests, rights,
   accessibility, review, documentation, and a publishable artifact.
 - Educational statements need verified sources with exact edition/page/section

@@ -1,5 +1,8 @@
 # Chords lab: research, scope and use
 
+German is available through **DE**, including every example, explanation and practice response. German chord roots and basses use H/B, keys use C-Dur/c-Moll. See [German terminology and sources](german-localization.md).
+
+
 ## What the reference contributed
 
 The owner requested an original learning tool inspired by

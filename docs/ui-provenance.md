@@ -13,7 +13,7 @@ Preserve the MIT notice in `LICENSES/shadcn-MIT.txt` and the descriptions in
 [THIRD-PARTY-NOTICES.md](../THIRD-PARTY-NOTICES.md).
 
 [ui-provenance.json](ui-provenance.json) records all 62 paths, their baseline
-SHA-256 hashes, and their current classification: 12 modified and 50 unchanged.
+SHA-256 hashes, and their current classification: 13 modified and 49 unchanged.
 Hashes were computed from the baseline Git blobs as UTF-8 after normalizing
 CRLF to LF. Line-ending conversion on Windows must not count as a modification.
 The automated checks use the committed hashes, so shallow CI checkouts need
@@ -22,8 +22,8 @@ neither historical Git objects nor network access.
 | Code category | Responsibility and future full coverage denominator |
 | --- | --- |
 | Authored application, learning UI, number field, authored libraries, configuration, scripts and infrastructure | Include all executable production code, even files not imported by tests. Keep code and educational-content licenses distinct. |
-| The 12 locally modified imported copies | Maintain and test the **entire files**, including inherited sections and currently unused copies. Include them in the maintained production-code coverage denominator; retaining upstream licensing does not exempt modifications from testing. |
-| The 50 unchanged imported copies, including `lib/utils.ts` | May be reported separately as third-party code after provenance review. Continue lint/type checks and integration tests for application use. Editing a copy moves it to the modified category. |
+| The 13 locally modified imported copies | Maintain and test the **entire files**, including inherited sections and currently unused copies. Include them in the maintained production-code coverage denominator; retaining upstream licensing does not exempt modifications from testing. |
+| The 49 unchanged imported copies, including `lib/utils.ts` | May be reported separately as third-party code after provenance review. Continue lint/type checks and integration tests for application use. Editing a copy moves it to the modified category. |
 | Installed dependencies | Track versions and licenses separately in the dependency/bundle audit; do not treat installed package internals as authored code. |
 | Test fixtures and generated output | Do not count as production code. Test maintained generators and configurations themselves. |
 
@@ -99,7 +99,7 @@ open.
 The formatter owns authored source and the authored stylesheet, and
 `npm run format:check` is a required Baseline check. The imported copies in
 `components/ui/` are excluded in `.oxfmtrc.json` so they stay comparable with
-the registry: reformatting all 62 files would rewrite the 50 unchanged copies
+the registry: reformatting all 62 files would rewrite the 49 unchanged copies
 and make a future re-import harder to read, without making any authored code
 clearer. `hooks/use-mobile.ts` and `lib/utils.ts` are formatted with the
 authored code, because their bodies are already maintained locally.
@@ -132,3 +132,11 @@ or extra code records, symlinks in the catalog, stale classifications and absent
 modification notices. They establish consistency with the local import, not
 authorship, full license clearance, accessibility certification or readiness to
 publish.
+
+## German interface modification, 2026-09-06
+
+`components/ui/sidebar.tsx` now accepts localized mobile dialog titles and
+descriptions; default labels remain available to other consumers. The entire
+copy moves into the maintained coverage denominator. Browser tests exercise the
+German mobile dialog and existing navigation behavior; inherited unused
+components remain visible in P00 coverage debt. MIT provenance is preserved.

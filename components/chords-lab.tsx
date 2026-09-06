@@ -1,4 +1,6 @@
 'use client';
+import { translator } from '@/lib/i18n';
+
 import {
   useEffect,
   useEffectEvent,
@@ -165,7 +167,7 @@ function fromTemplate(index: number, tonic = 0): Draft {
 }
 
 export function ChordsLab({ lang }: { lang: MusicLanguage }) {
-  const t = (en: string, ru: string) => (lang === 'ru' ? ru : en);
+  const t = translator(lang);
   const [history, setHistory] = useState<History>(() => ({
     past: [],
     present: fromTemplate(1),
@@ -570,7 +572,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                 key={i}
                 className={`chord-card ${i === selected ? 'is-selected' : ''} ${i === active ? 'is-sounding' : ''}`}
                 aria-pressed={i === selected}
-                aria-label={`${t('Chord', 'Аккорд')} ${i + 1}: ${chordSymbol(key, item)}${
+                aria-label={`${t('Chord', 'Аккорд')} ${i + 1}: ${chordSymbol(key, item, lang)}${
                   moved(item) === 0
                     ? ''
                     : `, ${count(Math.abs(moved(item)), lang, 'octaves')} ${
@@ -595,7 +597,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                   )}
                   <span>{count(item.beats, lang, 'beats')}</span>
                 </span>
-                <strong>{chordSymbol(key, item)}</strong>
+                <strong>{chordSymbol(key, item, lang)}</strong>
                 <span className="chord-roman">
                   {romanNumeral(key, item)}
                   {applied && (
@@ -839,7 +841,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
               <span className="chord-kicker">
                 {t('INSIDE THE CHORD', 'ВНУТРИ АККОРДА')} · {selected + 1}
               </span>
-              <h2>{chordSymbol(key, chord)}</h2>
+              <h2>{chordSymbol(key, chord, lang)}</h2>
               <p>
                 {definition[lang]} · {pitchName(construction[0], lang)}
               </p>
@@ -1034,11 +1036,11 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                 <button
                   key={degree}
                   disabled={chords.length >= MAX_CHORDS}
-                  aria-label={`${t('Add', 'Добавить')} ${chordSymbol(key, item)}`}
+                  aria-label={`${t('Add', 'Добавить')} ${chordSymbol(key, item, lang)}`}
                   onClick={() => appendChord(item)}
                 >
                   <span className="chord-roman">{romanNumeral(key, item)}</span>
-                  <strong>{chordSymbol(key, item)}</strong>
+                  <strong>{chordSymbol(key, item, lang)}</strong>
                   <small>
                     {chordNotes(key, item)
                       .map((p) => pitchName(p, lang))
@@ -1098,7 +1100,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                 'Меняйте по одному параметру: вид аккорда, бас, порядок, затем темп. Послушайте, прежде чем выбрать понравившийся вариант. Любое изменение можно отменить, в том числе загрузку другого примера.',
               )}
             </p>
-            <a className="chord-source" href={source.href}>
+            <a className="chord-source" href={source.href} lang="en">
               <BookOpen size={15} />
               {source.label}
             </a>

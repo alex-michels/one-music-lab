@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
+import { siteDescription } from '@/lib/i18n';
 import './globals.css';
 
 export const metadata: Metadata = {
   title: 'OML — One Music Lab',
   metadataBase: new URL('https://onemusiclab.org'),
   alternates: { canonical: '/' },
-  description:
-    'Explore sound, tuning and music theory. A bilingual laboratory with a tone generator, adjustable A4, musical notes and practical exercises.',
+  description: siteDescription.en,
 };
 
 export default function RootLayout({

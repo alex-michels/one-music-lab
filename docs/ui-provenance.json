@@ -197,7 +197,7 @@
     },
     "components/ui/sidebar.tsx": {
       "baselineSha256": "aa3322ca63f098aa1d2abf750f9d097da07362fce25939357f2cefc9b6a03988",
-      "status": "unchanged"
+      "status": "modified"
     },
     "components/ui/skeleton.tsx": {
       "baselineSha256": "4c342102b2bbf5bd8c04fa151fe5c13c42faee2f9587a3586c27322020ca35d1",

@@ -1,4 +1,4 @@
-export type MusicLanguage = 'en' | 'ru';
+export type MusicLanguage = import('./client-store').Lang;
 export type SpelledPitch = {
   letter: number;
   accidental: number;
@@ -8,17 +8,40 @@ export type SpelledPitch = {
 export type SpelledPattern = {
   en: string;
   ru: string;
+  de: string;
   steps: readonly number[];
   /** Zero-based diatonic positions; 7 is the octave, not the seventh. */
   degrees: readonly number[];
 };
 export type SpelledScale = SpelledPattern & {
-  title: { en: string; ru: string };
+  title: Record<MusicLanguage, string>;
 };
 
 const letters = 'CDEFGAB';
 const naturalSteps = [0, 2, 4, 5, 7, 9, 11];
 const russianNotes = ['до', 'ре', 'ми', 'фа', 'соль', 'ля', 'си'];
+// Columns: double flat, flat, natural, sharp, double sharp. H♭ is B;
+// A𝄫 is Ases and H𝄫 is Heses (Beck, Theorie D2/D3, pp. 8–10).
+const germanNotes = [
+  ['Ceses', 'Ces', 'C', 'Cis', 'Cisis'],
+  ['Deses', 'Des', 'D', 'Dis', 'Disis'],
+  ['Eses', 'Es', 'E', 'Eis', 'Eisis'],
+  ['Feses', 'Fes', 'F', 'Fis', 'Fisis'],
+  ['Geses', 'Ges', 'G', 'Gis', 'Gisis'],
+  ['Ases', 'As', 'A', 'Ais', 'Aisis'],
+  ['Heses', 'B', 'H', 'His', 'Hisis'],
+];
+const germanOctaves = [
+  'Subkontraoktave',
+  'Kontraoktave',
+  'große Oktave',
+  'kleine Oktave',
+  'eingestrichene Oktave',
+  'zweigestrichene Oktave',
+  'dreigestrichene Oktave',
+  'viergestrichene Oktave',
+  'fünfgestrichene Oktave',
+];
 const accidentals = ['𝄫', '♭', '', '♯', '𝄪'];
 const russianAccidentals = [
   '-дубль-бемоль',
@@ -104,12 +127,14 @@ export function spellPattern(
 }
 
 export function pitchName(pitch: SpelledPitch, lang: MusicLanguage): string {
+  if (lang === 'de') return germanNotes[pitch.letter][pitch.accidental + 2];
   return lang === 'ru'
     ? russianNotes[pitch.letter] + russianAccidentals[pitch.accidental + 2]
     : letters[pitch.letter] + accidentals[pitch.accidental + 2];
 }
 
 export function octaveName(pitch: SpelledPitch, lang: MusicLanguage): string {
+  if (lang === 'de') return germanOctaves[pitch.octave];
   return lang === 'ru'
     ? russianOctaves[pitch.octave]
     : `octave ${pitch.octave}`;
@@ -117,6 +142,13 @@ export function octaveName(pitch: SpelledPitch, lang: MusicLanguage): string {
 
 export function pitchLabel(pitch: SpelledPitch, lang: MusicLanguage): string {
   const name = pitchName(pitch, lang);
+  if (lang === 'de') {
+    if (pitch.octave < 2) return name + (pitch.octave === 0 ? '₂' : '₁');
+    if (pitch.octave === 2) return name;
+    return (
+      name.toLowerCase() + ['', '′', '″', '‴', '⁗', '⁗′'][pitch.octave - 3]
+    );
+  }
   return lang === 'ru'
     ? `${name}, ${octaveName(pitch, lang)}`
     : `${name}${pitch.octave}`;
@@ -127,5 +159,52 @@ export function scaleName(
   pattern: SpelledScale,
   lang: MusicLanguage,
 ): string {
-  return pattern.title[lang].replace('{tonic}', pitchName(tonic, lang));
+  const title = pattern.title[lang];
+  const name = pitchName(tonic, lang);
+  return title.replace(
+    '{tonic}',
+    lang === 'de' && title.includes('-Moll') ? name.toLowerCase() : name,
+  );
+}
+
+/** Chromatic keyboard labels have no key context; prefer sharps, as in EN.
+ * Degree-aware scale/chord spellings must continue to use spellPattern instead.
+ */
+export function keyboardPitch(midi: number): SpelledPitch {
+  if (!Number.isInteger(midi) || midi < 12 || midi > 119)
+    throw new RangeError('Keyboard note must be MIDI 12–119');
+  const position = midi % 12;
+  const letter = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6][position];
+  return {
+    letter,
+    accidental: position - naturalSteps[letter],
+    octave: Math.floor(midi / 12) - 1,
+    midi,
+  };
+}
+
+/** The frequency display can exceed the named keyboard range with extreme tuning.
+ * Preserve an exact MIDI identifier there, instead of inventing an octave name.
+ */
+export function localizedNoteName(midi: number, lang: MusicLanguage): string {
+  if (!Number.isInteger(midi))
+    throw new RangeError('Note number must be an integer');
+  if (midi < 12 || midi > 119) return `MIDI ${midi}`;
+  return pitchLabel(keyboardPitch(midi), lang);
+}
+
+/** A third keeps its third's letter, even when another key sounds identical. */
+export function intervalLabels(
+  midi: number,
+  step: number,
+  degree: number,
+  lang: MusicLanguage,
+): string[] {
+  const root = keyboardPitch(midi);
+  const tonic = pitchName(root, 'en').replace('♯', '#');
+  return spellPattern(
+    tonic,
+    { steps: [0, step], degrees: [0, degree] },
+    root.octave,
+  ).map((pitch) => pitchLabel(pitch, lang));
 }

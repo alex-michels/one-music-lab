@@ -1,7 +1,7 @@
 # Contributing to One Music Lab
 
 One Music Lab connects theory, experimentation, practice, and an encyclopedia
-in English and Russian. Start with [ROADMAP.md](ROADMAP.md), choose one small
+in English, Russian and German. Start with [ROADMAP.md](ROADMAP.md), choose one small
 unfinished outcome, and explain its scope in a pull request. Large regional or
 historical topics must first be split into named, reviewable releases.
 
@@ -25,10 +25,12 @@ structure, and factual review; avoid artificial tests for prose wording.
 User-visible pitch and scale names must follow the active locale's professional
 standard. English uses letter names with accidentals and scientific octaves;
 Russian uses note names such as `до`, `ми-бемоль`, and `си-диез`, with Russian
-octave names; future German localization must use forms such as `c-Moll` and
-German pitch-letter conventions. Scale cards must preserve diatonic degree
+octave names; German uses `C-Dur`/`c-Moll`, H for English B, B for English
+B-flat, and classical octave labels such as `a′`. Scale cards must preserve
+diatonic degree
 letters (for example, C minor is C–D–E♭–F–G–A♭–B♭) instead of choosing a
-chromatic alias from the keyboard. The rule currently binds the “A little
+chromatic alias from the keyboard. In Russian, the rule currently binds the
+“A little
 experiment” lab; the keyboard and the ear-training panels still show English
 scientific pitch in the Russian interface, which ROADMAP P05 records as open. Keep the scope and sources in
 [music-notation.md](docs/music-notation.md), and add regression tests when a
@@ -39,6 +41,17 @@ identified international lead-sheet notation beside localized pitch names and
 chord-type explanations. Preserve degree spelling when transposing and distinguish
 chord quality from harmonic function. Its sources, audio bounds and supported
 model are recorded in [chords-lab.md](docs/chords-lab.md).
+
+German applies across all shipped website content, including the keyboard,
+practice feedback and chord-symbol roots/basses (`Hm7`, `B7`). Use
+`translator`/`localText` from `lib/i18n.ts` and add the German source-key entry
+in `lib/german.ts`; missing translations must fail typecheck. Localize formulas,
+errors and accessible labels too. Original foreign bibliographic titles and
+deliberately shown term equivalents may retain their language. Verify primary
+sources and record exact sections in
+[german-localization.md](docs/german-localization.md). English *parallel minor*
+is not German *Mollparallele*. New content requires EN/RU/DE parity; historical
+EN/RU roadmap wording is a minimum, not an exemption.
 
 Counted nouns go through `lib/plural.ts` rather than a literal string. Russian
 chooses one of three forms from the last digits of the number, so `2 полутонов`
