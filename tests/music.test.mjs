@@ -1,16 +1,16 @@
-import test from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { frequencyForMidi, nearestNote, ratios } from '../lib/music.ts';
 import { encodeWav } from '../lib/wav.ts';
 const close = (a, b, epsilon = 1e-8) =>
   assert.ok(Math.abs(a - b) < epsilon, `${a} ≠ ${b}`);
-await test('A4 reference and middle C frequencies', () => {
+test('A4 reference and middle C frequencies', () => {
   close(frequencyForMidi(69), 440);
   close(frequencyForMidi(60), 261.6255653005986);
   close(frequencyForMidi(69, 432), 432);
   close(frequencyForMidi(60, 432), 256.86873684058776);
 });
-await test('Every supported tuning preserves reference, octaves and inverse note mapping', () => {
+test('Every supported tuning preserves reference, octaves and inverse note mapping', () => {
   for (const tuning of ['equal', 'just', 'pythagorean'])
     for (const ref of [20, 415, 432, 440, 442, 2000]) {
       close(frequencyForMidi(69, ref, tuning), ref);
@@ -23,19 +23,19 @@ await test('Every supported tuning preserves reference, octaves and inverse note
       }
     }
 });
-await test('Known just and Pythagorean thirds differ from equal temperament', () => {
+test('Known just and Pythagorean thirds differ from equal temperament', () => {
   close(frequencyForMidi(73, 440, 'just'), 550);
   close(frequencyForMidi(73, 440, 'pythagorean'), 556.875);
   assert.ok(frequencyForMidi(73, 440) > 550);
   close(ratios.just[7], 1.5);
 });
-await test('Cents detect detuning above and below a named note', () => {
+test('Cents detect detuning above and below a named note', () => {
   close(nearestNote(440 * 2 ** (12 / 1200)).cents, 12);
   close(nearestNote(440 * 2 ** (-12 / 1200)).cents, -12);
   assert.equal(nearestNote(440).name, 'A4');
   assert.equal(nearestNote(20).name, 'D♯0');
 });
-await test('WAV has a valid mono PCM header, data length and clipped samples', () => {
+test('WAV has a valid mono PCM header, data length and clipped samples', () => {
   const buffer = encodeWav(new Float32Array([0, 0.5, -0.5, 2, -2]), 48000);
   const view = new DataView(buffer);
   const text = (o, n) => String.fromCharCode(...new Uint8Array(buffer, o, n));

@@ -1,4 +1,4 @@
-import test from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { AudioEngine } from '../lib/audio.ts';
 class Param {
@@ -63,7 +63,7 @@ class Context {
   }
 }
 globalThis.AudioContext = Context;
-await test('A sustained tone fades in, follows frequency changes, and stops', async () => {
+test('A sustained tone fades in, follows frequency changes, and stops', async () => {
   const audio = new AudioEngine();
   assert.equal(await audio.start(432, 'triangle', 0.2), true);
   const osc = audio.context.oscillators[0];
@@ -80,7 +80,7 @@ await test('A sustained tone fades in, follows frequency changes, and stops', as
   assert.ok(osc.stopped[0] > audio.context.currentTime);
   audio.dispose();
 });
-await test('Stopping during AudioContext resume cancels pending start', async () => {
+test('Stopping during AudioContext resume cancels pending start', async () => {
   const audio = new AudioEngine();
   let resume;
   audio.context.resume = () =>
@@ -94,7 +94,7 @@ await test('Stopping during AudioContext resume cancels pending start', async ()
   assert.equal(audio.context.oscillators.length, 0);
   audio.dispose();
 });
-await test('Sequential preview schedules notes with explicit spacing and silence stops all', async () => {
+test('Sequential preview schedules notes with explicit spacing and silence stops all', async () => {
   const audio = new AudioEngine();
   await audio.preview([440, 550, 660], 'sine', 0.18, 0.6, 0.75);
   const oscillators = audio.context.oscillators;
@@ -111,7 +111,7 @@ await test('Sequential preview schedules notes with explicit spacing and silence
   assert.ok(oscillators.every((o) => o.stopped.length === 2));
   audio.dispose();
 });
-await test('A chord divides gain across voices and skips frequencies beyond Nyquist', async () => {
+test('A chord divides gain across voices and skips frequencies beyond Nyquist', async () => {
   const audio = new AudioEngine();
   await audio.preview([440, 550, 660, 25000], 'sine', 0.18, 1.5, 0);
   assert.equal(audio.context.oscillators.length, 3);

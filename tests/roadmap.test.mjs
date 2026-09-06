@@ -1,4 +1,4 @@
-import test from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
@@ -20,7 +20,7 @@ const expectedIds = [
   ),
 ];
 
-await test('Every original topic is represented exactly once by a completion checkbox', () => {
+test('Every original topic is represented exactly once by a completion checkbox', () => {
   assert.ok(curriculum, 'The single curriculum checklist must exist');
   const actual = [
     ...curriculum.matchAll(/^- \[[ x]\] (\d+\.\d+|[A-D]\d+) — .+$/gm),
@@ -39,7 +39,7 @@ await test('Every original topic is represented exactly once by a completion che
   assert.equal(new Set(actual).size, actual.length);
 });
 
-await test('Each curriculum module has four delivery layers and separate ready/published gates', () => {
+test('Each curriculum module has four delivery layers and separate ready/published gates', () => {
   const modules = [
     ...curriculum.matchAll(
       /^### ([A-Z]\d{2}) — (.+)\n([\s\S]*?)(?=^### |$(?![\s\S]))/gm,
@@ -76,7 +76,7 @@ await test('Each curriculum module has four delivery layers and separate ready/p
   }
 });
 
-await test('Curriculum prerequisites resolve and contain no cycles', () => {
+test('Curriculum prerequisites resolve and contain no cycles', () => {
   const graph = new Map(
     [
       ...curriculum.matchAll(

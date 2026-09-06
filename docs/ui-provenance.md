@@ -27,11 +27,14 @@ neither historical Git objects nor network access.
 | Installed dependencies | Track versions and licenses separately in the dependency/bundle audit; do not treat installed package internals as authored code. |
 | Test fixtures and generated output | Do not count as production code. Test maintained generators and configurations themselves. |
 
-This change does **not** alter coverage inclusion, exclusions or thresholds.
-The current `test:coverage` command still measures only loaded `lib/*.ts` and
-`hooks/*.ts`; it cannot substantiate full application coverage. P00's complete
-instrumentation task must implement the boundary above without excluding
-unused authored or modified files to improve the result.
+This boundary is now implemented in `vitest.config.ts`, which reads
+[ui-provenance.json](ui-provenance.json) directly: copies marked `modified` are
+measured together with the authored code, and copies marked `unchanged` are
+excluded from that denominator and reported separately. Editing a copy
+therefore moves it into the measured set automatically, and
+`tests/coverage-boundary.test.mjs` fails if the record and the denominator ever
+disagree. Instrumentation is not coverage: the measured share is still low, and
+no threshold is enforced yet.
 
 ## Retain the current catalog
 

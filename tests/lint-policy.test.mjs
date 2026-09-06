@@ -1,4 +1,4 @@
-import test from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -6,7 +6,7 @@ import { basename, dirname, isAbsolute, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
-await test('Lint permits explicit list semantics but still rejects other redundant roles', async () => {
+test('Lint permits explicit list semantics but still rejects other redundant roles', async () => {
   const root = fileURLToPath(new URL('../', import.meta.url));
   const directory = await mkdtemp(join(tmpdir(), 'oml-lint-policy-'));
   try {
