@@ -2,6 +2,634 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 @custom-variant dark (&:is(.dark *));
+/* Original Chords lab surface; shares the sound lab's colour and type tokens. */
+.chords-lab {
+  display: grid;
+  gap: 24px;
+}
+.chord-workbench,
+.chord-inspector,
+.chord-palette,
+.chord-learning {
+  padding: 24px;
+  min-width: 0;
+}
+.chord-workbench-heading,
+.chord-inspector-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.chord-workbench h2,
+.chord-palette h2 {
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  margin-top: 6px;
+}
+.chord-kicker {
+  font-size: 10px;
+  letter-spacing: 1.3px;
+  color: var(--muted-foreground);
+  font-weight: 650;
+}
+.chord-setup {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.chord-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+.chord-field > span,
+.chord-tempo,
+.chord-volume {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+/* Russian chord-type names are long — «Малый минорный септаккорд» does not fit
+   one line in a half-width field — so the trigger grows to two lines instead
+   of trimming the term that identifies the chord. */
+.chord-field [data-slot='select-trigger'] {
+  width: 100%;
+  min-height: 42px;
+  height: auto;
+  padding-block: 8px;
+  white-space: normal;
+  background: var(--card);
+}
+.chord-field [data-slot='select-value'] {
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-align: left;
+}
+/* The popup is portalled out of the panel, so it needs its own class. Template
+   and chord-type names are full terms; they wrap instead of being clipped. */
+.chord-select-content [data-slot='select-item'],
+.chord-select-content [data-slot='select-item'] > * {
+  white-space: normal;
+  text-align: left;
+  min-width: 0;
+}
+.chord-select-content [data-slot='select-item'] {
+  padding-block: 6px;
+}
+.chord-select-content [data-slot='select-label'] {
+  position: sticky;
+  top: 0;
+  background: var(--popover);
+  font-weight: 650;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-size: 10px;
+  padding-block: 7px;
+}
+/* The scale control and the action that gives up what it deliberately keeps. */
+.chord-scale-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+.chord-fit {
+  align-self: flex-start;
+  font-size: 11px;
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-align: left;
+}
+.chord-fit:disabled {
+  color: var(--muted-foreground);
+  text-decoration: none;
+}
+.chord-timeline {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.chord-card {
+  position: relative;
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--background);
+  padding: 15px 17px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  min-height: 147px;
+}
+.chord-card:hover {
+  border-color: var(--primary);
+}
+.chord-card.is-selected {
+  border-color: var(--primary);
+  background: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+.chord-card.is-sounding {
+  background: var(--primary);
+  color: var(--card);
+}
+.chord-card-top {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+.chord-card strong {
+  font-size: 28px;
+  font-weight: 550;
+  letter-spacing: -1px;
+  overflow-wrap: anywhere;
+}
+.chord-roman {
+  font-family: var(--font-geist-mono);
+  font-size: 12px;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.chord-roman em {
+  font-style: normal;
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid currentColor;
+  opacity: 0.8;
+}
+.chord-card.is-sounding .chord-roman,
+.chord-card.is-sounding .chord-card-top {
+  color: inherit;
+}
+/* Marks a card the reader has moved out of the register the phrase loaded in,
+   so an octave jump is visible before it is heard. */
+.chord-moved {
+  font-style: normal;
+  font-size: 10px;
+  padding: 0 4px;
+  margin-right: auto;
+  border-radius: 4px;
+  color: var(--primary);
+  border: 1px solid currentColor;
+  font-variant-numeric: tabular-nums;
+}
+.chord-card.is-sounding .chord-moved {
+  color: inherit;
+}
+.chord-beat-dots {
+  display: flex;
+  gap: 4px;
+  margin-top: 3px;
+}
+.chord-beat-dots i {
+  width: 4px;
+  height: 4px;
+  background: currentColor;
+  opacity: 0.4;
+  border-radius: 50%;
+}
+.chord-now {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  font-size: 10px;
+}
+.chord-edit-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 20px;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.chord-edit-actions > div {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.chord-edit-actions button:disabled {
+  opacity: 0.4;
+}
+.chord-edit-actions button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.chord-transport {
+  padding: 20px 0;
+  border-block: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.chord-transport > .chord-field {
+  flex-direction: row;
+  align-items: center;
+}
+.chord-transport > .chord-field [data-slot='select-trigger'] {
+  width: 65px;
+}
+.chord-transport output {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+.chord-tempo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chord-tempo input {
+  width: 62px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+.chord-sound-settings {
+  font-size: 12px;
+  margin-top: 16px;
+}
+.chord-sound-settings summary {
+  cursor: pointer;
+  color: var(--muted-foreground);
+}
+.chord-sound-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  padding-top: 18px;
+}
+.chord-volume {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 0 10px;
+}
+.chord-volume input {
+  accent-color: var(--primary);
+  width: 100%;
+}
+.chord-lower-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  align-items: start;
+  gap: 24px;
+}
+.chord-inspector-heading h2 {
+  font-size: 42px;
+  font-weight: 500;
+  letter-spacing: -1.5px;
+  line-height: 1.3;
+  margin-top: 4px;
+}
+.chord-inspector-heading p {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.chord-inspector-tools {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+/* The same stepper the sound lab uses for its keyboard register. */
+.chord-register {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+.chord-register button {
+  width: 25px;
+  height: 25px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 14px;
+}
+.chord-register button:disabled {
+  opacity: 0.4;
+}
+.chord-inspector-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.chord-formula {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  border-block: 1px solid var(--border);
+  margin-top: 22px;
+  padding: 16px 0;
+}
+.chord-formula span {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.chord-formula strong {
+  font-family: var(--font-geist-mono);
+  font-size: 14px;
+  font-weight: 500;
+}
+.chord-pitches {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0;
+  flex-wrap: wrap;
+}
+.chord-pitches button {
+  display: flex;
+  flex: 1 1 70px;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+  background: var(--accent);
+  border-radius: 7px;
+  padding: 10px 6px;
+  min-width: 0;
+}
+.chord-pitches strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+.chord-pitches small {
+  font-size: 10px;
+  color: var(--muted-foreground);
+}
+.chord-pitches em {
+  font-size: 9px;
+  font-style: normal;
+  color: var(--primary);
+}
+.chord-keyboard {
+  height: 100px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: #fff;
+}
+.chord-keyboard > span {
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 14px;
+}
+.chord-white-key {
+  height: 100%;
+  background: #fafcfb;
+  border-right: 1px solid #ced8d2;
+}
+.chord-black-key {
+  height: 62%;
+  background: #293d35;
+  border-radius: 0 0 4px 4px;
+  z-index: 1;
+}
+.chord-white-key.is-active {
+  background: #d1e9d8;
+}
+.chord-black-key.is-active {
+  background: #397153;
+}
+.chord-keyboard i {
+  background: #28664f;
+  border-radius: 50%;
+  width: 6px;
+  height: 6px;
+}
+.chord-black-key i {
+  background: #e9f3ed;
+}
+.chord-insight {
+  font-size: 12px;
+  line-height: 1.7;
+  margin-top: 15px;
+  color: var(--muted-foreground);
+}
+.chord-insight strong {
+  color: var(--foreground);
+  font-weight: 500;
+}
+.chord-palette-switch {
+  display: flex;
+  padding: 4px;
+  gap: 4px;
+  background: var(--muted);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+.chord-palette-switch button {
+  flex: 1;
+  border-radius: 5px;
+  font-size: 12px;
+  padding: 8px;
+}
+.chord-palette-switch [aria-pressed='true'] {
+  background: var(--card);
+  box-shadow: 0 1px 3px #102b1e1a;
+}
+.chord-palette-list {
+  display: grid;
+  gap: 7px;
+}
+.chord-palette-list button {
+  display: grid;
+  grid-template-columns: 42px 65px 1fr 16px;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 11px;
+  text-align: left;
+}
+.chord-palette-list button:hover {
+  background: var(--accent);
+}
+.chord-palette-list strong {
+  font-size: 16px;
+  font-weight: 550;
+  overflow-wrap: anywhere;
+}
+.chord-palette-list small {
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+.chord-learning [data-slot='tabs-list'] {
+  flex-wrap: wrap;
+  height: auto;
+  margin-bottom: 20px;
+}
+.chord-learning h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.chord-learning p {
+  font-size: 13px;
+  line-height: 1.8;
+  max-width: 90ch;
+  margin-top: 10px;
+  color: var(--muted-foreground);
+}
+.chord-learning .chord-feedback {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  color: var(--primary);
+}
+.chord-answer-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.chord-terms {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.chord-source,
+.chord-source-links {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 11px;
+  margin-top: 22px;
+}
+.chord-source-links {
+  gap: 18px;
+  margin-top: 12px;
+}
+.chord-source-links a,
+.chord-source {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: var(--primary);
+}
+.chord-footnote {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  text-align: center;
+  line-height: 1.7;
+}
+.chord-message {
+  display: block;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--foreground);
+}
+/* The scale note is the one message that sits directly above the cards, and
+   without this it reads as a caption stuck to the first one. */
+.chord-message + .chord-timeline {
+  margin-top: 16px;
+}
+.chord-source-links {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+}
+.chord-lab-link {
+  margin-top: 16px;
+}
+@media (max-width: 1100px) {
+  .chord-lower-grid {
+    grid-template-columns: 1fr;
+  }
+  .chord-palette-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .chord-workbench,
+  .chord-inspector,
+  .chord-palette,
+  .chord-learning {
+    padding: 18px;
+  }
+  .chord-setup {
+    grid-template-columns: 1fr 1fr;
+  }
+  .chord-setup > :first-child {
+    grid-column: 1 / -1;
+  }
+  .chord-timeline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .chord-card {
+    padding: 12px;
+    min-height: 130px;
+  }
+  .chord-card strong {
+    font-size: 25px;
+  }
+  .chord-sound-grid,
+  .chord-terms,
+  .chord-palette-list {
+    grid-template-columns: 1fr;
+  }
+  /* Six edit buttons plus the selection counter do not share one narrow row
+     without squeezing the counter into two words per line. */
+  .chord-edit-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .chord-edit-actions > div {
+    width: 100%;
+  }
+  .chord-transport {
+    gap: 12px;
+  }
+  .chord-transport > .primary-button {
+    width: 100%;
+  }
+  .chord-transport output {
+    margin-left: 0;
+  }
+  .chord-inspector-controls {
+    grid-template-columns: 1fr;
+  }
+  .chord-inspector-heading {
+    flex-wrap: wrap;
+  }
+  .chord-workbench-heading .soft-badge {
+    white-space: normal;
+    text-align: right;
+  }
+}
 /* Retain the existing CSS variable names, using device fonts without CDN requests. */
 :root {
   --font-geist-sans: 'Segoe UI', Arial, sans-serif;
@@ -171,12 +799,54 @@ p {
   gap: 6px;
 }
 .nav-item {
-  height: 46px;
+  height: auto;
+  min-height: 46px;
   border-radius: 8px;
-  padding: 0 14px;
+  padding: 11px 14px;
   gap: 12px;
   font-size: 14px;
   color: #64726c;
+}
+/* A translated label may not fit on one line. Wrapping keeps every entry
+   readable at the default width instead of ending in an ellipsis; the panel
+   is also resizable for readers who prefer one line. */
+.lab-sidebar .nav-item > span:last-child,
+.lab-sidebar .nav-item > span:nth-last-child(2) {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+.sidebar-resizer {
+  position: absolute;
+  inset-block: 0;
+  right: -5px;
+  width: 11px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: col-resize;
+  z-index: 20;
+  touch-action: none;
+}
+.sidebar-resizer::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  left: 5px;
+  width: 1px;
+  background: var(--primary);
+  opacity: 0;
+  transition: opacity 120ms ease-linear;
+}
+.sidebar-resizer:hover::before,
+.sidebar-resizer:focus-visible::before {
+  opacity: 1;
+}
+.sidebar-resizer:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -1px;
 }
 .nav-item[data-active] {
   background: #eaf3ed;
@@ -1134,6 +1804,12 @@ h1 {
   }
   .lab-sidebar [data-slot='sidebar-header'] {
     padding: 28px;
+  }
+  /* The panel is a full-height sheet on a phone, so there is no edge to drag
+     and nothing for the handle to do; hiding it also takes it out of the tab
+     order and the accessibility tree. */
+  .sidebar-resizer {
+    display: none;
   }
   .scope-header {
     font-size: 9px;

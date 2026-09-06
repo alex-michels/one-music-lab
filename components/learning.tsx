@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { count } from '@/lib/plural';
 import {
   ArrowLeft,
   ArrowRight,
@@ -379,8 +380,7 @@ export function Practice({
                     : t('Keep listening.', 'Продолжайте слушать.')}
                 </strong>{' '}
                 {quizIntervals[question.index][lang]} ·{' '}
-                {quizIntervals[question.index].step}{' '}
-                {t('semitones', 'полутонов')}.
+                {count(quizIntervals[question.index].step, lang, 'semitones')}.
                 <span className="answer-detail">
                   {noteName(question.root)} →{' '}
                   {noteName(question.root + quizIntervals[question.index].step)}{' '}

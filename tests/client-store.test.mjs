@@ -3,10 +3,14 @@ import assert from 'node:assert/strict';
 import {
   LANGUAGE_STORAGE_KEY,
   PAGES,
+  SIDEBAR_WIDTH,
+  SIDEBAR_WIDTH_STORAGE_KEY,
+  clampSidebarWidth,
   createClientStore,
   langFromStorage,
   localStorageOrNull,
   pageFromHash,
+  sidebarWidthFromStorage,
 } from '../lib/client-store.ts';
 
 test('The page comes from the URL hash and unknown hashes open the lab', () => {
@@ -142,4 +146,57 @@ test('Every subscriber is notified and unsubscribing one leaves the others activ
   store.set(5);
   assert.deepEqual(calls, ['a', 'b', 'b', 'b']);
   assert.equal(store.getSnapshot(), 5);
+});
+
+test('The saved sidebar width is used only when it is a usable number', () => {
+  const storage = (value) => ({
+    getItem(key) {
+      assert.equal(key, SIDEBAR_WIDTH_STORAGE_KEY);
+      return value;
+    },
+  });
+  assert.equal(sidebarWidthFromStorage(storage('300')), 300);
+  assert.equal(sidebarWidthFromStorage(storage(' 300 ')), 300);
+  assert.equal(sidebarWidthFromStorage(storage('300.6')), 301);
+  for (const missing of [null, undefined, '', '   ']) {
+    assert.equal(
+      sidebarWidthFromStorage(storage(missing)),
+      SIDEBAR_WIDTH.preferred,
+      JSON.stringify(missing),
+    );
+  }
+  for (const nonsense of ['wide', 'NaN', '{}', 'Infinity']) {
+    assert.equal(
+      sidebarWidthFromStorage(storage(nonsense)),
+      SIDEBAR_WIDTH.preferred,
+      nonsense,
+    );
+  }
+  // A width saved by an older build, or edited by hand, is brought into range
+  // rather than collapsing or hiding the panel.
+  assert.equal(sidebarWidthFromStorage(storage('40')), SIDEBAR_WIDTH.min);
+  assert.equal(sidebarWidthFromStorage(storage('9999')), SIDEBAR_WIDTH.max);
+  assert.equal(sidebarWidthFromStorage(storage('-1')), SIDEBAR_WIDTH.min);
+  assert.equal(sidebarWidthFromStorage(null), SIDEBAR_WIDTH.preferred);
+  assert.equal(
+    sidebarWidthFromStorage({
+      getItem() {
+        throw new Error('SecurityError');
+      },
+    }),
+    SIDEBAR_WIDTH.preferred,
+  );
+});
+
+test('The sidebar width is clamped to a range that keeps the panel usable', () => {
+  assert.ok(SIDEBAR_WIDTH.min < SIDEBAR_WIDTH.preferred);
+  assert.ok(SIDEBAR_WIDTH.preferred < SIDEBAR_WIDTH.max);
+  assert.equal(clampSidebarWidth(SIDEBAR_WIDTH.min - 1), SIDEBAR_WIDTH.min);
+  assert.equal(clampSidebarWidth(SIDEBAR_WIDTH.max + 1), SIDEBAR_WIDTH.max);
+  assert.equal(clampSidebarWidth(SIDEBAR_WIDTH.min), SIDEBAR_WIDTH.min);
+  assert.equal(clampSidebarWidth(SIDEBAR_WIDTH.max), SIDEBAR_WIDTH.max);
+  assert.equal(clampSidebarWidth(250.4), 250);
+  assert.equal(clampSidebarWidth(250.5), 251);
+  for (const bad of [NaN, Infinity, -Infinity])
+    assert.equal(clampSidebarWidth(bad), SIDEBAR_WIDTH.preferred, String(bad));
 });

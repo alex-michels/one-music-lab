@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
+import tailwindcss from '@tailwindcss/postcss';
 
 const root = fileURLToPath(new URL('./', import.meta.url));
 
@@ -34,6 +35,7 @@ export const authoredProductionCode = [
   'app/**/*.{ts,tsx}',
   'components/learning.tsx',
   'components/experiments.tsx',
+  'components/chords-lab.tsx',
   'components/number-field.tsx',
   'hooks/**/*.{ts,tsx}',
   'lib/**/*.{ts,tsx}',
@@ -75,6 +77,8 @@ export function selectedEngines(
 }
 
 export default defineConfig({
+  // Browser component tests use the same generated utilities as the app.
+  css: { postcss: { plugins: [tailwindcss()] } },
   test: {
     globals: false,
     // Policy tests start the real linter in a child process; the default

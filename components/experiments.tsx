@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Play, Sparkles, Volume2 } from 'lucide-react';
+import { count } from '@/lib/plural';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
@@ -190,9 +191,7 @@ export function Experiments({
                     {n.hz.toFixed(2)}
                     <small> Hz</small>
                   </strong>
-                  <em>
-                    {pattern.steps[i]} {t('semitones', 'полутонов')}
-                  </em>
+                  <em>{count(pattern.steps[i], lang, 'semitones')}</em>
                 </div>
               ))}
             </div>

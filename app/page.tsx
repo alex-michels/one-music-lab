@@ -7,6 +7,7 @@ import {
   Encyclopedia,
 } from '@/components/learning';
 import { NumberField } from '@/components/number-field';
+import { ChordsLab } from '@/components/chords-lab';
 import { exportTone } from '@/lib/wav';
 import { registerLabTools, type LabState } from '@/lib/webmcp';
 import { Download } from 'lucide-react';
@@ -62,10 +63,14 @@ import {
 import { AudioEngine } from '@/lib/audio';
 import {
   LANGUAGE_STORAGE_KEY,
+  SIDEBAR_WIDTH,
+  SIDEBAR_WIDTH_STORAGE_KEY,
+  clampSidebarWidth,
   createClientStore,
   langFromStorage,
   localStorageOrNull,
   pageFromHash,
+  sidebarWidthFromStorage,
   type Lang,
   type Page,
 } from '@/lib/client-store';
@@ -86,6 +91,10 @@ const pageStore = createClientStore<Page>(
 const langStore = createClientStore<Lang>(
   () => langFromStorage(localStorageOrNull()),
   'en',
+);
+const sidebarWidthStore = createClientStore<number>(
+  () => sidebarWidthFromStorage(localStorageOrNull()),
+  SIDEBAR_WIDTH.preferred,
 );
 function WaveIcon({ wave }: { wave: Wave }) {
   const d =
@@ -114,18 +123,91 @@ function WaveIcon({ wave }: { wave: Wave }) {
     </svg>
   );
 }
+/**
+ * Drag handle for the navigation panel's width. Translated labels are not all
+ * the same length — `Chords lab` is `Лаборатория аккордов` — so the labels wrap
+ * at the default width rather than being cut off, and a reader who would rather
+ * have them on one line can widen the panel here. It is a button rather than
+ * the ARIA window-splitter pattern, because a focusable `separator` is not
+ * something this project's linter will accept without a suppression; the cost
+ * is that the current width is not announced, and the gain is that pointer,
+ * keyboard and screen-reader users all get the same working control. Arrow keys
+ * move it, Shift moves it faster, Home restores the design width, and the value
+ * is remembered per browser.
+ */
+function SidebarResizer({
+  width,
+  setWidth,
+  t,
+}: {
+  width: number;
+  setWidth: (value: number) => void;
+  t: (en: string, ru: string) => string;
+}) {
+  return (
+    <button
+      type="button"
+      className="sidebar-resizer"
+      aria-label={t(
+        'Navigation width. Drag, or use the left and right arrow keys.',
+        'Ширина панели навигации. Перетащите или используйте стрелки влево и вправо.',
+      )}
+      onDoubleClick={() => setWidth(SIDEBAR_WIDTH.preferred)}
+      onPointerDown={(event) => {
+        event.preventDefault();
+        // Capture keeps the cursor and the events on the handle while the
+        // pointer wanders off it, but Firefox refuses a pointer id it did not
+        // itself issue, and losing the drag is worse than losing the cursor.
+        try {
+          event.currentTarget.setPointerCapture(event.pointerId);
+        } catch {}
+        // The window, not the handle: an eleven-pixel target is easy to leave,
+        // and without capture the handle would stop hearing the pointer.
+        const drag = (moved: PointerEvent) =>
+          setWidth(clampSidebarWidth(moved.clientX));
+        const release = () => {
+          window.removeEventListener('pointermove', drag);
+          window.removeEventListener('pointerup', release);
+          window.removeEventListener('pointercancel', release);
+        };
+        window.addEventListener('pointermove', drag);
+        window.addEventListener('pointerup', release);
+        window.addEventListener('pointercancel', release);
+      }}
+      onKeyDown={(event) => {
+        const step = event.shiftKey ? 32 : 8;
+        if (event.key === 'ArrowLeft')
+          setWidth(clampSidebarWidth(width - step));
+        else if (event.key === 'ArrowRight')
+          setWidth(clampSidebarWidth(width + step));
+        else if (event.key === 'Home') setWidth(SIDEBAR_WIDTH.preferred);
+        else return;
+        event.preventDefault();
+      }}
+    />
+  );
+}
 function Navigation({
   page,
   navigate,
   t,
+  width,
+  setWidth,
 }: {
   page: Page;
   navigate: (p: Page) => void;
   t: (en: string, ru: string) => string;
+  width: number;
+  setWidth: (value: number) => void;
 }) {
   const { setOpenMobile } = useSidebar();
   const items = [
     { id: 'lab', icon: FlaskConical, label: t('Sound lab', 'Лаборатория') },
+    {
+      id: 'chords',
+      icon: Music2,
+      label: t('Chords lab', 'Лаборатория аккордов'),
+    },
     { id: 'theory', icon: BookOpen, label: t('Music theory', 'Теория музыки') },
     { id: 'practice', icon: Headphones, label: t('Practice', 'Практика') },
     {
@@ -169,7 +251,11 @@ function Navigation({
               >
                 <Icon />
                 <span>{label}</span>
-                {id === 'lab' && <span className="nav-count">01</span>}
+                {id === 'lab' && (
+                  <span className="nav-count" aria-hidden="true">
+                    01
+                  </span>
+                )}
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
@@ -207,6 +293,7 @@ function Navigation({
           <span>v0.1</span>
         </div>
       </SidebarFooter>
+      <SidebarResizer width={width} setWidth={setWidth} t={t} />
     </Sidebar>
   );
 }
@@ -222,6 +309,11 @@ export default function Home() {
     pageStore.subscribe,
     pageStore.getSnapshot,
     pageStore.getServerSnapshot,
+  );
+  const sidebarWidth = useSyncExternalStore(
+    sidebarWidthStore.subscribe,
+    sidebarWidthStore.getSnapshot,
+    sidebarWidthStore.getServerSnapshot,
   );
   const setLang = langStore.set;
   const setPage = pageStore.set;
@@ -361,6 +453,13 @@ export default function Home() {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
     } catch {}
   }, [lang]);
+  // Same ordering rule as the language above: the store has already read the
+  // saved width by the time this effect writes one back.
+  useEffect(() => {
+    try {
+      localStorage.setItem(SIDEBAR_WIDTH_STORAGE_KEY, String(sidebarWidth));
+    } catch {}
+  }, [sidebarWidth]);
   useEffect(() => {
     audio.current?.update(frequency, wave, volume / 100);
   }, [frequency, wave, volume]);
@@ -557,8 +656,16 @@ export default function Home() {
     pythagorean: t('Pythagorean · A', 'Пифагорейский · от A'),
   };
   return (
-    <SidebarProvider style={{ '--sidebar-width': '232px' } as CSSProperties}>
-      <Navigation page={page} navigate={navigate} t={t} />
+    <SidebarProvider
+      style={{ '--sidebar-width': sidebarWidth + 'px' } as CSSProperties}
+    >
+      <Navigation
+        page={page}
+        navigate={navigate}
+        t={t}
+        width={sidebarWidth}
+        setWidth={sidebarWidthStore.set}
+      />
       <div className="workspace">
         <header className="topbar">
           <div className="breadcrumb">
@@ -571,11 +678,13 @@ export default function Home() {
             <strong>
               {page === 'lab'
                 ? t('Sound lab', 'Лаборатория')
-                : page === 'theory'
-                  ? t('Music theory', 'Теория музыки')
-                  : page === 'practice'
-                    ? t('Practice', 'Практика')
-                    : t('Encyclopedia', 'Энциклопедия')}
+                : page === 'chords'
+                  ? t('Chords lab', 'Лаборатория аккордов')
+                  : page === 'theory'
+                    ? t('Music theory', 'Теория музыки')
+                    : page === 'practice'
+                      ? t('Practice', 'Практика')
+                      : t('Encyclopedia', 'Энциклопедия')}
             </strong>
           </div>
           <div className="topbar-right">
@@ -618,17 +727,19 @@ export default function Home() {
               <h1>
                 {page === 'lab'
                   ? t('Sound, at your fingertips.', 'Звук в ваших руках.')
-                  : page === 'theory'
-                    ? t(
-                        'The ideas behind the music.',
-                        'Идеи, из которых звучит музыка.',
-                      )
-                    : page === 'practice'
+                  : page === 'chords'
+                    ? t('Chords, connected.', 'Аккорды в движении.')
+                    : page === 'theory'
                       ? t(
-                          'Make listening a skill.',
-                          'Превратите слушание в навык.',
+                          'The ideas behind the music.',
+                          'Идеи, из которых звучит музыка.',
                         )
-                      : t('The language of music.', 'Язык музыки.')}
+                      : page === 'practice'
+                        ? t(
+                            'Make listening a skill.',
+                            'Превратите слушание в навык.',
+                          )
+                        : t('The language of music.', 'Язык музыки.')}
               </h1>
               <p>
                 {page === 'lab'
@@ -636,10 +747,15 @@ export default function Home() {
                       'A space to play with sound and discover the music inside it.',
                       'Пространство для экспериментов со звуком и открытий в музыке.',
                     )
-                  : t(
-                      'Connected ideas. Audible examples. A little discovery every day.',
-                      'Связанные понятия. Звучащие примеры. Новые открытия каждый день.',
-                    )}
+                  : page === 'chords'
+                    ? t(
+                        'Build a chord. Shape a progression. Hear what changes.',
+                        'Соберите аккорд. Создайте последовательность. Услышьте изменения.',
+                      )
+                    : t(
+                        'Connected ideas. Audible examples. A little discovery every day.',
+                        'Связанные понятия. Звучащие примеры. Новые открытия каждый день.',
+                      )}
               </p>
             </div>
             <div className="heading-icon">
@@ -1032,6 +1148,17 @@ export default function Home() {
                 tuning={tuning}
                 play={playSequence}
               />
+              <button
+                className="secondary-button chord-lab-link"
+                onClick={() => navigate('chords')}
+              >
+                <Music2 size={18} />
+                {t(
+                  'Open Chords lab · build a progression',
+                  'Лаборатория аккордов · создайте последовательность',
+                )}
+                <ArrowUpRight size={16} />
+              </button>
               <div className="export-row">
                 <button
                   className="secondary-button"
@@ -1066,6 +1193,8 @@ export default function Home() {
                 </span>
               </div>
             </>
+          ) : page === 'chords' ? (
+            <ChordsLab lang={lang} />
           ) : page === 'theory' ? (
             <Theory
               lang={lang}

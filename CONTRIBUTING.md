@@ -34,6 +34,24 @@ scientific pitch in the Russian interface, which ROADMAP P05 records as open. Ke
 [music-notation.md](docs/music-notation.md), and add regression tests when a
 scale, locale, or notation rule changes.
 
+The Chords lab also follows this rule. Its letter chord symbols use explicitly
+identified international lead-sheet notation beside localized pitch names and
+chord-type explanations. Preserve degree spelling when transposing and distinguish
+chord quality from harmonic function. Its sources, audio bounds and supported
+model are recorded in [chords-lab.md](docs/chords-lab.md).
+
+Counted nouns go through `lib/plural.ts` rather than a literal string. Russian
+chooses one of three forms from the last digits of the number, so `2 полутонов`
+and `4 долей` are both wrong where the helper writes `2 полутона` and `4 доли`.
+Add a new counter to that file's `nouns` table with a test rather than
+inlining a genitive plural.
+
+An analytical label must state what proves it. The Chords lab marks a chord
+`V/x` only when its quality differs from the scale's own triad on that degree
+**and** the next chord's root is a fifth below, and it shows nothing where it
+cannot demonstrate both. Prefer a description the model can defend over a
+classification it cannot, and record the cases a rule deliberately declines.
+
 Run:
 
 ```sh
