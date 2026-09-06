@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 
 const root = fileURLToPath(new URL('./', import.meta.url));
@@ -39,14 +40,74 @@ export const authoredProductionCode = [
   'vite.config.ts',
 ];
 
+/** The engines a release is checked against; real devices are recorded separately. */
+export const browserEngines = ['chromium', 'firefox', 'webkit'] as const;
+type BrowserEngine = (typeof browserEngines)[number];
+
+/**
+ * CI runs every engine and is the authoritative result. A developer machine
+ * where one engine cannot launch may narrow the run with
+ * `OML_BROWSERS=chromium,webkit`; an unknown name is a mistake, not a filter.
+ *
+ * The v8 coverage provider supports a single Chromium instance only, so a
+ * coverage run measures Chromium and the matrix runs without coverage. Both
+ * run in CI, so neither the numbers nor the engines are traded away.
+ */
+export function selectedEngines(
+  value = process.env.OML_BROWSERS,
+  measuringCoverage = process.argv.includes('--coverage'),
+): BrowserEngine[] {
+  const requested = (value ?? '')
+    .split(',')
+    .map((name) => name.trim())
+    .filter(Boolean);
+  const unknown = requested.filter(
+    (name) => !browserEngines.includes(name as BrowserEngine),
+  );
+  if (unknown.length > 0)
+    throw new Error(
+      `OML_BROWSERS lists unknown engines: ${unknown.join(', ')}. Known: ${browserEngines.join(', ')}.`,
+    );
+  // Every remaining name was just checked against the list above.
+  if (requested.length > 0) return requested as BrowserEngine[];
+  return measuringCoverage ? ['chromium'] : [...browserEngines];
+}
+
 export default defineConfig({
   test: {
-    include: ['tests/**/*.test.{mjs,ts,tsx}'],
-    environment: 'node',
     globals: false,
     // Policy tests start the real linter in a child process; the default
     // five seconds is not enough for several fixtures on a cold cache.
     testTimeout: 60_000,
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: 'unit',
+          // Component files opt into a DOM with a @vitest-environment docblock.
+          environment: 'node',
+          include: ['tests/*.test.{mjs,ts,tsx}'],
+        },
+      },
+      {
+        extends: true,
+        // Pre-bundle what the component tests import, so the browser run is
+        // not reloaded halfway through by a discovered dependency.
+        optimizeDeps: {
+          include: ['react', 'react-dom/client', 'react/jsx-dev-runtime'],
+        },
+        test: {
+          name: 'browser',
+          include: ['tests/browser/*.test.mjs'],
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright(),
+            instances: selectedEngines().map((browser) => ({ browser })),
+          },
+        },
+      },
+    ],
     restoreMocks: true,
     unstubEnvs: true,
     unstubGlobals: true,
