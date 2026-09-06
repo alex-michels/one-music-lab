@@ -62,9 +62,9 @@ const openTab = async (name) => {
 async function choose(label, option) {
   const box = page.getByRole('combobox', { name: label, exact: true });
   await act(async () => box.click());
-  await act(async () =>
-    page.getByRole('option', { name: option, exact: true }).click(),
-  );
+  const item = page.getByRole('option', { name: option, exact: true });
+  await expect.element(item).toBeInTheDocument();
+  await act(async () => item.click());
   await expect.poll(() => box.element().textContent).toContain(option);
 }
 
