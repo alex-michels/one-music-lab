@@ -155,25 +155,29 @@ export const chordQualities = {
   ),
 };
 export type ChordQuality = keyof typeof chordQualities;
+/**
+ * One card in the progression. `octave` is that chord's own register — the
+ * written octave the key's tonic is spelled in while this chord is built, not
+ * the root's own written octave, which can be one higher when the root letter
+ * wraps past B. Keeping it the tonic's register is what holds degree spelling
+ * steady across the whole progression; the editor shows the reader the octave
+ * the chord actually sounds in instead. Absent means the default register.
+ */
 export type ChordStep = {
   degree: number;
   quality: ChordQuality;
   inversion: number;
   beats: number;
+  octave?: number;
 };
-/**
- * The key the lab builds in, and the register it builds in. `octave` is the
- * written octave of the tonic, so raising it moves the whole progression; it
- * is optional because most callers do not care which register they are in.
- */
-export type ChordKey = { tonic: number; mode: KeyMode; octave?: number };
+export type ChordKey = { tonic: number; mode: KeyMode };
 export const MAX_CHORDS = 16;
 /** The register the player accepts, which is the compass of a piano. */
 export const MIN_MIDI = 24;
 export const MAX_MIDI = 108;
-/** The registers the lab offers, as the written octave of the tonic. */
+/** The registers the lab offers a chord, as the written octave of the tonic. */
 export const OCTAVES = { min: 1, max: 6, preferred: 3 };
-const registerOf = (key: ChordKey) => key.octave ?? OCTAVES.preferred;
+const registerOf = (chord: ChordStep) => chord.octave ?? OCTAVES.preferred;
 
 export function validateKey(key: ChordKey) {
   if (
@@ -183,13 +187,10 @@ export function validateKey(key: ChordKey) {
     !Object.hasOwn(scaleSteps, key.mode)
   )
     throw new RangeError('Invalid chord key');
-  if (
-    key.octave !== undefined &&
-    (!Number.isInteger(key.octave) ||
-      key.octave < OCTAVES.min ||
-      key.octave > OCTAVES.max)
-  )
-    throw new RangeError('Invalid chord register');
+  // Migration guard, not a permanent rule. The register used to live here, and
+  // the test suites are plain JavaScript, so a stale caller would otherwise be
+  // ignored and play at the default register with nothing to notice it.
+  if ('octave' in key) throw new RangeError('Register belongs to the chord');
 }
 export function validateChord(chord: ChordStep) {
   if (
@@ -208,13 +209,21 @@ export function validateChord(chord: ChordStep) {
     chord.inversion >= chordQualities[chord.quality].steps.length
   )
     throw new RangeError('Invalid bass position');
+  if (
+    chord.octave !== undefined &&
+    (!Number.isInteger(chord.octave) ||
+      chord.octave < OCTAVES.min ||
+      chord.octave > OCTAVES.max)
+  )
+    throw new RangeError('Invalid chord register');
 }
 export function keyPitch(key: ChordKey) {
   validateKey(key);
+  // Only the pitch class of this is ever shown, so the register is a constant.
   return spellPattern(
     keyTonics[key.mode][key.tonic],
     { steps: [0], degrees: [0] },
-    registerOf(key),
+    OCTAVES.preferred,
   )[0];
 }
 export function keyName(key: ChordKey, lang: MusicLanguage) {
@@ -226,7 +235,7 @@ export function chordNotes(key: ChordKey, chord: ChordStep): SpelledPitch[] {
   const root = spellPattern(
     keyTonics[key.mode][key.tonic],
     { steps: [scaleSteps[key.mode][chord.degree]], degrees: [chord.degree] },
-    registerOf(key),
+    registerOf(chord),
   )[0];
   const definition = chordQualities[chord.quality];
   const notes = definition.steps.map((step, i) => {
@@ -259,27 +268,43 @@ export function chordNotes(key: ChordKey, chord: ChordStep): SpelledPitch[] {
   });
 }
 /**
- * The registers this progression could move to and still be playable. The
- * answer depends on the chords, not only on the key: a ninth chord in its
- * highest bass position already reaches near the top of the keyboard, so the
- * lab disables the ends of the octave control instead of failing on Play.
+ * The registers THIS chord could move to and still be playable. It depends on
+ * the chord, not only on the key: a ninth in its highest bass position spans
+ * nearly two octaves and reaches close to the top of the keyboard, so it can
+ * be lowered much further than it can be raised. The lab disables the ends of
+ * the octave control instead of failing when Play is pressed.
+ *
+ * The answer does not depend on where the chord currently sits — moving a
+ * chord an octave moves its whole range with it — so the same chord returns
+ * the same window from every register it is asked at.
  */
-export function octaveRange(key: ChordKey, chords: ChordStep[]) {
-  validateKey(key);
-  if (chords.length < 1 || chords.length > MAX_CHORDS)
-    throw new RangeError('Invalid progression settings');
-  let low = Infinity,
-    high = -Infinity;
-  for (const chord of chords)
-    for (const note of chordNotes(key, chord)) {
-      low = Math.min(low, note.midi);
-      high = Math.max(high, note.midi);
-    }
-  const here = registerOf(key);
+export function octaveRange(key: ChordKey, chord: ChordStep) {
+  const notes = chordNotes(key, chord);
+  const low = Math.min(...notes.map((note) => note.midi));
+  const high = Math.max(...notes.map((note) => note.midi));
+  const here = registerOf(chord);
   return {
     min: Math.max(OCTAVES.min, here - Math.floor((low - MIN_MIDI) / 12)),
     max: Math.min(OCTAVES.max, here + Math.floor((MAX_MIDI - high) / 12)),
   };
+}
+
+/**
+ * A chord's register can be made illegal by an edit that has nothing to do
+ * with the register: transposing the key, switching to a wider chord type, or
+ * moving the bass up an inversion all change how much room the chord needs.
+ * Every such edit goes through here, so that a stored octave is pulled back
+ * into range at the moment it stops fitting rather than throwing later, when
+ * the reader presses Play and the error looks like a broken browser.
+ */
+export function clampChord(key: ChordKey, chord: ChordStep): ChordStep {
+  const at = registerOf(chord);
+  const room = octaveRange(key, chord);
+  const octave = Math.min(room.max, Math.max(room.min, at));
+  // Compared against the effective register, not the stored one, so a chord
+  // that never named an octave is returned untouched rather than acquiring a
+  // redundant field every time an unrelated edit passes through here.
+  return octave === at ? chord : { ...chord, octave };
 }
 export function chordSymbol(key: ChordKey, chord: ChordStep) {
   const root = chordNotes(key, { ...chord, inversion: 0 })[0];
@@ -1072,6 +1097,14 @@ export function planProgression(
   for (let repeat = 0; repeat < repeats; repeat++) {
     for (const chord of chords) {
       const notes = chordNotes(key, chord);
+      // The register is per chord, so a phrase can contain one card that no
+      // longer fits. Say which chord, here, rather than letting the player
+      // reject the note later where the reader is told to check their browser.
+      for (const note of notes)
+        if (note.midi < MIN_MIDI || note.midi > MAX_MIDI)
+          throw new RangeError(
+            `Chord ${chordSymbol(key, chord)} lies outside the keyboard`,
+          );
       starts.push(beat * secondsPerBeat);
       const count = figure.rate === 0 ? 1 : chord.beats * figure.rate;
       const length = (chord.beats / count) * secondsPerBeat;

@@ -49,6 +49,10 @@ export const nouns = {
     en: { one: 'chord', other: 'chords' },
     ru: { one: 'аккорд', few: 'аккорда', many: 'аккордов' },
   },
+  octaves: {
+    en: { one: 'octave', other: 'octaves' },
+    ru: { one: 'октаву', few: 'октавы', many: 'октав' },
+  },
   semitones: {
     en: { one: 'semitone', other: 'semitones' },
     ru: { one: 'полутон', few: 'полутона', many: 'полутонов' },

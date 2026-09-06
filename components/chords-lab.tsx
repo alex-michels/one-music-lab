@@ -38,6 +38,7 @@ import {
   chordNotes,
   chordQualities,
   chordSymbol,
+  clampChord,
   commonToneNames,
   keyName,
   keyPitch,
@@ -56,7 +57,12 @@ import {
   type ProgressionPlan,
   type Texture,
 } from '@/lib/chords';
-import { pitchLabel, pitchName, type MusicLanguage } from '@/lib/notation';
+import {
+  octaveName,
+  pitchLabel,
+  pitchName,
+  type MusicLanguage,
+} from '@/lib/notation';
 import { count } from '@/lib/plural';
 
 type Option = { value: string; label: string };
@@ -131,6 +137,19 @@ const HISTORY_LIMIT = 60;
  */
 const MAX_GAIN = 0.6;
 
+/**
+ * Transposing or changing the palette scale changes how much room each chord
+ * needs, so a register that fitted a moment ago may not fit now. Pulling every
+ * chord back into range here is the difference between a phrase that keeps
+ * playing and one that fails at Play with an error about the browser.
+ */
+function reregister(draft: Draft): Draft {
+  return {
+    ...draft,
+    chords: draft.chords.map((chord) => clampChord(draft.key, chord)),
+  };
+}
+
 function fromTemplate(index: number, tonic = 0): Draft {
   const template = progressionTemplates[index];
   return {
@@ -176,8 +195,15 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
   const notes = chordNotes(key, chord);
   const construction = chordNotes(key, { ...chord, inversion: 0 });
   const definition = chordQualities[chord.quality];
-  const octave = key.octave ?? OCTAVES.preferred;
-  const register = octaveRange(key, chords);
+  const register = octaveRange(key, chord);
+  // What the reader is told is the octave the chord SOUNDS in, which is the
+  // one the pitch chips below it show. The stored number is the register the
+  // key is spelled in for this chord, and can be one lower when the root
+  // letter wraps past B; the two move together, so a step is still a step.
+  const sounding = octaveName(notes[0], lang);
+  /** Octaves this card sits above or below the register a template loads at. */
+  const moved = (item: ChordStep) =>
+    (item.octave ?? OCTAVES.preferred) - OCTAVES.preferred;
   const template = progressionTemplates[draft.template];
   const source = templateSources[template.source];
   const duration =
@@ -300,12 +326,17 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
     setAnswer(null);
     setReplaced(false);
   }
+  /**
+   * Every edit to one chord, the register included. A change to the degree,
+   * type or bass can leave a stored register too high or too low to play, so
+   * the result is clamped rather than left to fail at Play.
+   */
   const changeChord = (changes: Partial<ChordStep>) =>
     commit((d) => ({
       ...d,
       edited: true,
       chords: d.chords.map((c, i) =>
-        i === selected ? { ...c, ...changes } : c,
+        i === selected ? clampChord(d.key, { ...c, ...changes }) : c,
       ),
     }));
   function loadTemplate(index: number) {
@@ -313,9 +344,21 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
     commit(() => fromTemplate(index, key.tonic), 0);
     setReplaced(wasEdited);
   }
+  // A chord added from the palette joins the register the reader is working
+  // in, the way a duplicate does, rather than jumping back to the default.
   const appendChord = (next: ChordStep) =>
     commit(
-      (d) => ({ ...d, edited: true, chords: [...d.chords, { ...next }] }),
+      (d) => ({
+        ...d,
+        edited: true,
+        chords: [
+          ...d.chords,
+          clampChord(d.key, {
+            ...next,
+            octave: chord.octave ?? OCTAVES.preferred,
+          }),
+        ],
+      }),
       chords.length,
     );
   const duplicateChord = () =>
@@ -349,15 +392,32 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
   const shiftRegister = (direction: number) =>
     commit((d) => ({
       ...d,
-      key: {
-        ...d.key,
-        octave: (d.key.octave ?? OCTAVES.preferred) + direction,
-      },
+      edited: true,
+      chords: d.chords.map((c, i) =>
+        i === selected
+          ? { ...c, octave: (c.octave ?? OCTAVES.preferred) + direction }
+          : c,
+      ),
     }));
+  /**
+   * Planning refuses a chord that lies off the keyboard. Clamping every edit
+   * should make that unreachable, but a refusal thrown straight out of a click
+   * handler would take the lab down, so it lands in the same visible error the
+   * rest of the audio path uses.
+   */
+  function start(plan: () => ProgressionPlan, cards: number[]) {
+    try {
+      void play(plan(), cards);
+    } catch {
+      stop();
+      setError(true);
+    }
+  }
   const hearChord = () =>
-    void play(planProgression(key, [{ ...chord, beats: 2 }], 80, 'held', 1), [
-      selected,
-    ]);
+    start(
+      () => planProgression(key, [{ ...chord, beats: 2 }], 80, 'held', 1),
+      [selected],
+    );
   const keyStart = Math.floor(notes[0].midi / 12) * 12;
   const keyEnd = Math.ceil((notes.at(-1)!.midi + 1) / 12) * 12;
   const pianoKeys = Array.from(
@@ -412,7 +472,9 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
             label={t('Tonic · transpose', 'Тоника · транспонировать')}
             value={String(key.tonic)}
             onChange={(v) =>
-              commit((d) => ({ ...d, key: { ...d.key, tonic: Number(v) } }))
+              commit((d) =>
+                reregister({ ...d, key: { ...d.key, tonic: Number(v) } }),
+              )
             }
             options={Array.from({ length: 12 }, (_, tonic) => ({
               value: String(tonic),
@@ -423,11 +485,13 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
             label={t('Palette scale', 'Гамма палитры')}
             value={key.mode}
             onChange={(v) =>
-              commit((d) => ({
-                ...d,
-                edited: true,
-                key: { ...d.key, mode: v as ChordKey['mode'] },
-              }))
+              commit((d) =>
+                reregister({
+                  ...d,
+                  edited: true,
+                  key: { ...d.key, mode: v as ChordKey['mode'] },
+                }),
+              )
             }
             options={[
               { value: 'major', label: t('Major', 'Мажор') },
@@ -449,7 +513,13 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                 key={i}
                 className={`chord-card ${i === selected ? 'is-selected' : ''} ${i === active ? 'is-sounding' : ''}`}
                 aria-pressed={i === selected}
-                aria-label={`${t('Chord', 'Аккорд')} ${i + 1}: ${chordSymbol(key, item)}`}
+                aria-label={`${t('Chord', 'Аккорд')} ${i + 1}: ${chordSymbol(key, item)}${
+                  moved(item) === 0
+                    ? ''
+                    : `, ${count(Math.abs(moved(item)), lang, 'octaves')} ${
+                        moved(item) > 0 ? t('up', 'вверх') : t('down', 'вниз')
+                      }`
+                }`}
                 onClick={() => {
                   setSelected(i);
                   setAnswer(null);
@@ -457,6 +527,15 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
               >
                 <span className="chord-card-top">
                   <span>{String(i + 1).padStart(2, '0')}</span>
+                  {/* A moved chord has to be visible without selecting it,
+                      or the reader hears a jump with nothing on screen to
+                      account for it. */}
+                  {moved(item) !== 0 && (
+                    <em className="chord-moved">
+                      {moved(item) > 0 ? '↑' : '↓'}
+                      {Math.abs(moved(item))}
+                    </em>
+                  )}
                   <span>{count(item.beats, lang, 'beats')}</span>
                 </span>
                 <strong>{chordSymbol(key, item)}</strong>
@@ -550,8 +629,8 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
             onClick={() =>
               playing || pending
                 ? stop()
-                : void play(
-                    planProgression(key, chords, tempo, texture, repeats),
+                : start(
+                    () => planProgression(key, chords, tempo, texture, repeats),
                     chords.map((_, i) => i),
                   )
             }
@@ -716,23 +795,21 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
               <div className="chord-register">
                 <button
                   aria-label={t(
-                    'Lower the register of the whole progression',
-                    'Понизить регистр всей последовательности',
+                    'Move this chord down an octave',
+                    'Опустить этот аккорд на октаву',
                   )}
-                  disabled={octave <= register.min}
+                  disabled={(chord.octave ?? OCTAVES.preferred) <= register.min}
                   onClick={() => shiftRegister(-1)}
                 >
                   −
                 </button>
-                <span>
-                  {t('Octave', 'Октава')} {octave}
-                </span>
+                <span>{sounding}</span>
                 <button
                   aria-label={t(
-                    'Raise the register of the whole progression',
-                    'Повысить регистр всей последовательности',
+                    'Move this chord up an octave',
+                    'Поднять этот аккорд на октаву',
                   )}
-                  disabled={octave >= register.max}
+                  disabled={(chord.octave ?? OCTAVES.preferred) >= register.max}
                   onClick={() => shiftRegister(1)}
                 >
                   +
@@ -846,8 +923,8 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
               'Обращение меняет нижний звук, но не основной тон.',
             )}{' '}
             {t(
-              'The octave control moves the whole progression, and stops where a chord would leave the keyboard.',
-              'Кнопки октавы переносят всю последовательность и останавливаются там, где аккорд вышел бы за пределы клавиатуры.',
+              'The octave buttons move this chord alone. A chord in a high bass position already sits well above its root position, so it can usually be lowered further than it can be raised: the top stop is where the chord would leave the keyboard, the bottom one is as low as this lab goes.',
+              'Кнопки октавы переносят только этот аккорд. Аккорд с басом в верхнем обращении и без того звучит заметно выше основного вида, поэтому опустить его обычно можно дальше, чем поднять: сверху предел — край клавиатуры, снизу — самый низкий регистр этой лаборатории.',
             )}
           </p>
           {selected > 0 && (
@@ -862,8 +939,8 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
               </strong>
               .{' '}
               {t(
-                'Compare their registers as well as their names.',
-                'Сравните также их регистры.',
+                'Compare their registers as well as their names: a card moved out of the default register is marked in the timeline.',
+                'Сравните также их регистры: карточка, перенесённая из исходного регистра, помечена в дорожке.',
               )}
             </p>
           )}

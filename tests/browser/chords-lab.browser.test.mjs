@@ -510,7 +510,7 @@ test('A card is marked as an applied dominant only while the next chord proves i
   expect(cards()[7]).toBe('A7');
 });
 
-test('The octave control moves the whole progression and stops at the keyboard edge', async () => {
+test('The octave buttons move one chord and leave its neighbours alone', async () => {
   mount();
   const shown = () =>
     container.querySelector('.chord-register span').textContent;
@@ -518,42 +518,111 @@ test('The octave control moves the whole progression and stops at the keyboard e
     [...container.querySelectorAll('.chord-pitches small')].map(
       (node) => node.textContent,
     );
-  const raise = 'Raise the register of the whole progression';
-  const lower = 'Lower the register of the whole progression';
+  const markers = () =>
+    [...container.querySelectorAll('.chord-card')].map(
+      (card) => card.querySelector('.chord-moved')?.textContent ?? '',
+    );
+  const up = 'Move this chord up an octave';
+  const down = 'Move this chord down an octave';
+  // The lowest note each chord starts on, read off what is actually scheduled.
+  const bassLine = async () => {
+    await button('Play progression').click();
+    const plan = playback.mock.lastCall[0];
+    await button('Stop').click();
+    return plan.starts.map((at) =>
+      Math.min(
+        ...plan.events.filter((e) => e.at === at).map((event) => event.midi),
+      ),
+    );
+  };
 
-  expect(shown()).toBe('Octave 3');
+  expect(shown()).toBe('octave 3');
   expect(registers()).toEqual(['C3', 'E3', 'G3']);
-  await button(raise).click();
-  expect(shown()).toBe('Octave 4');
+  expect(await bassLine()).toEqual([48, 53, 55, 48]);
+
+  await button(up).click();
+  expect(shown()).toBe('octave 4');
   expect(registers()).toEqual(['C4', 'E4', 'G4']);
-  // The whole phrase moves, not only the inspected card.
-  await button('Play progression').click();
-  expect(playback.mock.lastCall[0].events[0].midi).toBe(60);
-  await button('Stop').click();
+  // The whole point: only the first chord moved.
+  expect(await bassLine()).toEqual([60, 53, 55, 48]);
+  // And it says so on the card, so the jump is visible before it is heard.
+  expect(markers()).toEqual(['↑1', '', '', '']);
+  expect(
+    container.querySelectorAll('.chord-card')[0].getAttribute('aria-label'),
+  ).toBe('Chord 1: C, 1 octave up');
+  expect(container.textContent).toContain('· edited');
 
-  // It belongs to the progression, so it is undoable like any other edit.
   await button('Undo').click();
-  expect(shown()).toBe('Octave 3');
-  expect(registers()).toEqual(['C3', 'E3', 'G3']);
+  expect(shown()).toBe('octave 3');
+  expect(markers()).toEqual(['', '', '', '']);
 
-  await button(lower).click();
-  await button(lower).click();
-  expect(shown()).toBe('Octave 1');
-  expect(registers()).toEqual(['C1', 'E1', 'G1']);
-  await expect.element(button(lower)).toBeDisabled();
+  // The reason the control exists: a chord in its highest bass position sits
+  // far above its root position, and one card can be brought back down.
+  await button('Chord 3: G7').click();
+  expect(shown()).toBe('octave 3');
+  await choose('Bass / inversion', 'F · in the bass');
+  expect(shown()).toBe('octave 4');
+  await button(down).click();
+  expect(shown()).toBe('octave 3');
+  expect(registers()).toEqual(['F3', 'G3', 'B3', 'D4']);
+  expect((await bassLine())[2]).toBe(53);
+  expect(markers()).toEqual(['', '', '↓1', '']);
+});
 
-  // A ninth chord in its highest bass position reaches near the top of the
-  // keyboard, so raising stops early rather than failing when Play is pressed.
+test('A chord cannot be moved or edited off the keyboard', async () => {
+  mount();
+  const shown = () =>
+    container.querySelector('.chord-register span').textContent;
+  const up = 'Move this chord up an octave';
+  const down = 'Move this chord down an octave';
+  const raise = () => container.querySelector(`[aria-label="${up}"]`);
+
+  // A triad has room in both directions; the ends stop where the keyboard does.
+  for (let step = 0; step < 6; step++) {
+    if (raise().disabled) break;
+    await button(up).click();
+  }
+  expect(shown()).toBe('octave 6');
+  await expect.element(button(up)).toBeDisabled();
+
+  // Widening the chord where it stands would push it off the keyboard, so the
+  // register is pulled back instead of failing when Play is pressed.
   await choose('Chord type', 'Major ninth');
   await choose('Bass / inversion', 'D · in the bass');
-  for (let step = 0; step < 6; step++) {
-    if (container.querySelector(`[aria-label="${raise}"]`).disabled) break;
-    await button(raise).click();
-  }
-  expect(shown()).toBe('Octave 5');
-  await expect.element(button(raise)).toBeDisabled();
   await button('Play progression').click();
+  expect(container.querySelector('[role="alert"]')).toBeNull();
   expect(
     Math.max(...playback.mock.lastCall[0].events.map((event) => event.midi)),
   ).toBeLessThanOrEqual(108);
+  await button('Stop').click();
+
+  // Transposing does the same: it changes how much room every chord needs.
+  await button(down).click();
+  await button(down).click();
+  await choose('Tonic · transpose', 'B');
+  await button('Play progression').click();
+  expect(container.querySelector('[role="alert"]')).toBeNull();
+  expect(
+    Math.max(...playback.mock.lastCall[0].events.map((event) => event.midi)),
+  ).toBeLessThanOrEqual(108);
+  await button('Stop').click();
+});
+
+test('A chord added from the palette joins the register being worked in', async () => {
+  mount();
+  const markers = () =>
+    [...container.querySelectorAll('.chord-card')].map(
+      (card) => card.querySelector('.chord-moved')?.textContent ?? '',
+    );
+  expect(markers()).toEqual(['', '', '', '']);
+  await button('Move this chord down an octave').click();
+  expect(markers()).toEqual(['↓1', '', '', '']);
+  // The palette used to add at the register a template loads in, so a chord
+  // added while working an octave down arrived an octave away from its
+  // neighbours. A duplicate already carried the register; now both do.
+  await button('Add Dm').click();
+  expect(markers()).toEqual(['↓1', '', '', '', '↓1']);
+  await button('Chord 1: C, 1 octave down').click();
+  await button('Duplicate chord').click();
+  expect(markers()).toEqual(['↓1', '↓1', '', '', '', '↓1']);
 });

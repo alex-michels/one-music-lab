@@ -60,13 +60,20 @@ experiment**, or open `/#chords`.
    deleting a card. Loading an example over work you had edited says so, and
    names Undo as the way back. Timbre, volume and repeat count are playback
    settings rather than part of the phrase, so undo leaves them alone.
-5. Transpose with the tonic control. Changing the palette scale also changes
+5. Transpose with the tonic control. Transposing and changing the palette scale
+   both change how much room each chord needs, so either can pull a card that
+   was sitting at the top of its range down a register. That clamp is lossy:
+   changing back does not restore the register the card had, only Undo does.
+   Changing the palette scale also changes
    the progression's degree roots, retaining custom chord qualities. Edited
    chords can therefore lie outside the palette. The minor palette is natural
    minor; choose major V or V7 to compare the raised leading tone.
-6. Move the whole progression up or down with the octave control on the chord
-   card. It stops where a chord would leave the keyboard, so a ninth in its
-   highest bass position can be lowered further than it can be raised.
+6. Move the selected chord up or down with the octave buttons on its card.
+   They move that chord alone: a chord in a high bass position already sits
+   well above its root position — a ninth chord's top note rises 21 semitones
+   between root position and its highest bass — so bringing one card back down
+   is how a phrase is evened out. The buttons stop where the chord would leave
+   the keyboard, and a card that has been moved is marked in the timeline.
 7. Choose tempo, one/two/four passes, and one of eight accompaniment figures:
    held chords, repeated quarters or eighths, arpeggios rising or falling, the
    Alberti low–high–middle–high pattern, a bass note answered by afterbeat
@@ -82,7 +89,11 @@ experiment**, or open `/#chords`.
 формы, краски и хроматика). Затем выберите карточку аккорда. В редакторе
 меняются ступень основного тона, вид аккорда, бас и длительность. Палитра
 добавляет трезвучия или септаккорды; кнопки позволяют переставлять, дублировать
-и удалять карточки. **Отменить и Вернуть охватывают любое изменение
+и удалять карточки. Кнопки октавы на карточке аккорда переносят **только
+выбранный аккорд**: аккорд с басом в верхнем обращении звучит заметно выше
+основного вида, и его можно вернуть вниз, не трогая соседние. Перенесённая
+карточка помечается в дорожке, а кнопки останавливаются там, где аккорд вышел
+бы за пределы клавиатуры. **Отменить и Вернуть охватывают любое изменение
 последовательности**, включая загрузку другого примера. Тоника транспонирует
 последовательность. Смена гаммы меняет высоты ступеней, сохраняя выбранные виды
 аккордов. Для вводного тона в миноре сравните мажорный V7 с минорным v7.
@@ -144,11 +155,29 @@ width, which is an interface preference rather than musical work.
 - This lab has its own fixed 12-TET reference, A4 = 440 Hz, and straight 4/4.
   Sound-lab tuning/reference controls do not alter it. One beat is a quarter
   note; the twelve-bar examples contain 48 beats each.
-- The register is the written octave of the tonic, offered between 1 and 6.
-  Which of those a given progression can actually use depends on its chords,
-  because a ninth in its highest bass position already reaches near the top of
-  the keyboard; the control disables its own ends rather than letting Play
-  fail, and a test asserts that the offered range is exactly the playable one.
+- Each chord carries its own register, offered between 1 and 6. The stored
+  number is the octave the key's tonic is spelled in while that chord is built,
+  which is what holds degree spelling steady across a transposition; it is not
+  always the root's own written octave, because a root letter that wraps past B
+  is written an octave higher. The control therefore shows the reader the
+  octave the chord actually sounds in — the one the pitch chips beside it name,
+  and in Russian an octave name rather than a number — while the buttons move
+  the stored register. The two differ by a constant, so a step is still a step,
+  and no end-of-range message names an octave.
+- Which registers a chord can occupy depends on the chord, not on its
+  neighbours: a ninth in its highest bass position reaches near the top of the
+  keyboard and can be lowered much further than it can be raised. The buttons
+  disable at that chord's own ends, and a test asserts the offered range is
+  exactly the playable one for every key, degree, type and bass position.
+- An edit that has nothing to do with the register can still leave one out of
+  range — transposing, widening the chord type, or moving the bass up all
+  change how much room a chord needs. Every such edit passes through one clamp,
+  so a stored register is pulled back at the moment it stops fitting. Without
+  it the phrase failed only at Play, with an error blaming the browser.
+- Mixed registers are a real editing tool and a real risk: the arpeggio,
+  Alberti and afterbeat figures walk each chord's own notes, so a chord dropped
+  an octave turns a stepwise bass into a leap. Nothing breaks; the progression
+  simply sounds different, which is the point of being able to hear it.
 - Accompaniment figures follow Hutchinson §14.3–14.5 and are ways to hear the
   same harmony move, not claims about a style: none of them is swing, guitar
   strumming, a drum pattern or a real instrument. Voices sounding at the same
@@ -240,7 +269,11 @@ Install real browser engines once with `npx playwright install`. Unit tests
 assert independently specified pitch spellings, transposition, all selectable
 keys/degrees/qualities/basses, bass register, invalid inputs, every template's
 chord symbols and Roman numerals, the applied-dominant rule including the cases
-it declines to label, progression timing and bounded audio lifecycle. Browser
+it declines to label, that a register left on the key is refused rather than
+ignored, that each chord's offered registers are exactly its playable ones and
+do not depend on where it currently sits, that the clamp is idempotent and
+keeps every chord on the keyboard, progression timing and bounded audio
+lifecycle. Browser
 tests exercise the editor, locale, mobile layout, undo and redo across every
 kind of edit, progression changes, transport, errors and feedback. Separate
 tests render real Web Audio and measure frequency components, scheduled
@@ -265,9 +298,11 @@ than a discovery. Each names the roadmap module it would serve.
   substitution. A validated root alteration of ±1 semitone, spelled from the
   degree letter, would unlock H02 (4.12–4.15), H08 (5.29), H10 (6.12) and the
   Mixolydian and Aeolian rock loops in J07 (8.23).
-- **Voice leading.** Bass rotation is register sorting, not part-writing. There
-  is no SATB layout, no doubling rule, no parallel-fifth detection and no
-  resolution of the leading tone or the seventh. That is the whole of H06.
+- **Voice leading.** Bass rotation is register sorting, not part-writing, and
+  the per-chord octave transposes a whole stack rather than respacing it.
+  Neither is voicing: there is no SATB layout, no doubling rule, no
+  parallel-fifth detection and no resolution of the leading tone or the
+  seventh. That is the whole of H06.
 - **Non-chord tones and rhythm.** Every voice starts and stops with its chord;
   there are no suspensions, passing tones or anticipations (H07), and the meter
   is fixed at 4/4 with a quarter-note beat.

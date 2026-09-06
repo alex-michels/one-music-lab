@@ -9,6 +9,7 @@ import {
   keyPitch,
   keyTonics,
   MAX_CHORDS,
+  clampChord,
   MAX_MIDI,
   MIN_MIDI,
   OCTAVES,
@@ -490,47 +491,74 @@ test('Playback planning respects beats, fractional tempo, repetitions and exact 
   ).toHaveLength(64);
 });
 
-test('The register moves the whole progression without changing its spelling', () => {
+test('A chord carries its own register, and the register never changes its spelling', () => {
   const triad = chord();
   expect(chordNotes(C, triad).map((p) => p.midi)).toEqual([48, 52, 55]);
-  expect(chordNotes({ ...C, octave: 4 }, triad).map((p) => p.midi)).toEqual([
+  expect(chordNotes(C, { ...triad, octave: 4 }).map((p) => p.midi)).toEqual([
     60, 64, 67,
   ]);
-  expect(chordNotes({ ...C, octave: 1 }, triad).map((p) => p.midi)).toEqual([
+  expect(chordNotes(C, { ...triad, octave: 1 }).map((p) => p.midi)).toEqual([
     24, 28, 31,
   ]);
   // A written pitch is a written pitch: only the octave number moves with it.
-  expect(names({ ...C, octave: 5 }, triad)).toEqual(['C', 'E', 'G']);
+  expect(names(C, { ...triad, octave: 5 })).toEqual(['C', 'E', 'G']);
   expect(
-    chordNotes({ ...C, octave: 5 }, triad).map((p) => pitchLabel(p, 'en')),
+    chordNotes(C, { ...triad, octave: 5 }).map((p) => pitchLabel(p, 'en')),
   ).toEqual(['C5', 'E5', 'G5']);
-  expect(chordSymbol({ ...C, octave: 6 }, triad)).toBe('C');
-  expect(keyName({ ...C, octave: 6 }, 'ru')).toBe('до мажор');
+  expect(chordSymbol(C, { ...triad, octave: 6 })).toBe('C');
+  expect(romanNumeral(C, { ...triad, octave: 6 })).toBe('I');
+
+  // One card moves; its neighbours do not.
+  const phrase = [chord(), { ...chord('minor', { degree: 5 }), octave: 2 }];
+  expect(phrase.map((c) => chordNotes(C, c)[0].midi)).toEqual([48, 45]);
+
+  // Cross-chord comparisons are pitch-class based, so they survive the move.
+  expect(commonToneNames(C, phrase[0], phrase[1], 'en')).toEqual(['C', 'E']);
+  expect(
+    appliedDominant(
+      C,
+      { ...chord('seventh', { degree: 1 }), octave: 5 },
+      { ...chord('major', { degree: 4 }), octave: 1 },
+    ),
+  ).toBe('V7/V');
+
   for (const bad of [0, 7, 3.5, NaN, Infinity, -1])
-    expect(() => chordNotes({ ...C, octave: bad }, triad)).toThrow(RangeError);
+    expect(() => chordNotes(C, { ...triad, octave: bad })).toThrow(RangeError);
 });
 
-test('The offered registers are exactly those that keep every chord playable', () => {
-  expect(octaveRange(C, [chord()])).toEqual({
+test('A register left on the key is refused rather than quietly ignored', () => {
+  // These are plain-JavaScript tests, so no compiler catches a stale call site.
+  // The register used to live on the key; a caller that still sets it there
+  // must fail where it is wrong instead of playing at the default register.
+  const triad = chord();
+  for (const octave of [3, 4, undefined])
+    expect(() => chordNotes({ ...C, octave }, triad)).toThrow(RangeError);
+  expect(() => keyPitch({ ...C, octave: 3 })).toThrow(RangeError);
+  expect(() => keyName({ ...C, octave: 3 }, 'en')).toThrow(RangeError);
+  expect(keyName(C, 'ru')).toBe('до мажор');
+});
+
+test('The offered registers are exactly those that keep the chord playable', () => {
+  expect(octaveRange(C, chord())).toEqual({
     min: OCTAVES.min,
     max: OCTAVES.max,
   });
   // A ninth chord in its highest bass position already reaches near the top of
-  // the keyboard, so this progression cannot be raised at all.
+  // the keyboard, so it cannot be raised at all — which is the whole reason
+  // the register belongs to the chord rather than to the phrase.
   const B = { tonic: 11, mode: 'major' };
   const tall = { degree: 6, quality: 'maj9', inversion: 4, beats: 4 };
   expect(Math.max(...chordNotes(B, tall).map((p) => p.midi))).toBe(105);
-  expect(octaveRange(B, [tall]).max).toBe(3);
-  // One tall chord limits the whole phrase, not only its own card.
-  expect(octaveRange(B, [chord(), tall]).max).toBe(3);
-  expect(octaveRange({ ...C, octave: 1 }, [chord()]).min).toBe(OCTAVES.min);
-  expect(() => octaveRange(C, [])).toThrow(RangeError);
-  expect(() =>
-    octaveRange(
-      C,
-      Array.from({ length: MAX_CHORDS + 1 }, () => chord()),
-    ),
-  ).toThrow(RangeError);
+  expect(octaveRange(B, tall).max).toBe(3);
+  // A tall chord no longer limits its neighbours: that coupling is gone.
+  expect(octaveRange(B, chord()).max).toBe(OCTAVES.max);
+
+  // The range is a property of the chord, not of where it currently sits, so
+  // asking from any register gives the same answer. Without this, an
+  // implementation that wrongly re-anchors on the current octave would pass
+  // every other assertion here.
+  for (let octave = OCTAVES.min; octave <= OCTAVES.max; octave++)
+    expect(octaveRange(B, { ...tall, octave })).toEqual(octaveRange(B, tall));
 
   // The range is right rather than merely safe: every octave inside it plays,
   // and the octave just outside it would not.
@@ -545,20 +573,27 @@ test('The offered registers are exactly those that keep every chord playable', (
             inversion: chordQualities[quality].steps.length - 1,
             beats: 4,
           };
-          const range = octaveRange(key, [step]);
+          const range = octaveRange(key, step);
           const where = `${mode} ${tonic} ${degree} ${quality}`;
           expect(range.min, where).toBeLessThanOrEqual(range.max);
           for (let octave = range.min; octave <= range.max; octave++) {
-            const midi = chordNotes({ ...key, octave }, step).map(
+            const midi = chordNotes(key, { ...step, octave }).map(
               (p) => p.midi,
             );
             expect(Math.min(...midi), where).toBeGreaterThanOrEqual(MIN_MIDI);
             expect(Math.max(...midi), where).toBeLessThanOrEqual(MAX_MIDI);
+            // Russian names only exist for written octaves 0-8, so the range
+            // is load-bearing for the localization, not only for the audio.
+            for (const pitch of chordNotes(key, { ...step, octave }))
+              for (const language of ['en', 'ru'])
+                expect(pitchLabel(pitch, language), where).not.toContain(
+                  'undefined',
+                );
           }
           if (range.max < OCTAVES.max)
             expect(
               Math.max(
-                ...chordNotes({ ...key, octave: range.max + 1 }, step).map(
+                ...chordNotes(key, { ...step, octave: range.max + 1 }).map(
                   (p) => p.midi,
                 ),
               ),
@@ -567,13 +602,89 @@ test('The offered registers are exactly those that keep every chord playable', (
           if (range.min > OCTAVES.min)
             expect(
               Math.min(
-                ...chordNotes({ ...key, octave: range.min - 1 }, step).map(
+                ...chordNotes(key, { ...step, octave: range.min - 1 }).map(
                   (p) => p.midi,
                 ),
               ),
               where,
             ).toBeLessThan(MIN_MIDI);
         }
+});
+
+test('An edit that shrinks a chord’s room pulls its register back into range', () => {
+  // The bug this exists to prevent: park a chord at a register that fits, then
+  // change something that has nothing to do with the register, and the chord
+  // is left off the keyboard until Play fails with an error about the browser.
+  const wide = {
+    degree: 6,
+    quality: 'maj9',
+    inversion: 4,
+    beats: 4,
+    octave: 6,
+  };
+  expect(() => validateChord(wide)).not.toThrow();
+  expect(Math.max(...chordNotes(C, wide).map((p) => p.midi))).toBeGreaterThan(
+    MAX_MIDI,
+  );
+  const fixed = clampChord(C, wide);
+  expect(fixed.octave).toBe(octaveRange(C, wide).max);
+  expect(
+    Math.max(...chordNotes(C, fixed).map((p) => p.midi)),
+  ).toBeLessThanOrEqual(MAX_MIDI);
+
+  // Transposition is the same hazard: this is the smallest real case, a chord
+  // the control permits at octave 6 in C that no longer fits in D.
+  const edge = {
+    degree: 6,
+    quality: 'add9',
+    inversion: 0,
+    beats: 4,
+    octave: 6,
+  };
+  const D = { tonic: 2, mode: 'major' };
+  expect(Math.max(...chordNotes(D, edge).map((p) => p.midi))).toBe(111);
+  expect(clampChord(D, edge).octave).toBe(5);
+
+  // A chord already in range is returned unchanged, identity included, so the
+  // clamp can be applied on every edit without churning the draft.
+  const fine = chord();
+  expect(clampChord(C, fine)).toBe(fine);
+
+  // Clamping is idempotent and always lands inside the offered band.
+  for (const mode of ['major', 'minor'])
+    for (let tonic = 0; tonic < 12; tonic++)
+      for (let degree = 0; degree < 7; degree++)
+        for (const quality of Object.keys(chordQualities))
+          for (let octave = OCTAVES.min; octave <= OCTAVES.max; octave++) {
+            const key = { tonic, mode };
+            const step = {
+              degree,
+              quality,
+              inversion: chordQualities[quality].steps.length - 1,
+              beats: 4,
+              octave,
+            };
+            const once = clampChord(key, step);
+            const where = `${mode} ${tonic} ${degree} ${quality} @${octave}`;
+            expect(clampChord(key, once), where).toEqual(once);
+            const midi = chordNotes(key, once).map((p) => p.midi);
+            expect(Math.min(...midi), where).toBeGreaterThanOrEqual(MIN_MIDI);
+            expect(Math.max(...midi), where).toBeLessThanOrEqual(MAX_MIDI);
+          }
+});
+
+test('A phrase carrying a chord off the keyboard is refused by name', () => {
+  const off = { degree: 6, quality: 'maj9', inversion: 4, beats: 4, octave: 6 };
+  expect(() => planProgression(C, [chord(), off], 120, 'held', 1)).toThrow(
+    /outside the keyboard/,
+  );
+  // Naming the chord is the point: the player's own error blames the browser.
+  expect(() => planProgression(C, [chord(), off], 120, 'held', 1)).toThrow(
+    /Bmaj9/,
+  );
+  expect(() =>
+    planProgression(C, [chord(), clampChord(C, off)], 120, 'held', 1),
+  ).not.toThrow();
 });
 
 test('Each accompaniment figure places the voices its name describes', () => {

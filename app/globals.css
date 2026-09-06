@@ -156,6 +156,21 @@
 .chord-card.is-sounding .chord-card-top {
   color: inherit;
 }
+/* Marks a card the reader has moved out of the register the phrase loaded in,
+   so an octave jump is visible before it is heard. */
+.chord-moved {
+  font-style: normal;
+  font-size: 10px;
+  padding: 0 4px;
+  margin-right: auto;
+  border-radius: 4px;
+  color: var(--primary);
+  border: 1px solid currentColor;
+  font-variant-numeric: tabular-nums;
+}
+.chord-card.is-sounding .chord-moved {
+  color: inherit;
+}
 .chord-beat-dots {
   display: flex;
   gap: 4px;
