@@ -9,12 +9,17 @@ import {
   keyPitch,
   keyTonics,
   MAX_CHORDS,
+  MAX_MIDI,
+  MIN_MIDI,
+  OCTAVES,
+  octaveRange,
   paletteChord,
   planProgression,
   progressionTemplates,
   romanNumeral,
   templateGroups,
   templateSources,
+  textures,
   validateChord,
 } from '../lib/chords.ts';
 import { pitchLabel, pitchName } from '../lib/notation.ts';
@@ -483,6 +488,176 @@ test('Playback planning respects beats, fractional tempo, repetitions and exact 
       4,
     ).starts,
   ).toHaveLength(64);
+});
+
+test('The register moves the whole progression without changing its spelling', () => {
+  const triad = chord();
+  expect(chordNotes(C, triad).map((p) => p.midi)).toEqual([48, 52, 55]);
+  expect(chordNotes({ ...C, octave: 4 }, triad).map((p) => p.midi)).toEqual([
+    60, 64, 67,
+  ]);
+  expect(chordNotes({ ...C, octave: 1 }, triad).map((p) => p.midi)).toEqual([
+    24, 28, 31,
+  ]);
+  // A written pitch is a written pitch: only the octave number moves with it.
+  expect(names({ ...C, octave: 5 }, triad)).toEqual(['C', 'E', 'G']);
+  expect(
+    chordNotes({ ...C, octave: 5 }, triad).map((p) => pitchLabel(p, 'en')),
+  ).toEqual(['C5', 'E5', 'G5']);
+  expect(chordSymbol({ ...C, octave: 6 }, triad)).toBe('C');
+  expect(keyName({ ...C, octave: 6 }, 'ru')).toBe('до мажор');
+  for (const bad of [0, 7, 3.5, NaN, Infinity, -1])
+    expect(() => chordNotes({ ...C, octave: bad }, triad)).toThrow(RangeError);
+});
+
+test('The offered registers are exactly those that keep every chord playable', () => {
+  expect(octaveRange(C, [chord()])).toEqual({
+    min: OCTAVES.min,
+    max: OCTAVES.max,
+  });
+  // A ninth chord in its highest bass position already reaches near the top of
+  // the keyboard, so this progression cannot be raised at all.
+  const B = { tonic: 11, mode: 'major' };
+  const tall = { degree: 6, quality: 'maj9', inversion: 4, beats: 4 };
+  expect(Math.max(...chordNotes(B, tall).map((p) => p.midi))).toBe(105);
+  expect(octaveRange(B, [tall]).max).toBe(3);
+  // One tall chord limits the whole phrase, not only its own card.
+  expect(octaveRange(B, [chord(), tall]).max).toBe(3);
+  expect(octaveRange({ ...C, octave: 1 }, [chord()]).min).toBe(OCTAVES.min);
+  expect(() => octaveRange(C, [])).toThrow(RangeError);
+  expect(() =>
+    octaveRange(
+      C,
+      Array.from({ length: MAX_CHORDS + 1 }, () => chord()),
+    ),
+  ).toThrow(RangeError);
+
+  // The range is right rather than merely safe: every octave inside it plays,
+  // and the octave just outside it would not.
+  for (const mode of ['major', 'minor'])
+    for (let tonic = 0; tonic < 12; tonic++)
+      for (let degree = 0; degree < 7; degree++)
+        for (const quality of Object.keys(chordQualities)) {
+          const key = { tonic, mode };
+          const step = {
+            degree,
+            quality,
+            inversion: chordQualities[quality].steps.length - 1,
+            beats: 4,
+          };
+          const range = octaveRange(key, [step]);
+          const where = `${mode} ${tonic} ${degree} ${quality}`;
+          expect(range.min, where).toBeLessThanOrEqual(range.max);
+          for (let octave = range.min; octave <= range.max; octave++) {
+            const midi = chordNotes({ ...key, octave }, step).map(
+              (p) => p.midi,
+            );
+            expect(Math.min(...midi), where).toBeGreaterThanOrEqual(MIN_MIDI);
+            expect(Math.max(...midi), where).toBeLessThanOrEqual(MAX_MIDI);
+          }
+          if (range.max < OCTAVES.max)
+            expect(
+              Math.max(
+                ...chordNotes({ ...key, octave: range.max + 1 }, step).map(
+                  (p) => p.midi,
+                ),
+              ),
+              where,
+            ).toBeGreaterThan(MAX_MIDI);
+          if (range.min > OCTAVES.min)
+            expect(
+              Math.min(
+                ...chordNotes({ ...key, octave: range.min - 1 }, step).map(
+                  (p) => p.midi,
+                ),
+              ),
+              where,
+            ).toBeLessThan(MIN_MIDI);
+        }
+});
+
+test('Each accompaniment figure places the voices its name describes', () => {
+  const two = [chord('major', { beats: 2 })];
+  const plan = (texture) => planProgression(C, two, 120, texture, 1);
+  const shape = (texture) =>
+    plan(texture).events.map((e) => [e.midi, e.at, e.level]);
+  const third = 1 / 3;
+  // Held: one event per voice for the whole chord.
+  expect(shape('held')).toEqual([
+    [48, 0, third],
+    [52, 0, third],
+    [55, 0, third],
+  ]);
+  // Repeated block chords, in quarters and in eighths.
+  expect(plan('pulse').events.map((e) => e.at)).toEqual([
+    0, 0, 0, 0.5, 0.5, 0.5,
+  ]);
+  expect(plan('eighths').events.map((e) => e.at)).toEqual([
+    0, 0, 0, 0.25, 0.25, 0.25, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75,
+  ]);
+  // Arpeggios: one voice at a time, and a lone voice is not made quiet.
+  expect(shape('arpeggio')).toEqual([
+    [48, 0, 1],
+    [52, 0.25, 1],
+    [55, 0.5, 1],
+    [48, 0.75, 1],
+  ]);
+  expect(shape('arpeggioDown').map(([midi]) => midi)).toEqual([55, 52, 48, 55]);
+  // Alberti: low, high, middle, high.
+  expect(shape('alberti').map(([midi]) => midi)).toEqual([48, 55, 52, 55]);
+  // A seventh chord has two middle voices, so the cycle walks through them.
+  expect(
+    planProgression(
+      C,
+      [chord('seventh', { beats: 4 })],
+      120,
+      'alberti',
+      1,
+    ).events.map((e) => e.midi),
+  ).toEqual([48, 58, 52, 58, 48, 58, 55, 58]);
+  // Afterbeat: the bass takes the downbeat, the chords answer after it.
+  expect(shape('afterbeat')).toEqual([
+    [48, 0, 1],
+    [48, 0.25, third],
+    [52, 0.25, third],
+    [55, 0.25, third],
+    [48, 0.75, third],
+    [52, 0.75, third],
+    [55, 0.75, third],
+  ]);
+  // Offbeat: upbeats only, with no downbeat at all.
+  expect(plan('offbeat').events.map((e) => e.at)).toEqual([
+    0.25, 0.25, 0.25, 0.75, 0.75, 0.75,
+  ]);
+  // Every figure marks the chord change at the same moment for the highlight.
+  for (const texture of textures)
+    expect(plan(texture).starts, texture).toEqual([0]);
+  expect(() => planProgression(C, two, 120, 'swing', 1)).toThrow(RangeError);
+});
+
+test('Every texture stays inside the audio bounds at the longest phrase allowed', () => {
+  // Sixteen chords of eight beats over four passes is the most the transport
+  // can ask for. These are the same limits lib/chord-audio.ts enforces before
+  // it schedules anything, checked here where every texture can be compared.
+  const phrase = Array.from({ length: MAX_CHORDS }, () =>
+    chord('maj9', { beats: 8 }),
+  );
+  for (const texture of textures) {
+    const plan = planProgression(C, phrase, 200, texture, 4);
+    expect(plan.duration, texture).toBeLessThanOrEqual(180);
+    expect(plan.events.length, texture).toBeGreaterThan(0);
+    expect(plan.events.length, texture).toBeLessThanOrEqual(5120);
+    for (const event of plan.events) {
+      expect(event.duration, texture).toBeGreaterThanOrEqual(0.02);
+      expect(event.at + event.duration, texture).toBeLessThanOrEqual(
+        plan.duration,
+      );
+      expect(event.level, texture).toBeGreaterThan(0);
+      expect(event.level, texture).toBeLessThanOrEqual(1);
+      expect(event.midi, texture).toBeGreaterThanOrEqual(MIN_MIDI);
+      expect(event.midi, texture).toBeLessThanOrEqual(MAX_MIDI);
+    }
+  }
 });
 
 describe('Invalid inputs never create a phrase', () => {

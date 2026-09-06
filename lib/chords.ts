@@ -161,8 +161,19 @@ export type ChordStep = {
   inversion: number;
   beats: number;
 };
-export type ChordKey = { tonic: number; mode: KeyMode };
+/**
+ * The key the lab builds in, and the register it builds in. `octave` is the
+ * written octave of the tonic, so raising it moves the whole progression; it
+ * is optional because most callers do not care which register they are in.
+ */
+export type ChordKey = { tonic: number; mode: KeyMode; octave?: number };
 export const MAX_CHORDS = 16;
+/** The register the player accepts, which is the compass of a piano. */
+export const MIN_MIDI = 24;
+export const MAX_MIDI = 108;
+/** The registers the lab offers, as the written octave of the tonic. */
+export const OCTAVES = { min: 1, max: 6, preferred: 3 };
+const registerOf = (key: ChordKey) => key.octave ?? OCTAVES.preferred;
 
 export function validateKey(key: ChordKey) {
   if (
@@ -172,6 +183,13 @@ export function validateKey(key: ChordKey) {
     !Object.hasOwn(scaleSteps, key.mode)
   )
     throw new RangeError('Invalid chord key');
+  if (
+    key.octave !== undefined &&
+    (!Number.isInteger(key.octave) ||
+      key.octave < OCTAVES.min ||
+      key.octave > OCTAVES.max)
+  )
+    throw new RangeError('Invalid chord register');
 }
 export function validateChord(chord: ChordStep) {
   if (
@@ -196,7 +214,7 @@ export function keyPitch(key: ChordKey) {
   return spellPattern(
     keyTonics[key.mode][key.tonic],
     { steps: [0], degrees: [0] },
-    3,
+    registerOf(key),
   )[0];
 }
 export function keyName(key: ChordKey, lang: MusicLanguage) {
@@ -208,7 +226,7 @@ export function chordNotes(key: ChordKey, chord: ChordStep): SpelledPitch[] {
   const root = spellPattern(
     keyTonics[key.mode][key.tonic],
     { steps: [scaleSteps[key.mode][chord.degree]], degrees: [chord.degree] },
-    3,
+    registerOf(key),
   )[0];
   const definition = chordQualities[chord.quality];
   const notes = definition.steps.map((step, i) => {
@@ -239,6 +257,29 @@ export function chordNotes(key: ChordKey, chord: ChordStep): SpelledPitch[] {
     voiced[i] = copy;
     return copy;
   });
+}
+/**
+ * The registers this progression could move to and still be playable. The
+ * answer depends on the chords, not only on the key: a ninth chord in its
+ * highest bass position already reaches near the top of the keyboard, so the
+ * lab disables the ends of the octave control instead of failing on Play.
+ */
+export function octaveRange(key: ChordKey, chords: ChordStep[]) {
+  validateKey(key);
+  if (chords.length < 1 || chords.length > MAX_CHORDS)
+    throw new RangeError('Invalid progression settings');
+  let low = Infinity,
+    high = -Infinity;
+  for (const chord of chords)
+    for (const note of chordNotes(key, chord)) {
+      low = Math.min(low, note.midi);
+      high = Math.max(high, note.midi);
+    }
+  const here = registerOf(key);
+  return {
+    min: Math.max(OCTAVES.min, here - Math.floor((low - MIN_MIDI) / 12)),
+    max: Math.min(OCTAVES.max, here + Math.floor((MAX_MIDI - high) / 12)),
+  };
 }
 export function chordSymbol(key: ChordKey, chord: ChordStep) {
   const root = chordNotes(key, { ...chord, inversion: 0 })[0];
@@ -375,7 +416,64 @@ export function commonToneNames(
     .filter((p) => next.some((n) => n.midi % 12 === p.midi % 12))
     .map((p) => pitchName(p, lang));
 }
-export type Texture = 'held' | 'pulse' | 'arpeggio';
+/**
+ * Accompaniment figures after Hutchinson §14.3–14.5: block chords repeated in
+ * quarters or eighths, arpeggios rising and falling, the Alberti low–high–
+ * middle–high pattern, a bass note answered by afterbeats, and chords placed
+ * on the upbeats. They are ways to hear the same harmony move, not claims
+ * about a style: none of them is swing, strumming or a real instrument.
+ */
+export const textures = [
+  'held',
+  'pulse',
+  'eighths',
+  'arpeggio',
+  'arpeggioDown',
+  'alberti',
+  'afterbeat',
+  'offbeat',
+] as const;
+export type Texture = (typeof textures)[number];
+
+/**
+ * Alberti bass generalized past the triad it was named for: the lowest voice,
+ * the highest, one of the voices between them, the highest again. A triad has
+ * a single middle voice and gives the classical four-note cycle; a seventh or
+ * a ninth walks through its middles across successive cycles.
+ */
+function albertiVoice(i: number, notes: SpelledPitch[]) {
+  const middles = notes.slice(1, -1);
+  const position = i % 4;
+  if (position === 0) return notes[0];
+  if (position === 2) return middles[Math.floor(i / 4) % middles.length];
+  return notes.at(-1)!;
+}
+
+/**
+ * `rate` is positions per beat; 0 means one event for the whole chord.
+ * `voices` chooses what sounds at each position, and may choose nothing.
+ */
+const figures: Record<
+  Texture,
+  { rate: number; voices: (i: number, notes: SpelledPitch[]) => SpelledPitch[] }
+> = {
+  held: { rate: 0, voices: (_, notes) => notes },
+  pulse: { rate: 1, voices: (_, notes) => notes },
+  eighths: { rate: 2, voices: (_, notes) => notes },
+  arpeggio: { rate: 2, voices: (i, notes) => [notes[i % notes.length]] },
+  arpeggioDown: {
+    rate: 2,
+    voices: (i, notes) => [notes[notes.length - 1 - (i % notes.length)]],
+  },
+  alberti: { rate: 2, voices: (i, notes) => [albertiVoice(i, notes)] },
+  // The bass takes the downbeat and the chords answer it after the beat.
+  afterbeat: {
+    rate: 2,
+    voices: (i, notes) => (i === 0 ? [notes[0]] : i % 2 ? notes : []),
+  },
+  // Upbeats only: the chord change is heard late, on purpose.
+  offbeat: { rate: 2, voices: (i, notes) => (i % 2 ? notes : []) },
+};
 const step = (degree: number, quality: ChordQuality, beats = 4): ChordStep => ({
   degree,
   quality,
@@ -961,12 +1059,13 @@ export function planProgression(
     !Number.isInteger(repeats) ||
     repeats < 1 ||
     repeats > 4 ||
-    !['held', 'pulse', 'arpeggio'].includes(texture) ||
+    !(textures as readonly string[]).includes(texture) ||
     chords.length < 1 ||
     chords.length > MAX_CHORDS
   )
     throw new RangeError('Invalid progression settings');
   const secondsPerBeat = 60 / tempo;
+  const figure = figures[texture];
   const events: NoteEvent[] = [],
     starts: number[] = [];
   let beat = 0;
@@ -974,22 +1073,18 @@ export function planProgression(
     for (const chord of chords) {
       const notes = chordNotes(key, chord);
       starts.push(beat * secondsPerBeat);
-      const count =
-        texture === 'held'
-          ? 1
-          : texture === 'pulse'
-            ? chord.beats
-            : chord.beats * 2;
+      const count = figure.rate === 0 ? 1 : chord.beats * figure.rate;
       const length = (chord.beats / count) * secondsPerBeat;
       for (let i = 0; i < count; i++) {
-        const voices =
-          texture === 'arpeggio' ? [notes[i % notes.length]] : notes;
+        const voices = figure.voices(i, notes);
         for (const note of voices)
           events.push({
             midi: note.midi,
             at: beat * secondsPerBeat + i * length,
             duration: length * 0.9,
-            level: 1 / notes.length,
+            // The voices sounding together share one level, so a figure that
+            // plays one note at a time is not quieter than a block chord.
+            level: 1 / voices.length,
           });
       }
       beat += chord.beats;

@@ -1,4 +1,4 @@
-import type { ProgressionPlan } from './chords';
+import { MAX_MIDI, MIN_MIDI, type ProgressionPlan } from './chords';
 
 export type ChordTone = 'sine' | 'triangle';
 
@@ -28,8 +28,8 @@ export class ChordPlayer {
     for (const event of plan.events) {
       if (
         !Number.isInteger(event.midi) ||
-        event.midi < 24 ||
-        event.midi > 108 ||
+        event.midi < MIN_MIDI ||
+        event.midi > MAX_MIDI ||
         !Number.isFinite(event.at) ||
         event.at < 0 ||
         !Number.isFinite(event.duration) ||

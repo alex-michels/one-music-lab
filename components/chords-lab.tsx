@@ -42,6 +42,8 @@ import {
   keyName,
   keyPitch,
   MAX_CHORDS,
+  OCTAVES,
+  octaveRange,
   paletteChord,
   planProgression,
   progressionTemplates,
@@ -167,6 +169,8 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
   const notes = chordNotes(key, chord);
   const construction = chordNotes(key, { ...chord, inversion: 0 });
   const definition = chordQualities[chord.quality];
+  const octave = key.octave ?? OCTAVES.preferred;
+  const register = octaveRange(key, chords);
   const template = progressionTemplates[draft.template];
   const source = templateSources[template.source];
   const duration =
@@ -331,6 +335,14 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
       return { ...d, edited: true, chords: next };
     }, selected + direction);
 
+  const shiftRegister = (direction: number) =>
+    commit((d) => ({
+      ...d,
+      key: {
+        ...d.key,
+        octave: (d.key.octave ?? OCTAVES.preferred) + direction,
+      },
+    }));
   const hearChord = () =>
     void play(planProgression(key, [{ ...chord, beats: 2 }], 80, 'held', 1), [
       selected,
@@ -603,8 +615,37 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                   label: t('Quarter-note pulse', 'Пульсация четвертями'),
                 },
                 {
+                  value: 'eighths',
+                  label: t('Eighth-note chords', 'Аккорды восьмыми'),
+                },
+                {
                   value: 'arpeggio',
-                  label: t('Eighth-note arpeggio', 'Арпеджио восьмыми'),
+                  label: t('Arpeggio, rising', 'Арпеджио вверх'),
+                },
+                {
+                  value: 'arpeggioDown',
+                  label: t('Arpeggio, falling', 'Арпеджио вниз'),
+                },
+                {
+                  value: 'alberti',
+                  label: t(
+                    'Alberti bass · low, high, middle, high',
+                    'Бас Альберти · низ, верх, середина, верх',
+                  ),
+                },
+                {
+                  value: 'afterbeat',
+                  label: t(
+                    'Bass, then afterbeat chords',
+                    'Бас на доле, аккорды после неё',
+                  ),
+                },
+                {
+                  value: 'offbeat',
+                  label: t(
+                    'Offbeat chords only',
+                    'Только аккорды на слабых долях',
+                  ),
                 },
               ]}
             />
@@ -656,10 +697,37 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                 {definition[lang]} · {pitchName(construction[0], lang)}
               </p>
             </div>
-            <button className="secondary-button" onClick={hearChord}>
-              <Headphones size={16} />
-              {t('Listen', 'Слушать')}
-            </button>
+            <div className="chord-inspector-tools">
+              <button className="secondary-button" onClick={hearChord}>
+                <Headphones size={16} />
+                {t('Listen', 'Слушать')}
+              </button>
+              <div className="chord-register">
+                <button
+                  aria-label={t(
+                    'Lower the register of the whole progression',
+                    'Понизить регистр всей последовательности',
+                  )}
+                  disabled={octave <= register.min}
+                  onClick={() => shiftRegister(-1)}
+                >
+                  −
+                </button>
+                <span>
+                  {t('Octave', 'Октава')} {octave}
+                </span>
+                <button
+                  aria-label={t(
+                    'Raise the register of the whole progression',
+                    'Повысить регистр всей последовательности',
+                  )}
+                  disabled={octave >= register.max}
+                  onClick={() => shiftRegister(1)}
+                >
+                  +
+                </button>
+              </div>
+            </div>
           </div>
           <div className="chord-inspector-controls">
             <Choice
@@ -765,6 +833,10 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
             {t(
               'An inversion changes the lowest note, not the root.',
               'Обращение меняет нижний звук, но не основной тон.',
+            )}{' '}
+            {t(
+              'The octave control moves the whole progression, and stops where a chord would leave the keyboard.',
+              'Кнопки октавы переносят всю последовательность и останавливаются там, где аккорд вышел бы за пределы клавиатуры.',
             )}
           </p>
           {selected > 0 && (

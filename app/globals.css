@@ -275,6 +275,31 @@
   font-size: 12px;
   color: var(--muted-foreground);
 }
+.chord-inspector-tools {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+/* The same stepper the sound lab uses for its keyboard register. */
+.chord-register {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+.chord-register button {
+  width: 25px;
+  height: 25px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 14px;
+}
+.chord-register button:disabled {
+  opacity: 0.4;
+}
 .chord-inspector-controls {
   display: grid;
   grid-template-columns: 1fr 1fr;

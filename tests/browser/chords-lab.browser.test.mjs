@@ -222,9 +222,26 @@ test('All style examples and accompaniment controls change what gets scheduled',
   expect(plan.events).toHaveLength(104);
   expect(level).toBe(0.3);
   expect(tone).toBe('sine');
-  await choose('Texture', 'Eighth-note arpeggio');
+  await choose('Texture', 'Arpeggio, rising');
   await button('Play progression').click();
   expect(playback.mock.lastCall[0].events).toHaveLength(64);
+  await choose('Texture', 'Alberti bass · low, high, middle, high');
+  await button('Play progression').click();
+  expect(playback.mock.lastCall[0].events).toHaveLength(64);
+  // The two figures named for where they sit against the beat are checked
+  // against the beat itself: one carries the downbeat, the other avoids it.
+  await choose('Texture', 'Bass, then afterbeat chords');
+  await button('Play progression').click();
+  const after = playback.mock.lastCall[0];
+  expect(
+    after.events.filter((event) => after.starts.includes(event.at)),
+  ).toHaveLength(after.starts.length);
+  await choose('Texture', 'Offbeat chords only');
+  await button('Play progression').click();
+  const off = playback.mock.lastCall[0];
+  expect(
+    off.events.filter((event) => off.starts.includes(event.at)),
+  ).toHaveLength(0);
   await choose('Texture', 'Held chords');
   await choose('Timbre', 'Soft triangle');
   await page.getByRole('tab', { name: 'Terms & sources', exact: true }).click();
@@ -489,4 +506,52 @@ test('A card is marked as an applied dominant only while the next chord proves i
   );
   expect(applied()).toEqual(['V7/ii']);
   expect(cards()[7]).toBe('A7');
+});
+
+test('The octave control moves the whole progression and stops at the keyboard edge', async () => {
+  mount();
+  const shown = () =>
+    container.querySelector('.chord-register span').textContent;
+  const registers = () =>
+    [...container.querySelectorAll('.chord-pitches small')].map(
+      (node) => node.textContent,
+    );
+  const raise = 'Raise the register of the whole progression';
+  const lower = 'Lower the register of the whole progression';
+
+  expect(shown()).toBe('Octave 3');
+  expect(registers()).toEqual(['C3', 'E3', 'G3']);
+  await button(raise).click();
+  expect(shown()).toBe('Octave 4');
+  expect(registers()).toEqual(['C4', 'E4', 'G4']);
+  // The whole phrase moves, not only the inspected card.
+  await button('Play progression').click();
+  expect(playback.mock.lastCall[0].events[0].midi).toBe(60);
+  await button('Stop').click();
+
+  // It belongs to the progression, so it is undoable like any other edit.
+  await button('Undo').click();
+  expect(shown()).toBe('Octave 3');
+  expect(registers()).toEqual(['C3', 'E3', 'G3']);
+
+  await button(lower).click();
+  await button(lower).click();
+  expect(shown()).toBe('Octave 1');
+  expect(registers()).toEqual(['C1', 'E1', 'G1']);
+  await expect.element(button(lower)).toBeDisabled();
+
+  // A ninth chord in its highest bass position reaches near the top of the
+  // keyboard, so raising stops early rather than failing when Play is pressed.
+  await choose('Chord type', 'Major ninth');
+  await choose('Bass / inversion', 'D · in the bass');
+  for (let step = 0; step < 6; step++) {
+    if (container.querySelector(`[aria-label="${raise}"]`).disabled) break;
+    await button(raise).click();
+  }
+  expect(shown()).toBe('Octave 5');
+  await expect.element(button(raise)).toBeDisabled();
+  await button('Play progression').click();
+  expect(
+    Math.max(...playback.mock.lastCall[0].events.map((event) => event.midi)),
+  ).toBeLessThanOrEqual(108);
 });

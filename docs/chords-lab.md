@@ -64,9 +64,15 @@ experiment**, or open `/#chords`.
    the progression's degree roots, retaining custom chord qualities. Edited
    chords can therefore lie outside the palette. The minor palette is natural
    minor; choose major V or V7 to compare the raised leading tone.
-6. Choose tempo, one/two/four passes, and held chords, quarter-note pulses or
-   eighth-note arpeggios. Timbres are synthesized sine and triangle waves.
-7. Compare one change at a time in **Listen & explore**. **Try a challenge**
+6. Move the whole progression up or down with the octave control on the chord
+   card. It stops where a chord would leave the keyboard, so a ninth in its
+   highest bass position can be lowered further than it can be raised.
+7. Choose tempo, one/two/four passes, and one of eight accompaniment figures:
+   held chords, repeated quarters or eighths, arpeggios rising or falling, the
+   Alberti low–high–middle–high pattern, a bass note answered by afterbeat
+   chords, or chords on the upbeats alone. Timbres are synthesized sine and
+   triangle waves; real instrument samples are not part of this release.
+8. Compare one change at a time in **Listen & explore**. **Try a challenge**
    gives feedback on root identification even when the bass changes.
    **Terms & sources** connects the notation and harmonic concepts to readings.
 
@@ -138,6 +144,15 @@ width, which is an interface preference rather than musical work.
 - This lab has its own fixed 12-TET reference, A4 = 440 Hz, and straight 4/4.
   Sound-lab tuning/reference controls do not alter it. One beat is a quarter
   note; the twelve-bar examples contain 48 beats each.
+- The register is the written octave of the tonic, offered between 1 and 6.
+  Which of those a given progression can actually use depends on its chords,
+  because a ninth in its highest bass position already reaches near the top of
+  the keyboard; the control disables its own ends rather than letting Play
+  fail, and a test asserts that the offered range is exactly the playable one.
+- Accompaniment figures follow Hutchinson §14.3–14.5 and are ways to hear the
+  same harmony move, not claims about a style: none of them is swing, guitar
+  strumming, a drum pattern or a real instrument. Voices sounding at the same
+  moment share one level, so an arpeggio is not quieter than a block chord.
 - Tempo: 40–200 BPM, 1–8 beats per chord, 1–4 bounded passes, maximum three
   minutes. Every template is tested to stay inside those bounds at four passes,
   so no starting point can load in an unplayable state. Audio phrases and note
@@ -191,6 +206,7 @@ musical examples.
 | Hutchinson, same text | [§3.1 Minor Scales](https://musictheory.pugetsound.edu/mt21c/MinorScales.html); [§7.4 Cadences](https://musictheory.pugetsound.edu/mt21c/cadences.html); [§9.4 Harmonic Function, especially §9.4.3](https://musictheory.pugetsound.edu/mt21c/HarmonicFunction.html) | Raised seventh in harmonic minor; authentic, plagal, half and deceptive cadence types, and the note that a deceptive cadence covers V resolving to anything but I; the tonic/pre-dominant/dominant pattern and the IV that prolongs the tonic. Functions are contextual, not inferred solely from chord quality. |
 | Hutchinson, same text | [§9.3 Shorter progressions from the circle of fifths](https://musictheory.pugetsound.edu/mt21c/ShorterProgressionsFromTheCircleOfFifths.html); [§9.7 The Best-Seller Progression](https://musictheory.pugetsound.edu/mt21c/BestsellerProgression.html); [§12.4, table 12.4.1](https://musictheory.pugetsound.edu/mt21c/TwelveBarBlues.html); [§31.8 Standard Chord Progressions](https://musictheory.pugetsound.edu/mt21c/StandardChordProgressions.html) | ii–V–I, the vi–ii–V–I and iii–vi–ii–V circle segments and their rotations; I–V–vi–IV and the rotations §9.7 names; twelve-bar harmonic form; the jazz standard progressions. No recorded or notated song examples copied. Table 12.4.1 supplies the roots, not a requirement to use sevenths. |
 | Hutchinson, same text | [§17.3 Secondary Dominants in Major and Minor](https://musictheory.pugetsound.edu/mt21c/SecondaryDominantsInMajorAndMinor.html); [§19.1 Mode Mixture](https://musictheory.pugetsound.edu/mt21c/ModeMixtureSection.html) | Applied dominants and the `V/x` notation; borrowing from the parallel minor, with the lowered sixth degree named as its commonest carrier. |
+| Hutchinson, same text | [§14.3 Arpeggiated Accompaniments](https://musictheory.pugetsound.edu/mt21c/ArpeggiatedAccompaniments.html); [§14.4 Block Chord Accompaniments](https://musictheory.pugetsound.edu/mt21c/BlockChordAccompaniments.html); [§14.5 Afterbeats and Offbeats](https://musictheory.pugetsound.edu/mt21c/AfterbeatsOffbeats.html) | The eight accompaniment figures: arpeggios up and down, the Alberti “low–high–middle–high” pattern, chords repeated in quarters and in eighths, afterbeats that follow a bass note on the downbeat, and offbeats that avoid downbeats. Figures only; no notated example is reproduced. |
 | Bryn Hughes and Megan Lavengood, *Open Music Theory*, 2nd edition, eds. Gotham, Gullings, Hamm, Hughes, Jarvis, Lavengood and Peterson | [“Four-Chord Schemas”](https://viva.pressbooks.pub/openmusictheory/chapter/4-chord-schemas/); [“Blues Harmony”](https://viva.pressbooks.pub/openmusictheory/chapter/blues-harmony/) | The doo-wop, singer/songwriter and hopscotch schemas with their substitutions and rotations, and the ear test of which chord the major tonic is approached from; the twelve-bar frame, the quick change, the minor blues and the jazz blues. CC BY-SA 4.0. Patterns and facts used; no text, notation or media reproduced, so this project's own licensing is unchanged. |
 | Bryn Hughes and Kris Shaffer, *Open Music Theory*, same edition | [“Classical Schemas (in a Pop Context)”](https://viva.pressbooks.pub/openmusictheory/chapter/classical-schemas/) | The lament schema `I–♭VII–♭VI–V` over the descending minor tetrachord, and the circle-of-fifths schema. CC BY-SA 4.0, same handling as above. |
 | Gilbert DeBenedetti, *Harmonic Expansions*, G Major Music Theory, LLC; site copyright 2011, online text | [§5.5 Inserting IV, twelve-bar pattern and final footnote](https://www.gmajormusictheory.org/HarmExpansions/Ch5/05_5.html) | Blues tonic expansion; I/IV dominant-seventh qualities and stylistic distinction from Baroque/Classical progression. Copyright retained; facts paraphrased, no media copied. |
@@ -260,6 +276,17 @@ than a discovery. Each names the roadmap module it would serve.
   one following chord. Tonicization confirmed over several chords, modulation
   and enharmonic reinterpretation (H10, H11) need a phrase-level analyser, and
   should say what evidence they used rather than asserting a key.
+- **Instruments.** Every timbre is a bare oscillator. Sampled or modelled
+  instruments would need a licensed sound source, a loading strategy for the
+  static export, and a decision about download size; the owner has asked for
+  them later rather than now, so the figure set above is deliberately the part
+  that can be done with oscillators alone. F15 covers timbre and envelope.
+- **Playing a chord back.** The practice tab asks the reader to identify a root
+  from a list. Asking them to *play* the chord shown, as F08 and H01 want of
+  their exercises, needs an input surface — a clickable keyboard that collects
+  a set of pitches and checks it against the chord — plus a rule for what
+  counts as correct (pitch classes, or register and doubling too). That is a
+  content decision as much as a technical one.
 - **Keeping your work.** The phrase lives in the mounted session. Naming,
   saving, sharing or exporting a progression touches P07 (files and personal
   data) and is not a change to make casually.
