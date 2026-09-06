@@ -57,7 +57,11 @@ export function nearestNote(
   reference = 440,
   tuning: Tuning = 'equal',
 ) {
-  const estimate = Math.round(69 + 12 * Math.log2(frequency / reference)) || 0;
+  // An unusable frequency must still leave a finite starting point: searching
+  // outwards from Infinity never ends, because Infinity + 1 is Infinity.
+  // `|| 0` also folds the -0 that rounding produces just below the reference.
+  const guess = Math.round(69 + 12 * Math.log2(frequency / reference));
+  const estimate = Number.isFinite(guess) ? guess || 0 : 0;
   let midi = estimate;
   let cents =
     1200 * Math.log2(frequency / frequencyForMidi(midi, reference, tuning));
