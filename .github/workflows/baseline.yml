@@ -31,10 +31,10 @@ jobs:
       - run: npm ci
       - name: Unit tests and roadmap integrity
         run: npm test
-      - name: Partial loaded-module coverage (not a release gate)
+      - name: Coverage over all authored code (no threshold gate yet)
         run: |
           mkdir -p outputs
-          npm run test:coverage 2>&1 | tee outputs/partial-coverage.txt
+          npm run test:coverage 2>&1 | tee outputs/coverage-report.txt
       - name: Typecheck
         run: npm run typecheck
       - name: Lint
@@ -83,7 +83,7 @@ jobs:
         if: always()
         run: |
           printf '%s\n' '## Baseline only — not publication readiness' >> "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' 'Coverage is limited to loaded lib modules; UI/browser paths are not yet included. ROADMAP P00 and gate G remain open.' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' 'Coverage now measures every authored file, but the numbers are low and no threshold is enforced yet; browser and audio paths are not covered. ROADMAP P00 and gate G remain open.' >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' 'Lint is a required step; the run fails on any lint error.' >> "$GITHUB_STEP_SUMMARY"
       - name: Attach audit reports
         if: always()
@@ -91,7 +91,9 @@ jobs:
         with:
           name: baseline-audit-reports
           path: |
-            outputs/partial-coverage.txt
+            outputs/coverage-report.txt
+            outputs/coverage/coverage-summary.json
+            outputs/coverage/lcov.info
             outputs/site-server.txt
           if-no-files-found: warn
           retention-days: 14

@@ -70,8 +70,10 @@ URL-hash/localStorage client store, and the viewport (`useIsMobile`) store.
 It also checks copied UI provenance, rendered `ItemGroup` list semantics and
 the narrow lint allowance for explicit native-list roles. See the
 [UI provenance boundary](docs/ui-provenance.md) before editing catalog copies.
-`test:coverage` is currently a **partial loaded-module report** for `lib/*.ts`
-and `hooks/*.ts`, not coverage of the whole app. UI and actual browser audio tests are still needed.
+`test:coverage` reports **every authored file**, including files no test loads
+yet, so an untested module appears at 0% instead of disappearing. Component
+tests run against a real DOM. The current figure is about 24% of statements:
+the measurement is complete, the coverage itself is not. UI and actual browser audio tests are still needed.
 The 24 lint errors found by the audit are fixed (ROADMAP P00); `npm run lint`
 and `npm run format:check` must pass, and the Baseline checks GitHub workflow
 fails on a lint or formatting error. `npm run format` rewrites the authored

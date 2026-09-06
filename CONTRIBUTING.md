@@ -31,17 +31,30 @@ npm run format:check
 npm run build
 ```
 
-The current tests use Node's test runner. Await top-level `test()` calls so their
-returned promises are handled explicitly; keep the existing sequential tests
-within each file. The TSX rendering test loads the real component with Vite,
-which also exposes Node test types to whole-repository type-aware lint.
-`test:coverage` measures **loaded**
-`lib/*.ts` and `hooks/*.ts` modules and is a temporary partial report, not
-repository-wide coverage.
-The baseline has nine audio/math/WAV tests, roadmap integrity tests, and tests
-for the client-state and viewport stores. The 24 lint errors found by the audit
-are fixed; uncovered UI/integration paths and unverified browser behavior are
-still tracked in P00. Do not describe this as release-certified.
+Tests run on Vitest, which loads TSX and the `@/` alias the same way the
+application build does. Node-environment suites cover libraries, configuration
+and policy; a file starting with `/** @vitest-environment jsdom */` gets a real
+DOM for component tests, so a component can be driven through focus, typing,
+keyboard and rerenders instead of being snapshotted.
+
+`test:coverage` measures the denominator recorded in `vitest.config.ts`: all
+authored production code, including files no test imports yet, plus the
+imported copies changed locally. Untouched imported copies are reported
+separately, as [ui-provenance](docs/ui-provenance.md) describes. Nothing is
+excluded to improve a number, and `tests/coverage-boundary.test.mjs` fails if a
+new authored file is left out of the denominator. Instrumentation is not
+coverage: every authored file is now measured, but most are still at 0%.
+
+Two measurement limits are known. `vite.config.ts` cannot be instrumented,
+because Vitest loads the project's own Vite configuration outside the
+instrumented module graph; its behaviour is asserted directly in
+`tests/vite-config.test.mjs` instead. The artifact and HTTP suites
+(`test:site`, `test:private`, `test:static`) check a built artifact rather than
+source, so they stay on Node's runner and outside the source denominator.
+
+The 24 lint errors found by the audit are fixed; uncovered UI, audio and
+browser paths are still tracked in P00. Do not describe this as
+release-certified.
 
 The target is **100% meaningful statements, branches, functions, and lines** for
 all first-party production code, including initially unimported files. Add a
