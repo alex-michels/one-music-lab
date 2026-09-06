@@ -91,6 +91,24 @@ configuration fix. These are markup and lint checks, not a claim of tested
 Safari/VoiceOver behavior; P00's browser and assistive-technology review remains
 open.
 
+## Formatting boundary
+
+The formatter owns authored source and the authored stylesheet, and
+`npm run format:check` is a required Baseline check. The imported copies in
+`components/ui/` are excluded in `.oxfmtrc.json` so they stay comparable with
+the registry: reformatting all 62 files would rewrite the 50 unchanged copies
+and make a future re-import harder to read, without making any authored code
+clearer. `hooks/use-mobile.ts` and `lib/utils.ts` are formatted with the
+authored code, because their bodies are already maintained locally.
+
+Prose, data and configuration files are also outside the formatter: the roadmap
+and the review documents are parsed and read as text, and
+[ui-provenance.json](ui-provenance.json) is a record whose shape is described
+above. Excluding them is a formatting-scope decision only. It does not narrow
+lint, typecheck, tests or the coverage denominator, and `.gitattributes` keeps
+one line ending on every platform so the check behaves the same on Windows,
+macOS and Linux.
+
 ## Maintaining the record
 
 When editing an unchanged copy, change its classification to `modified`, add a

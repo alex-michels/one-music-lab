@@ -39,6 +39,8 @@ jobs:
         run: npm run typecheck
       - name: Lint
         run: npm run lint
+      - name: Formatting
+        run: npm run format:check
       - name: Build
         run: npm run build
       - name: Rendered site identity from the built Worker

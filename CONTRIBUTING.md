@@ -27,6 +27,7 @@ npm test
 npm run test:coverage
 npm run typecheck
 npm run lint
+npm run format:check
 npm run build
 ```
 
@@ -51,7 +52,8 @@ owner, and follow-up issue; the reviewer decides whether it blocks publication.
 Coverage numbers do not replace input diversity, assertions, mutation testing of
 critical algorithms, actual listening, or subject-matter review.
 
-The Baseline checks workflow runs lint as a required step. It is sufficient to
+The Baseline checks workflow runs lint and the formatting check as required
+steps; run `npm run format` before review. It is sufficient to
 reproduce the audit baseline, not to approve production code or close G. Make
 the complete coverage/browser checks mandatory once P00 is resolved. New changes
 must not add lint errors, untested behavior, or unexplained failures.

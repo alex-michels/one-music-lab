@@ -14,6 +14,7 @@
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint",
     "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "test:site": "node --test tests/site-http.mjs",
     "test:coverage": "node --experimental-strip-types --experimental-test-coverage --test --test-coverage-include=lib/*.ts --test-coverage-include=hooks/*.ts tests/*.test.mjs",
