@@ -1,4 +1,4 @@
-import test from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import {
   LANGUAGE_STORAGE_KEY,
@@ -9,7 +9,7 @@ import {
   pageFromHash,
 } from '../lib/client-store.ts';
 
-await test('The page comes from the URL hash and unknown hashes open the lab', () => {
+test('The page comes from the URL hash and unknown hashes open the lab', () => {
   for (const page of PAGES) {
     assert.equal(pageFromHash('#' + page), page);
     assert.equal(pageFromHash(page), page);
@@ -19,7 +19,7 @@ await test('The page comes from the URL hash and unknown hashes open the lab', (
   }
 });
 
-await test('The saved language is honoured only when it is a supported value', () => {
+test('The saved language is honoured only when it is a supported value', () => {
   const storage = (value) => ({
     getItem(key) {
       assert.equal(key, LANGUAGE_STORAGE_KEY);
@@ -44,7 +44,7 @@ await test('The saved language is honoured only when it is a supported value', (
   );
 });
 
-await test('Storage access that is absent or throws degrades to null', () => {
+test('Storage access that is absent or throws degrades to null', () => {
   const descriptor = Object.getOwnPropertyDescriptor(
     globalThis,
     'localStorage',
@@ -77,7 +77,7 @@ await test('Storage access that is absent or throws degrades to null', () => {
   }
 });
 
-await test('A client store reads the browser once and changes only through set', () => {
+test('A client store reads the browser once and changes only through set', () => {
   let reads = 0;
   const store = createClientStore(() => {
     reads += 1;
@@ -111,7 +111,7 @@ await test('A client store reads the browser once and changes only through set',
   assert.equal(reads, 1);
 });
 
-await test('Setting a value before the first snapshot skips the browser read', () => {
+test('Setting a value before the first snapshot skips the browser read', () => {
   let reads = 0;
   const store = createClientStore(() => {
     reads += 1;
@@ -125,7 +125,7 @@ await test('Setting a value before the first snapshot skips the browser read', (
   assert.equal(reads, 0);
 });
 
-await test('Every subscriber is notified and unsubscribing one leaves the others active', () => {
+test('Every subscriber is notified and unsubscribing one leaves the others active', () => {
   const store = createClientStore(() => 1, 0);
   const calls = [];
   const unsubscribeA = store.subscribe(() => calls.push('a'));

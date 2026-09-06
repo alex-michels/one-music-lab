@@ -1,4 +1,4 @@
-import test from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -10,7 +10,7 @@ const inventory = JSON.parse(
   await readFile(join(root, 'docs/ui-provenance.json'), 'utf8'),
 );
 
-await test('Every copied UI/helper file has an explicit provenance classification', async () => {
+test('Every copied UI/helper file has an explicit provenance classification', async () => {
   assert.equal(inventory.schemaVersion, 1);
   assert.match(inventory.baselineCommit, /^[a-f0-9]{40}$/);
   const entries = await readdir(join(root, 'components/ui'), {
@@ -39,7 +39,7 @@ await test('Every copied UI/helper file has an explicit provenance classificatio
   );
 });
 
-await test('Locally changed copies cannot be classified as unchanged vendor code', async () => {
+test('Locally changed copies cannot be classified as unchanged vendor code', async () => {
   const notices = await readFile(join(root, 'THIRD-PARTY-NOTICES.md'), 'utf8');
   for (const [path, record] of Object.entries(inventory.files)) {
     assert.match(record.baselineSha256, /^[a-f0-9]{64}$/, path);
