@@ -10,26 +10,12 @@ import {
   Headphones,
   Play,
   Search,
-  Sparkles,
   Volume2,
   X,
 } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { curriculum, lessons, patterns, terms } from '@/lib/learning';
-import {
-  frequencyForMidi,
-  noteName,
-  type Tuning,
-  type Wave,
-} from '@/lib/music';
+import { curriculum, lessons, terms } from '@/lib/learning';
+import { frequencyForMidi, noteName, type Wave } from '@/lib/music';
 type Lang = 'en' | 'ru';
 type PlaySequence = (
   frequencies: number[],
@@ -37,157 +23,7 @@ type PlaySequence = (
   wave?: Wave,
 ) => Promise<void>;
 
-export function Experiments({
-  lang,
-  reference,
-  tuning,
-  play,
-}: {
-  lang: Lang;
-  reference: number;
-  tuning: Tuning;
-  play: PlaySequence;
-}) {
-  const [kind, setKind] = useState<keyof typeof patterns>('intervals');
-  const [selected, setSelected] = useState(3);
-  const [root, setRoot] = useState(69);
-  const t = (en: string, ru: string) => (lang === 'ru' ? ru : en);
-  const pattern = patterns[kind][Math.min(selected, patterns[kind].length - 1)];
-  const notes = pattern.steps.map((step) => ({
-    midi: root + step,
-    hz: frequencyForMidi(root + step, reference, tuning),
-  }));
-  return (
-    <section className="panel experiments">
-      <div className="panel-heading">
-        <span>
-          <Sparkles size={18} />
-          {t('A little experiment', 'Небольшой эксперимент')}
-        </span>
-        <span className="soft-badge">
-          {t('Listen to relationships', 'Слушайте отношения')}
-        </span>
-      </div>
-      <Tabs
-        value={kind}
-        onValueChange={(v) => {
-          setKind(v as keyof typeof patterns);
-          setSelected(0);
-        }}
-      >
-        <TabsList className="experiment-tabs">
-          {(['intervals', 'scales', 'chords'] as const).map((key, i) => (
-            <TabsTrigger key={key} value={key}>
-              {
-                [
-                  t('Intervals', 'Интервалы'),
-                  t('Scales & modes', 'Гаммы и лады'),
-                  t('Chords', 'Аккорды'),
-                ][i]
-              }
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        {(['intervals', 'scales', 'chords'] as const).map((key) => (
-          <TabsContent key={key} value={key}>
-            <div className="experiment-controls">
-              <div>
-                <label id={'root-' + key}>
-                  {t('Root note', 'Основной тон')}
-                </label>
-                <Select
-                  value={String(root)}
-                  onValueChange={(v) => {
-                    if (v) setRoot(Number(v));
-                  }}
-                >
-                  <SelectTrigger aria-labelledby={'root-' + key}>
-                    <SelectValue>{noteName(root)}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.from({ length: 12 }, (_, i) => (
-                      <SelectItem key={i} value={String(60 + i)}>
-                        {noteName(60 + i)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label id={'pattern-' + key}>
-                  {t('Explore', 'Исследовать')}
-                </label>
-                <Select
-                  value={String(selected)}
-                  onValueChange={(v) => {
-                    if (v) setSelected(Number(v));
-                  }}
-                >
-                  <SelectTrigger aria-labelledby={'pattern-' + key}>
-                    <SelectValue>{pattern[lang]}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {patterns[key].map((p, i) => (
-                      <SelectItem key={i} value={String(i)}>
-                        {p[lang]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <button
-                className="primary-button"
-                onClick={() =>
-                  void play(
-                    notes.map((n) => n.hz),
-                    0.65,
-                  ).catch(() => {})
-                }
-              >
-                <Play size={16} />
-                {t('In sequence', 'Последовательно')}
-              </button>
-              {key !== 'scales' && (
-                <button
-                  className="secondary-button"
-                  onClick={() =>
-                    void play(
-                      notes.map((n) => n.hz),
-                      0,
-                    ).catch(() => {})
-                  }
-                >
-                  <Volume2 size={17} />
-                  {t('Together', 'Вместе')}
-                </button>
-              )}
-            </div>
-            <div className="note-sequence">
-              {notes.map((n, i) => (
-                <div key={i}>
-                  <span>{noteName(n.midi)}</span>
-                  <strong>
-                    {n.hz.toFixed(2)}
-                    <small> Hz</small>
-                  </strong>
-                  <em>
-                    {pattern.steps[i]} {t('semitones', 'полутонов')}
-                  </em>
-                </div>
-              ))}
-            </div>
-            <p className="experiment-hint">
-              {t(
-                'Pitch labels use sharps. Semitone offsets identify keyboard steps; their sizes depend on your tuning.',
-                'Названия высот записаны с диезами. Смещения обозначают шаги клавиатуры; их размер зависит от строя.',
-              )}
-            </p>
-          </TabsContent>
-        ))}
-      </Tabs>
-    </section>
-  );
-}
+export { Experiments } from './experiments';
 
 export function Theory({
   lang,

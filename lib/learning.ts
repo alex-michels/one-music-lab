@@ -1,3 +1,5 @@
+import { scales } from './scales';
+import type { SpelledPattern } from './notation';
 export type LocalText = { en: string; ru: string };
 const b = (en: string, ru: string): LocalText => ({ en, ru });
 export const lessons = [
@@ -317,65 +319,83 @@ export const terms = [
     lesson: 'chords',
   },
 ];
-export const patterns = {
+export const patterns: Record<
+  'intervals' | 'scales' | 'chords',
+  SpelledPattern[]
+> = {
   intervals: [
-    { en: 'Minor second', ru: 'Малая секунда', steps: [0, 1] },
-    { en: 'Major second', ru: 'Большая секунда', steps: [0, 2] },
-    { en: 'Minor third', ru: 'Малая терция', steps: [0, 3] },
-    { en: 'Major third', ru: 'Большая терция', steps: [0, 4] },
-    { en: 'Perfect fourth', ru: 'Чистая кварта', steps: [0, 5] },
-    { en: 'Tritone', ru: 'Тритон', steps: [0, 6] },
-    { en: 'Perfect fifth', ru: 'Чистая квинта', steps: [0, 7] },
-    { en: 'Octave', ru: 'Октава', steps: [0, 12] },
+    { en: 'Minor second', ru: 'Малая секунда', steps: [0, 1], degrees: [0, 1] },
+    {
+      en: 'Major second',
+      ru: 'Большая секунда',
+      steps: [0, 2],
+      degrees: [0, 1],
+    },
+    { en: 'Minor third', ru: 'Малая терция', steps: [0, 3], degrees: [0, 2] },
+    { en: 'Major third', ru: 'Большая терция', steps: [0, 4], degrees: [0, 2] },
+    {
+      en: 'Perfect fourth',
+      ru: 'Чистая кварта',
+      steps: [0, 5],
+      degrees: [0, 3],
+    },
+    {
+      en: 'Tritone (augmented fourth)',
+      ru: 'Тритон (увеличенная кварта)',
+      steps: [0, 6],
+      degrees: [0, 3],
+    },
+    {
+      en: 'Perfect fifth',
+      ru: 'Чистая квинта',
+      steps: [0, 7],
+      degrees: [0, 4],
+    },
+    { en: 'Octave', ru: 'Октава', steps: [0, 12], degrees: [0, 7] },
   ],
-  scales: [
-    { en: 'Major', ru: 'Мажор', steps: [0, 2, 4, 5, 7, 9, 11, 12] },
-    {
-      en: 'Natural minor',
-      ru: 'Натуральный минор',
-      steps: [0, 2, 3, 5, 7, 8, 10, 12],
-    },
-    { en: 'Dorian', ru: 'Дорийский', steps: [0, 2, 3, 5, 7, 9, 10, 12] },
-    {
-      en: 'Mixolydian',
-      ru: 'Миксолидийский',
-      steps: [0, 2, 4, 5, 7, 9, 10, 12],
-    },
-    {
-      en: 'Major pentatonic',
-      ru: 'Мажорная пентатоника',
-      steps: [0, 2, 4, 7, 9, 12],
-    },
-    {
-      en: 'Minor pentatonic',
-      ru: 'Минорная пентатоника',
-      steps: [0, 3, 5, 7, 10, 12],
-    },
-    {
-      en: 'Blues (12-TET)',
-      ru: 'Блюзовый (12-TET)',
-      steps: [0, 3, 5, 6, 7, 10, 12],
-    },
-  ],
+  scales,
   chords: [
-    { en: 'Major triad', ru: 'Мажорное трезвучие', steps: [0, 4, 7] },
-    { en: 'Minor triad', ru: 'Минорное трезвучие', steps: [0, 3, 7] },
-    { en: 'Diminished', ru: 'Уменьшённое', steps: [0, 3, 6] },
-    { en: 'Augmented', ru: 'Увеличенное', steps: [0, 4, 8] },
+    {
+      en: 'Major triad',
+      ru: 'Мажорное трезвучие',
+      steps: [0, 4, 7],
+      degrees: [0, 2, 4],
+    },
+    {
+      en: 'Minor triad',
+      ru: 'Минорное трезвучие',
+      steps: [0, 3, 7],
+      degrees: [0, 2, 4],
+    },
+    {
+      en: 'Diminished',
+      ru: 'Уменьшённое',
+      steps: [0, 3, 6],
+      degrees: [0, 2, 4],
+    },
+    {
+      en: 'Augmented',
+      ru: 'Увеличенное',
+      steps: [0, 4, 8],
+      degrees: [0, 2, 4],
+    },
     {
       en: 'Dominant seventh',
       ru: 'Малый мажорный септаккорд',
       steps: [0, 4, 7, 10],
+      degrees: [0, 2, 4, 6],
     },
     {
       en: 'Major seventh',
       ru: 'Большой мажорный септаккорд',
       steps: [0, 4, 7, 11],
+      degrees: [0, 2, 4, 6],
     },
     {
       en: 'Minor seventh',
       ru: 'Малый минорный септаккорд',
       steps: [0, 3, 7, 10],
+      degrees: [0, 2, 4, 6],
     },
   ],
 };
