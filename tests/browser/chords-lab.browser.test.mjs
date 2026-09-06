@@ -33,12 +33,17 @@ function mount(lang = 'en') {
     root.render(createElement(ChordsLab, { lang }));
   });
 }
-afterEach(() => {
+afterEach(async () => {
   if (root) void act(() => root.unmount());
   root = null;
   container?.remove();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
+  // A test that narrows the viewport must not leave the next one there: below
+  // 768px the sidebar becomes a sheet, so an unrelated test would fail with a
+  // missing element instead of its own reason. Restoring here rather than at
+  // the end of that test also survives its failure.
+  await page.viewport(1280, 900);
 });
 const button = (name) => {
   const locator = page.getByRole('button', { name, exact: true });
@@ -53,8 +58,12 @@ async function choose(label, option) {
   await act(async () => {
     await page.getByRole('combobox', { name: label, exact: true }).click();
   });
+  const item = page.getByRole('option', { name: option, exact: true });
+  await expect.element(item).toBeInTheDocument();
   await act(async () => {
-    await page.getByRole('option', { name: option, exact: true }).click();
+    // A long grouped list can open scrolled away from the wanted entry.
+    item.element().scrollIntoView({ block: 'center' });
+    await item.click();
   });
 }
 const pitches = () =>
@@ -98,10 +107,16 @@ test('Edit, transpose, reorder and hear a progression with correctly spelled inv
   await button('Move chord left').click();
   expect(cards()[0]).toBe('A♭maj9/B♭');
   await button('Duplicate chord').click();
+  // The copy lands beside its original and becomes the selection, so that a
+  // duplicated chord can be edited where it will be heard.
   expect(cards()).toHaveLength(5);
-  await expect.element(button('Move chord right')).toBeDisabled();
+  expect(cards()[1]).toBe('A♭maj9/B♭');
+  expect(
+    container.querySelectorAll('.chord-card')[1].getAttribute('aria-pressed'),
+  ).toBe('true');
   await button('Remove chord').click();
   expect(cards()).toHaveLength(4);
+  expect(cards()[0]).toBe('A♭maj9/B♭');
   await button('Chord 2: G♭').click();
   expect(container.textContent).toContain('Shared pitches');
   await button('Sevenths').click();
@@ -120,7 +135,7 @@ test('Edit, transpose, reorder and hear a progression with correctly spelled inv
 test('Russian notation, root/bass feedback and source tabs stay usable at phone width', async () => {
   await page.viewport(390, 844);
   mount('ru');
-  await choose('Отправная точка', 'Минор · вводный тон');
+  await choose('Отправная точка', 'Минор · вводный тон · i–iv–V7–i');
   expect(pitches()).toEqual(['до', 'ми-бемоль', 'соль']);
   await choose('Бас / обращение', 'соль · в басу');
   expect(pitches()).toEqual(['соль', 'до', 'ми-бемоль']);
@@ -146,7 +161,7 @@ test('Russian notation, root/bass feedback and source tabs stay usable at phone 
   await choose('Тоника · транспонировать', 'ре-бемоль');
   await choose('Вид аккорда', 'Мажорное трезвучие');
   await choose('Ступень основного тона', '5 · ля-бемоль');
-  await choose('Длительность', '2 долей');
+  await choose('Длительность', '2 доли');
   await button('Слушать').click();
   await button('Стоп').click();
   await page
@@ -164,20 +179,24 @@ test('Russian notation, root/bass feedback and source tabs stay usable at phone 
     .getByRole('tab', { name: 'Слушайте и исследуйте', exact: true })
     .click();
   expect(container.textContent).toContain('исходный пример');
-  await page.viewport(1280, 900);
 });
 
 test('All style examples and accompaniment controls change what gets scheduled', async () => {
   mount();
   for (const [name, expected] of [
-    ['Minor · the leading tone', ['Cm', 'Fm', 'G7', 'Cm']],
+    ['Minor key · the leading tone · i–iv–V7–i', ['Cm', 'Fm', 'G7', 'Cm']],
     [
-      'Blues · twelve bars',
+      'Twelve-bar blues · the basic frame · I7 · IV7 · V7',
       ['C7', 'C7', 'C7', 'C7', 'F7', 'F7', 'C7', 'C7', 'G7', 'F7', 'C7', 'C7'],
     ],
-    ['Jazz · ii–V–I', ['Dm7', 'G7', 'Cmaj7']],
-    ['Pop · four-chord loop', ['C', 'G', 'Am', 'F']],
-    ['Classical · a return home', ['C', 'F', 'G7', 'C']],
+    [
+      'Lament · a descending minor tetrachord · i–♭VII–♭VI–V',
+      ['Cm', 'B♭', 'A♭', 'G'],
+    ],
+    ['Hopscotch · step, step, skip · IV–V–vi–I', ['F', 'G', 'Am', 'C']],
+    ['ii–V–I · the shortest circle · ii7–V7–Imaj7', ['Dm7', 'G7', 'Cmaj7']],
+    ['Singer/songwriter · four chords · I–V–vi–IV', ['C', 'G', 'Am', 'F']],
+    ['Authentic cadence · a return home · I–IV–V7–I', ['C', 'F', 'G7', 'C']],
   ]) {
     await choose('Starting point', name);
     expect(cards()).toEqual(expected);
@@ -393,4 +412,81 @@ test('The app opens the chords hash, switches EN/RU, links from Sound lab, and d
   await button('Sound lab').click();
   await button('Open Chords lab · build a progression').click();
   expect(window.location.hash).toBe('#chords');
+});
+
+test('Loading another example replaces the phrase, and one Undo brings it back', async () => {
+  mount();
+  await expect.element(button('Undo')).toBeDisabled();
+  await expect.element(button('Redo')).toBeDisabled();
+
+  // Build something worth losing: a different chord type and an extra card.
+  await choose('Chord type', 'Minor seventh');
+  await button('Add G').click();
+  expect(cards()).toEqual(['Cm7', 'F', 'G7', 'C', 'G']);
+  expect(container.textContent).toContain('· edited');
+
+  await choose('Starting point', 'Doo-wop · the ballad cycle · I–vi–IV–V');
+  expect(cards()).toEqual(['C', 'Am', 'F', 'G']);
+  // The replacement says so, rather than leaving the reader to notice.
+  expect(container.querySelector('output.chord-message').textContent).toContain(
+    'Undo brings it back',
+  );
+
+  await button('Undo').click();
+  expect(cards()).toEqual(['Cm7', 'F', 'G7', 'C', 'G']);
+  expect(container.querySelector('output.chord-message')).toBeNull();
+  await button('Redo').click();
+  expect(cards()).toEqual(['C', 'Am', 'F', 'G']);
+
+  // Undo reaches every kind of edit, including transposition and deletion,
+  // and a new edit clears the redo branch rather than leaving a stale future.
+  await button('Undo').click();
+  await button('Chord 5: G').click();
+  await button('Remove chord').click();
+  expect(cards()).toEqual(['Cm7', 'F', 'G7', 'C']);
+  await choose('Tonic · transpose', 'D');
+  expect(cards()).toEqual(['Dm7', 'G', 'A7', 'D']);
+  await expect.element(button('Redo')).toBeDisabled();
+  await button('Undo').click();
+  await button('Undo').click();
+  expect(cards()).toEqual(['Cm7', 'F', 'G7', 'C', 'G']);
+
+  // The selection cannot point past a shortened phrase after undo or redo.
+  await button('Chord 5: G').click();
+  await button('Redo').click();
+  await button('Redo').click();
+  expect(cards()).toEqual(['Dm7', 'G', 'A7', 'D']);
+  expect(container.textContent).toContain('Selected 4 / 4');
+});
+
+test('A card is marked as an applied dominant only while the next chord proves it', async () => {
+  mount();
+  const applied = () =>
+    [...container.querySelectorAll('.chord-roman em')].map(
+      (n) => n.textContent,
+    );
+  expect(applied()).toEqual([]);
+
+  await choose(
+    'Starting point',
+    'Applied dominant · a dominant of the dominant · I–V7/V–V–I',
+  );
+  expect(cards()).toEqual(['C', 'D7', 'G', 'C']);
+  expect(applied()).toEqual(['V7/V']);
+
+  // Change what follows it and the claim is withdrawn, because the label
+  // describes a resolution rather than a chord.
+  await button('Chord 3: G').click();
+  await choose('Root degree', '7 · B');
+  expect(applied()).toEqual([]);
+  await button('Undo').click();
+  expect(applied()).toEqual(['V7/V']);
+
+  // The jazz blues carries two of them, on the same degree, four bars apart.
+  await choose(
+    'Starting point',
+    'Jazz blues · ii–V inside the form · I7 … VI7–ii7–V7',
+  );
+  expect(applied()).toEqual(['V7/ii']);
+  expect(cards()[7]).toBe('A7');
 });

@@ -20,6 +20,39 @@ export const LANGUAGES = ['en', 'ru'] as const;
 export type Lang = (typeof LANGUAGES)[number];
 
 export const LANGUAGE_STORAGE_KEY = 'oml-language';
+export const SIDEBAR_WIDTH_STORAGE_KEY = 'oml-sidebar-width';
+
+/**
+ * Navigation labels are translated, and a translation can be much longer than
+ * the English it replaces: `Chords lab` becomes `Лаборатория аккордов`. The
+ * default width fits the design, the range keeps the sidebar usable at either
+ * end, and the reader can move it. Pixels, because the sidebar is measured in
+ * pixels and the value is written straight into `--sidebar-width`.
+ */
+export const SIDEBAR_WIDTH = { min: 190, max: 420, preferred: 232 };
+
+/** Any value the sidebar can actually take; anything unusable is the default. */
+export function clampSidebarWidth(value: number): number {
+  if (!Number.isFinite(value)) return SIDEBAR_WIDTH.preferred;
+  return Math.min(
+    SIDEBAR_WIDTH.max,
+    Math.max(SIDEBAR_WIDTH.min, Math.round(value)),
+  );
+}
+
+/** The saved sidebar width; missing, unreadable or nonsense values are the default. */
+export function sidebarWidthFromStorage(
+  storage: Pick<Storage, 'getItem'> | null | undefined,
+): number {
+  try {
+    const saved = storage?.getItem(SIDEBAR_WIDTH_STORAGE_KEY);
+    if (saved === null || saved === undefined || saved.trim() === '')
+      return SIDEBAR_WIDTH.preferred;
+    return clampSidebarWidth(Number(saved));
+  } catch {
+    return SIDEBAR_WIDTH.preferred;
+  }
+}
 
 export type ClientStore<T> = {
   /** Registers a listener and returns the function that removes it. */

@@ -1,5 +1,11 @@
 'use client';
-import { useEffect, useEffectEvent, useRef, useState } from 'react';
+import {
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -10,13 +16,17 @@ import {
   Music2,
   Play,
   Plus,
+  Redo2,
   Square,
   Trash2,
+  Undo2,
 } from 'lucide-react';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -24,6 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { NumberField } from './number-field';
 import { ChordPlayer, type ChordTone } from '@/lib/chord-audio';
 import {
+  appliedDominant,
   chordNotes,
   chordQualities,
   chordSymbol,
@@ -33,8 +44,10 @@ import {
   MAX_CHORDS,
   paletteChord,
   planProgression,
-  progressionPresets,
+  progressionTemplates,
   romanNumeral,
+  templateGroups,
+  templateSources,
   type ChordKey,
   type ChordQuality,
   type ChordStep,
@@ -42,17 +55,21 @@ import {
   type Texture,
 } from '@/lib/chords';
 import { pitchLabel, pitchName, type MusicLanguage } from '@/lib/notation';
+import { count } from '@/lib/plural';
 
+type Option = { value: string; label: string };
 function Choice({
   label,
   value,
   options,
   onChange,
+  children,
 }: {
   label: string;
   value: string;
-  options: { value: string; label: string }[];
+  options: Option[];
   onChange: (value: string) => void;
+  children?: ReactNode;
 }) {
   return (
     <div className="chord-field">
@@ -64,34 +81,73 @@ function Choice({
         }}
       >
         <SelectTrigger aria-label={label}>
+          {/* A value outside the list is shown as itself rather than crashing. */}
           <SelectValue>
-            {options.find((option) => option.value === value)!.label}
+            {options.find((option) => option.value === value)?.label ?? value}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
+        {/* A long grouped list reads better anchored under its trigger than
+            centred on the current value, which can open a 22-entry popup
+            already scrolled past the family the reader is looking for. */}
+        <SelectContent
+          className="chord-select-content"
+          alignItemWithTrigger={false}
+        >
+          {children ??
+            options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
         </SelectContent>
       </Select>
     </div>
   );
 }
 
+/**
+ * The document the editor owns. Playback preferences (timbre, volume, repeat
+ * count) stay outside it, because undoing a change to the progression should
+ * not silently move the volume slider back as well.
+ */
+type Draft = {
+  key: ChordKey;
+  chords: ChordStep[];
+  tempo: number;
+  texture: Texture;
+  template: number;
+  edited: boolean;
+};
+type History = { past: Draft[]; present: Draft; future: Draft[] };
+/** Deep enough for a working session, short enough to stay a fixed cost. */
+const HISTORY_LIMIT = 60;
+
+function fromTemplate(index: number, tonic = 0): Draft {
+  const template = progressionTemplates[index];
+  return {
+    key: { tonic, mode: template.mode },
+    chords: template.steps.map((chord) => ({ ...chord })),
+    tempo: template.tempo,
+    texture: template.texture,
+    template: index,
+    edited: false,
+  };
+}
+
 export function ChordsLab({ lang }: { lang: MusicLanguage }) {
   const t = (en: string, ru: string) => (lang === 'ru' ? ru : en);
-  const [key, setKey] = useState<ChordKey>({ tonic: 0, mode: 'major' });
-  const [preset, setPreset] = useState(0);
-  const [edited, setEdited] = useState(false);
-  const [chords, setChords] = useState<ChordStep[]>(
-    progressionPresets[0].steps,
-  );
-  const [selected, setSelected] = useState(0);
+  const [history, setHistory] = useState<History>(() => ({
+    past: [],
+    present: fromTemplate(1),
+    future: [],
+  }));
+  const draft = history.present;
+  const { key, chords, tempo, texture } = draft;
+  const [selectedCard, setSelected] = useState(0);
+  // Undo, redo and deletion can shorten the phrase under the selection.
+  const selected = Math.min(selectedCard, chords.length - 1);
+  const [replaced, setReplaced] = useState(false);
   const [sevenths, setSevenths] = useState(false);
-  const [tempo, setTempo] = useState(84);
-  const [texture, setTexture] = useState<Texture>('held');
   const [tone, setTone] = useState<ChordTone>('triangle');
   const [volume, setVolume] = useState(25);
   const [repeats, setRepeats] = useState(1);
@@ -111,6 +167,8 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
   const notes = chordNotes(key, chord);
   const construction = chordNotes(key, { ...chord, inversion: 0 });
   const definition = chordQualities[chord.quality];
+  const template = progressionTemplates[draft.template];
+  const source = templateSources[template.source];
   const duration =
     ((chords.reduce((sum, c) => sum + c.beats, 0) * 60) / tempo) * repeats;
   const common =
@@ -182,44 +240,97 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
       }
     }
   }
-  function changeChord(changes: Partial<ChordStep>) {
+
+  /**
+   * Every change to the progression goes through here, so that every change is
+   * reversible. Choosing a different starting example is a change like any
+   * other: it replaces the phrase, and one Undo brings the old one back.
+   */
+  function commit(change: (draft: Draft) => Draft, nextSelected?: number) {
     stop();
-    setEdited(true);
+    setHistory((state) => ({
+      past: [...state.past, state.present].slice(-HISTORY_LIMIT),
+      present: change(state.present),
+      future: [],
+    }));
+    if (nextSelected !== undefined) setSelected(nextSelected);
     setAnswer(null);
-    setChords(
-      chords.map((c, i) => (i === selected ? { ...c, ...changes } : c)),
+    setReplaced(false);
+  }
+  function undo() {
+    stop();
+    setHistory((state) =>
+      state.past.length === 0
+        ? state
+        : {
+            past: state.past.slice(0, -1),
+            present: state.past.at(-1)!,
+            future: [state.present, ...state.future].slice(0, HISTORY_LIMIT),
+          },
     );
-  }
-  function selectPreset(index: number) {
-    stop();
-    const next = progressionPresets[index];
-    setPreset(index);
-    setKey({ ...key, mode: next.mode });
-    setChords(next.steps.map((c) => ({ ...c })));
-    setTempo(next.tempo);
-    setTexture(next.texture);
-    setSelected(0);
     setAnswer(null);
-    setEdited(false);
+    setReplaced(false);
   }
-  function addChord(next: ChordStep) {
+  function redo() {
     stop();
-    setEdited(true);
-    setChords([...chords, { ...next }]);
-    setSelected(chords.length);
+    setHistory((state) =>
+      state.future.length === 0
+        ? state
+        : {
+            past: [...state.past, state.present].slice(-HISTORY_LIMIT),
+            present: state.future[0],
+            future: state.future.slice(1),
+          },
+    );
     setAnswer(null);
+    setReplaced(false);
   }
-  function move(direction: number) {
-    stop();
-    const next = [...chords];
-    [next[selected], next[selected + direction]] = [
-      next[selected + direction],
-      next[selected],
-    ];
-    setChords(next);
-    setSelected(selected + direction);
-    setEdited(true);
+  const changeChord = (changes: Partial<ChordStep>) =>
+    commit((d) => ({
+      ...d,
+      edited: true,
+      chords: d.chords.map((c, i) =>
+        i === selected ? { ...c, ...changes } : c,
+      ),
+    }));
+  function loadTemplate(index: number) {
+    const wasEdited = draft.edited;
+    commit(() => fromTemplate(index, key.tonic), 0);
+    setReplaced(wasEdited);
   }
+  const appendChord = (next: ChordStep) =>
+    commit(
+      (d) => ({ ...d, edited: true, chords: [...d.chords, { ...next }] }),
+      chords.length,
+    );
+  const duplicateChord = () =>
+    commit(
+      (d) => ({
+        ...d,
+        edited: true,
+        chords: d.chords.toSpliced(selected + 1, 0, { ...chord }),
+      }),
+      selected + 1,
+    );
+  const removeChord = () =>
+    commit(
+      (d) => ({
+        ...d,
+        edited: true,
+        chords: d.chords.filter((_, i) => i !== selected),
+      }),
+      Math.max(0, selected - 1),
+    );
+  const move = (direction: number) =>
+    commit((d) => {
+      const next = [...d.chords];
+      [next[selected], next[selected + direction]] = [
+        next[selected + direction],
+        next[selected],
+      ];
+      return { ...d, edited: true, chords: next };
+    }, selected + direction);
+
   const hearChord = () =>
     void play(planProgression(key, [{ ...chord, beats: 2 }], 80, 'held', 1), [
       selected,
@@ -252,21 +363,34 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
         <div className="chord-setup">
           <Choice
             label={t('Starting point', 'Отправная точка')}
-            value={String(preset)}
-            onChange={(v) => selectPreset(Number(v))}
-            options={progressionPresets.map((p, i) => ({
+            value={String(draft.template)}
+            onChange={(v) => loadTemplate(Number(v))}
+            options={progressionTemplates.map((item, i) => ({
               value: String(i),
-              label: p[lang],
+              label: `${item[lang]} · ${item.pattern}`,
             }))}
-          />
+          >
+            {templateGroups.map((group) => (
+              <SelectGroup key={group.id}>
+                <SelectLabel>{group[lang]}</SelectLabel>
+                {progressionTemplates.flatMap((item, i) =>
+                  item.group === group.id
+                    ? [
+                        <SelectItem key={item.id} value={String(i)}>
+                          {item[lang]} · {item.pattern}
+                        </SelectItem>,
+                      ]
+                    : [],
+                )}
+              </SelectGroup>
+            ))}
+          </Choice>
           <Choice
             label={t('Tonic · transpose', 'Тоника · транспонировать')}
             value={String(key.tonic)}
-            onChange={(v) => {
-              stop();
-              setKey({ ...key, tonic: Number(v) });
-              setAnswer(null);
-            }}
+            onChange={(v) =>
+              commit((d) => ({ ...d, key: { ...d.key, tonic: Number(v) } }))
+            }
             options={Array.from({ length: 12 }, (_, tonic) => ({
               value: String(tonic),
               label: pitchName(keyPitch({ ...key, tonic }), lang),
@@ -275,12 +399,13 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
           <Choice
             label={t('Palette scale', 'Гамма палитры')}
             value={key.mode}
-            onChange={(v) => {
-              stop();
-              setKey({ ...key, mode: v as ChordKey['mode'] });
-              setEdited(true);
-              setAnswer(null);
-            }}
+            onChange={(v) =>
+              commit((d) => ({
+                ...d,
+                edited: true,
+                key: { ...d.key, mode: v as ChordKey['mode'] },
+              }))
+            }
             options={[
               { value: 'major', label: t('Major', 'Мажор') },
               {
@@ -294,42 +419,69 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
           className="chord-timeline"
           aria-label={t('Progression chords', 'Аккорды последовательности')}
         >
-          {chords.map((item, i) => (
-            <button
-              key={i}
-              className={`chord-card ${i === selected ? 'is-selected' : ''} ${i === active ? 'is-sounding' : ''}`}
-              aria-pressed={i === selected}
-              aria-label={`${t('Chord', 'Аккорд')} ${i + 1}: ${chordSymbol(key, item)}`}
-              onClick={() => {
-                setSelected(i);
-                setAnswer(null);
-              }}
-            >
-              <span className="chord-card-top">
-                <span>{String(i + 1).padStart(2, '0')}</span>
-                <span>
-                  {item.beats} {t('beats', 'долей')}
+          {chords.map((item, i) => {
+            const applied = appliedDominant(key, item, chords[i + 1]);
+            return (
+              <button
+                key={i}
+                className={`chord-card ${i === selected ? 'is-selected' : ''} ${i === active ? 'is-sounding' : ''}`}
+                aria-pressed={i === selected}
+                aria-label={`${t('Chord', 'Аккорд')} ${i + 1}: ${chordSymbol(key, item)}`}
+                onClick={() => {
+                  setSelected(i);
+                  setAnswer(null);
+                }}
+              >
+                <span className="chord-card-top">
+                  <span>{String(i + 1).padStart(2, '0')}</span>
+                  <span>{count(item.beats, lang, 'beats')}</span>
                 </span>
-              </span>
-              <strong>{chordSymbol(key, item)}</strong>
-              <span className="chord-roman">{romanNumeral(key, item)}</span>
-              <span className="chord-beat-dots" aria-hidden="true">
-                {Array.from({ length: item.beats }, (_, n) => (
-                  <i key={n} />
-                ))}
-              </span>
-              {i === active && (
-                <span className="chord-now">{t('Playing', 'Звучит')}</span>
-              )}
-            </button>
-          ))}
+                <strong>{chordSymbol(key, item)}</strong>
+                <span className="chord-roman">
+                  {romanNumeral(key, item)}
+                  {applied && (
+                    <em
+                      title={t(
+                        'Acts as the dominant of the next chord',
+                        'Действует как доминанта к следующему аккорду',
+                      )}
+                    >
+                      {applied}
+                    </em>
+                  )}
+                </span>
+                <span className="chord-beat-dots" aria-hidden="true">
+                  {Array.from({ length: item.beats }, (_, n) => (
+                    <i key={n} />
+                  ))}
+                </span>
+                {i === active && (
+                  <span className="chord-now">{t('Playing', 'Звучит')}</span>
+                )}
+              </button>
+            );
+          })}
         </fieldset>
         <div className="chord-edit-actions">
-          <span>
+          <output>
             {t('Selected', 'Выбран')} {selected + 1} / {chords.length}
-            {edited ? t(' · edited', ' · изменено') : ''}
-          </span>
+            {draft.edited ? t(' · edited', ' · изменено') : ''}
+          </output>
           <div>
+            <button
+              aria-label={t('Undo', 'Отменить')}
+              disabled={history.past.length === 0}
+              onClick={undo}
+            >
+              <Undo2 size={16} />
+            </button>
+            <button
+              aria-label={t('Redo', 'Вернуть')}
+              disabled={history.future.length === 0}
+              onClick={redo}
+            >
+              <Redo2 size={16} />
+            </button>
             <button
               aria-label={t('Move chord left', 'Переместить аккорд влево')}
               disabled={selected === 0}
@@ -347,25 +499,27 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
             <button
               aria-label={t('Duplicate chord', 'Дублировать аккорд')}
               disabled={chords.length >= MAX_CHORDS}
-              onClick={() => addChord(chord)}
+              onClick={duplicateChord}
             >
               <Copy size={16} />
             </button>
             <button
               aria-label={t('Remove chord', 'Удалить аккорд')}
               disabled={chords.length === 1}
-              onClick={() => {
-                stop();
-                setChords(chords.filter((_, i) => i !== selected));
-                setSelected(Math.max(0, selected - 1));
-                setEdited(true);
-                setAnswer(null);
-              }}
+              onClick={removeChord}
             >
               <Trash2 size={16} />
             </button>
           </div>
         </div>
+        {replaced && (
+          <output className="chord-message">
+            {t(
+              'The example replaced the progression you had edited. Undo brings it back.',
+              'Пример заменил изменённую вами последовательность. Кнопка «Отменить» вернёт её.',
+            )}
+          </output>
+        )}
         <div className="chord-transport">
           <button
             className="primary-button"
@@ -393,10 +547,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
               min={40}
               max={200}
               value={tempo}
-              onValue={(n) => {
-                stop();
-                setTempo(n);
-              }}
+              onValue={(n) => commit((d) => ({ ...d, tempo: n }))}
             />
             <span>BPM</span>
           </label>
@@ -441,10 +592,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
             <Choice
               label={t('Texture', 'Фактура')}
               value={texture}
-              onChange={(v) => {
-                stop();
-                setTexture(v as Texture);
-              }}
+              onChange={(v) => commit((d) => ({ ...d, texture: v as Texture }))}
               options={[
                 {
                   value: 'held',
@@ -549,7 +697,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
               onChange={(v) => changeChord({ beats: Number(v) })}
               options={[1, 2, 3, 4, 6, 8].map((n) => ({
                 value: String(n),
-                label: `${n} ${t('beats', 'долей')}`,
+                label: count(n, lang, 'beats'),
               }))}
             />
           </div>
@@ -670,7 +818,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                   key={degree}
                   disabled={chords.length >= MAX_CHORDS}
                   aria-label={`${t('Add', 'Добавить')} ${chordSymbol(key, item)}`}
-                  onClick={() => addChord(item)}
+                  onClick={() => appendChord(item)}
                 >
                   <span className="chord-roman">{romanNumeral(key, item)}</span>
                   <strong>{chordSymbol(key, item)}</strong>
@@ -691,8 +839,8 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                   'Не более 16 аккордов. Удалите один, чтобы добавить новый.',
                 )
               : t(
-                  'Add a chord, then change its type or bass in the inspector. The palette follows the scale; your edited chords can go beyond it.',
-                  'Добавьте аккорд и измените его вид или бас в редакторе. Палитра следует гамме; ваши аккорды могут выходить за её пределы.',
+                  'A chord is added at the end; the copy button puts a duplicate next to the selected card. Then change its type or bass in the inspector. The palette follows the scale; your edited chords can go beyond it.',
+                  'Аккорд добавляется в конец, а кнопка копирования ставит дубликат рядом с выбранной карточкой. Затем измените вид или бас в редакторе. Палитра следует гамме; ваши аккорды могут выходить за её пределы.',
                 )}
           </p>
           {key.mode === 'minor' && (
@@ -721,16 +869,22 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
           </TabsList>
           <TabsContent value="explore">
             <h3>
-              {progressionPresets[preset][lang]}
-              {edited ? t(' · starting example', ' · исходный пример') : ''}
+              {template[lang]} · {template.pattern}
+              {draft.edited
+                ? t(' · starting example', ' · исходный пример')
+                : ''}
             </h3>
-            <p>{progressionPresets[preset].note[lang]}</p>
+            <p>{template.note[lang]}</p>
             <p>
               {t(
-                'Change one thing at a time: chord type, bass, order, then tempo. Listen before deciding which version you prefer.',
-                'Меняйте по одному параметру: вид аккорда, бас, порядок, затем темп. Послушайте, прежде чем выбрать понравившийся вариант.',
+                'Change one thing at a time: chord type, bass, order, then tempo. Listen before deciding which version you prefer. Every change can be undone, including loading another example.',
+                'Меняйте по одному параметру: вид аккорда, бас, порядок, затем темп. Послушайте, прежде чем выбрать понравившийся вариант. Любое изменение можно отменить, в том числе загрузку другого примера.',
               )}
             </p>
+            <a className="chord-source" href={source.href}>
+              <BookOpen size={15} />
+              {source.label}
+            </a>
           </TabsContent>
           <TabsContent value="practice">
             <h3>
@@ -802,55 +956,44 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
               </div>
               <div>
                 <h3>
+                  {t('V/x · applied dominants', 'V/x · побочные доминанты')}
+                </h3>
+                <p>
+                  {t(
+                    'A card shows V/x only when its chord is major where the scale is not, and the next chord’s root lies a fifth below. Both conditions are needed, because an applied dominant is defined by its resolution. Chords the lab cannot prove are left with their degree numeral alone.',
+                    'Отметка V/x появляется, только если аккорд мажорный там, где гамма даёт другой вид, и корень следующего аккорда лежит квинтой ниже. Нужны оба условия: побочная доминанта определяется своим разрешением. Там, где лаборатория не может это доказать, остаётся только обозначение ступени.',
+                  )}
+                </p>
+              </div>
+              <div>
+                <h3>
                   {t('A model to experiment with', 'Модель для экспериментов')}
                 </h3>
                 <p>
                   {t(
-                    'This lab uses 12-tone equal temperament, A4 = 440 Hz, and straight 4/4. The style examples are harmonic starting points. They do not model every tradition, phrasing, or rule of voice leading.',
-                    'Здесь используются равномерная темперация из 12 ступеней, ля первой октавы = 440 Гц и ровный размер 4/4. Стилевые примеры — отправные точки для работы с гармонией. Они не моделируют все традиции, фразировку и правила голосоведения.',
+                    'This lab uses 12-tone equal temperament, A4 = 440 Hz, and straight 4/4. The examples are harmonic starting points drawn from the readings below. They do not model every tradition, phrasing, or rule of voice leading, and a chord pattern alone does not establish a style or certify a cadence.',
+                    'Здесь используются равномерная темперация из 12 ступеней, ля первой октавы = 440 Гц и ровный размер 4/4. Примеры — гармонические отправные точки из приведённых ниже источников. Они не моделируют все традиции, фразировку и правила голосоведения, а сама последовательность аккордов не определяет ни стиль, ни каденцию.',
                   )}
                 </p>
               </div>
             </div>
-            <a
-              className="chord-source"
-              href="https://musictheory.pugetsound.edu/mt21c/TriadsIntroduction.html"
-            >
-              <BookOpen size={15} />
-              Robert Hutchinson ·{' '}
-              {t(
-                'Music Theory for the 21st-Century Classroom',
-                'Music Theory for the 21st-Century Classroom',
-              )}{' '}
-              · §6.1
-            </a>
             <div className="chord-source-links">
+              {Object.entries(templateSources).map(([id, item]) => (
+                <a key={id} href={item.href}>
+                  {item.label}
+                </a>
+              ))}
+              <a href="https://musictheory.pugetsound.edu/mt21c/TriadsIntroduction.html">
+                Hutchinson · §6.1 {t('Triads', 'Трезвучия')}
+              </a>
               <a href="https://musictheory.pugetsound.edu/mt21c/InvertedTriads.html">
-                §6.3 · {t('Inversions', 'Обращения')}
+                Hutchinson · §6.3 {t('Inversions', 'Обращения')}
               </a>
               <a href="https://musictheory.pugetsound.edu/mt21c/SeventhChordsIntroduction.html">
-                §8.1 · {t('Sevenths', 'Септаккорды')}
-              </a>
-              <a href="https://musictheory.pugetsound.edu/mt21c/HarmonicFunction.html">
-                §9.4 · {t('Function', 'Функции')}
-              </a>
-              <a href="https://musictheory.pugetsound.edu/mt21c/ShorterProgressionsFromTheCircleOfFifths.html">
-                §9.3.1 · ii–V–I
-              </a>
-              <a href="https://musictheory.pugetsound.edu/mt21c/BestsellerProgression.html">
-                §9.7 · {t('Pop', 'Поп')}
-              </a>
-              <a href="https://musictheory.pugetsound.edu/mt21c/TwelveBarBlues.html">
-                §12.4 · {t('Blues form', 'Блюзовая форма')}
+                Hutchinson · §8.1 {t('Sevenths', 'Септаккорды')}
               </a>
               <a href="https://musictheory.pugetsound.edu/mt21c/JazzChordBasics.html">
-                §31.1 · {t('Ninths', 'Нонаккорды')}
-              </a>
-              <a href="https://www.gmajormusictheory.org/HarmExpansions/Ch5/05_5.html">
-                {t(
-                  'Blues: chord type and function',
-                  'Блюз: вид аккорда и функция',
-                )}
+                Hutchinson · §31.1 {t('Ninths', 'Нонаккорды')}
               </a>
             </div>
           </TabsContent>
@@ -858,8 +1001,8 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
       </section>
       <p className="chord-footnote">
         {t(
-          'Start quietly · Esc to stop · Editing stops playback · Sound stays in your browser',
-          'Начните тихо · Esc — стоп · Редактирование останавливает звук · Звук создаётся в браузере',
+          'Start quietly · Esc to stop · Editing stops playback · Every change can be undone · Sound stays in your browser',
+          'Начните тихо · Esc — стоп · Редактирование останавливает звук · Любое изменение обратимо · Звук создаётся в браузере',
         )}
       </p>
     </div>

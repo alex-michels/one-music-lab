@@ -63,10 +63,14 @@ import {
 import { AudioEngine } from '@/lib/audio';
 import {
   LANGUAGE_STORAGE_KEY,
+  SIDEBAR_WIDTH,
+  SIDEBAR_WIDTH_STORAGE_KEY,
+  clampSidebarWidth,
   createClientStore,
   langFromStorage,
   localStorageOrNull,
   pageFromHash,
+  sidebarWidthFromStorage,
   type Lang,
   type Page,
 } from '@/lib/client-store';
@@ -87,6 +91,10 @@ const pageStore = createClientStore<Page>(
 const langStore = createClientStore<Lang>(
   () => langFromStorage(localStorageOrNull()),
   'en',
+);
+const sidebarWidthStore = createClientStore<number>(
+  () => sidebarWidthFromStorage(localStorageOrNull()),
+  SIDEBAR_WIDTH.preferred,
 );
 function WaveIcon({ wave }: { wave: Wave }) {
   const d =
@@ -115,14 +123,78 @@ function WaveIcon({ wave }: { wave: Wave }) {
     </svg>
   );
 }
+/**
+ * Drag handle for the navigation panel's width. Translated labels are not all
+ * the same length — `Chords lab` is `Лаборатория аккордов` — so the labels wrap
+ * at the default width rather than being cut off, and a reader who would rather
+ * have them on one line can widen the panel here. It is a button rather than
+ * the ARIA window-splitter pattern, because a focusable `separator` is not
+ * something this project's linter will accept without a suppression; the cost
+ * is that the current width is not announced, and the gain is that pointer,
+ * keyboard and screen-reader users all get the same working control. Arrow keys
+ * move it, Shift moves it faster, Home restores the design width, and the value
+ * is remembered per browser.
+ */
+function SidebarResizer({
+  width,
+  setWidth,
+  t,
+}: {
+  width: number;
+  setWidth: (value: number) => void;
+  t: (en: string, ru: string) => string;
+}) {
+  return (
+    <button
+      type="button"
+      className="sidebar-resizer"
+      aria-label={t(
+        'Navigation width. Drag, or use the left and right arrow keys.',
+        'Ширина панели навигации. Перетащите или используйте стрелки влево и вправо.',
+      )}
+      onDoubleClick={() => setWidth(SIDEBAR_WIDTH.preferred)}
+      onPointerDown={(event) => {
+        event.preventDefault();
+        const handle = event.currentTarget;
+        handle.setPointerCapture(event.pointerId);
+        // The panel starts at the viewport's left edge, so the pointer's own
+        // x position is the width the reader is asking for.
+        const drag = (moved: PointerEvent) =>
+          setWidth(clampSidebarWidth(moved.clientX));
+        const release = () => {
+          handle.removeEventListener('pointermove', drag);
+          handle.removeEventListener('pointerup', release);
+          handle.removeEventListener('pointercancel', release);
+        };
+        handle.addEventListener('pointermove', drag);
+        handle.addEventListener('pointerup', release);
+        handle.addEventListener('pointercancel', release);
+      }}
+      onKeyDown={(event) => {
+        const step = event.shiftKey ? 32 : 8;
+        if (event.key === 'ArrowLeft')
+          setWidth(clampSidebarWidth(width - step));
+        else if (event.key === 'ArrowRight')
+          setWidth(clampSidebarWidth(width + step));
+        else if (event.key === 'Home') setWidth(SIDEBAR_WIDTH.preferred);
+        else return;
+        event.preventDefault();
+      }}
+    />
+  );
+}
 function Navigation({
   page,
   navigate,
   t,
+  width,
+  setWidth,
 }: {
   page: Page;
   navigate: (p: Page) => void;
   t: (en: string, ru: string) => string;
+  width: number;
+  setWidth: (value: number) => void;
 }) {
   const { setOpenMobile } = useSidebar();
   const items = [
@@ -217,6 +289,7 @@ function Navigation({
           <span>v0.1</span>
         </div>
       </SidebarFooter>
+      <SidebarResizer width={width} setWidth={setWidth} t={t} />
     </Sidebar>
   );
 }
@@ -232,6 +305,11 @@ export default function Home() {
     pageStore.subscribe,
     pageStore.getSnapshot,
     pageStore.getServerSnapshot,
+  );
+  const sidebarWidth = useSyncExternalStore(
+    sidebarWidthStore.subscribe,
+    sidebarWidthStore.getSnapshot,
+    sidebarWidthStore.getServerSnapshot,
   );
   const setLang = langStore.set;
   const setPage = pageStore.set;
@@ -371,6 +449,13 @@ export default function Home() {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
     } catch {}
   }, [lang]);
+  // Same ordering rule as the language above: the store has already read the
+  // saved width by the time this effect writes one back.
+  useEffect(() => {
+    try {
+      localStorage.setItem(SIDEBAR_WIDTH_STORAGE_KEY, String(sidebarWidth));
+    } catch {}
+  }, [sidebarWidth]);
   useEffect(() => {
     audio.current?.update(frequency, wave, volume / 100);
   }, [frequency, wave, volume]);
@@ -567,8 +652,16 @@ export default function Home() {
     pythagorean: t('Pythagorean · A', 'Пифагорейский · от A'),
   };
   return (
-    <SidebarProvider style={{ '--sidebar-width': '232px' } as CSSProperties}>
-      <Navigation page={page} navigate={navigate} t={t} />
+    <SidebarProvider
+      style={{ '--sidebar-width': sidebarWidth + 'px' } as CSSProperties}
+    >
+      <Navigation
+        page={page}
+        navigate={navigate}
+        t={t}
+        width={sidebarWidth}
+        setWidth={sidebarWidthStore.set}
+      />
       <div className="workspace">
         <header className="topbar">
           <div className="breadcrumb">

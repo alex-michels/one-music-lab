@@ -79,10 +79,20 @@ is still pending. System font selection does not bundle font binaries.
 The original Chords lab takes product inspiration from OneMotion Chord Player;
 no OneMotion code, assets, audio, compositions or embedded runtime are included.
 [Chords lab provenance and source sections](docs/chords-lab.md) records the
-verified Hutchinson, DeBenedetti and Фролов readings. Their rights remain with
-their respective owners; original concise educational explanations remain
-CC BY 4.0 and original implementation remains Apache-2.0. No textbook notation
-images, musical examples or sound recordings are redistributed.
+verified Hutchinson, DeBenedetti, Open Music Theory and Фролов readings. Their
+rights remain with their respective owners; original concise educational
+explanations remain CC BY 4.0 and original implementation remains Apache-2.0.
+No textbook notation images, musical examples or sound recordings are
+redistributed.
+
+The progression library names chord patterns read in Open Music Theory
+(CC BY-SA 4.0) and in Robert Hutchinson's open text. A chord succession such as
+`I–vi–IV–V` is a musical fact rather than an expressive work, and every
+explanation, family name and translation shipped beside it was written for this
+project. No sentence, notated example, audio, image or worksheet from either
+text is copied, so the ShareAlike term of CC BY-SA 4.0 is not triggered and
+this project's own licensing is unchanged. Attribution is given in the UI and in
+[chords-lab.md](docs/chords-lab.md).
 
 Current lessons link to UNSW, Open Music Theory and the University of Puget
 Sound. External recordings, book scans, or extracted score images are not

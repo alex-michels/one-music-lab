@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import {
+  appliedDominant,
   chordNotes,
   chordQualities,
   chordSymbol,
@@ -7,10 +8,14 @@ import {
   keyName,
   keyPitch,
   keyTonics,
+  MAX_CHORDS,
   paletteChord,
   planProgression,
-  progressionPresets,
+  progressionTemplates,
   romanNumeral,
+  templateGroups,
+  templateSources,
+  validateChord,
 } from '../lib/chords.ts';
 import { pitchLabel, pitchName } from '../lib/notation.ts';
 
@@ -170,26 +175,255 @@ test('Diatonic palettes and Roman numerals distinguish type, scale reference and
   ).toEqual([]);
 });
 
-test('Style presets produce the intended progressions and a twelve-bar blues, not twelve beats', () => {
-  const expected = [
-    ['C', 'F', 'G7', 'C'],
-    ['Cm', 'Fm', 'G7', 'Cm'],
-    ['C7', 'C7', 'C7', 'C7', 'F7', 'F7', 'C7', 'C7', 'G7', 'F7', 'C7', 'C7'],
-    ['Dm7', 'G7', 'Cmaj7'],
-    ['C', 'G', 'Am', 'F'],
-  ];
-  progressionPresets.forEach((p, i) => {
-    const key = { ...C, mode: p.mode };
-    expect(p.steps.map((c) => chordSymbol(key, c))).toEqual(expected[i]);
-    expect(
-      planProgression(key, p.steps, p.tempo, p.texture, 1).duration,
-    ).toBeCloseTo(
-      (p.steps.reduce((sum, c) => sum + c.beats, 0) * 60) / p.tempo,
-    );
-  });
-  expect(progressionPresets[2].steps.reduce((sum, c) => sum + c.beats, 0)).toBe(
-    48,
+// Written from the readings, not from lib/chords.ts: the chord symbols each
+// template must produce in C major or C minor, and the Roman numerals the
+// picker advertises. A wrong degree, quality or order fails here.
+const expectedTemplates = {
+  blank: ['C'],
+  authentic: ['C', 'F', 'G7', 'C'],
+  half: ['C', 'Am', 'Dm', 'G'],
+  deceptive: ['C', 'F', 'G7', 'Am'],
+  plagal: ['C', 'G', 'C', 'F', 'C'],
+  minorDominant: ['Cm', 'Fm', 'G7', 'Cm'],
+  lament: ['Cm', 'B♭', 'A♭', 'G'],
+  circleFifths: ['Em', 'Am', 'Dm', 'G', 'C'],
+  singerSongwriter: ['C', 'G', 'Am', 'F'],
+  singerSongwriterMinor: ['Am', 'F', 'C', 'G'],
+  dooWop: ['C', 'Am', 'F', 'G'],
+  dooWopTwo: ['C', 'Am', 'Dm', 'G'],
+  hopscotch: ['F', 'G', 'Am', 'C'],
+  jazzTwoFive: ['Dm7', 'G7', 'Cmaj7'],
+  jazzMinorTwoFive: ['Dm7♭5', 'G7', 'Cm(maj7)'],
+  turnaround: ['Em7', 'Am7', 'Dm7', 'G7'],
+  blues: [
+    'C7',
+    'C7',
+    'C7',
+    'C7',
+    'F7',
+    'F7',
+    'C7',
+    'C7',
+    'G7',
+    'F7',
+    'C7',
+    'C7',
+  ],
+  bluesQuickChange: [
+    'C7',
+    'F7',
+    'C7',
+    'C7',
+    'F7',
+    'F7',
+    'C7',
+    'C7',
+    'G7',
+    'F7',
+    'C7',
+    'G7',
+  ],
+  minorBlues: [
+    'Cm7',
+    'Cm7',
+    'Cm7',
+    'Cm7',
+    'Fm7',
+    'Fm7',
+    'Cm7',
+    'Cm7',
+    'Dm7♭5',
+    'G7',
+    'Cm7',
+    'Cm7',
+  ],
+  jazzBlues: [
+    'C7',
+    'F7',
+    'C7',
+    'C7',
+    'F7',
+    'F7',
+    'C7',
+    'A7',
+    'Dm7',
+    'G7',
+    'C7',
+    'A7',
+  ],
+  borrowedFour: ['C', 'F', 'Fm', 'C'],
+  appliedDominant: ['C', 'D7', 'G', 'C'],
+};
+const expectedNumerals = {
+  half: ['I', 'vi', 'ii', 'V'],
+  lament: ['i', '♭VII', '♭VI', 'V'],
+  circleFifths: ['iii', 'vi', 'ii', 'V', 'I'],
+  hopscotch: ['IV', 'V', 'vi', 'I'],
+  jazzMinorTwoFive: ['iiø7', 'V7', 'i(maj7)'],
+  minorBlues: [
+    'i7',
+    'i7',
+    'i7',
+    'i7',
+    'iv7',
+    'iv7',
+    'i7',
+    'i7',
+    'iiø7',
+    'V7',
+    'i7',
+    'i7',
+  ],
+  borrowedFour: ['I', 'IV', 'iv', 'I'],
+};
+
+test('Every template spells the progression its name and Roman numerals claim', () => {
+  expect(new Set(progressionTemplates.map((p) => p.id)).size).toBe(
+    progressionTemplates.length,
   );
+  expect(
+    Object.keys(expectedTemplates).sort((a, b) => a.localeCompare(b)),
+  ).toEqual(
+    progressionTemplates.map((p) => p.id).sort((a, b) => a.localeCompare(b)),
+  );
+  for (const template of progressionTemplates) {
+    const key = { ...C, mode: template.mode };
+    expect(
+      template.steps.map((c) => chordSymbol(key, c)),
+      template.id,
+    ).toEqual(expectedTemplates[template.id]);
+    if (expectedNumerals[template.id])
+      expect(
+        template.steps.map((c) => romanNumeral(key, c)),
+        template.id,
+      ).toEqual(expectedNumerals[template.id]);
+  }
+});
+
+test('Every template is playable inside the editor and audio bounds it declares', () => {
+  const groups = new Set(templateGroups.map((g) => g.id));
+  const used = new Set();
+  for (const template of progressionTemplates) {
+    const key = { ...C, mode: template.mode };
+    expect(groups.has(template.group), template.id).toBe(true);
+    used.add(template.group);
+    expect(Object.hasOwn(templateSources, template.source), template.id).toBe(
+      true,
+    );
+    expect(template.steps.length).toBeGreaterThan(0);
+    expect(template.steps.length).toBeLessThanOrEqual(MAX_CHORDS);
+    for (const chord of template.steps) validateChord(chord);
+    // Four passes is the most the transport offers, and the planner refuses
+    // anything over three minutes: no template may be unplayable as loaded.
+    const plan = planProgression(
+      key,
+      template.steps,
+      template.tempo,
+      template.texture,
+      4,
+    );
+    expect(plan.duration).toBeLessThanOrEqual(180);
+    expect(plan.starts).toHaveLength(template.steps.length * 4);
+    expect(
+      planProgression(key, template.steps, template.tempo, template.texture, 1)
+        .duration,
+    ).toBeCloseTo(
+      (template.steps.reduce((sum, c) => sum + c.beats, 0) * 60) /
+        template.tempo,
+    );
+    for (const lang of ['en', 'ru']) {
+      expect(template[lang].length, template.id).toBeGreaterThan(3);
+      expect(template.note[lang].length, template.id).toBeGreaterThan(40);
+    }
+    expect(template.en, template.id).not.toBe(template.ru);
+    expect(template.note.en, template.id).not.toBe(template.note.ru);
+    expect(template.pattern, template.id).toMatch(/[IiVv]/);
+    // Transposition must not break a template in any offered key.
+    for (let tonic = 0; tonic < 12; tonic++)
+      for (const chord of template.steps)
+        expect(() =>
+          chordSymbol({ tonic, mode: template.mode }, chord),
+        ).not.toThrow();
+  }
+  expect([...used].sort((a, b) => a.localeCompare(b))).toEqual(
+    templateGroups.map((g) => g.id).sort((a, b) => a.localeCompare(b)),
+  );
+  for (const source of Object.values(templateSources))
+    expect(source.href).toMatch(/^https:\/\//);
+});
+
+test('The twelve-bar forms are twelve bars of four beats, not twelve beats', () => {
+  for (const id of ['blues', 'bluesQuickChange', 'minorBlues', 'jazzBlues']) {
+    const template = progressionTemplates.find((p) => p.id === id);
+    expect(template.steps, id).toHaveLength(12);
+    expect(
+      template.steps.reduce((sum, c) => sum + c.beats, 0),
+      id,
+    ).toBe(48);
+  }
+});
+
+test('An applied dominant is labelled only when the next chord proves it', () => {
+  const dominantOfFive = chord('seventh', { degree: 1 });
+  const five = chord('major', { degree: 4 });
+  expect(appliedDominant(C, dominantOfFive, five)).toBe('V7/V');
+  // Same chord, unproven: nothing follows it, or what follows is not a fifth below.
+  expect(appliedDominant(C, dominantOfFive, undefined)).toBeNull();
+  expect(appliedDominant(C, dominantOfFive, chord())).toBeNull();
+  // A triad works too, and the target keeps its own case but loses extensions.
+  expect(
+    appliedDominant(
+      C,
+      chord('major', { degree: 5 }),
+      chord('min7', { degree: 1 }),
+    ),
+  ).toBe('V/ii');
+  expect(
+    appliedDominant(
+      C,
+      chord('seventh', { degree: 5 }),
+      chord('min7', { degree: 1 }),
+    ),
+  ).toBe('V7/ii');
+  expect(
+    appliedDominant(
+      C,
+      chord('seventh', { degree: 2 }),
+      chord('minor', { degree: 5 }),
+    ),
+  ).toBe('V7/vi');
+  // The key's own dominant is never an applied dominant, in either mode.
+  expect(appliedDominant(C, five, chord())).toBeNull();
+  const Cm = { tonic: 0, mode: 'minor' };
+  expect(
+    appliedDominant(Cm, chord('seventh', { degree: 4 }), chord('minor')),
+  ).toBeNull();
+  // Blues I7 to IV7: the scale triad on that degree is already major, so the
+  // lab declines to call it applied. ♭VII in minor is diatonic for the same reason.
+  expect(
+    appliedDominant(C, chord('seventh'), chord('seventh', { degree: 3 })),
+  ).toBeNull();
+  expect(
+    appliedDominant(
+      Cm,
+      chord('major', { degree: 6 }),
+      chord('major', { degree: 2 }),
+    ),
+  ).toBeNull();
+  // A minor or suspended chord is never a dominant, whatever follows it.
+  for (const quality of ['min7', 'sus4', 'diminished', 'halfDim7'])
+    expect(appliedDominant(C, chord(quality, { degree: 1 }), five)).toBeNull();
+  // In minor a major tonic pointing at iv is an applied dominant of iv.
+  expect(
+    appliedDominant(Cm, chord('seventh'), chord('minor', { degree: 3 })),
+  ).toBe('V7/iv');
+  for (const bad of [{ degree: 7 }, { beats: 0 }])
+    expect(() => appliedDominant(C, chord('major', bad), five)).toThrow(
+      RangeError,
+    );
+  expect(() =>
+    appliedDominant(C, dominantOfFive, chord('major', { degree: -1 })),
+  ).toThrow(RangeError);
 });
 
 test('Playback planning respects beats, fractional tempo, repetitions and exact texture onsets', () => {
