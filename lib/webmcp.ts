@@ -1,10 +1,120 @@
-export type LabState = { frequency:number;reference:number;tuning:string;wave:string;playing:boolean };
-type Tool = {name:string;title:string;description:string;inputSchema:object;annotations:{readOnlyHint:boolean;untrustedContentHint:boolean};execute:(input:unknown)=>unknown};
-type ModelDocument = Document & {modelContext?:{registerTool:(tool:Tool,options:{signal:AbortSignal})=>void|Promise<void>}};
-export function registerLabTools(read:()=>LabState,configure:(values:Partial<LabState>)=>void,stop:()=>void) {
-  const context=(document as ModelDocument).modelContext;if(!context?.registerTool)return()=>{};const lifecycle=new AbortController();
-  const register=(tool:Tool)=>{try{void Promise.resolve(context.registerTool(tool,{signal:lifecycle.signal})).catch(()=>{});}catch{}};
-  register({name:'read_sound_lab',title:'Read sound lab',description:'Read the current frequency, A4 reference, tuning system, waveform and playback state.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:false},execute:()=>read()});
-  register({name:'configure_sound_lab',title:'Configure sound lab',description:'Set frequency, A4 reference, tuning or waveform and open the lab. Stops any playing sound. Does not start audio.',inputSchema:{type:'object',properties:{frequency:{type:'number',minimum:20,maximum:20000},reference:{type:'number',minimum:20,maximum:2000},tuning:{type:'string',enum:['equal','just','pythagorean']},wave:{type:'string',enum:['sine','triangle','square','sawtooth']}},additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute:(input)=>{if(!input||typeof input!=='object'||Array.isArray(input))throw new Error('Expected settings object');const value=input as Record<string,unknown>;for(const key of Object.keys(value))if(!['frequency','reference','tuning','wave'].includes(key))throw new Error('Unknown setting');for(const [key,max]of [['frequency',20000],['reference',2000]]as const)if(key in value&&(typeof value[key]!=='number'||!Number.isFinite(value[key])||value[key]<20||value[key]>max))throw new Error('Frequency outside supported range');if('wave'in value&&!['sine','triangle','square','sawtooth'].includes(String(value.wave)))throw new Error('Invalid waveform');if('tuning'in value&&!['equal','just','pythagorean'].includes(String(value.tuning)))throw new Error('Invalid tuning');configure(value);return read();}});
-  register({name:'stop_lab_audio',title:'Stop lab audio',description:'Stop all continuous and preview audio in the sound lab.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute:()=>{stop();return read();}});return()=>lifecycle.abort();
+export type LabState = {
+  frequency: number;
+  reference: number;
+  tuning: string;
+  wave: string;
+  playing: boolean;
+};
+type Tool = {
+  name: string;
+  title: string;
+  description: string;
+  inputSchema: object;
+  annotations: { readOnlyHint: boolean; untrustedContentHint: boolean };
+  execute: (input: unknown) => unknown;
+};
+type ModelDocument = Document & {
+  modelContext?: {
+    registerTool: (
+      tool: Tool,
+      options: { signal: AbortSignal },
+    ) => void | Promise<void>;
+  };
+};
+export function registerLabTools(
+  read: () => LabState,
+  configure: (values: Partial<LabState>) => void,
+  stop: () => void,
+) {
+  const context = (document as ModelDocument).modelContext;
+  if (!context?.registerTool) return () => {};
+  const lifecycle = new AbortController();
+  const register = (tool: Tool) => {
+    try {
+      void Promise.resolve(
+        context.registerTool(tool, { signal: lifecycle.signal }),
+      ).catch(() => {});
+    } catch {}
+  };
+  register({
+    name: 'read_sound_lab',
+    title: 'Read sound lab',
+    description:
+      'Read the current frequency, A4 reference, tuning system, waveform and playback state.',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+      additionalProperties: false,
+    },
+    annotations: { readOnlyHint: true, untrustedContentHint: false },
+    execute: () => read(),
+  });
+  register({
+    name: 'configure_sound_lab',
+    title: 'Configure sound lab',
+    description:
+      'Set frequency, A4 reference, tuning or waveform and open the lab. Stops any playing sound. Does not start audio.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        frequency: { type: 'number', minimum: 20, maximum: 20000 },
+        reference: { type: 'number', minimum: 20, maximum: 2000 },
+        tuning: { type: 'string', enum: ['equal', 'just', 'pythagorean'] },
+        wave: {
+          type: 'string',
+          enum: ['sine', 'triangle', 'square', 'sawtooth'],
+        },
+      },
+      additionalProperties: false,
+    },
+    annotations: { readOnlyHint: false, untrustedContentHint: false },
+    execute: (input) => {
+      if (!input || typeof input !== 'object' || Array.isArray(input))
+        throw new Error('Expected settings object');
+      const value = input as Record<string, unknown>;
+      for (const key of Object.keys(value))
+        if (!['frequency', 'reference', 'tuning', 'wave'].includes(key))
+          throw new Error('Unknown setting');
+      for (const [key, max] of [
+        ['frequency', 20000],
+        ['reference', 2000],
+      ] as const)
+        if (
+          key in value &&
+          (typeof value[key] !== 'number' ||
+            !Number.isFinite(value[key]) ||
+            value[key] < 20 ||
+            value[key] > max)
+        )
+          throw new Error('Frequency outside supported range');
+      if (
+        'wave' in value &&
+        !['sine', 'triangle', 'square', 'sawtooth'].includes(String(value.wave))
+      )
+        throw new Error('Invalid waveform');
+      if (
+        'tuning' in value &&
+        !['equal', 'just', 'pythagorean'].includes(String(value.tuning))
+      )
+        throw new Error('Invalid tuning');
+      configure(value);
+      return read();
+    },
+  });
+  register({
+    name: 'stop_lab_audio',
+    title: 'Stop lab audio',
+    description: 'Stop all continuous and preview audio in the sound lab.',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+      additionalProperties: false,
+    },
+    annotations: { readOnlyHint: false, untrustedContentHint: false },
+    execute: () => {
+      stop();
+      return read();
+    },
+  });
+  return () => lifecycle.abort();
 }

@@ -24,7 +24,9 @@ await test('All initial executable and styling resources exist in the portable d
     assert.ok(value.startsWith('/') && !value.startsWith('//'), tag);
     const url = new URL(value, 'http://127.0.0.1');
     const path = resolve(root, `.${decodeURIComponent(url.pathname)}`);
-    assert.ok(path.startsWith(root + (process.platform === 'win32' ? '\\' : '/')));
+    assert.ok(
+      path.startsWith(root + (process.platform === 'win32' ? '\\' : '/')),
+    );
     assert.ok((await stat(path)).isFile(), value);
     if (tag.startsWith('<script')) scripts++;
     if (/\brel="stylesheet"/.test(tag)) styles++;
@@ -36,14 +38,21 @@ await test('All initial executable and styling resources exist in the portable d
 await test('Browser assets contain no font CDN fallback or source maps', async () => {
   assert.doesNotMatch(html, /fonts\.(?:googleapis|gstatic)\.com/);
   const assets = join(root, '_next');
-  const entries = await readdir(assets, { recursive: true, withFileTypes: true });
+  const entries = await readdir(assets, {
+    recursive: true,
+    withFileTypes: true,
+  });
   for (const entry of entries) {
     assert.ok(!entry.isSymbolicLink(), entry.name);
     if (!entry.isFile()) continue;
     assert.doesNotMatch(entry.name, /\.(?:map|pem)$/);
     if (!/\.(?:css|js)$/.test(entry.name)) continue;
     const contents = await readFile(join(entry.parentPath, entry.name), 'utf8');
-    assert.doesNotMatch(contents, /fonts\.(?:googleapis|gstatic)\.com/, entry.name);
+    assert.doesNotMatch(
+      contents,
+      /fonts\.(?:googleapis|gstatic)\.com/,
+      entry.name,
+    );
     assert.doesNotMatch(contents, /sourceMappingURL=/, entry.name);
   }
 });

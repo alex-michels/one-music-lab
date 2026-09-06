@@ -1,11 +1,121 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { AudioEngine } from '../lib/audio.ts';
-class Param { value=0; events=[]; setTargetAtTime(...v){this.events.push(['target',...v]);}setValueAtTime(...v){this.events.push(['set',...v]);}linearRampToValueAtTime(...v){this.events.push(['ramp',...v]);}cancelScheduledValues(...v){this.events.push(['cancel',...v]);} }
-class Node { gain=new Param();frequency=new Param();started=[];stopped=[];connect(){}disconnect(){}start(t){this.started.push(t);}stop(t){this.stopped.push(t);} }
-class Context { sampleRate=48000;currentTime=10;destination={};oscillators=[];gains=[];resume(){return Promise.resolve();}createGain(){const n=new Node();this.gains.push(n);return n;}createOscillator(){const n=new Node();this.oscillators.push(n);return n;}createAnalyser(){return{connect(){},getByteTimeDomainData(a){a.fill(128);}};}close(){return Promise.resolve();} }
-globalThis.AudioContext=Context;
-await test('A sustained tone fades in, follows frequency changes, and stops',async()=>{const audio=new AudioEngine();assert.equal(await audio.start(432,'triangle',.2),true);const osc=audio.context.oscillators[0];assert.equal(osc.frequency.value,432);assert.equal(osc.type,'triangle');assert.equal(osc.started.length,1);audio.update(864,'square',.1);assert.equal(osc.type,'square');assert.ok(osc.frequency.events.some(e=>e[0]==='target'&&e[1]===864));audio.stopAll();assert.equal(osc.stopped.length,1);assert.ok(osc.stopped[0]>audio.context.currentTime);audio.dispose();});
-await test('Stopping during AudioContext resume cancels pending start',async()=>{const audio=new AudioEngine();let resume;audio.context.resume=()=>new Promise(resolve=>{resume=resolve;});const start=audio.start(440,'sine',.18);audio.stopAll();resume();assert.equal(await start,false);assert.equal(audio.context.oscillators.length,0);audio.dispose();});
-await test('Sequential preview schedules notes with explicit spacing and silence stops all',async()=>{const audio=new AudioEngine();await audio.preview([440,550,660],'sine',.18,.6,.75);const oscillators=audio.context.oscillators;assert.equal(oscillators.length,3);assert.deepEqual(oscillators.map(o=>o.frequency.value),[440,550,660]);assert.ok(Math.abs(oscillators[1].started[0]-oscillators[0].started[0]-.75)<1e-9);audio.stopAll();assert.ok(oscillators.every(o=>o.stopped.length===2));audio.dispose();});
-await test('A chord divides gain across voices and skips frequencies beyond Nyquist',async()=>{const audio=new AudioEngine();await audio.preview([440,550,660,25000],'sine',.18,1.5,0);assert.equal(audio.context.oscillators.length,3);for(const gain of audio.context.gains.slice(1))assert.ok(gain.gain.events.some(e=>e[0]==='ramp'&&e[1]===.25));audio.dispose();});
+class Param {
+  value = 0;
+  events = [];
+  setTargetAtTime(...v) {
+    this.events.push(['target', ...v]);
+  }
+  setValueAtTime(...v) {
+    this.events.push(['set', ...v]);
+  }
+  linearRampToValueAtTime(...v) {
+    this.events.push(['ramp', ...v]);
+  }
+  cancelScheduledValues(...v) {
+    this.events.push(['cancel', ...v]);
+  }
+}
+class Node {
+  gain = new Param();
+  frequency = new Param();
+  started = [];
+  stopped = [];
+  connect() {}
+  disconnect() {}
+  start(t) {
+    this.started.push(t);
+  }
+  stop(t) {
+    this.stopped.push(t);
+  }
+}
+class Context {
+  sampleRate = 48000;
+  currentTime = 10;
+  destination = {};
+  oscillators = [];
+  gains = [];
+  resume() {
+    return Promise.resolve();
+  }
+  createGain() {
+    const n = new Node();
+    this.gains.push(n);
+    return n;
+  }
+  createOscillator() {
+    const n = new Node();
+    this.oscillators.push(n);
+    return n;
+  }
+  createAnalyser() {
+    return {
+      connect() {},
+      getByteTimeDomainData(a) {
+        a.fill(128);
+      },
+    };
+  }
+  close() {
+    return Promise.resolve();
+  }
+}
+globalThis.AudioContext = Context;
+await test('A sustained tone fades in, follows frequency changes, and stops', async () => {
+  const audio = new AudioEngine();
+  assert.equal(await audio.start(432, 'triangle', 0.2), true);
+  const osc = audio.context.oscillators[0];
+  assert.equal(osc.frequency.value, 432);
+  assert.equal(osc.type, 'triangle');
+  assert.equal(osc.started.length, 1);
+  audio.update(864, 'square', 0.1);
+  assert.equal(osc.type, 'square');
+  assert.ok(
+    osc.frequency.events.some((e) => e[0] === 'target' && e[1] === 864),
+  );
+  audio.stopAll();
+  assert.equal(osc.stopped.length, 1);
+  assert.ok(osc.stopped[0] > audio.context.currentTime);
+  audio.dispose();
+});
+await test('Stopping during AudioContext resume cancels pending start', async () => {
+  const audio = new AudioEngine();
+  let resume;
+  audio.context.resume = () =>
+    new Promise((resolve) => {
+      resume = resolve;
+    });
+  const start = audio.start(440, 'sine', 0.18);
+  audio.stopAll();
+  resume();
+  assert.equal(await start, false);
+  assert.equal(audio.context.oscillators.length, 0);
+  audio.dispose();
+});
+await test('Sequential preview schedules notes with explicit spacing and silence stops all', async () => {
+  const audio = new AudioEngine();
+  await audio.preview([440, 550, 660], 'sine', 0.18, 0.6, 0.75);
+  const oscillators = audio.context.oscillators;
+  assert.equal(oscillators.length, 3);
+  assert.deepEqual(
+    oscillators.map((o) => o.frequency.value),
+    [440, 550, 660],
+  );
+  assert.ok(
+    Math.abs(oscillators[1].started[0] - oscillators[0].started[0] - 0.75) <
+      1e-9,
+  );
+  audio.stopAll();
+  assert.ok(oscillators.every((o) => o.stopped.length === 2));
+  audio.dispose();
+});
+await test('A chord divides gain across voices and skips frequencies beyond Nyquist', async () => {
+  const audio = new AudioEngine();
+  await audio.preview([440, 550, 660, 25000], 'sine', 0.18, 1.5, 0);
+  assert.equal(audio.context.oscillators.length, 3);
+  for (const gain of audio.context.gains.slice(1))
+    assert.ok(gain.gain.events.some((e) => e[0] === 'ramp' && e[1] === 0.25));
+  audio.dispose();
+});

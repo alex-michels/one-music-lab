@@ -60,6 +60,7 @@ npm test
 npm run test:coverage
 npm run typecheck
 npm run lint
+npm run format:check
 npm run build
 ```
 
@@ -72,7 +73,10 @@ the narrow lint allowance for explicit native-list roles. See the
 `test:coverage` is currently a **partial loaded-module report** for `lib/*.ts`
 and `hooks/*.ts`, not coverage of the whole app. UI and actual browser audio tests are still needed.
 The 24 lint errors found by the audit are fixed (ROADMAP P00); `npm run lint`
-must pass, and the Baseline checks GitHub workflow fails on any lint error.
+and `npm run format:check` must pass, and the Baseline checks GitHub workflow
+fails on a lint or formatting error. `npm run format` rewrites the authored
+source; the imported `components/ui` copies and prose, data and configuration
+files are outside the formatter, as `.oxfmtrc.json` records.
 The workflow reproduces tests/types/lint/build, the Worker HTTP check and the
 static export check; it is not a publication gate until P00 is completed.
 

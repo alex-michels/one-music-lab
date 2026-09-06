@@ -1,0 +1,3 @@
+# Keep one line ending everywhere. The formatter and its `--check` mode expect
+# LF, so a CRLF checkout would report every file as unformatted on Windows.
+* text=auto eol=lf

@@ -5,7 +5,8 @@ export const metadata: Metadata = {
   title: 'OML — One Music Lab',
   metadataBase: new URL('https://onemusiclab.org'),
   alternates: { canonical: '/' },
-  description: 'Explore sound, tuning and music theory. A bilingual laboratory with a tone generator, adjustable A4, musical notes and practical exercises.',
+  description:
+    'Explore sound, tuning and music theory. A bilingual laboratory with a tone generator, adjustable A4, musical notes and practical exercises.',
 };
 
 export default function RootLayout({
@@ -15,9 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        {children}
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

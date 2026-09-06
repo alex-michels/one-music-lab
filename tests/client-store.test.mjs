@@ -45,7 +45,10 @@ await test('The saved language is honoured only when it is a supported value', (
 });
 
 await test('Storage access that is absent or throws degrades to null', () => {
-  const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
+  const descriptor = Object.getOwnPropertyDescriptor(
+    globalThis,
+    'localStorage',
+  );
   try {
     Object.defineProperty(globalThis, 'localStorage', {
       configurable: true,
@@ -68,7 +71,8 @@ await test('Storage access that is absent or throws degrades to null', () => {
     assert.equal(localStorageOrNull(), fake);
     assert.equal(langFromStorage(localStorageOrNull()), 'ru');
   } finally {
-    if (descriptor) Object.defineProperty(globalThis, 'localStorage', descriptor);
+    if (descriptor)
+      Object.defineProperty(globalThis, 'localStorage', descriptor);
     else delete globalThis.localStorage;
   }
 });
@@ -84,14 +88,22 @@ await test('A client store reads the browser once and changes only through set',
   assert.equal(store.getSnapshot(), 'theory');
   assert.equal(store.getSnapshot(), 'theory');
   assert.equal(reads, 1, 'the browser is read exactly once');
-  assert.equal(store.getServerSnapshot(), 'lab', 'the server value stays fixed');
+  assert.equal(
+    store.getServerSnapshot(),
+    'lab',
+    'the server value stays fixed',
+  );
 
   const seen = [];
   const unsubscribe = store.subscribe(() => seen.push(store.getSnapshot()));
   store.set('practice');
   assert.deepEqual(seen, ['practice']);
   store.set('practice');
-  assert.deepEqual(seen, ['practice'], 'setting the same value does not notify');
+  assert.deepEqual(
+    seen,
+    ['practice'],
+    'setting the same value does not notify',
+  );
   unsubscribe();
   store.set('encyclopedia');
   assert.deepEqual(seen, ['practice'], 'removed listeners are not called');
