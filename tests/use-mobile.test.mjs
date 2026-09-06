@@ -8,13 +8,13 @@ function Probe() {
   return createElement('span', null, String(useIsMobile()));
 }
 
-test('Server rendering reports a desktop viewport without touching window', () => {
+await test('Server rendering reports a desktop viewport without touching window', () => {
   assert.equal(typeof globalThis.window, 'undefined');
   assert.equal(renderToString(createElement(Probe)), '<span>false</span>');
   assert.equal(mobileViewport.getServerSnapshot(), false);
 });
 
-test('The viewport snapshot follows the window width around the 768px breakpoint', () => {
+await test('The viewport snapshot follows the window width around the 768px breakpoint', () => {
   const previous = globalThis.window;
   try {
     for (const [width, expected] of [
@@ -32,7 +32,7 @@ test('The viewport snapshot follows the window width around the 768px breakpoint
   }
 });
 
-test('Subscribing listens to the media query and cleanup removes the listener', () => {
+await test('Subscribing listens to the media query and cleanup removes the listener', () => {
   const previous = globalThis.window;
   const listeners = new Set();
   const queries = [];

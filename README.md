@@ -66,6 +66,9 @@ npm run build
 `npm test` covers tuning identities, inverse note mapping, cents, WAV structure,
 audio scheduling/cancellation with a mocked AudioContext, roadmap integrity, the
 URL-hash/localStorage client store, and the viewport (`useIsMobile`) store.
+It also checks copied UI provenance, rendered `ItemGroup` list semantics and
+the narrow lint allowance for explicit native-list roles. See the
+[UI provenance boundary](docs/ui-provenance.md) before editing catalog copies.
 `test:coverage` is currently a **partial loaded-module report** for `lib/*.ts`
 and `hooks/*.ts`, not coverage of the whole app. UI and actual browser audio tests are still needed.
 The 24 lint errors found by the audit are fixed (ROADMAP P00); `npm run lint`

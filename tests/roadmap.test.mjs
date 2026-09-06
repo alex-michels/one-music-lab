@@ -15,7 +15,7 @@ const expectedIds = [
     Array.from({ length: count }, (_, n) => `${track}${n + 1}`)),
 ];
 
-test('Every original topic is represented exactly once by a completion checkbox', () => {
+await test('Every original topic is represented exactly once by a completion checkbox', () => {
   assert.ok(curriculum, 'The single curriculum checklist must exist');
   const actual = [...curriculum.matchAll(/^- \[[ x]\] (\d+\.\d+|[A-D]\d+) — .+$/gm)]
     .map((match) => match[1]);
@@ -26,7 +26,7 @@ test('Every original topic is represented exactly once by a completion checkbox'
   assert.equal(new Set(actual).size, actual.length);
 });
 
-test('Each curriculum module has four delivery layers and separate ready/published gates', () => {
+await test('Each curriculum module has four delivery layers and separate ready/published gates', () => {
   const modules = [...curriculum.matchAll(/^### ([A-Z]\d{2}) — (.+)\n([\s\S]*?)(?=^### |$(?![\s\S]))/gm)];
   assert.ok(modules.length > 0);
   assert.equal(new Set(modules.map((m) => m[1])).size, modules.length);
@@ -43,7 +43,7 @@ test('Each curriculum module has four delivery layers and separate ready/publish
   }
 });
 
-test('Curriculum prerequisites resolve and contain no cycles', () => {
+await test('Curriculum prerequisites resolve and contain no cycles', () => {
   const graph = new Map([...curriculum.matchAll(/^### ([A-Z]\d{2}) — .+\n+Зависимости: ([^.]+)\./gm)]
     .map(([, id, deps]) => [id, deps === '—' ? [] : deps.split(',')]));
   assert.ok(graph.has('F01'));
