@@ -55,16 +55,21 @@ const button = (name) => {
   return locator;
 };
 async function choose(label, option) {
+  const combobox = page.getByRole('combobox', { name: label, exact: true });
   await act(async () => {
-    await page.getByRole('combobox', { name: label, exact: true }).click();
+    await combobox.click();
   });
   const item = page.getByRole('option', { name: option, exact: true });
   await expect.element(item).toBeInTheDocument();
   await act(async () => {
-    // A long grouped list can open scrolled away from the wanted entry.
-    item.element().scrollIntoView({ block: 'center' });
+    // No manual scrolling here: the click already scrolls the option into
+    // view, and moving it first can shift it between the point being computed
+    // and the click landing, which silently leaves the old value selected.
     await item.click();
   });
+  // Confirm the value actually took. Without this a missed click surfaces
+  // later as a wrong chord, blaming whatever assertion happens to come next.
+  await expect.poll(() => combobox.element().textContent).toContain(option);
 }
 const pitches = () =>
   [...container.querySelectorAll('.chord-pitches strong')].map(
