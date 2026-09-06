@@ -164,3 +164,30 @@ test('The resize handle is reachable by keyboard and absent on a phone', async (
     )
     .toBe(true);
 });
+
+test('The language control offers three buttons and no punctuation', async () => {
+  mount();
+  const group = container.querySelector('.language-switch');
+  const buttons = [...group.querySelectorAll('button')];
+  expect(buttons.map((button) => button.textContent)).toEqual([
+    'EN',
+    'RU',
+    'DE',
+  ]);
+  // Each label is a code written in the language it selects, so it carries
+  // that language instead of being pronounced as English.
+  expect(buttons.map((button) => button.lang)).toEqual(['en', 'ru', 'de']);
+  // Nothing here submits anything, and `submit` is what a button without a
+  // type defaults to should this ever sit inside a form.
+  expect(buttons.map((button) => button.type)).toEqual([
+    'button',
+    'button',
+    'button',
+  ]);
+  // What assistive technology is actually offered: the slashes separate the
+  // three labels visually and must not be read out between them.
+  const exposed = group.cloneNode(true);
+  for (const hidden of exposed.querySelectorAll('[aria-hidden="true"]'))
+    hidden.remove();
+  expect(exposed.textContent.replace(/\s+/g, '')).toBe('ENRUDE');
+});

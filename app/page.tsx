@@ -720,27 +720,33 @@ export default function Home() {
             </span>
             <fieldset
               className="language-switch"
-
               aria-label={t('Language', 'Язык')}
             >
               <Globe2 size={16} />
               <button
+                type="button"
                 className={lang === 'en' ? 'selected' : ''}
                 aria-pressed={lang === 'en'}
                 onClick={() => setLang('en')}
+                lang="en"
               >
                 EN
               </button>
-              <span>/</span>
+              {/* The slashes only separate the three labels visually; in the
+                  accessibility tree they are read out between the buttons. */}
+              <span aria-hidden="true">/</span>
               <button
+                type="button"
                 className={lang === 'ru' ? 'selected' : ''}
                 aria-pressed={lang === 'ru'}
                 onClick={() => setLang('ru')}
+                lang="ru"
               >
                 RU
               </button>
-              <span>/</span>
+              <span aria-hidden="true">/</span>
               <button
+                type="button"
                 className={lang === 'de' ? 'selected' : ''}
                 aria-pressed={lang === 'de'}
                 onClick={() => setLang('de')}
