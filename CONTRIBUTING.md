@@ -31,10 +31,12 @@ npm run build
 ```
 
 The current tests use Node's test runner. `test:coverage` measures **loaded**
-`lib/*.ts` modules and is a temporary partial report, not repository-wide coverage.
-The baseline has nine audio/math/WAV tests plus roadmap integrity tests. Its
-24 known lint errors, uncovered UI/integration paths, and unverified browser
-behavior are tracked in P00. Do not describe this as release-certified.
+`lib/*.ts` and `hooks/*.ts` modules and is a temporary partial report, not
+repository-wide coverage.
+The baseline has nine audio/math/WAV tests, roadmap integrity tests, and tests
+for the client-state and viewport stores. The 24 lint errors found by the audit
+are fixed; uncovered UI/integration paths and unverified browser behavior are
+still tracked in P00. Do not describe this as release-certified.
 
 The target is **100% meaningful statements, branches, functions, and lines** for
 all first-party production code, including initially unimported files. Add a
@@ -45,10 +47,10 @@ owner, and follow-up issue; the reviewer decides whether it blocks publication.
 Coverage numbers do not replace input diversity, assertions, mutation testing of
 critical algorithms, actual listening, or subject-matter review.
 
-The current Baseline checks workflow deliberately reports lint debt separately.
-It is sufficient to reproduce the initial audit, not to approve production code
-or close G. Make lint and the complete coverage/browser checks mandatory once P00
-is resolved. New changes must not add untested behavior or unexplained failures.
+The Baseline checks workflow runs lint as a required step. It is sufficient to
+reproduce the audit baseline, not to approve production code or close G. Make
+the complete coverage/browser checks mandatory once P00 is resolved. New changes
+must not add lint errors, untested behavior, or unexplained failures.
 
 ## Educational contributions
 

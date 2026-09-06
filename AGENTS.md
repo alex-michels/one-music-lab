@@ -18,7 +18,8 @@ register; do not create a competing roadmap or silently drop original topic IDs.
   user-visible outcomes; use real browser audio tests where mocks are insufficient.
 - Run `npm test`, `npm run test:coverage`, `npm run typecheck`, `npm run lint`,
   and `npm run build` as applicable. Report failures honestly. The documented
-  baseline lint and coverage debt is not a waiver for new code or a release gate.
+  baseline coverage debt is not a waiver for new code or a release gate; lint
+  must pass.
 - Keep setup instructions reproducible on Windows, macOS, and Linux. Update the
   README and relevant developer/user documentation in the same PR as changes.
 - A topic is complete only after ROADMAP gate G: sourced EN/RU theory, working

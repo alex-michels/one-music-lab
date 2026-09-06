@@ -1,4 +1,4 @@
-type LabState = { frequency:number;reference:number;tuning:string;wave:string;playing:boolean };
+export type LabState = { frequency:number;reference:number;tuning:string;wave:string;playing:boolean };
 type Tool = {name:string;title:string;description:string;inputSchema:object;annotations:{readOnlyHint:boolean;untrustedContentHint:boolean};execute:(input:unknown)=>unknown};
 type ModelDocument = Document & {modelContext?:{registerTool:(tool:Tool,options:{signal:AbortSignal})=>void|Promise<void>}};
 export function registerLabTools(read:()=>LabState,configure:(values:Partial<LabState>)=>void,stop:()=>void) {
