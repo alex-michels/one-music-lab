@@ -163,7 +163,9 @@ width, which is an interface preference rather than musical work.
   Generation checks cancel pending resume operations. Escape, editing,
   hiding the page and unmounting cancel scheduled voices. Ended nodes are
   disconnected; the context is closed on unmount. Start failures are visible
-  and retryable. Volume is deliberately modest, never calibrated SPL.
+  and retryable. The volume slider reads 0–100% of this lab's own ceiling
+  rather than of full scale, so its right-hand end is a round 100% and still
+  well below what the player would accept. It is never a calibrated SPL.
 
 ## The progression library
 

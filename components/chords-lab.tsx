@@ -123,6 +123,13 @@ type Draft = {
 type History = { past: Draft[]; present: Draft; future: Draft[] };
 /** Deep enough for a working session, short enough to stay a fixed cost. */
 const HISTORY_LIMIT = 60;
+/**
+ * The loudest this lab will ask for, as a fraction of what the player accepts.
+ * Five sine voices at full master gain are louder than anyone expects from a
+ * first click, so the slider reads 0-100% of this ceiling rather than of full
+ * scale: 100% on the control is the lab full, not the machine full.
+ */
+const MAX_GAIN = 0.6;
 
 function fromTemplate(index: number, tonic = 0): Draft {
   const template = progressionTemplates[index];
@@ -151,7 +158,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
   const [replaced, setReplaced] = useState(false);
   const [sevenths, setSevenths] = useState(false);
   const [tone, setTone] = useState<ChordTone>('triangle');
-  const [volume, setVolume] = useState(25);
+  const [volume, setVolume] = useState(40);
   const [repeats, setRepeats] = useState(1);
   const [playing, setPlaying] = useState(false);
   const [pending, setPending] = useState(false);
@@ -230,7 +237,11 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
     setPending(true);
     try {
       player.current ??= new ChordPlayer();
-      const origin = await player.current.play(plan, volume / 100, tone);
+      const origin = await player.current.play(
+        plan,
+        (volume / 100) * MAX_GAIN,
+        tone,
+      );
       if (id !== request.current) return;
       setPending(false);
       if (origin === null) return;
@@ -670,7 +681,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                 type="range"
                 aria-label={t('Volume', 'Громкость')}
                 min={0}
-                max={60}
+                max={100}
                 value={volume}
                 onChange={(e) => {
                   stop();

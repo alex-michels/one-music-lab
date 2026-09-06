@@ -155,20 +155,24 @@ function SidebarResizer({
       onDoubleClick={() => setWidth(SIDEBAR_WIDTH.preferred)}
       onPointerDown={(event) => {
         event.preventDefault();
-        const handle = event.currentTarget;
-        handle.setPointerCapture(event.pointerId);
-        // The panel starts at the viewport's left edge, so the pointer's own
-        // x position is the width the reader is asking for.
+        // Capture keeps the cursor and the events on the handle while the
+        // pointer wanders off it, but Firefox refuses a pointer id it did not
+        // itself issue, and losing the drag is worse than losing the cursor.
+        try {
+          event.currentTarget.setPointerCapture(event.pointerId);
+        } catch {}
+        // The window, not the handle: an eleven-pixel target is easy to leave,
+        // and without capture the handle would stop hearing the pointer.
         const drag = (moved: PointerEvent) =>
           setWidth(clampSidebarWidth(moved.clientX));
         const release = () => {
-          handle.removeEventListener('pointermove', drag);
-          handle.removeEventListener('pointerup', release);
-          handle.removeEventListener('pointercancel', release);
+          window.removeEventListener('pointermove', drag);
+          window.removeEventListener('pointerup', release);
+          window.removeEventListener('pointercancel', release);
         };
-        handle.addEventListener('pointermove', drag);
-        handle.addEventListener('pointerup', release);
-        handle.addEventListener('pointercancel', release);
+        window.addEventListener('pointermove', drag);
+        window.addEventListener('pointerup', release);
+        window.addEventListener('pointercancel', release);
       }}
       onKeyDown={(event) => {
         const step = event.shiftKey ? 32 : 8;

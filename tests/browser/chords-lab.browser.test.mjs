@@ -213,13 +213,15 @@ test('All style examples and accompaniment controls change what gets scheduled',
     .fill('120');
   act(() => {
     const volume = container.querySelector('input[type="range"]');
-    Reflect.set(HTMLInputElement.prototype, 'value', '30', volume);
+    Reflect.set(HTMLInputElement.prototype, 'value', '50', volume);
     volume.dispatchEvent(new Event('input', { bubbles: true }));
   });
   await button('Play progression').click();
   const [plan, level, tone] = playback.mock.lastCall;
   expect(plan.duration).toBe(16);
   expect(plan.events).toHaveLength(104);
+  // The slider is a percentage of the lab's own ceiling, not of full scale,
+  // so half of it asks the player for 0.3 rather than 0.5.
   expect(level).toBe(0.3);
   expect(tone).toBe('sine');
   await choose('Texture', 'Arpeggio, rising');

@@ -61,7 +61,9 @@ const pointer = {
   pointerType: 'mouse',
   isPrimary: true,
 };
-function drag(to) {
+// A synthetic pointer id is one no browser issued, so // rejects it in Firefox. The handle must survive that, which is the point of
+// dispatching these events rather than asking the driver to move a mouse.
+function drag(to, { release = true } = {}) {
   act(() => {
     handle().dispatchEvent(
       new PointerEvent('pointerdown', { ...pointer, buttons: 1, clientX: 232 }),
@@ -69,6 +71,10 @@ function drag(to) {
     handle().dispatchEvent(
       new PointerEvent('pointermove', { ...pointer, buttons: 1, clientX: to }),
     );
+    if (release)
+      handle().dispatchEvent(
+        new PointerEvent('pointerup', { ...pointer, clientX: to }),
+      );
   });
 }
 const press = (key, shiftKey = false) =>
@@ -106,7 +112,7 @@ test('The navigation panel can be resized by pointer and by keyboard, within bou
   reset();
   expect(width()).toBe(SIDEBAR_WIDTH.preferred);
 
-  drag(330);
+  drag(330, { release: false });
   expect(width()).toBe(330);
   // Releasing ends the drag: a later move must not keep resizing the panel.
   act(() => {
