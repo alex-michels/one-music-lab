@@ -29,8 +29,12 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium firefox webkit
       - name: Unit tests and roadmap integrity
         run: npm test
+      - name: Browser, audio and accessibility tests (Chromium, Firefox, WebKit)
+        run: npm run test:browser
       - name: Coverage over all authored code (no threshold gate yet)
         run: |
           mkdir -p outputs

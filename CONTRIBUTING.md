@@ -24,6 +24,7 @@ Run:
 
 ```sh
 npm test
+npm run test:browser
 npm run test:coverage
 npm run typecheck
 npm run lint
@@ -45,7 +46,19 @@ excluded to improve a number, and `tests/coverage-boundary.test.mjs` fails if a
 new authored file is left out of the denominator. Instrumentation is not
 coverage: every authored file is now measured, but most are still at 0%.
 
-Two measurement limits are known. `vite.config.ts` cannot be instrumented,
+`npm run test:browser` runs the suites under `tests/browser/` in real
+Chromium, Firefox and WebKit through Playwright; install the engines once with
+`npx playwright install`. Audio is verified by rendering the real graph with
+`OfflineAudioContext` and measuring the samples, never by asserting that a
+mocked context was called. If one engine cannot start on your machine, narrow
+the run with `OML_BROWSERS=chromium,webkit`; CI runs all three and is the
+result that counts. Playwright's WebKit has no Web Audio at all, so the audio
+suite reports as skipped there rather than pretending to pass, and real Safari
+and mobile checks remain open device work in P00.
+
+Three measurement limits are known. The v8 coverage provider supports a single
+Chromium instance, so `test:coverage` measures Chromium and the matrix run
+covers the other engines; both run in CI. `vite.config.ts` cannot be instrumented,
 because Vitest loads the project's own Vite configuration outside the
 instrumented module graph; its behaviour is asserted directly in
 `tests/vite-config.test.mjs` instead. The artifact and HTTP suites
