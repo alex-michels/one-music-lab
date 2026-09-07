@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import { Piano, Volume2, Square } from 'lucide-react';
 import {
   notationExamples,
@@ -14,17 +15,19 @@ import {
   type SpelledPitch,
 } from '@/lib/notation';
 import { frequencyForMidi, type Tuning } from '@/lib/music';
+import { Staff } from '@/components/staff';
+import type { Clef } from '@/lib/staff';
 type Lang = import('@/lib/client-store').Lang;
 
 /**
  * The notes lab (roadmap №558). A written note, the key it lands on and the
  * frequency it makes, in one chain the reader can move from either end.
  *
- * There is no staff here yet. Engraving waits on the engine chosen in №553, so
- * this panel works in note names, which the model already spells correctly in
- * all three systems. What it can already show is the part a staff would not
- * add: that the spelling and the sounding pitch are different facts, and that
- * the reference pitch and the tuning map decide the frequency.
+ * The staff is drawn by components/staff.tsx from committed glyph outlines
+ * (№553); no engine runs here and no font is fetched. What the panel adds
+ * around it is the part a staff alone does not say: that the spelling and the
+ * sounding pitch are different facts, and that the reference pitch and the
+ * tuning map decide the frequency while the written note stays put.
  */
 
 const NATURAL_STEPS = [0, 2, 4, 5, 7, 9, 11];
@@ -43,6 +46,14 @@ function spell(
     midi: (octave + 1) * 12 + NATURAL_STEPS[letter] + accidental,
   };
 }
+
+const clefs: Clef[] = ['treble', 'bass', 'alto', 'tenor'];
+const clefNames: Record<Clef, Record<Lang, string>> = {
+  treble: { en: 'Treble', ru: 'Скрипичный', de: 'Violinschlüssel' },
+  bass: { en: 'Bass', ru: 'Басовый', de: 'Bassschlüssel' },
+  alto: { en: 'Alto', ru: 'Альтовый', de: 'Altschlüssel' },
+  tenor: { en: 'Tenor', ru: 'Теноровый', de: 'Tenorschlüssel' },
+};
 
 export function NotesLab({
   lang,
@@ -64,6 +75,7 @@ export function NotesLab({
   stop: () => void;
 }) {
   const t = translator(lang);
+  const [clef, setClef] = useState<Clef>('treble');
   const { letter, accidental, octave } = state.note;
   const setNote = (note: Partial<NotesLabState['note']>) => {
     stop();
@@ -137,6 +149,21 @@ export function NotesLab({
             <span className="panel-number">02</span>
             {t('What it is', 'Что это')}
           </span>
+        </div>
+        <div className="staff-frame">
+          <Staff pitches={[pitch]} clef={clef} lang={lang} space={11} />
+          <fieldset className="note-chooser" aria-label={t('Clef', 'Ключ')}>
+            {clefs.map((value) => (
+              <button
+                key={value}
+                className={value === clef ? 'selected' : ''}
+                aria-pressed={value === clef}
+                onClick={() => setClef(value)}
+              >
+                {clefNames[value][lang]}
+              </button>
+            ))}
+          </fieldset>
         </div>
         <div className="note-name">{pitchLabel(pitch, lang)}</div>
         <dl>
