@@ -85,6 +85,15 @@ scope](docs/german-localization.md). German teaching text is independently
 phrased original CC BY 4.0 content; no third-party paragraphs, notation images
 or recordings are copied.
 
+Planned notation teaching takes its topic order, structure and German
+terminology as orientation from Erich Wolf, *Die Musikausbildung* I
+(Breitkopf & Härtel, recorded as S33 in the [source
+register](ROADMAP.md)). Nothing is carried over from it: not its wording, not
+its question and exercise apparatus, not its compiled term lists, not its music
+examples, and not the Universal Edition facsimile it reproduces under a
+permission granted to that publisher. Its statements are re-verified against
+current sources before anything is taught, and the edition is dated when cited.
+
 The original Chords lab takes product inspiration from OneMotion Chord Player;
 no OneMotion code, assets, audio, compositions or embedded runtime are included.
 [Chords lab provenance and source sections](docs/chords-lab.md) records the
