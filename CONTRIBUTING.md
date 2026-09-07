@@ -137,8 +137,16 @@ must not add lint errors, untested behavior, or unexplained failures.
 
 ## Educational contributions
 
-Each topic needs all four layers and the complete G checklist from ROADMAP.md.
-Attach evidence for learning objectives, sources, exercise feedback, EN/RU parity,
+Use the permanent task number from [ROADMAP.md](ROADMAP.md) in assignments and
+PRs. Keep its checkbox as the only completion status; store requirements and
+evidence in the linked subject document. The [roadmap guide](docs/roadmap-guide.md)
+preserves all original topic and module IDs, including P00–P10. Never renumber
+existing tasks when regrouping them or reuse a number; append the next unused
+number for new work. Documentation checks protect the topic inventory, links,
+dependencies and separation of readiness from publication.
+
+Each topic needs all four layers and the complete [G criteria](docs/release-criteria.md).
+Attach evidence for learning objectives, sources, exercise feedback, EN/RU/DE parity,
 lab presets, encyclopedia cross-links, accessibility, tests, and rights. A shared
 experiment or concept may support multiple topics, but each topic must demonstrate
 its own learning outcome. Do not close an ID merely because a page exists.

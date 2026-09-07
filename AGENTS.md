@@ -3,6 +3,9 @@
 These rules apply to this repository. Read `ROADMAP.md`, `CONTRIBUTING.md`, and
 the relevant code before changing a feature. The roadmap is the only completion
 register; do not create a competing roadmap or silently drop original topic IDs.
+Use permanent task numbers from ROADMAP.md; preserve old IDs through
+docs/roadmap-guide.md. Requirements and evidence belong in the linked subject
+documents, with gate G in docs/release-criteria.md. Do not renumber existing tasks.
 
 - Work in a branch and open a pull request. Do not push feature changes directly
   to `main`, merge, or deploy without the owner's authorization for that action.
@@ -22,8 +25,8 @@ register; do not create a competing roadmap or silently drop original topic IDs.
   must pass.
 - Keep setup instructions reproducible on Windows, macOS, and Linux. Update the
   README and relevant developer/user documentation in the same PR as changes.
-- A topic is complete only after ROADMAP gate G: sourced EN/RU/DE theory, working
-  laboratory, meaningful practice with feedback, encyclopedia, tests, rights,
+- A topic is complete only after gate G (docs/release-criteria.md): sourced
+  EN/RU/DE theory, working laboratory, meaningful practice with feedback, encyclopedia, tests, rights,
   accessibility, review, documentation, and a publishable artifact.
 - Educational statements need verified sources with exact edition/page/section
   or timecode. AI output, search snippets, and book contents are not evidence.

@@ -1,5 +1,16 @@
 # Notation chapter — content plan
 
+**Roadmap navigation (2026-09-07):** the analysis below is preserved from the
+notation work; no lesson analysis was repeated during the documentation split.
+Line numbers and descriptions of the old Roadmap layout refer to the
+[pre-split revision](https://github.com/alex-michels/one-music-lab/blob/a05a640/ROADMAP.md).
+Use the [ID index](roadmap-guide.md) for current task numbers, [module requirements](roadmap-guide.md#учебные-модули)
+for F01/F03/F04/F05/N02, [gate G](release-criteria.md) for acceptance and
+[sources S33/S34](sources.md) for the already recorded bibliography. Old proposals
+and diagnostic observations below are historical context, not a second status
+register. The current roadmap tests protect the 511-topic mapping, module
+dependencies and links across these documents.
+
 **Status:** planning. Nothing here ships and no roadmap checkbox is closed by it. Repository facts were checked against the working tree on 2026-09-07; unverifiable claims are marked **[unverified]**. The source book is recorded as S33 in the ROADMAP register.
 
 **One-paragraph summary.** The chapter decomposes into **79 atoms**, which become **13 small theory lessons**, **~95 encyclopedia entries**, **14 generated exercise types** and **one new tab in the Sound lab**. It lands across **five** roadmap modules — F01, F03, F04, F05, N02 — and touches five more only as cross-links. It closes **no** checkbox on its own, and it cannot be cited at all until the scanned book has a bibliographic identity. The two engineering prerequisites are (a) a notation renderer, for which I recommend **hand-rolled interactive SVG over the existing `SpelledPitch` model, plus Verovio 6.3.0 run in Node at build time** for engraved examples, and (b) a rational-duration model, which does not exist anywhere in `lib/`. The two content prerequisites are a source record and a named German-language reviewer.

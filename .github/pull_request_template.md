@@ -1,7 +1,8 @@
 ## Outcome
 
 Describe the concrete problem and resulting behavior. Include relevant roadmap
-IDs and prerequisites. For a broad topic, define this release's exact scope.
+task numbers and prerequisites (old IDs resolve through docs/roadmap-guide.md).
+For a broad topic, define this release's exact scope.
 
 ## Validation
 
@@ -17,7 +18,7 @@ Commands/results and remaining risks:
 
 - [ ] Sources were read and recorded with exact references; EN/RU/DE parity checked.
 - [ ] Rights and attribution were checked for text, code, scores, and media.
-- [ ] Topic closures have all four layers and complete ROADMAP gate G evidence.
+- [ ] Topic closures have all four layers and complete docs/release-criteria.md gate G evidence.
 - [ ] Roadmap status reflects only verified work; publication is recorded separately.
 
 For documentation-only or infrastructure PRs, explicitly identify which content
