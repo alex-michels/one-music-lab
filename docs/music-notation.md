@@ -44,15 +44,23 @@ may use international letter names and scientific octaves. This combination is
 intentional and is not an outstanding localization defect. Preserve these
 displays; tasks 556/557 do not require rewriting existing features.
 
-Professional terminology and notation guide educational material and new labs
-or sections. Russian teaching explanations use professional Russian terms.
-Traditional Russian notation has priority when creating Russian laboratory
-material. International notation such as `C4`, `E♭4` and `A4` remains a valid
-alternative and is not a localization error in itself.
-Make the chosen convention clear in context or a short label without forcing
-Russian duplicates for every pitch. Correct scale-degree spelling remains
-required in either convention. This scope decision changes no existing pitch
-labels, audio, exercises or assessment answers.
+For newly created Russian material, use professional terminology and the following
+notation policy by section:
+
+| Section | Note and octave notation |
+|---|---|
+| Theory and pedagogical material | Traditional Russian names and octave designations. |
+| Trainers | Traditional Russian notation in prompts, answer labels and feedback. |
+| Ordinary encyclopedia articles | Traditional Russian notation. |
+| Encyclopedia articles explaining different international systems | The notation of the systems being discussed, clearly identified in context. |
+| Laboratory material | Traditional Russian notation has priority; international notation such as `C4`, `E♭4` and `A4` remains valid and is not a localization error in itself. |
+
+The laboratory allowance does not replace the notation policy for theory,
+trainers or ordinary encyclopedia articles. In a laboratory, make the convention
+clear in context or a short label without forcing Russian duplicates for every
+pitch. Correct scale-degree spelling remains required in either convention.
+The existing displays accepted above remain unchanged; this scope decision
+changes no current pitch labels, audio, exercises or assessment answers.
 
 ## Sources
 

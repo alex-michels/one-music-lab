@@ -8,7 +8,10 @@ docs/roadmap-guide.md. Requirements and evidence belong in the linked subject
 documents, with gate G in docs/release-criteria.md. Do not renumber existing tasks.
 Notation scope: preserve the existing Russian Sound lab displays, including
 international labels outside the localized experiment. Tasks 556/557 concern
-educational material and new labs/sections. Traditional Russian notation has
+educational material and new labs/sections. Russian theory, teaching material,
+trainers and ordinary encyclopedia articles use traditional Russian notation;
+articles about international systems use the notation of the systems discussed.
+Traditional Russian notation has
 priority in new Russian laboratory content; international notation is also valid
 and is not a localization error. Locale parity does not require retrofitting existing
 displays or adding Russian duplicates for every pitch label (see CONTRIBUTING.md).

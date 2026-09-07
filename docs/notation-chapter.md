@@ -51,7 +51,10 @@ dependencies and links across these documents.
 
 **Owner's scope clarification:** the language-specific teaching choices below
 apply to educational material and new laboratories/sections, not to a rewrite
-of the existing Sound lab. Traditional Russian notation has priority when
+of the existing Sound lab. Russian theory, teaching material, trainers and
+ordinary encyclopedia articles use traditional Russian note and octave names.
+Encyclopedia articles explaining different international systems use those
+systems' notation. Traditional Russian notation has priority when
 creating Russian laboratory material. International letter names and scientific
 octaves remain valid alternatives, not localization errors, with the convention
 clear in context or a short label. Russian duplicates for every label are not
