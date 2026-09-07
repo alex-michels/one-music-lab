@@ -2695,3 +2695,55 @@ h1 {
   cursor: not-allowed;
   opacity: 0.45;
 }
+/* Notation trainer (roadmap №558). The mode switch sits above whichever
+   exercise is showing; the kind and level rows are inside its card. */
+.practice-modes {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.practice-modes button,
+.exercise-kinds button,
+.exercise-levels button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border: 1px solid #d8ded6;
+  border-radius: 999px;
+  background: #fff;
+  color: #4a544d;
+  font-size: 13px;
+  cursor: pointer;
+}
+.practice-modes button:hover,
+.exercise-kinds button:hover,
+.exercise-levels button:hover {
+  border-color: #294f3c;
+  color: #294f3c;
+}
+.practice-modes .selected,
+.exercise-kinds .selected,
+.exercise-levels .selected {
+  background: #294f3c;
+  border-color: #294f3c;
+  color: #fff;
+}
+.exercise-kinds,
+.exercise-levels {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.exercise-levels button {
+  font-size: 12px;
+  padding: 5px 11px;
+}
+.exercise-prompt {
+  text-align: center;
+  text-wrap: balance;
+  margin: 6px 0 14px;
+}

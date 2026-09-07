@@ -925,5 +925,38 @@ export const german = {
   fine: 'fine',
   'Fine marks where the piece stops after a da capo or dal segno return.':
     'Fine bezeichnet die Stelle, an der das Stück nach der Rückkehr durch da capo oder dal segno endet.',
+  // Notation trainer (roadmap №558).
+  'READING NOTATION': 'NOTENTEXT LESEN',
+  Level: 'Stufe',
+  'Next question': 'Nächste Frage',
+  'Not quite.': 'Nicht ganz.',
+  'Read, then check': 'Erst lesen, dann prüfen',
+  'Name the answer to yourself before looking at the options. The options are there to be checked against, not to be chosen from.':
+    'Nenne die Antwort erst für dich selbst und sieh dann auf die Auswahl. Die Auswahl dient der Prüfung, nicht der Wahl.',
+  Exercise: 'Übung',
+  'Ear training': 'Gehörbildung',
+  'Reading notation': 'Notentext lesen',
+  Registers: 'Oktavlagen',
+  'Altered notes': 'Versetzungszeichen',
+  'Dotted values': 'Punktierte Werte',
+  'Irregular groups': 'Unregelmäßige Teilungen',
+  'Tied values': 'Übergebundene Werte',
+  'That is the one.': 'Genau der ist es.',
+  'The name is right and the register is not: every register starts at its own C.':
+    'Der Name stimmt, die Oktavlage nicht: jede Oktavlage beginnt bei ihrem eigenen C.',
+  'That is the neighbouring step. Count the letters, not the keys.':
+    'Das ist die Nachbarstufe. Zähle die Stufen, nicht die Tasten.',
+  'The step is right, the sign is not. Check how far the sign moves the note.':
+    'Die Stufe stimmt, das Vorzeichen nicht. Prüfe, wie weit das Zeichen den Ton versetzt.',
+  'That sounds the same but is written on another step, which is what the task asked to change.':
+    'Das klingt gleich, steht aber auf einer anderen Stufe — und genau die Schreibweise war zu ändern.',
+  'That is the value without its dot. The dot adds half of the value again.':
+    'Das ist der Wert ohne Punkt. Der Punkt fügt die Hälfte des Wertes noch einmal hinzu.',
+  'That is how many parts the value was divided into, not how long it lasts.':
+    'Das ist die Anzahl der Teile, nicht die Dauer eines Teils.',
+  'An irregular group is written in the next larger regular division, not in the one it sounds like.':
+    'Eine unregelmäßige Teilung wird im nächstgrößeren regelmäßigen Wert geschrieben, nicht in dem, nach dem sie klingt.',
+  'The values simply add up. Count them in the smaller of the two.':
+    'Die Werte addieren sich einfach. Zähle sie im kleineren der beiden.',
 } as const;
 export type GermanKey = keyof typeof german;

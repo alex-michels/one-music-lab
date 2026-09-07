@@ -19,7 +19,19 @@ import {
   X,
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { curriculum, lessons, terms } from '@/lib/learning';
+import {
+  curriculum,
+  exerciseExplanations,
+  exerciseModes,
+  lessons,
+  terms,
+} from '@/lib/learning';
+import {
+  generateFrom,
+  grade,
+  type ExerciseKind,
+  type Level,
+} from '@/lib/exercises';
 import { frequencyForMidi, noteName, type Wave } from '@/lib/music';
 type Lang = import('@/lib/client-store').Lang;
 type PlaySequence = (
@@ -278,6 +290,152 @@ const quizIntervals = [
   },
   { de: german['Octave'], en: 'Octave', ru: 'Октава', step: 12, degree: 7 },
 ];
+/**
+ * The generated notation exercises. Items are pure values from
+ * `lib/exercises.ts`, so what happens here is only choosing a seed, showing the
+ * item and reporting the tag its own generator attached to the chosen option.
+ */
+function NotationQuiz({ lang }: { lang: Lang }) {
+  const t = translator(lang);
+  const [kind, setKind] = useState<ExerciseKind>('octave-region');
+  const [level, setLevel] = useState<Level>(1);
+  // The seed is the item. Keeping it in state means a reader can be sent back
+  // to the exact question they saw, and the tests can reproduce it.
+  const [seed, setSeed] = useState(1);
+  const [chosen, setChosen] = useState<string | null>(null);
+  const [score, setScore] = useState(0);
+  const [total, setTotal] = useState(0);
+  const item = generateFrom(kind, level, seed, lang);
+  const verdict = chosen === null ? null : grade(item, chosen);
+  const answer = (id: string) => {
+    if (chosen !== null) return;
+    setChosen(id);
+    setTotal((n) => n + 1);
+    if (grade(item, id).correct) setScore((n) => n + 1);
+  };
+  const restart = (next: { kind?: ExerciseKind; level?: Level }) => {
+    if (next.kind) setKind(next.kind);
+    if (next.level) setLevel(next.level);
+    setSeed((n) => n + 101);
+    setChosen(null);
+  };
+  return (
+    <div className="practice-layout">
+      <section className="panel practice-card">
+        <div className="eyebrow">
+          {t('READING NOTATION', 'ЧТЕНИЕ НОТНОЙ ЗАПИСИ')}
+        </div>
+        <div className="exercise-kinds">
+          {exerciseModes.map((mode) => (
+            <button
+              key={mode.kind}
+              className={mode.kind === kind ? 'selected' : ''}
+              aria-pressed={mode.kind === kind}
+              onClick={() => restart({ kind: mode.kind })}
+            >
+              {mode.label[lang]}
+            </button>
+          ))}
+        </div>
+        <div className="exercise-levels">
+          {([1, 2, 3] as const).map((value) => (
+            <button
+              key={value}
+              className={value === level ? 'selected' : ''}
+              aria-pressed={value === level}
+              onClick={() => restart({ level: value })}
+            >
+              {t('Level', 'Уровень')} {value}
+            </button>
+          ))}
+        </div>
+        <h2 className="exercise-prompt">{item.prompt}</h2>
+        <div className="answer-grid">
+          {item.options.map((option) => (
+            <button
+              key={option.id}
+              disabled={chosen !== null}
+              onClick={() => answer(option.id)}
+              className={
+                chosen !== null && option.id === item.answer
+                  ? 'answer-correct'
+                  : chosen === option.id
+                    ? 'answer-wrong'
+                    : ''
+              }
+            >
+              <span>{option.label}</span>
+              {chosen !== null && option.id === item.answer ? (
+                <Check size={18} />
+              ) : chosen === option.id ? (
+                <X size={18} />
+              ) : null}
+            </button>
+          ))}
+        </div>
+        {verdict && (
+          <output
+            className={
+              'answer-feedback ' + (verdict.correct ? 'correct' : 'incorrect')
+            }
+          >
+            <strong>
+              {verdict.correct
+                ? t('That’s right.', 'Верно.')
+                : t('Not quite.', 'Не совсем.')}
+            </strong>{' '}
+            {exerciseExplanations[verdict.tag][lang]}
+          </output>
+        )}
+        {verdict && (
+          <button className="primary-button" onClick={() => restart({})}>
+            {t('Next question', 'Следующий вопрос')}
+            <ArrowRight size={17} />
+          </button>
+        )}
+      </section>
+      <aside>
+        <section className="panel practice-progress">
+          <span className="eyebrow">{t('THIS SESSION', 'ЭТА СЕССИЯ')}</span>
+          <div className="score">
+            {score}
+            <span>/ {total}</span>
+          </div>
+          <p>{t('correct answers', 'правильных ответов')}</p>
+          <Progress
+            aria-label={t(
+              'Correct answer percentage',
+              'Процент правильных ответов',
+            )}
+            value={total ? (score / total) * 100 : 0}
+          />
+          <div className="progress-caption">
+            <span>{total ? Math.round((score / total) * 100) : 0}%</span>
+            <button
+              onClick={() => {
+                setScore(0);
+                setTotal(0);
+                restart({});
+              }}
+            >
+              {t('Reset session', 'Сбросить сессию')}
+            </button>
+          </div>
+        </section>
+        <div className="practice-tip">
+          <h3>{t('Read, then check', 'Сначала прочитайте')}</h3>
+          <p>
+            {t(
+              'Name the answer to yourself before looking at the options. The options are there to be checked against, not to be chosen from.',
+              'Сначала ответьте себе, а потом смотрите на варианты. Варианты нужны для проверки, а не для выбора.',
+            )}
+          </p>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
 export function Practice({
   lang,
   reference,
@@ -288,6 +446,7 @@ export function Practice({
   play: PlaySequence;
 }) {
   const t = translator(lang);
+  const [mode, setMode] = useState<'ear' | 'notation'>('ear');
   const [question, setQuestion] = useState<{
     index: number;
     root: number;
@@ -332,150 +491,182 @@ export function Practice({
     if (i === question.index) setScore((n) => n + 1);
   };
   return (
-    <div className="practice-layout">
-      <section className="panel practice-card">
-        <div className="eyebrow">
-          {t('EAR TRAINING · INTERVALS', 'ТРЕНИРОВКА СЛУХА · ИНТЕРВАЛЫ')}
-        </div>
-        <span className="practice-icon">
-          <Headphones size={38} strokeWidth={1.4} />
-        </span>
-        <h2>
-          {t(
-            'Listen to the space between.',
-            'Услышьте расстояние между нотами.',
-          )}
-        </h2>
-        <p>
-          {t(
-            'Two notes, played one after the other. Which interval do you hear?',
-            'Две ноты звучат последовательно. Какой интервал вы слышите?',
-          )}
-        </p>
-        <div className="quiz-pitch">
-          <span>♪</span>
-          <span className="quiz-dashes">· · · · ·</span>
-          <span>?</span>
-        </div>
-        {!question ? (
-          <button className="primary-button" onClick={next}>
-            <Play size={17} />
-            {t('Start listening', 'Начать тренировку')}
-          </button>
-        ) : (
-          <>
-            <button className="secondary-button" onClick={() => void replay()}>
-              <Volume2 size={18} />
-              {t('Listen again', 'Послушать ещё раз')}
+    <>
+      <fieldset
+        className="practice-modes"
+        aria-label={t('Exercise', 'Упражнение')}
+      >
+        <button
+          className={mode === 'ear' ? 'selected' : ''}
+          aria-pressed={mode === 'ear'}
+          onClick={() => setMode('ear')}
+        >
+          <Headphones size={16} />
+          {t('Ear training', 'Тренировка слуха')}
+        </button>
+        <button
+          className={mode === 'notation' ? 'selected' : ''}
+          aria-pressed={mode === 'notation'}
+          onClick={() => setMode('notation')}
+        >
+          <BookOpen size={16} />
+          {t('Reading notation', 'Чтение нотной записи')}
+        </button>
+      </fieldset>
+      {mode === 'notation' ? <NotationQuiz lang={lang} /> : practiceEar()}
+    </>
+  );
+  function practiceEar() {
+    return (
+      <div className="practice-layout">
+        <section className="panel practice-card">
+          <div className="eyebrow">
+            {t('EAR TRAINING · INTERVALS', 'ТРЕНИРОВКА СЛУХА · ИНТЕРВАЛЫ')}
+          </div>
+          <span className="practice-icon">
+            <Headphones size={38} strokeWidth={1.4} />
+          </span>
+          <h2>
+            {t(
+              'Listen to the space between.',
+              'Услышьте расстояние между нотами.',
+            )}
+          </h2>
+          <p>
+            {t(
+              'Two notes, played one after the other. Which interval do you hear?',
+              'Две ноты звучат последовательно. Какой интервал вы слышите?',
+            )}
+          </p>
+          <div className="quiz-pitch">
+            <span>♪</span>
+            <span className="quiz-dashes">· · · · ·</span>
+            <span>?</span>
+          </div>
+          {!question ? (
+            <button className="primary-button" onClick={next}>
+              <Play size={17} />
+              {t('Start listening', 'Начать тренировку')}
             </button>
-            <div className="answer-grid">
-              {quizIntervals.map((option, i) => (
-                <button
-                  key={i}
-                  disabled={answer !== null || !hasHeard}
-                  onClick={() => choose(i)}
+          ) : (
+            <>
+              <button
+                className="secondary-button"
+                onClick={() => void replay()}
+              >
+                <Volume2 size={18} />
+                {t('Listen again', 'Послушать ещё раз')}
+              </button>
+              <div className="answer-grid">
+                {quizIntervals.map((option, i) => (
+                  <button
+                    key={i}
+                    disabled={answer !== null || !hasHeard}
+                    onClick={() => choose(i)}
+                    className={
+                      answer !== null && i === question.index
+                        ? 'answer-correct'
+                        : answer === i
+                          ? 'answer-wrong'
+                          : ''
+                    }
+                  >
+                    <span>{option[lang]}</span>
+                    {answer !== null && i === question.index ? (
+                      <Check size={18} />
+                    ) : answer === i ? (
+                      <X size={18} />
+                    ) : (
+                      <span className="answer-number">{i + 1}</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+              {answer !== null && (
+                <output
                   className={
-                    answer !== null && i === question.index
-                      ? 'answer-correct'
-                      : answer === i
-                        ? 'answer-wrong'
-                        : ''
+                    'answer-feedback ' +
+                    (answer === question.index ? 'correct' : 'incorrect')
                   }
                 >
-                  <span>{option[lang]}</span>
-                  {answer !== null && i === question.index ? (
-                    <Check size={18} />
-                  ) : answer === i ? (
-                    <X size={18} />
-                  ) : (
-                    <span className="answer-number">{i + 1}</span>
-                  )}
+                  <strong>
+                    {answer === question.index
+                      ? t('That’s right.', 'Верно.')
+                      : t('Keep listening.', 'Продолжайте слушать.')}
+                  </strong>{' '}
+                  {quizIntervals[question.index][lang]} ·{' '}
+                  {count(quizIntervals[question.index].step, lang, 'semitones')}
+                  .
+                  <span className="answer-detail">
+                    {lang === 'de'
+                      ? intervalLabels(
+                          question.root,
+                          quizIntervals[question.index].step,
+                          quizIntervals[question.index].degree,
+                          lang,
+                        ).join(' → ')
+                      : `${noteName(question.root)} → ${noteName(question.root + quizIntervals[question.index].step)}`}{' '}
+                    · {lang === 'de' ? 'a′' : 'A4'} ={' '}
+                    {localNumber(question.reference, lang)} Hz
+                  </span>
+                </output>
+              )}
+              {answer !== null && (
+                <button className="primary-button" onClick={next}>
+                  {t('Next interval', 'Следующий интервал')}
+                  <ArrowRight size={17} />
                 </button>
-              ))}
-            </div>
-            {answer !== null && (
-              <output
-                className={
-                  'answer-feedback ' +
-                  (answer === question.index ? 'correct' : 'incorrect')
-                }
-              >
-                <strong>
-                  {answer === question.index
-                    ? t('That’s right.', 'Верно.')
-                    : t('Keep listening.', 'Продолжайте слушать.')}
-                </strong>{' '}
-                {quizIntervals[question.index][lang]} ·{' '}
-                {count(quizIntervals[question.index].step, lang, 'semitones')}.
-                <span className="answer-detail">
-                  {lang === 'de'
-                    ? intervalLabels(
-                        question.root,
-                        quizIntervals[question.index].step,
-                        quizIntervals[question.index].degree,
-                        lang,
-                      ).join(' → ')
-                    : `${noteName(question.root)} → ${noteName(question.root + quizIntervals[question.index].step)}`}{' '}
-                  · {lang === 'de' ? 'a′' : 'A4'} ={' '}
-                  {localNumber(question.reference, lang)} Hz
-                </span>
-              </output>
-            )}
-            {answer !== null && (
-              <button className="primary-button" onClick={next}>
-                {t('Next interval', 'Следующий интервал')}
-                <ArrowRight size={17} />
-              </button>
-            )}
-          </>
-        )}
-      </section>
-      <aside>
-        <section className="panel practice-progress">
-          <span className="eyebrow">{t('THIS SESSION', 'ЭТА СЕССИЯ')}</span>
-          <div className="score">
-            {score}
-            <span>/ {total}</span>
-          </div>
-          <p>{t('correct answers', 'правильных ответов')}</p>
-          <Progress
-            aria-label={t(
-              'Correct answer percentage',
-              'Процент правильных ответов',
-            )}
-            value={total ? (score / total) * 100 : 0}
-          />
-          <div className="progress-caption">
-            <span>{total ? Math.round((score / total) * 100) : 0}%</span>
-            <button
-              onClick={() => {
-                setScore(0);
-                setTotal(0);
-                setQuestion(null);
-                setAnswer(null);
-                setHasHeard(false);
-              }}
-            >
-              {t('Reset session', 'Сбросить сессию')}
-            </button>
-          </div>
+              )}
+            </>
+          )}
         </section>
-        <div className="practice-tip">
-          <h3>{t('A listening habit', 'Слуховая привычка')}</h3>
-          <p>
-            {t(
-              'Sing the first note, then the second. Notice the distance, not just whether it sounds familiar.',
-              'Спойте первую ноту, затем вторую. Обращайте внимание на расстояние, а не только на знакомое звучание.',
-            )}
-          </p>
-          <p>
-            {t(
-              'Exercises use 12-tone equal temperament. Your chosen A4 is captured when each question starts. Results stay in this session.',
-              'Упражнения используют 12-ступенный равномерный строй. Выбранная A4 фиксируется в начале вопроса. Результаты хранятся в этой сессии.',
-            )}
-          </p>
-        </div>
-      </aside>
-    </div>
-  );
+        <aside>
+          <section className="panel practice-progress">
+            <span className="eyebrow">{t('THIS SESSION', 'ЭТА СЕССИЯ')}</span>
+            <div className="score">
+              {score}
+              <span>/ {total}</span>
+            </div>
+            <p>{t('correct answers', 'правильных ответов')}</p>
+            <Progress
+              aria-label={t(
+                'Correct answer percentage',
+                'Процент правильных ответов',
+              )}
+              value={total ? (score / total) * 100 : 0}
+            />
+            <div className="progress-caption">
+              <span>{total ? Math.round((score / total) * 100) : 0}%</span>
+              <button
+                onClick={() => {
+                  setScore(0);
+                  setTotal(0);
+                  setQuestion(null);
+                  setAnswer(null);
+                  setHasHeard(false);
+                }}
+              >
+                {t('Reset session', 'Сбросить сессию')}
+              </button>
+            </div>
+          </section>
+          <div className="practice-tip">
+            <h3>{t('A listening habit', 'Слуховая привычка')}</h3>
+            <p>
+              {t(
+                'Sing the first note, then the second. Notice the distance, not just whether it sounds familiar.',
+                'Спойте первую ноту, затем вторую. Обращайте внимание на расстояние, а не только на знакомое звучание.',
+              )}
+            </p>
+            <p>
+              {t(
+                'Exercises use 12-tone equal temperament. Your chosen A4 is captured when each question starts. Results stay in this session.',
+                'Упражнения используют 12-ступенный равномерный строй. Выбранная A4 фиксируется в начале вопроса. Результаты хранятся в этой сессии.',
+              )}
+            </p>
+          </div>
+        </aside>
+      </div>
+    );
+  }
 }

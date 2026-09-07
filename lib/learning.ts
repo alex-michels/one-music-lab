@@ -1,8 +1,10 @@
 import { german } from './german';
 import { scales } from './scales';
 import type { SpelledPattern } from './notation';
+import type { ErrorTag, ExerciseKind } from './exercises';
 import { localText as b } from './i18n';
 export type { LocalText } from './i18n';
+import type { LocalText } from './i18n';
 export const lessons = [
   {
     id: 'sound',
@@ -1513,4 +1515,56 @@ export const patterns: Record<
       degrees: [0, 2, 4, 6],
     },
   ],
+};
+
+/**
+ * The generated notation exercises offered in Practice (roadmap №558). The
+ * kinds live in lib/exercises.ts; these are only their labels and the sentence
+ * shown when an answer misses, so the trainer explains a mistake instead of
+ * marking it.
+ */
+export const exerciseModes: { kind: ExerciseKind; label: LocalText }[] = [
+  { kind: 'octave-region', label: b('Registers', 'Октавы') },
+  { kind: 'accidental-name', label: b('Altered notes', 'Знаки альтерации') },
+  { kind: 'enharmonic', label: b('Enharmonic spelling', 'Энгармонизм') },
+  { kind: 'dotted-value', label: b('Dotted values', 'Длительности с точкой') },
+  { kind: 'tuplet', label: b('Irregular groups', 'Особые деления') },
+  { kind: 'tie-sum', label: b('Tied values', 'Залигованные длительности') },
+];
+
+/** One sentence per way of being wrong, keyed by the generator's own tag. */
+export const exerciseExplanations: Record<ErrorTag, LocalText> = {
+  correct: b('That is the one.', 'Именно так.'),
+  'neighbour-register': b(
+    'The name is right and the register is not: every register starts at its own C.',
+    'Название верное, а октава — нет: каждая октава начинается со своего до.',
+  ),
+  'wrong-letter': b(
+    'That is the neighbouring step. Count the letters, not the keys.',
+    'Это соседняя ступень. Считайте ступени, а не клавиши.',
+  ),
+  'wrong-alteration': b(
+    'The step is right, the sign is not. Check how far the sign moves the note.',
+    'Ступень верна, знак — нет. Проверьте, на сколько знак смещает ноту.',
+  ),
+  'same-sound-other-spelling': b(
+    'That sounds the same but is written on another step, which is what the task asked to change.',
+    'Это звучит так же, но записано от другой ступени, а изменить нужно было именно запись.',
+  ),
+  'forgot-the-dot': b(
+    'That is the value without its dot. The dot adds half of the value again.',
+    'Это длительность без точки. Точка прибавляет ещё половину длительности.',
+  ),
+  'halved-instead-of-dotted': b(
+    'That is how many parts the value was divided into, not how long it lasts.',
+    'Это число частей, на которые поделена длительность, а не её продолжительность.',
+  ),
+  'counted-the-written-value': b(
+    'An irregular group is written in the next larger regular division, not in the one it sounds like.',
+    'Особое деление записывается ближайшей большей регулярной длительностью, а не той, на которую похоже звучание.',
+  ),
+  'added-wrong': b(
+    'The values simply add up. Count them in the smaller of the two.',
+    'Длительности просто складываются. Считайте их в меньшей из двух.',
+  ),
 };
