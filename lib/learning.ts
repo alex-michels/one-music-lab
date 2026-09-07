@@ -1537,6 +1537,12 @@ export const exerciseModes: { kind: ExerciseKind; label: LocalText }[] = [
   { kind: 'dotted-value', label: b('Dotted values', 'Длительности с точкой') },
   { kind: 'tuplet', label: b('Irregular groups', 'Особые деления') },
   { kind: 'tie-sum', label: b('Tied values', 'Залигованные длительности') },
+  { kind: 'read-pitch', label: b('Read a note', 'Чтение ноты') },
+  { kind: 'clef-transform', label: b('Change of clef', 'Смена ключа') },
+  {
+    kind: 'accidental-scope',
+    label: b('How far a sign reaches', 'Действие знака'),
+  },
 ];
 
 /** One sentence per way of being wrong, keyed by the generator's own tag. */
@@ -1569,6 +1575,18 @@ export const exerciseExplanations: Record<ErrorTag, LocalText> = {
   'halved-instead-of-dotted': b(
     'That is how many parts the value was divided into, not how long it lasts.',
     'Это число частей, на которые поделена длительность, а не её продолжительность.',
+  ),
+  'read-the-other-clef': b(
+    'That is what the same place would mean in another clef. The clef at the start decides which pitch each line and space carries.',
+    'Так это место читалось бы в другом ключе. Ключ в начале определяет, какая нота стоит на каждой линейке и в каждом промежутке.',
+  ),
+  'ignored-the-sign': b(
+    'That is the note without its sign. The sign belongs to the note it stands in front of.',
+    'Это нота без знака. Знак относится к той ноте, перед которой он стоит.',
+  ),
+  'carried-the-sign-too-far': b(
+    'The sign stopped at the barline. Beyond it the note is plain again unless it is written anew.',
+    'Знак закончился на тактовой черте. За ней нота снова без знака, если он не выставлен заново.',
   ),
   'one-step-too-long': b(
     'That value is one step longer than the group uses. The written value comes from the next larger regular division, not from the starting value.',

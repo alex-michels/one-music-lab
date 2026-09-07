@@ -68,6 +68,7 @@ export function Staff({
   lang,
   space = 9,
   label,
+  barlines = [],
 }: {
   pitches: SpelledPitch[];
   clef?: Clef;
@@ -77,6 +78,8 @@ export function Staff({
   space?: number;
   /** Overrides the generated description when the picture means something more. */
   label?: string;
+  /** Note indices a barline is drawn after, for showing how far a sign reaches. */
+  barlines?: number[];
 }) {
   const titleId = useId();
   const plan: StaffLayout = layout(pitches, clef, values);
@@ -111,6 +114,23 @@ export function Staff({
         y={stepY(clefStep[clef], plan.top)}
         space={space}
       />
+      {barlines.map((index) => {
+        const note = plan.notes[index];
+        const next = plan.notes[index + 1];
+        if (!note) return null;
+        const x = next ? (note.x + next.x) / 2 : plan.width - 0.5;
+        return (
+          <line
+            key={`bar-${index}`}
+            x1={x * space}
+            x2={x * space}
+            y1={stepY(8, plan.top) * space}
+            y2={stepY(0, plan.top) * space}
+            stroke="currentColor"
+            strokeWidth={Math.max(1, space * 0.1)}
+          />
+        );
+      })}
       {plan.notes.map((note, i) => (
         <g key={i}>
           {note.ledger.map((step) => (

@@ -32,6 +32,7 @@ import {
   type ExerciseKind,
   type Level,
 } from '@/lib/exercises';
+import { Staff } from '@/components/staff';
 import { frequencyForMidi, noteName, type Wave } from '@/lib/music';
 type Lang = import('@/lib/client-store').Lang;
 type PlaySequence = (
@@ -349,6 +350,18 @@ function NotationQuiz({ lang }: { lang: Lang }) {
             </button>
           ))}
         </div>
+        {item.staff && (
+          <div className="exercise-staff">
+            <Staff
+              pitches={item.staff.pitches}
+              clef={item.staff.clef}
+              barlines={item.staff.barlines}
+              lang={lang}
+              space={13}
+              label={t('The note to name', 'Нота, которую нужно назвать')}
+            />
+          </div>
+        )}
         <h2 className="exercise-prompt">{item.prompt}</h2>
         <div className="answer-grid">
           {item.options.map((option) => (

@@ -1031,5 +1031,15 @@ export const german = {
     'MIDI legt die Nummer eines Tons fest, nicht den Namen seiner Oktavlage. Dieselbe Taste mit der Nummer 60 heißt in manchen Programmen C3, in anderen C4 und in einigen C5. Wenn die Namen auseinandergehen, gilt die Nummer.',
   'That value is one step longer than the group uses. The written value comes from the next larger regular division, not from the starting value.':
     'Dieser Wert ist eine Stufe länger als der, mit dem die Gruppe notiert wird. Der Notenwert ergibt sich aus der nächstgrößeren regelmäßigen Teilung, nicht aus dem Ausgangswert.',
+  // Staff-based exercises (roadmap №553).
+  'Read a note': 'Einen Ton lesen',
+  'Change of clef': 'Schlüsselwechsel',
+  'That is what the same place would mean in another clef. The clef at the start decides which pitch each line and space carries.':
+    'So läse sich dieselbe Stelle in einem anderen Schlüssel. Der Schlüssel am Anfang bestimmt, welcher Ton auf jeder Linie und in jedem Zwischenraum steht.',
+  'That is the note without its sign. The sign belongs to the note it stands in front of.':
+    'Das ist der Ton ohne sein Zeichen. Das Zeichen gehört zu der Note, vor der es steht.',
+  'The sign stopped at the barline. Beyond it the note is plain again unless it is written anew.':
+    'Das Zeichen endete am Taktstrich. Dahinter steht der Ton wieder ohne Zeichen, sofern es nicht erneut gesetzt wird.',
+  'The note to name': 'Der zu benennende Ton',
 } as const;
 export type GermanKey = keyof typeof german;

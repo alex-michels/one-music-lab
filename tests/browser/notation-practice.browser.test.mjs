@@ -114,3 +114,41 @@ test('Every exercise kind produces an answerable question in all three languages
     container = null;
   }
 });
+
+test('Staff-based questions draw the staff they ask about', async () => {
+  await render('en');
+  await click('Reading notation');
+  for (const [mode, expectStaff] of [
+    ['Read a note', true],
+    ['Change of clef', true],
+    ['How far a sign reaches', true],
+    ['Registers', false],
+  ]) {
+    await click(mode);
+    const staff = container.querySelector('svg.staff');
+    if (expectStaff) {
+      expect(staff, `${mode} drew no staff`).not.toBeNull();
+      // The picture is the question, so it has to carry a name of its own.
+      expect(staff.querySelector('title').textContent.length).toBeGreaterThan(
+        0,
+      );
+      // Five staff lines at least; a clef and a head as paths.
+      expect(staff.querySelectorAll('line').length).toBeGreaterThanOrEqual(5);
+      expect(staff.querySelectorAll('path').length).toBeGreaterThanOrEqual(2);
+    } else {
+      expect(staff, `${mode} drew a staff it does not need`).toBeNull();
+    }
+  }
+});
+
+test('A sign that stops at the barline is drawn with the barline', async () => {
+  await render('en');
+  await click('Reading notation');
+  await click('How far a sign reaches');
+  const staff = container.querySelector('svg.staff');
+  // Three notes and a barline: the rule cannot be read without seeing where
+  // the bar ends.
+  expect(staff.querySelectorAll('path').length).toBeGreaterThanOrEqual(4);
+  expect(prompt().length).toBeGreaterThan(10);
+  expect(answers().length).toBe(2);
+});

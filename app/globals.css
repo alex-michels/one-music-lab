@@ -2845,3 +2845,8 @@ h1 {
   max-width: 100%;
   height: auto;
 }
+.exercise-staff {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0 10px;
+}

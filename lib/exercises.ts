@@ -7,6 +7,7 @@ import {
   type SpelledPitch,
 } from './notation';
 import { count } from './plural';
+import type { Clef } from './staff';
 
 /**
  * Generated notation exercises (roadmap №558).
@@ -28,7 +29,10 @@ export type ExerciseKind =
   | 'enharmonic'
   | 'dotted-value'
   | 'tuplet'
-  | 'tie-sum';
+  | 'tie-sum'
+  | 'read-pitch'
+  | 'clef-transform'
+  | 'accidental-scope';
 
 export type Level = 1 | 2 | 3;
 
@@ -44,9 +48,19 @@ export type ErrorTag =
   | 'halved-instead-of-dotted'
   | 'counted-the-written-value'
   | 'one-step-too-long'
-  | 'added-wrong';
+  | 'added-wrong'
+  | 'read-the-other-clef'
+  | 'ignored-the-sign'
+  | 'carried-the-sign-too-far';
 
 export type Option = { id: string; label: string; tag: ErrorTag };
+
+export type StaffSpec = {
+  pitches: SpelledPitch[];
+  clef: Clef;
+  /** Note indices a barline follows, for showing how far a sign reaches. */
+  barlines?: number[];
+};
 
 export type Item = {
   kind: ExerciseKind;
@@ -59,6 +73,8 @@ export type Item = {
   answer: string;
   /** The single rule the item tests, for choosing what to ask next. */
   rule: string;
+  /** Present when the question is a picture rather than a sentence. */
+  staff?: StaffSpec;
 };
 
 /** Deterministic 32-bit generator, the same one the property tests use. */
@@ -171,6 +187,9 @@ const alterationSets: Record<Level, readonly number[]> = {
   3: [-2, -1, 0, 1, 2],
 };
 
+const diatonicOf = (p: { letter: number; octave: number }): number =>
+  p.letter + 7 * p.octave;
+
 function spelled(
   letter: number,
   accidental: number,
@@ -198,6 +217,11 @@ const prompts: Record<MusicLanguage, Record<string, string>> = {
     tuplet:
       'Starting value: {base}. Equal parts: {count}, written as a {ratio} tuplet. Which basic note value is used inside the group?',
     'tie-sum': 'Two tied notes, {a} and {b}. How long do they sound together?',
+    'read-pitch': 'Name the note on the staff.',
+    'clef-transform':
+      'The same place on the staff, read in the {clef}. Which note is it?',
+    'accidental-scope':
+      'Which note is the last one? Mind how far the sign in front of the first note reaches.',
   },
   ru: {
     'octave-region':
@@ -209,6 +233,11 @@ const prompts: Record<MusicLanguage, Record<string, string>> = {
     tuplet:
       'Исходная длительность: {base}. Число равных частей: {count}, отношение особого деления — {ratio}. Какой базовой длительностью записываются ноты группы?',
     'tie-sum': 'Две ноты связаны лигой: {a} и {b}. Сколько они звучат вместе?',
+    'read-pitch': 'Назовите ноту, записанную на стане.',
+    'clef-transform':
+      'То же место на стане, прочитанное в ключе: {clef}. Какая это нота?',
+    'accidental-scope':
+      'Какая нота стоит последней? Учтите, до каких пор действует знак перед первой нотой.',
   },
   de: {
     'octave-region':
@@ -221,6 +250,11 @@ const prompts: Record<MusicLanguage, Record<string, string>> = {
       'Ausgangswert: {base}. Gleiche Teile: {count}, als N-tole im Verhältnis {ratio}. Mit welchem Notenwert werden die Noten der Gruppe notiert?',
     'tie-sum':
       'Zwei Töne sind übergebunden: {a} und {b}. Wie lang klingen sie zusammen?',
+    'read-pitch': 'Benennen Sie den notierten Ton.',
+    'clef-transform':
+      'Dieselbe Stelle im System, im {clef} gelesen. Welcher Ton ist das?',
+    'accidental-scope':
+      'Wie heißt der letzte Ton? Achten Sie darauf, wie weit das Zeichen vor dem ersten Ton reicht.',
   },
 };
 
@@ -524,6 +558,205 @@ function tieSum(
   };
 }
 
+const clefNames: Record<MusicLanguage, Record<Clef, string>> = {
+  en: {
+    treble: 'treble clef',
+    bass: 'bass clef',
+    alto: 'alto clef',
+    tenor: 'tenor clef',
+  },
+  ru: {
+    treble: 'скрипичный',
+    bass: 'басовый',
+    alto: 'альтовый',
+    tenor: 'теноровый',
+  },
+  de: {
+    treble: 'Violinschlüssel',
+    bass: 'Bassschlüssel',
+    alto: 'Altschlüssel',
+    tenor: 'Tenorschlüssel',
+  },
+};
+
+const readingClefs: Clef[] = ['treble', 'bass', 'alto', 'tenor'];
+
+/** Staff steps that stay comfortable to read: inside the staff, or one ledger. */
+const READ_LOW = -3;
+const READ_HIGH = 11;
+
+/** A pitch that lands in the readable band of the given clef. */
+function readablePitch(
+  next: () => number,
+  clef: Clef,
+  alterations: readonly number[],
+): SpelledPitch {
+  const bottom = { treble: 30, bass: 18, alto: 24, tenor: 22 }[clef];
+  const step = READ_LOW + Math.floor(next() * (READ_HIGH - READ_LOW + 1));
+  const value = bottom + step;
+  const letter = ((value % 7) + 7) % 7;
+  const octave = Math.floor(value / 7);
+  return spelled(letter, pick(next, alterations), octave);
+}
+
+function readPitch(
+  next: () => number,
+  level: Level,
+  lang: MusicLanguage,
+): Omit<Item, 'kind' | 'level' | 'seed' | 'lang'> {
+  const clef = level === 1 ? 'treble' : pick(next, readingClefs);
+  const pitch = readablePitch(next, clef, alterationSets[level]);
+  const correct = pitchName(pitch, lang);
+  const options: Option[] = [{ id: 'a', label: correct, tag: 'correct' }];
+  const others: Option[] = [
+    {
+      id: '',
+      label: pitchName(
+        spelled((pitch.letter + 1) % 7, pitch.accidental, pitch.octave),
+        lang,
+      ),
+      tag: 'wrong-letter',
+    },
+    {
+      id: '',
+      label: pitchName(
+        spelled((pitch.letter + 6) % 7, pitch.accidental, pitch.octave),
+        lang,
+      ),
+      tag: 'wrong-letter',
+    },
+  ];
+  if (pitch.accidental !== 0)
+    others.push({
+      id: '',
+      label: pitchName({ ...pitch, accidental: 0 }, lang),
+      tag: 'ignored-the-sign',
+    });
+  // Reading the same place in the wrong clef is the mistake worth naming.
+  const otherClef = readingClefs.find((c) => c !== clef) as Clef;
+  const shift = { treble: 30, bass: 18, alto: 24, tenor: 22 };
+  const misread = shift[clef] - shift[otherClef];
+  others.push({
+    id: '',
+    label: pitchName(
+      spelled(
+        (((pitch.letter + misread) % 7) + 7) % 7,
+        pitch.accidental,
+        pitch.octave + Math.floor((pitch.letter + misread) / 7),
+      ),
+      lang,
+    ),
+    tag: 'read-the-other-clef',
+  });
+  for (const option of shuffle(next, others)) {
+    if (options.length >= 4) break;
+    if (options.some((o) => o.label === option.label)) continue;
+    options.push({ ...option, id: 'bcd'[options.length - 1] });
+  }
+  return {
+    prompt: prompts[lang]['read-pitch'],
+    options: shuffle(next, options),
+    answer: 'a',
+    rule: 'read-a-notated-pitch',
+    staff: { pitches: [pitch], clef },
+  };
+}
+
+function clefTransform(
+  next: () => number,
+  level: Level,
+  lang: MusicLanguage,
+): Omit<Item, 'kind' | 'level' | 'seed' | 'lang'> {
+  const from = pick(next, readingClefs);
+  const to = pick(
+    next,
+    readingClefs.filter((c) => c !== from),
+  );
+  const pitch = readablePitch(
+    next,
+    from,
+    alterationSets[Math.min(level, 2) as Level],
+  );
+  const bottom = { treble: 30, bass: 18, alto: 24, tenor: 22 };
+  const step = diatonicOf(pitch) - bottom[from];
+  const moved = bottom[to] + step;
+  const target = spelled(
+    ((moved % 7) + 7) % 7,
+    pitch.accidental,
+    Math.floor(moved / 7),
+  );
+  const correct = pitchName(target, lang);
+  const options: Option[] = [{ id: 'a', label: correct, tag: 'correct' }];
+  const others: Option[] = [
+    { id: '', label: pitchName(pitch, lang), tag: 'read-the-other-clef' },
+    {
+      id: '',
+      label: pitchName(
+        spelled((target.letter + 1) % 7, target.accidental, target.octave),
+        lang,
+      ),
+      tag: 'wrong-letter',
+    },
+    {
+      id: '',
+      label: pitchName(
+        spelled((target.letter + 6) % 7, target.accidental, target.octave),
+        lang,
+      ),
+      tag: 'wrong-letter',
+    },
+  ];
+  for (const option of shuffle(next, others)) {
+    if (options.length >= 4) break;
+    if (options.some((o) => o.label === option.label)) continue;
+    options.push({ ...option, id: 'bcd'[options.length - 1] });
+  }
+  return {
+    prompt: fill(prompts[lang]['clef-transform'], {
+      clef: clefNames[lang][to],
+    }),
+    options: shuffle(next, options),
+    answer: 'a',
+    rule: 'same-place-other-clef',
+    staff: { pitches: [pitch], clef: from },
+  };
+}
+
+function accidentalScope(
+  next: () => number,
+  level: Level,
+  lang: MusicLanguage,
+): Omit<Item, 'kind' | 'level' | 'seed' | 'lang'> {
+  const clef = level === 1 ? 'treble' : pick(next, readingClefs);
+  const sign = pick(next, level === 1 ? [1, -1] : [1, -1, 2, -2]);
+  const base = readablePitch(next, clef, [0]);
+  const altered = spelled(base.letter, sign, base.octave);
+  // A neighbour so the bar is a bar rather than one note repeated.
+  const other = readablePitch(next, clef, [0]);
+  // Beyond the barline the sign is spent; inside it, it still holds.
+  const beyond = next() < 0.5;
+  const pitches = beyond
+    ? [altered, other, { ...base }]
+    : [altered, other, { ...base }];
+  const answerPitch = beyond ? base : altered;
+  const correct = pitchName(answerPitch, lang);
+  const options: Option[] = [
+    { id: 'a', label: correct, tag: 'correct' },
+    {
+      id: 'b',
+      label: pitchName(beyond ? altered : base, lang),
+      tag: beyond ? 'carried-the-sign-too-far' : 'ignored-the-sign',
+    },
+  ];
+  return {
+    prompt: fill(prompts[lang]['accidental-scope'], {}),
+    options: shuffle(next, options),
+    answer: 'a',
+    rule: beyond ? 'sign-stops-at-the-barline' : 'sign-holds-to-the-barline',
+    staff: { pitches, clef, barlines: beyond ? [1] : [2] },
+  };
+}
+
 const builders = {
   'octave-region': octaveRegion,
   'accidental-name': accidentalName,
@@ -531,6 +764,9 @@ const builders = {
   'dotted-value': dottedValue,
   tuplet,
   'tie-sum': tieSum,
+  'read-pitch': readPitch,
+  'clef-transform': clefTransform,
+  'accidental-scope': accidentalScope,
 } as const;
 
 export const exerciseKinds = Object.keys(builders) as ExerciseKind[];
