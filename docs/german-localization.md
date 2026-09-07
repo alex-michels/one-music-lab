@@ -51,7 +51,7 @@ Redaktioneller Abgleich: Codex; unabhängiges musiktheoretisches und deutsches
 Sprachreview durch den vom Eigentümer benannten Reviewer steht im Gate G noch
 aus. Automatische Tests ersetzen dieses Review nicht.
 
-Quelle 1 steht zusätzlich als **S34** im Quellenregister der ROADMAP, weil sie
+Quelle 1 steht zusätzlich als **S34** im [Quellenregister](sources.md), weil sie
 das Verhalten von `lib/notation.ts` bestimmt und in Tests geprüft wird; die
 Registerzeile und dieser Abschnitt müssen übereinstimmen.
 

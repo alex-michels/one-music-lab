@@ -18,9 +18,13 @@ See [LICENSE](LICENSE), [CONTENT-LICENSE.md](CONTENT-LICENSE.md) and
 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Paid hosted services or optional
 features may be offered without withdrawing the rights granted by these licenses.
 
-The [single roadmap and critical audit](ROADMAP.md) maps all 511 proposed topics
-to 128 modules, with dependencies, sources, and separate readiness/publication
-checkboxes. Each topic requires theory, lab, practice, and encyclopedia coverage.
+The [roadmap](ROADMAP.md) is a checklist grouped by subject, with permanent task
+numbers: ask for “task 003” to work on note and octave names. It is the only
+completion register. The [roadmap guide](docs/roadmap-guide.md) maps the original
+511 topic IDs and 128 modules to these numbers and links to the requirements,
+sources, engineering evidence and historical audit. Each learning topic must
+pass [gate G](docs/release-criteria.md); publication has a separate checklist item
+and still requires the owner's authorization.
 
 ## Included
 
