@@ -233,3 +233,23 @@ test('German shows its own register names and the software caveat', async () => 
     'MIDI legt die Nummer',
   );
 });
+
+test('Every panel in the notes lab keeps its content off the border', async () => {
+  await mount();
+  // The language store is read once per page, so an earlier test's switch
+  // outlives it; say which language this test runs in rather than inheriting.
+  await click('EN');
+  await click('Notes');
+  // .panel carries only the border and background; each panel takes its own
+  // padding from a more specific class, so a new one added without it renders
+  // with its text flush against the edge.
+  const panels = [...container.querySelectorAll('.notes-lab > .panel')];
+  expect(panels.length).toBeGreaterThanOrEqual(3);
+  for (const panel of panels) {
+    const pad = Number.parseFloat(getComputedStyle(panel).paddingLeft);
+    expect(pad, panel.className + ' has no padding').toBeGreaterThan(8);
+  }
+  // Nothing may spill sideways out of the drawing area either.
+  const lab = container.querySelector('.notes-lab');
+  expect(lab.scrollWidth).toBeLessThanOrEqual(lab.clientWidth + 1);
+});

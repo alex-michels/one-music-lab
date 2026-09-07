@@ -1041,5 +1041,6 @@ export const german = {
   'The sign stopped at the barline. Beyond it the note is plain again unless it is written anew.':
     'Das Zeichen endete am Taktstrich. Dahinter steht der Ton wieder ohne Zeichen, sofern es nicht erneut gesetzt wird.',
   'The note to name': 'Der zu benennende Ton',
+  'Search a term…': 'Begriff suchen …',
 } as const;
 export type GermanKey = keyof typeof german;

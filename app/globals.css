@@ -2227,11 +2227,6 @@ h1 {
   font-weight: 500;
   letter-spacing: -0.4px;
 }
-.alternate-term {
-  color: #95a186;
-  font-size: 12px;
-  margin-top: 7px;
-}
 .term-card p {
   font-size: 16px;
   line-height: 1.8;
@@ -2752,9 +2747,12 @@ h1 {
 .is-hidden {
   display: none;
 }
+.notes-lab > .panel {
+  padding: 25px;
+}
 .notes-lab {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 18px;
   align-items: start;
 }

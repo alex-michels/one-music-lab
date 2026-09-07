@@ -198,7 +198,7 @@ export function Encyclopedia({
   const [query, setQuery] = useState('');
   const t = translator(lang);
   const filtered = terms.filter((term) =>
-    (Object.values(term.title).join(' ') + ' ' + term.body[lang])
+    (term.title[lang] + ' ' + term.body[lang])
       .toLowerCase()
       .includes(query.toLowerCase()),
   );
@@ -221,10 +221,7 @@ export function Encyclopedia({
         <Search size={19} />
         <input
           aria-label={t('Search musical terms', 'Найти музыкальный термин')}
-          placeholder={t(
-            'Search a term in English, Russian or German…',
-            'Найти термин на русском, английском или немецком…',
-          )}
+          placeholder={t('Search a term…', 'Найти термин…')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -234,9 +231,6 @@ export function Encyclopedia({
         {filtered.map((term) => (
           <article className="panel term-card" key={term.title.en}>
             <h3>{term.title[lang]}</h3>
-            <span className="alternate-term" lang={lang === 'en' ? 'ru' : 'en'}>
-              {term.title[lang === 'en' ? 'ru' : 'en']}
-            </span>
             <p>{term.body[lang]}</p>
             <button
               className="text-button"
