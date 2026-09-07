@@ -73,6 +73,43 @@ Three consequences run through everything below.
 The same argument applies to octave registers: an English reader is not taught
 *eingestrichene Oktave*, and a German reader is not taught `C4`.
 
+## 0b. What the chapter gets wrong, or dates
+
+The chapter is a sound **skeleton**: its section order — Tonbenennung →
+Schlüssel → Vorzeichen → Längenwerte → Pausen → Verzierungen → Tempo/Dynamik →
+Artikulation — is still how German *Allgemeine Musiklehre* is organised today
+(Ziegenrücker, *ABC Musik*; Michels, *dtv-Atlas Musik*, 7th ed. 2023). That is
+what it is used for.
+
+Twelve of its individual statements must not be taught as it has them. Ordered
+by how badly each would mis-teach.
+
+| # | The chapter says | Status | What we teach instead |
+|---|---|---|---|
+| 1 | Vocal music is beamed per syllable (§8a footnote, Bach example) | **reversed since 1967** | Modern vocal engraving beams by beat, like instrumental music, and carries syllables through text underlay and melisma slurs. Syllable beaming is the *historical* practice a reader meets in older editions. |
+| 2 | To reduce a double accidental, write ♮♯ or ♮♭ | **outdated** | The single accidental alone. Show ♮♯ only as a variant found in pre-1950 editions. The renderer must still *read* it. |
+| 3 | "In einem Prozeß wurde die Erfindung dem … Winkel zugesprochen" | **contested — drop the sentence** | Winkel built the double-weighted pendulum and deposited it with the Amsterdam institute on 27 Nov 1814; Maelzel saw it in 1815, was refused the rights, and patented his own with a scale; a commission of the Netherlands institute recognised Winkel's priority. No "trial" wording. |
+| 4 | Dot = normal staccato, Keil = especially sharp | **conflates two claims** | As a *modern engraving* distinction it is current (Gould: dot = staccato, wedge = staccatissimo). As a claim about the repertoire it illustrates it is unsafe — before c. 1850 dot, dash and wedge are not reliably distinguishable in sources. Teach the first, drop or caveat the second. |
+| 5 | §14 "Neue Notationsmethoden" | **a 1967 snapshot** | Keep for structure and history, labelled as such. What actually happened is partial absorption: proportional notation, feathered beams and boxed repetition survived; most graphic systems did not. Route any current treatment through Kurt Stone, *Music Notation in the Twentieth Century* (1980) and Gould (2011). |
+| 6 | Dreihalbe-, Dreiviertel-, Dreiachtel-, Dreisechzehntelnote | **archaic** | `punktierte Halbe`, `punktierte Viertel`. The Drei-forms are a historical synonym note, never a glossary headword. |
+| 7 | "Notationsorthographie" | **Wolf's own coinage** | Not in the literature. The canonical term is *enharmonische Verwechslung* / enharmonic spelling. Usable only as an attributed metaphor. |
+| 8 | Pralltriller = upper auxiliary, Mordent = lower | **correct for German, and a translation trap** | The definitions stand. But unqualified Russian *мордент* is the German *Pralltriller*, and German *Mordent* is Russian *перечёркнутый мордент*. Never translate by the cognate; the internal id is upper-auxiliary / lower-auxiliary. |
+| 9 | Irregular groups are written in the next larger regular division | **still mainstream, incomplete** | Correct and it is Gould's first option, but 7:8 is a recognised alternative; print the ratio whenever the written value could be misread. Cite Gould, not the chapter. |
+| 10 | Accidentals do not add up; in-bar scope is one bar, one octave | **rule correct, practice omitted** | Keep both rules. Add what the chapter omits: modern practice re-notates the accidental in the other octave rather than relying on the scope rule, and uses courtesy accidentals. The grand-staff shared-c claim needs its own check. |
+| 11 | Akzidentien / Vorzeichen / Versetzungszeichen | **still the careful split** | Adopt it, but head the topic *Akzidentien* — that is now the lemma — with Vorzeichen and Versetzungszeichen as its two cases, and note that colloquial German collapses them. |
+| 12 | German H comes from b quadratum / b rotundum | **correct, badly told** | A gradual scribal-then-typographic development, not the "a printer mistook b for h" anecdote. And keep the pitch-name convention separate from the chord-symbol convention, which is international B/B♭. |
+
+Two mechanical passes follow from this: every German term taken from the book
+goes through the 1996 orthography reform (`Baßschlüssel` → `Bassschlüssel`,
+`Generalbaß` → `Generalbass`), and the octave regions ship with a
+Helmholtz ↔ scientific ↔ MIDI mapping rather than Helmholtz alone.
+
+The chapter's own bibliographic identity is settled and recorded as S33; the
+1967 table of contents confirms Kapitel I as pp. 1–32 with the sixteen sections
+in the order used here. All editions after the first are posthumous — the
+author died in 1971 — so the 1985 "korrigierte" edition is the only revision,
+and it is a light one.
+
 ## 1. The atomic topic list, and the lesson grouping
 
 ### 1.1 Inventory ids
