@@ -51,6 +51,10 @@ Redaktioneller Abgleich: Codex; unabhängiges musiktheoretisches und deutsches
 Sprachreview durch den vom Eigentümer benannten Reviewer steht im Gate G noch
 aus. Automatische Tests ersetzen dieses Review nicht.
 
+Quelle 1 steht zusätzlich als **S34** im Quellenregister der ROADMAP, weil sie
+das Verhalten von `lib/notation.ts` bestimmt und in Tests geprüft wird; die
+Registerzeile und dieser Abschnitt müssen übereinstimmen.
+
 1. **Monika Beck** (Theorie), **Thomas Bauser** (Gehörbildung), *Theorie D2/D3*,
    Demoausgabe 2012, Musikverlag Wolfram Heinlein für BBMV/VBSM.
    [Verlagslehrgang beim VBSM](https://www.musikschulen-bayern.de/assets/FLP/Lernhilfen/Theoriehefte/D2-D3-Theorie-Demo2012.pdf),
