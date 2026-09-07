@@ -110,6 +110,68 @@ in the order used here. All editions after the first are posthumous — the
 author died in 1971 — so the 1985 "korrigierte" edition is the only revision,
 and it is a light one.
 
+## 0c. Octave designation — settled
+
+**German teaches Helmholtz with the German register names. English teaches
+scientific pitch. Russian teaches the Russian register names.** Not a close
+call, and the reasoning is worth keeping because the obvious counter-argument
+is wrong.
+
+German pedagogy uses `c′` / *eingestrichene Oktave* and nothing else. The
+strongest evidence is negative: scientific pitch notation has **no German
+lemma** — German Wikipedia carries no article for it under any title and the
+English article has no German interwiki link. Where `de:Oktave` mentions C4 it
+frames it as a convention of *«Computerprogrammen … und zunehmend in der
+englischsprachigen Musiktheorie»*. Musikhochschule course material, the D1/D2/D3
+theory syllabi and the German teaching sites present the register ladder alone.
+
+The reference pitch is written **`a′ = 440 Hz`** and called the *Kammerton*,
+never `A4`. ISO 16 / DIN 1317 fix a1 = 440 Hz. German and Austrian orchestras
+tune in practice to 443 Hz, Switzerland to 442 — relevant because the Sound lab
+lets the reference be edited.
+
+**The "but the software shows C4" argument is empirically false here.** MIDI
+fixes the note *number*, not the octave *name*; the MMA states outright that it
+has issued no recommendation on octave numbering. And the two DAWs a German
+learner is most likely to be using are both German-origin and both disagree
+with scientific pitch:
+
+| Application | MIDI 60 shows as | Configurable |
+|---|---|---|
+| Cubase / Nuendo (Steinberg, Hamburg) | `C3` | no |
+| Ableton Live (Berlin) | `C3` | no |
+| Logic Pro | `C3` by default | yes |
+| Dorico (also Steinberg) | `C4` | yes |
+| REAPER, MuseScore | `C4` | yes |
+| FL Studio | `C5` | no |
+
+Steinberg ships two products that contradict each other. Teaching `C4` in
+German would be unfamiliar at the Musikschule *and* still off by one against the
+learner's own DAW.
+
+So the German lesson teaches the ladder and `a′ = 440 Hz`, and adds one honest
+sentence: a DAW may label the same key `C3`, `C4` or `C5`, because MIDI
+standardises the number and not the name. That belongs in the notes lab as a
+fact about software — **never in a scored item**, since it has no single correct
+answer.
+
+Three implementation consequences:
+
+- In any cross-reference the collision is **German C₂ (Subkontra) = SPN C0**.
+  German C₁ (Kontra) and SPN C1 are the same pitch, so that pair is not the trap.
+- **Both `c′` and `c1` are standard German.** The repo prints the stroke form;
+  Beck — the source `lib/notation.ts` cites — prints subscript digits. Exercises
+  accept either.
+- The repo's nine registers are a defensible subset. German references run from
+  Subsubkontra to siebengestrichene, but the MIDI 12–119 naming range makes the
+  extremes unreachable anyway.
+
+This also settles the English question the plan left open: English keeps
+scientific pitch as its taught system, and the Helmholtz register names become
+encyclopedia material (§2.4a) rather than an English learning objective.
+`docs/music-notation.md` and `docs/german-localization.md` already match; no
+display contract changes.
+
 ## 1. The atomic topic list, and the lesson grouping
 
 ### 1.1 Inventory ids
