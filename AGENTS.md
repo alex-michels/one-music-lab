@@ -6,6 +6,11 @@ register; do not create a competing roadmap or silently drop original topic IDs.
 Use permanent task numbers from ROADMAP.md; preserve old IDs through
 docs/roadmap-guide.md. Requirements and evidence belong in the linked subject
 documents, with gate G in docs/release-criteria.md. Do not renumber existing tasks.
+Notation scope: preserve the existing Russian Sound lab displays, including
+international labels outside the localized experiment. Tasks 556/557 concern
+educational material and new labs/sections; international notation is allowed in
+Russian laboratory content. Locale parity does not require retrofitting existing
+displays or adding Russian duplicates for every pitch label (see CONTRIBUTING.md).
 
 - Work in a branch and open a pull request. Do not push feature changes directly
   to `main`, merge, or deploy without the owner's authorization for that action.

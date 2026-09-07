@@ -49,6 +49,15 @@ dependencies and links across these documents.
 
 ## 0a. The learner learns one naming system — their own
 
+**Owner's scope clarification:** the language-specific teaching choices below
+apply to educational material and new laboratories/sections, not to a rewrite
+of the existing Sound lab. International letter names and scientific octaves
+are allowed in the laboratory portion of Russian material, with the convention
+clear in context or a short label. Russian duplicates for every label are not
+required. Preserve the existing Russian experiment labels and international
+labels in the other panels. See [tasks 556/557](engineering.md#task-556) and the
+[notation scope](music-notation.md#scope-of-future-localization-work).
+
 A reader of the English interface learns C D E F G A B, sharps and flats, and
 scientific octaves. A reader of the German interface learns C D E F G A **H**,
 `-is`/`-es` and the classical octave names. A reader of the Russian interface

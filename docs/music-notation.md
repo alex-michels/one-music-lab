@@ -7,8 +7,8 @@ semitone offset. The written pitch does not change with the selected tuning
 map. Enharmonic spellings are therefore preserved:
 C natural minor is `C D E♭ F G A♭ B♭ C`, while F♯ major contains E♯.
 
-English uses scientific-pitch labels such as `C4` and `E♭4`. Russian uses the
-professional note names with hyphens for accidentals, as prescribed by the
+In this experiment, English uses scientific-pitch labels such as `C4` and `E♭4`.
+Russian uses professional note names with hyphens for accidentals, as prescribed by the
 Russian orthography reference: `до`, `ми-бемоль`, `си-диез`. Russian octave
 names are shown in words (for example, `первая октава`) because Russian
 professional pitch notation does not use the English scientific octave suffix
@@ -35,6 +35,24 @@ The melodic pair follows the classical scale convention. The lab labels the
 blues collection as a 12-TET model and writes its added blue note as lowered
 scale degree 5 (for C: `G♭`), while recognizing that blues performance can use
 expressive intonation and multiple analytical spellings.
+
+## Scope of future localization work
+
+The owner accepts the current Russian Sound lab: “A little experiment” uses
+Russian note names, while the other existing panels, keyboard and ear trainer
+may use international letter names and scientific octaves. This combination is
+intentional and is not an outstanding localization defect. Preserve these
+displays; tasks 556/557 do not require rewriting existing features.
+
+Professional terminology and notation guide educational material and new labs
+or sections. Russian teaching explanations use Russian terms, while their
+laboratory portions may use international notation such as `C4`, `E♭4` and `A4`.
+Make the chosen convention clear in context or a short label without forcing
+Russian duplicates for every pitch. Correct scale-degree spelling remains
+required in either convention. This scope decision changes no existing pitch
+labels, audio, exercises or assessment answers.
+
+## Sources
 
 The formulas and terminology were checked against:
 
