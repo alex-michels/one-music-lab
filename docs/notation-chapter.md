@@ -36,6 +36,43 @@
 
 ---
 
+## 0a. The learner learns one naming system — their own
+
+A reader of the English interface learns C D E F G A B, sharps and flats, and
+scientific octaves. A reader of the German interface learns C D E F G A **H**,
+`-is`/`-es` and the classical octave names. A reader of the Russian interface
+learns до ре ми фа соль ля си, диез and бемоль, and первая октава. Each of
+those is complete and self-consistent on its own.
+
+**Nobody learns the mapping between them.** That German H is English B is a
+localization invariant of this product, not a learning objective: it is the
+reason `lib/notation.ts` exists, it is asserted in
+`tests/german-localization.test.mjs`, and it is recorded in
+`docs/german-localization.md`. A learner who never opens a German score has no
+use for it, and teaching it spends their attention on our implementation
+problem.
+
+Three consequences run through everything below.
+
+1. **No lesson and no exercise compares naming systems.** The only place the
+   correspondence may appear at all is a single optional encyclopedia entry for
+   a reader who has picked up a German score and wants to know why it shows H —
+   reference material, never a lesson and never scored.
+2. **No generated item may have an answer that depends on the interface
+   language.** This was already required for a different reason (§5.3a: "B" is
+   the correct English answer for letter 6 natural and names a different pitch
+   in German), and it is the same rule seen from the other side.
+3. **The three language versions of a lesson are not translations of each other
+   where the notation systems genuinely differ.** German has a real
+   morphological system to learn — `-is`, `-isis`, `-es`, `-eses` and the
+   irregular *Es*, *As*, *B*, *Heses*. English has "sharp" and "flat". Russian
+   has "диез" and "бемоль". The German lesson is therefore longer than the
+   English one at that point, and the English lesson must **not** be padded with
+   *Heses* to match it. That is correct localization, not a parity failure.
+
+The same argument applies to octave registers: an English reader is not taught
+*eingestrichene Oktave*, and a German reader is not taught `C4`.
+
 ## 1. The atomic topic list, and the lesson grouping
 
 ### 1.1 Inventory ids
@@ -65,7 +102,7 @@ Columns: **§** = chapter section · **ID** = roadmap topic · **Dest** = T*n* t
 | NA | Atom | § | ID | Dest |
 |---|---|---|---|---|
 | 12 | The seven Stammtöne C D E F G A H | 1 | 2.3 | T3 E |
-| 13 | German **H** = English **B**; German **B** = English **B♭** = русское си-бемоль | 1 | 2.3 | T3 P E |
+| 13 | The correspondence German **H** = English **B**, German **B** = English **B♭** | 1 | 2.3 | **— not taught** (§0a); product invariant, plus one optional encyclopedia entry |
 | 14 | The octave as the recurrence of the name eight steps up; why seven names suffice for 52 Stammtöne | 1 | 2.3 | T3 E |
 | 15 | The nine octave regions Subkontra…fünfgestrichen, **each beginning at C** | 1 | 2.3 | T3 N P E |
 | 16 | The written octave follows the written letter: `his′` ≠ `c″` | 1, 6 | 2.3 | T3 P E |
@@ -204,7 +241,7 @@ Three constraints fix the number:
 |---|---|---|---|
 | **T1** | Five lines, and the clef that fixes them | 01–05 | F03 / 2.1, 2.2 |
 | **T2** | Four clefs, one sounding pitch | 06–11 | F03 / 2.2 |
-| **T3** | Letters, registers and the German H | 12–17 | **F01 / 2.3** |
+| **T3** | Note names and registers, in the reader’s own system | 12, 14–17 | **F01 / 2.3** |
 | **T4** | Raising and lowering a written note | 18, 22–27 | F03 / 2.4 |
 | **T5** | How far a sign reaches | 19–21 | F03 / 2.4 |
 | **T6** | Two spellings, one key | 28, 29 | F03 / 2.4 |
@@ -274,6 +311,7 @@ So the encyclopedia layer needs a **P02 schema PR before content**, and stable p
 
 | Atom | Reason |
 |---|---|
+| NA13 cross-language naming | §0a. A localization invariant, not a learning objective. One optional encyclopedia entry for a reader holding a German score; never a lesson, never scored. |
 | NA57 ornament realisation | Period-, national- and edition-dependent. A single realisation with automated right/wrong feedback breaches `AGENTS.md:28-31` and `CONTRIBUTING.md:154-156`. |
 | NA62 Space-Notation / Aktionsschrift | Needs licensed facsimiles; the chapter's own example is a Universal Edition score reproduced under a permission granted to that publisher **[unverified — I cannot read the scan]**. The chapter itself states no unified method emerged, so there is no assessable correct answer. → N05. |
 | NA58, NA59, NA79 | Facsimile problem plus their own roadmap homes (N05, H04, N04). Encyclopedia stubs with forward links only. |
@@ -628,8 +666,19 @@ Two smaller ones worth a glossary note each: **UK "pause" = fermata but German "
 
 | Module | Topic | Line | Coverage |
 |---|---|---|---|
-| **F01** | 2.3 Названия нот … октавные обозначения | 204 | **German half only.** §1 gives the Stammtöne, H/B, the octave, the nine registers. The **English** letter system needs Helmholtz register names (audit item 10, `:22` — *"scientific/Helmholtz/русские октавные обозначения"*), and **solmization is entirely absent**. |
+| **F01** | 2.3 Названия нот … октавные обозначения | 204 | The chapter supplies the German system (Stammtöne, the nine registers). **But the topic as worded conflicts with §0a — see the note below.** |
 | **F07** | 3.21 Порядок ключевых знаков | 309 | **placement half only** — the fifths order and fixed positions; *why* a key has those signs belongs to F07's own topics. |
+
+> **2.3 needs an owner decision before it can be worked on.** Its title commits
+> to teaching *«английская, немецкая, сольмизационная системы»* comparatively,
+> and audit item 10 (`ROADMAP.md:22`) adds *«оговариваем B/H,
+> scientific/Helmholtz/русские октавные обозначения и movable/fixed do»*. Under
+> §0a the product teaches each reader only their own system, which contradicts
+> both. Either the roadmap wording is narrowed to "each interface language
+> teaches its own naming and octave convention; the correspondence is a
+> localization invariant and, at most, one encyclopedia entry", or §0a is
+> overruled. This plan assumes the former. Solmization is a separate topic and
+> is absent from the chapter either way.
 
 **Adjacent — cross-links only, do not claim coverage:** N01 2.14 (accent *sign* only; 2.10–2.13 absent) · N03 2.21 (clef-per-instrument + Akkolade) · N04 2.22/2.23 (three footnote-level facts: chant's four lines, relative vs mensural values, mensural-derived multi-bar rests) · N05 2.24/2.26 (overview depth; 2.27 absent) · N06 13.11 (real engraving conventions, but stated for the hand-writing student) and 2.28 (absent) · F08 4.21 / H03 4.22 / H04 4.18 (one comparative sentence each) · F07 3.20 (accidental order is a fifths order, but quintal kinship is never taught).
 
@@ -705,7 +754,7 @@ Each stage is a separate PR set with its own evidence. **No stage before S5 touc
 | **S2 — Content registry** | `lib/content/` with `types.ts`, `sources.ts`, `SourceRef`, typed `LessonId` cross-links; the existing six lessons and twelve terms moved, **none added**; the German parity walk repointed at the registry root; term schema extended per P02. | S1 | No |
 | **S3 — Sound lab extraction + tab shell** | `components/sound-lab.tsx` extracted (a pure move, ~440 lines, no behaviour change); `<Tabs>` shell; `.lab-tabs` CSS; both new components registered in `authoredProductionCode`; `read_sound_lab` semantics documented. Ships with the tone generator only. | S1 | No |
 | **S4 — Engine spike (P05)** | `lib/staff.ts` geometry + a build-time Verovio glyph-outline extractor; one exercise ("name this note", violin and bass clef, ledger lines, all five accidentals, DE/RU/EN labels from `pitchName`) answered by MC, typed name, and click-on-staff; tested in all three engines with real clicks and keyboard events; the new static-export assertion. **This is the artifact `ROADMAP.md:124` asks for.** | S2, S3 | Closes P05's engine bullet only |
-| **S5 — F01 tranche** | **T3** (letters, registers, German H) + the T3 practice types + ~20 glossary entries. **Needs no renderer.** Advances 2.3, which sits in the roadmap's designated first public release. Also lands the EN Helmholtz register work. | S4 (or independently — T3 is renderer-free) | 2.3 evidence |
+| **S5 — F01 tranche** | **T3** (note names and registers, per language) + the T3 practice types + ~20 glossary entries. **Needs no renderer.** Advances 2.3, which sits in the roadmap's designated first public release. Also lands the EN Helmholtz register work. | S4 (or independently — T3 is renderer-free) | 2.3 evidence |
 | **S6 — Duration model** | `lib/exercises/` rationals, tuplets, ties, meter/grouping — P05 bullet 2. **Must state what happens to the existing `figures[].rate` subdivision layer** in `lib/chords.ts:526-549`, which is a partial rhythmic model already sourced to Hutchinson. | S4 | Closes P05 bullet 2 |
 | **S7 — F03 tranche** | **T1, T2, T4, T5, T6** + exercise types T1–T6 + the notes-lab clef/accidental/enharmonic surfaces + ~35 glossary entries. | S5, S6 | 2.1, 2.2, 2.4 evidence |
 | **S8 — F04 tranche** | **T7, T10** + rest and metronome exercises + the tempo/agogics glossary. | S6, S7 | 2.5, 2.15 evidence |
