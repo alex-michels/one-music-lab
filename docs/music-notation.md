@@ -45,8 +45,10 @@ intentional and is not an outstanding localization defect. Preserve these
 displays; tasks 556/557 do not require rewriting existing features.
 
 Professional terminology and notation guide educational material and new labs
-or sections. Russian teaching explanations use Russian terms, while their
-laboratory portions may use international notation such as `C4`, `E♭4` and `A4`.
+or sections. Russian teaching explanations use professional Russian terms.
+Traditional Russian notation has priority when creating Russian laboratory
+material. International notation such as `C4`, `E♭4` and `A4` remains a valid
+alternative and is not a localization error in itself.
 Make the chosen convention clear in context or a short label without forcing
 Russian duplicates for every pitch. Correct scale-degree spelling remains
 required in either convention. This scope decision changes no existing pitch

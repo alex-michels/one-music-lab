@@ -25,9 +25,10 @@ structure, and factual review; avoid artificial tests for prose wording.
 New educational material, laboratories and sections use professional terminology
 and notation appropriate to their language and learning context. English uses
 letter names with accidentals and scientific octaves; Russian teaching text uses
-names such as `до`, `ми-бемоль`, `си-диез` and Russian octave names. International
-letter names and scientific pitch (for example, `C4`, `E♭4`, `A4`) are also
-acceptable in the laboratory portion of Russian material. Make the convention
+names such as `до`, `ми-бемоль`, `си-диез` and Russian octave names. Traditional
+Russian notation has priority when creating Russian laboratory material.
+International letter names and scientific pitch (for example, `C4`, `E♭4`, `A4`)
+remain valid alternatives; their use is not a localization error. Make the convention
 clear through context or a short label; Russian duplicates for every symbol are
 not required. German uses `C-Dur`/`c-Moll`, H for English B, B for English B-flat,
 and classical octave labels such as `a′`.

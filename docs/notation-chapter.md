@@ -51,8 +51,9 @@ dependencies and links across these documents.
 
 **Owner's scope clarification:** the language-specific teaching choices below
 apply to educational material and new laboratories/sections, not to a rewrite
-of the existing Sound lab. International letter names and scientific octaves
-are allowed in the laboratory portion of Russian material, with the convention
+of the existing Sound lab. Traditional Russian notation has priority when
+creating Russian laboratory material. International letter names and scientific
+octaves remain valid alternatives, not localization errors, with the convention
 clear in context or a short label. Russian duplicates for every label are not
 required. Preserve the existing Russian experiment labels and international
 labels in the other panels. See [tasks 556/557](engineering.md#task-556) and the

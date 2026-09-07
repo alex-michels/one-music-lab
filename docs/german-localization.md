@@ -42,8 +42,10 @@ beschriebenen tonal/jazzbezogenen Lehrmodells. Sie machen 12-TET oder
 Dur-Moll-Harmonik nicht zum Maßstab aller Musikkulturen. Deutsche Klaviatur und
 Gehörbildung sind in dieser Änderung lokalisiert. Die bestehenden internationalen
 Tonbezeichnungen in der russischen Oberfläche sind vom Eigentümer akzeptiert
-und bleiben erhalten; sie sind keine offene Lokalisierungsaufgabe. Auch neue
-russischsprachige Laborinhalte dürfen internationale Notation verwenden; siehe
+und bleiben erhalten; sie sind keine offene Lokalisierungsaufgabe. Bei neuen
+russischsprachigen Laborinhalten haben traditionelle russische Tonbezeichnungen
+Vorrang. Internationale Notation bleibt zulässig und ist an sich kein
+Lokalisierungsfehler; siehe
 [Geltungsbereich](music-notation.md#scope-of-future-localization-work).
 
 ## Geprüfte Quellen
