@@ -36,6 +36,7 @@ export const authoredProductionCode = [
   'components/learning.tsx',
   'components/experiments.tsx',
   'components/chords-lab.tsx',
+  'components/notes-lab.tsx',
   'components/number-field.tsx',
   'hooks/**/*.{ts,tsx}',
   'lib/**/*.{ts,tsx}',

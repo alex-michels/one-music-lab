@@ -19,6 +19,7 @@ import {
 } from '@/components/learning';
 import { NumberField } from '@/components/number-field';
 import { ChordsLab } from '@/components/chords-lab';
+import { NotesLab } from '@/components/notes-lab';
 import { exportTone } from '@/lib/wav';
 import { registerLabTools, type LabState } from '@/lib/webmcp';
 import { Download } from 'lucide-react';
@@ -336,6 +337,7 @@ export default function Home() {
   const setLang = langStore.set;
   const setPage = pageStore.set;
   const [frequency, setFrequency] = useState(440);
+  const [labTab, setLabTab] = useState<'tone' | 'notes'>('tone');
   const [reference, setReference] = useState(440);
   const [tuning, setTuning] = useState<Tuning>('equal');
   const [wave, setWave] = useState<Wave>('sine');
@@ -809,15 +811,45 @@ export default function Home() {
           {page === 'lab' ? (
             <>
               <div className="section-tabs">
-                <span className="active">
+                <button
+                  type="button"
+                  className={labTab === 'tone' ? 'active' : ''}
+                  aria-pressed={labTab === 'tone'}
+                  onClick={() => setLabTab('tone')}
+                >
                   <Activity size={17} />
                   {t('Tone generator', 'Генератор тонов')}
-                </span>
+                </button>
+                <button
+                  type="button"
+                  className={labTab === 'notes' ? 'active' : ''}
+                  aria-pressed={labTab === 'notes'}
+                  onClick={() => setLabTab('notes')}
+                >
+                  <Music2 size={17} />
+                  {t('Notes', 'Ноты')}
+                </button>
                 <span className="section-caption">
-                  {t('FROM FREQUENCY TO FEELING', 'ОТ ЧАСТОТЫ К ОЩУЩЕНИЮ')}
+                  {labTab === 'notes'
+                    ? t('FROM WRITING TO SOUND', 'ОТ ЗАПИСИ К ЗВУЧАНИЮ')
+                    : t('FROM FREQUENCY TO FEELING', 'ОТ ЧАСТОТЫ К ОЩУЩЕНИЮ')}
                 </span>
               </div>
-              <div className="instrument-grid">
+              {labTab === 'notes' && (
+                <NotesLab
+                  lang={lang}
+                  reference={reference}
+                  tuning={tuning}
+                  play={playNote}
+                />
+              )}
+              <div
+                className={
+                  labTab === 'tone'
+                    ? 'instrument-grid'
+                    : 'instrument-grid is-hidden'
+                }
+              >
                 <section className="panel generator">
                   <div className="panel-heading">
                     <span>
@@ -1240,7 +1272,11 @@ export default function Home() {
                   )}
                 </span>
               </div>
-              <div className="lab-footer">
+              <div
+                className={
+                  labTab === 'tone' ? 'lab-footer' : 'lab-footer is-hidden'
+                }
+              >
                 <span>
                   <Headphones size={15} />
                   {t(

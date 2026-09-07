@@ -2747,3 +2747,78 @@ h1 {
   text-wrap: balance;
   margin: 6px 0 14px;
 }
+/* The Sound lab's second tab replaces the generator rather than sitting under
+   it, so the hidden half leaves the accessibility tree with it. */
+.is-hidden {
+  display: none;
+}
+.notes-lab {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+.notes-lab .note-caveat {
+  grid-column: 1 / -1;
+}
+.note-chooser {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 14px;
+}
+.note-chooser button {
+  padding: 7px 12px;
+  border: 1px solid #d8ded6;
+  border-radius: 8px;
+  background: #fff;
+  color: #4a544d;
+  font-size: 13px;
+  cursor: pointer;
+}
+.note-chooser button:hover {
+  border-color: #294f3c;
+  color: #294f3c;
+}
+.note-chooser .selected {
+  background: #294f3c;
+  border-color: #294f3c;
+  color: #fff;
+}
+.note-name {
+  font-size: 40px;
+  font-weight: 600;
+  color: #294f3c;
+  margin: 6px 0 14px;
+}
+.note-readout dl {
+  display: grid;
+  gap: 9px;
+  margin: 0 0 16px;
+}
+.note-readout dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #eef1ec;
+  padding-bottom: 7px;
+}
+.note-readout dt {
+  color: #74847b;
+  font-size: 13px;
+}
+.note-readout dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.note-caption,
+.note-caveat p {
+  color: #74847b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+@media (max-width: 900px) {
+  .notes-lab {
+    grid-template-columns: 1fr;
+  }
+}

@@ -958,5 +958,21 @@ export const german = {
     'Eine unregelmäßige Teilung wird im nächstgrößeren regelmäßigen Wert geschrieben, nicht in dem, nach dem sie klingt.',
   'The values simply add up. Count them in the smaller of the two.':
     'Die Werte addieren sich einfach. Zähle sie im kleineren der beiden.',
+  // Notes lab (roadmap №558).
+  Notes: 'Noten',
+  'FROM WRITING TO SOUND': 'VON DER SCHRIFT ZUM KLANG',
+  'Write a note': 'Einen Ton aufschreiben',
+  'What it is': 'Was daraus wird',
+  Written: 'Schreibweise',
+  Register: 'Oktavlage',
+  'Sounding pitch': 'Klingende Tonhöhe',
+  'outside the audible range': 'außerhalb des hörbaren Bereichs',
+  'MIDI number': 'MIDI-Nummer',
+  'Hear this note': 'Diesen Ton hören',
+  'The frequency follows the reference pitch and the tuning map chosen in the tone generator. The written note does not change when they do.':
+    'Die Frequenz richtet sich nach dem Kammerton und der Stimmung, die im Tongenerator gewählt sind. Die Schreibweise des Tons ändert sich dadurch nicht.',
+  'IF YOU ALSO USE SOFTWARE': 'WENN SIE AUCH AM RECHNER ARBEITEN',
+  'MIDI fixes the note number, not the name of its octave. The same key that is number 60 here appears as C3 in some programs, C4 in others and C5 in a few. Read the number when the names disagree.':
+    'MIDI legt die Nummer eines Tons fest, nicht den Namen seiner Oktavlage. Dieselbe Taste mit der Nummer 60 heißt in manchen Programmen C3, in anderen C4 und in einigen C5. Wenn die Namen auseinandergehen, gilt die Nummer.',
 } as const;
 export type GermanKey = keyof typeof german;
