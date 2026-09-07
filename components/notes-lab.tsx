@@ -1,6 +1,11 @@
 'use client';
-import { useState } from 'react';
-import { Piano, Volume2 } from 'lucide-react';
+import { Piano, Volume2, Square } from 'lucide-react';
+import {
+  notationExamples,
+  notationGroups,
+  type NotesLabState,
+  type NotationExampleId,
+} from '@/lib/notation-experiments';
 import { fixedNumber, translator } from '@/lib/i18n';
 import {
   octaveName,
@@ -44,16 +49,26 @@ export function NotesLab({
   reference,
   tuning,
   play,
+  state,
+  onChange,
+  playExample,
+  stop,
 }: {
   lang: Lang;
   reference: number;
   tuning: Tuning;
   play: (midi: number) => void | Promise<void>;
+  state: NotesLabState;
+  onChange: (state: NotesLabState) => void;
+  playExample: (id: NotationExampleId, tempo: number) => void | Promise<void>;
+  stop: () => void;
 }) {
   const t = translator(lang);
-  const [letter, setLetter] = useState(0);
-  const [accidental, setAccidental] = useState(0);
-  const [octave, setOctave] = useState(4);
+  const { letter, accidental, octave } = state.note;
+  const setNote = (note: Partial<NotesLabState['note']>) => {
+    stop();
+    onChange({ ...state, note: { ...state.note, ...note } });
+  };
   const pitch = spell(letter, accidental, octave);
   const hz = frequencyForMidi(pitch.midi, reference, tuning);
   const audible = hz >= 20 && hz <= 20000;
@@ -82,7 +97,7 @@ export function NotesLab({
               key={value}
               className={value === letter ? 'selected' : ''}
               aria-pressed={value === letter}
-              onClick={() => setLetter(value)}
+              onClick={() => setNote({ letter: value })}
             >
               {pitchName(spell(value, 0, octave), lang)}
             </button>
@@ -97,7 +112,7 @@ export function NotesLab({
               key={value}
               className={value === accidental ? 'selected' : ''}
               aria-pressed={value === accidental}
-              onClick={() => setAccidental(value)}
+              onClick={() => setNote({ accidental: value })}
             >
               {signs[lang][value + 2]}
             </button>
@@ -109,7 +124,7 @@ export function NotesLab({
               key={value}
               className={value === octave ? 'selected' : ''}
               aria-pressed={value === octave}
-              onClick={() => setOctave(value)}
+              onClick={() => setNote({ octave: value })}
             >
               {octaveName(spell(letter, 0, value), lang)}
             </button>
@@ -154,10 +169,82 @@ export function NotesLab({
           <Volume2 size={17} />
           {t('Hear this note', 'Послушать ноту')}
         </button>
+        <button className="text-button" onClick={stop}>
+          <Square size={16} />
+          {t('Stop sound', 'Остановить звук')}
+        </button>
         <p className="note-caption">
           {t(
             'The frequency follows the reference pitch and the tuning map chosen in the tone generator. The written note does not change when they do.',
             'Частота зависит от опорного тона и строя, выбранных в генераторе тонов. Запись ноты при этом не меняется.',
+          )}
+        </p>
+      </section>
+      <section className="panel notation-examples">
+        <div className="panel-heading">
+          <span>
+            {t('Compare short examples', 'Сравните короткие примеры')}
+          </span>
+        </div>
+        <fieldset
+          className="note-chooser"
+          aria-label={t('Experiment topic', 'Тема эксперимента')}
+        >
+          {notationGroups.map((group) => (
+            <button
+              key={group.id}
+              aria-pressed={state.group === group.id}
+              className={state.group === group.id ? 'selected' : ''}
+              onClick={() => {
+                stop();
+                onChange({ ...state, group: group.id });
+              }}
+            >
+              {group.label[lang]}
+            </button>
+          ))}
+        </fieldset>
+        <fieldset
+          className="note-chooser"
+          aria-label={t('Quarter notes per minute', 'Четвертей в минуту')}
+        >
+          <legend>{t('Quarter notes per minute', 'Четвертей в минуту')}</legend>
+          {([60, 120] as const).map((tempo) => (
+            <button
+              key={tempo}
+              aria-pressed={state.tempo === tempo}
+              className={state.tempo === tempo ? 'selected' : ''}
+              onClick={() => {
+                stop();
+                onChange({ ...state, tempo });
+              }}
+            >
+              ♩ = {tempo}
+            </button>
+          ))}
+        </fieldset>
+        <div className="notation-example-actions">
+          {(Object.keys(notationExamples) as NotationExampleId[])
+            .filter((id) => notationExamples[id].group === state.group)
+            .map((id) => (
+              <button
+                key={id}
+                className="primary-button"
+                onClick={() => void playExample(id, state.tempo)}
+              >
+                <Volume2 size={17} />
+                {notationExamples[id].label[lang]}
+              </button>
+            ))}
+          <button className="text-button" onClick={stop}>
+            <Square size={16} />
+            {t('Stop example', 'Остановить пример')}
+          </button>
+        </div>
+        <p className="note-caption">
+          {t(
+            'Each button plays a finite example. Compare the attacks and gaps at the same tempo; the oscillator illustrates timing, not an instrument-specific articulation rule.',
+            'Каждая кнопка запускает конечный пример. Сравнивайте атаки и паузы при одном темпе; генератор иллюстрирует временные отношения, а не правила штрихов конкретного инструмента.',
           )}
         </p>
       </section>

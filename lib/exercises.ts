@@ -6,6 +6,7 @@ import {
   type MusicLanguage,
   type SpelledPitch,
 } from './notation';
+import { count } from './plural';
 
 /**
  * Generated notation exercises (roadmap №558).
@@ -39,8 +40,10 @@ export type ErrorTag =
   | 'wrong-alteration'
   | 'same-sound-other-spelling'
   | 'forgot-the-dot'
+  | 'forgot-second-dot'
   | 'halved-instead-of-dotted'
   | 'counted-the-written-value'
+  | 'one-step-too-long'
   | 'added-wrong';
 
 export type Option = { id: string; label: string; tag: ErrorTag };
@@ -186,30 +189,36 @@ function spelled(
 
 const prompts: Record<MusicLanguage, Record<string, string>> = {
   en: {
-    'octave-region': 'Which register does this note belong to?',
+    'octave-region':
+      'Start on {pitch}, then move {distance} {direction}. Which register contains the resulting note?',
     'accidental-name': 'What is this note called?',
-    enharmonic: 'Write the same sounding pitch on the letter {letter}.',
+    enharmonic:
+      'Respell {pitch} using the letter {letter}, keeping the sounding pitch (12-tone equal temperament).',
     'dotted-value': 'How many {unit} does {value} last?',
     tuplet:
-      'A {base} is divided into {count} equal parts. How long is one part?',
+      'Starting value: {base}. Equal parts: {count}, written as a {ratio} tuplet. Which basic note value is used inside the group?',
     'tie-sum': 'Two tied notes, {a} and {b}. How long do they sound together?',
   },
   ru: {
-    'octave-region': 'К какой октаве относится эта нота?',
+    'octave-region':
+      'Исходная нота: {pitch}. Перенесите её на {distance} {direction}. В какой октаве окажется нота?',
     'accidental-name': 'Как называется эта нота?',
-    enharmonic: 'Запишите тот же звук от ступени {letter}.',
+    enharmonic:
+      'Перепишите ноту {pitch} от ступени {letter}, сохранив высоту звучания (12-ступенный равномерный строй).',
     'dotted-value': 'Сколько длительностей «{unit}» звучит {value}?',
     tuplet:
-      'Длительность {base} делится на {count} равных частей. Какова одна часть?',
+      'Исходная длительность: {base}. Число равных частей: {count}, отношение особого деления — {ratio}. Какой базовой длительностью записываются ноты группы?',
     'tie-sum': 'Две ноты связаны лигой: {a} и {b}. Сколько они звучат вместе?',
   },
   de: {
-    'octave-region': 'In welcher Oktavlage steht dieser Ton?',
+    'octave-region':
+      'Ausgangston: {pitch}. Versetzen Sie ihn um {distance} {direction}. In welcher Oktavlage liegt der Zielton?',
     'accidental-name': 'Wie heißt dieser Ton?',
-    enharmonic: 'Schreiben Sie denselben Klang auf der Stufe {letter}.',
+    enharmonic:
+      'Schreiben Sie {pitch} mit dem Stammton {letter} enharmonisch um, bei gleicher klingender Tonhöhe (12-stufige gleichstufige Stimmung).',
     'dotted-value': 'Wie viele {unit} dauert {value}?',
     tuplet:
-      'Eine {base} wird in {count} gleiche Teile geteilt. Wie lang ist ein Teil?',
+      'Ausgangswert: {base}. Gleiche Teile: {count}, als N-tole im Verhältnis {ratio}. Mit welchem Notenwert werden die Noten der Gruppe notiert?',
     'tie-sum':
       'Zwei Töne sind übergebunden: {a} und {b}. Wie lang klingen sie zusammen?',
   },
@@ -231,6 +240,22 @@ function octaveRegion(
   const midi = LOW_MIDI + Math.floor(next() * (HIGH_MIDI - LOW_MIDI));
   const pitch = keyboardPitch(midi);
   const correct = octaveName(pitch, lang);
+  // The learner has to move between registers; naming the target register in
+  // the stem would give the answer away in Russian. Keep every source in range.
+  const movements = [-level, level].filter(
+    (delta) => pitch.octave - delta >= 0 && pitch.octave - delta <= 8,
+  );
+  const delta = pick(next, movements);
+  const source = {
+    ...pitch,
+    octave: pitch.octave - delta,
+    midi: midi - delta * 12,
+  };
+  const directions = {
+    en: ['down', 'up'],
+    ru: ['ниже', 'выше'],
+    de: ['nach unten', 'nach oben'],
+  };
   const options: Option[] = [{ id: 'a', label: correct, tag: 'correct' }];
   // The neighbours are the mistake worth diagnosing: an octave out, not random.
   for (const [i, delta] of [-1, 1, 2].entries()) {
@@ -241,7 +266,11 @@ function octaveRegion(
     options.push({ id: 'bcd'[i], label, tag: 'neighbour-register' });
   }
   return {
-    prompt: `${prompts[lang]['octave-region']} — ${pitchLabel(pitch, lang)}`,
+    prompt: fill(prompts[lang]['octave-region'], {
+      pitch: pitchLabel(source, lang),
+      distance: count(Math.abs(delta), lang, 'octaves'),
+      direction: directions[lang][delta > 0 ? 1 : 0],
+    }),
     options: shuffle(next, options),
     answer: 'a',
     rule: `register-${level}`,
@@ -341,7 +370,7 @@ function enharmonic(
     pitch.midi - ((targetOctave + 1) * 12 + naturals[target]);
   if (Math.abs(targetAccidental) > 2) return null;
   const correctPitch = spelled(target, targetAccidental, targetOctave);
-  const correct = pitchName(correctPitch, lang);
+  const correct = pitchLabel(correctPitch, lang);
   const options: Option[] = [{ id: 'a', label: correct, tag: 'correct' }];
   const others: Option[] = [];
   for (const delta of [-1, 1]) {
@@ -349,13 +378,13 @@ function enharmonic(
     if (Math.abs(alt) > 2) continue;
     others.push({
       id: '',
-      label: pitchName(spelled(target, alt, targetOctave), lang),
+      label: pitchLabel(spelled(target, alt, targetOctave), lang),
       tag: 'wrong-alteration',
     });
   }
   others.push({
     id: '',
-    label: pitchName(pitch, lang),
+    label: pitchLabel(pitch, lang),
     tag: 'same-sound-other-spelling',
   });
   for (const option of others) {
@@ -366,6 +395,7 @@ function enharmonic(
   if (options.length < 3) return null;
   return {
     prompt: fill(prompts[lang].enharmonic, {
+      pitch: pitchLabel(pitch, lang),
       letter: pitchName(spelled(target, 0, targetOctave), lang),
     }),
     options: shuffle(next, options),
@@ -395,9 +425,13 @@ function dottedValue(
   };
   const options: Option[] = [
     { id: 'a', label: String(count), tag: 'correct' },
-    { id: 'b', label: String(count - 1), tag: 'forgot-the-dot' },
+    {
+      id: 'b',
+      label: String(count - 1),
+      tag: dots === 2 ? 'forgot-second-dot' : 'forgot-the-dot',
+    },
     { id: 'c', label: String(count + 1), tag: 'added-wrong' },
-    { id: 'd', label: String(2 ** dots), tag: 'halved-instead-of-dotted' },
+    { id: 'd', label: String(2 ** dots), tag: 'forgot-the-dot' },
   ];
   const unique = options.filter(
     (o, i) => options.findIndex((x) => x.label === o.label) === i,
@@ -434,12 +468,14 @@ function tuplet(
     {
       id: 'b',
       label: valueNames[lang][written / 2],
-      tag: 'counted-the-written-value',
+      // One step longer than the group uses. The opposite mistake from c, so
+      // it cannot share c's explanation.
+      tag: 'one-step-too-long',
     },
     {
       id: 'c',
       label: valueNames[lang][written * 2],
-      tag: 'added-wrong',
+      tag: 'counted-the-written-value',
     },
   ];
   const unique = options.filter(
@@ -449,6 +485,7 @@ function tuplet(
     prompt: fill(prompts[lang].tuplet, {
       base: valueNames[lang][den],
       count: String(count),
+      ratio: `${count}:${regular}`,
     }),
     options: shuffle(next, unique),
     answer: 'a',

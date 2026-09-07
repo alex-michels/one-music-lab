@@ -205,8 +205,8 @@ export const lessons = [
       ),
     ],
     experiment: b(
-      'Play C4, then every white key up to C5, saying each name with its octave number aloud.',
-      'Сыграйте до первой октавы, затем каждую белую клавишу вверх до до второй, называя вслух ступень и октаву.',
+      'In Notes, select C in octave 4. Use the note buttons up to B, then select C in octave 5. Play and name each note.',
+      'Во вкладке «Ноты» выберите до первой октавы. Пройдите кнопками ступеней до си, затем выберите до второй октавы. Проигрывайте и называйте каждую ноту.',
     ),
     hz: 261.625565,
     wave: 'triangle',
@@ -230,17 +230,17 @@ export const lessons = [
         'Нотный стан — пять параллельных линеек и четыре промежутка между ними, всего девять мест. И линейки, и промежутки считают снизу вверх: нижняя линия — первая линейка, нижний промежуток — первый промежуток. Головка ноты стоит либо на линейке, которая её пересекает, либо внутри промежутка.',
       ),
       b(
-        'The place just above the top line and the place just below the bottom line also belong to the staff, which makes eleven in all. Past them, short ledger lines extend it one step at a time. Notes are read left to right, and heads aligned vertically sound together.',
-        'Место сразу над пятой линейкой и место сразу под первой тоже принадлежат стану — так получается одиннадцать. Дальше стан продолжают короткие добавочные линейки, по одной на каждую следующую ступень. Ноты читают слева направо; головки, выстроенные по вертикали, звучат одновременно.',
+        'The places just above and below the staff bring the total to eleven before ledger lines are needed. Beyond them, short ledger lines continue the same alternation of lines and spaces: the next diatonic step does not always need another line. Notes are read left to right; vertically aligned notes sound together.',
+        'Места сразу над пятой линейкой и под первой дают всего одиннадцать позиций без добавочных линеек. Дальше чередование линеек и промежутков продолжается. Например, над скрипичным станом ля второй октавы стоит на первой добавочной линейке, си — в промежутке над ней, до третьей — на второй добавочной. Ноты читают слева направо; выстроенные по вертикали ноты звучат одновременно.',
       ),
     ],
     experiment: b(
-      'Play C4 and G4 one after the other, then together, and compare reading across with reading down.',
-      'Сыграйте до первой октавы и соль первой октавы сначала подряд, затем вместе, и сравните чтение слева направо с чтением по вертикали.',
+      'Compare the two pitch examples: C4 and G4 one after another, then together. Relate these to horizontal order and simultaneous notes in the lesson; this lab currently uses note names.',
+      'Сравните два примера: до и соль первой октавы по очереди, затем одновременно. Соотнесите их с последовательностью и одновременным звучанием в уроке; сейчас лаборатория работает с названиями нот.',
     ),
     hz: 261.625565,
     wave: 'triangle',
-    source: 'https://www.lehrklaenge.de/PHP/Grundlagen/Noten_lesen.php',
+    source: 'https://www.lehrklaenge.de/PHP/Grundlagen/Notensystem.php',
   },
   {
     id: 'clefs',
@@ -270,7 +270,7 @@ export const lessons = [
     ),
     hz: 391.995436,
     wave: 'triangle',
-    source: 'https://www.lehrklaenge.de/PHP/Grundlagen/Noten_lesen.php',
+    source: 'https://www.lehrklaenge.de/PHP/Grundlagen/Notenschluessel.php',
   },
   {
     id: 'accidental-signs',
@@ -300,7 +300,7 @@ export const lessons = [
     ),
     hz: 261.625565,
     wave: 'triangle',
-    source: 'https://www.lehrklaenge.de/PHP/Grundlagen/Noten_lesen.php',
+    source: 'https://www.lehrklaenge.de/PHP/Grundlagen/Vorzeichen.php',
   },
   {
     id: 'accidental-scope',
@@ -330,7 +330,7 @@ export const lessons = [
     ),
     hz: 493.883301,
     wave: 'sine',
-    source: 'https://viva.pressbooks.pub/openmusictheory/table-of-contents/',
+    source: 'https://www.lehrklaenge.de/PHP/Grundlagen/Vorzeichen.php',
   },
   {
     id: 'enharmonics',
@@ -360,7 +360,8 @@ export const lessons = [
     ),
     hz: 369.994423,
     wave: 'triangle',
-    source: 'https://newt.phys.unsw.edu.au/jw/notes.html',
+    source:
+      'https://viva.pressbooks.pub/openmusictheory/chapter/half-and-whole-steps/#chapter-1384-section-4',
   },
   {
     id: 'durations',
@@ -385,12 +386,13 @@ export const lessons = [
       ),
     ],
     experiment: b(
-      'Hold a steady pulse in the lab and count one whole, two halves, then four quarters across the same span.',
-      'Задайте ровный пульс в лаборатории и отсчитайте на одном отрезке целую, две половинные, затем четыре четверти.',
+      'Compare One whole note, Two half notes and Four quarter notes at the same tempo. The written values fill the same four quarter-note beats; count the attacks.',
+      'При одном темпе сравните «Одна целая», «Две половинные» и «Четыре четверти». Записанные длительности заполняют одинаковые четыре четвертные доли; считайте атаки.',
     ),
     hz: 261.625565,
     wave: 'square',
-    source: 'https://www.lehrklaenge.de/PHP/Grundlagen/Noten_lesen.php',
+    source:
+      'https://viva.pressbooks.pub/openmusictheory/chapter/notating-rhythm/',
   },
   {
     id: 'dots-ties',
@@ -415,12 +417,13 @@ export const lessons = [
       ),
     ],
     experiment: b(
-      'Play a note, then the same pitch twice under a tie, and hear one long sound instead of two attacks.',
-      'Сыграйте ноту, затем ту же высоту дважды под лигой продления, и услышьте один долгий звук вместо двух.',
+      'Compare Two separate quarter notes with Two quarter notes tied. Both fill two beats; the tied example has one attack and one sustained sound.',
+      'Сравните две отдельные четверти с двумя четвертями под лигой продления. Обе записи заполняют две доли; под лигой слышны одна атака и один протяжённый звук.',
     ),
     hz: 293.664768,
     wave: 'triangle',
-    source: 'https://www.lehrklaenge.de/PHP/Grundlagen/Noten_lesen.php',
+    source:
+      'https://viva.pressbooks.pub/openmusictheory/chapter/notating-rhythm/#chapter-57-section-3',
   },
   {
     id: 'beat-division',
@@ -445,12 +448,12 @@ export const lessons = [
       ),
     ],
     experiment: b(
-      'Play two eighths on one beat, then three triplet eighths, and hear the beat keep its length.',
-      'Сыграйте на одну долю две восьмые, затем три восьмые триолью, и услышьте, что доля не изменилась.',
+      'At the same tempo, compare Two eighths per beat and Three triplet eighths per beat. Each example fills four beats; only the division changes.',
+      'При одном темпе сравните две восьмые на долю и три триольные восьмые на долю. Каждый пример заполняет четыре доли; меняется только деление.',
     ),
     hz: 329.627557,
     wave: 'square',
-    source: 'https://viva.pressbooks.pub/openmusictheory/table-of-contents/',
+    source: 'https://www.lehrklaenge.de/PHP/Grundlagen/Triole.php',
   },
   {
     id: 'tempo',
@@ -475,12 +478,13 @@ export const lessons = [
       ),
     ],
     experiment: b(
-      'Set the pulse to 60 beats per minute, then to 120, and count four beats at each speed.',
-      'Задайте пульс 60 ударов в минуту, затем 120, и отсчитайте по четыре доли в каждом темпе.',
+      'Choose ♩ = 60 and play Four steady beats, then repeat at ♩ = 120. Count four beats each time and compare their spacing.',
+      'Выберите ♩ = 60 и запустите «Четыре ровные доли», затем повторите при ♩ = 120. Каждый раз отсчитайте четыре доли и сравните расстояние между атаками.',
     ),
     hz: 440,
     wave: 'sine',
-    source: 'https://viva.pressbooks.pub/openmusictheory/table-of-contents/',
+    source:
+      'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/#tempo',
   },
   {
     id: 'dynamics',
@@ -507,7 +511,8 @@ export const lessons = [
     ),
     hz: 440,
     wave: 'sine',
-    source: 'https://www.lehrklaenge.de/PHP/Grundlagen/Noten_lesen.php',
+    source:
+      'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/#dynamics',
   },
   {
     id: 'articulation',
@@ -532,12 +537,13 @@ export const lessons = [
       ),
     ],
     experiment: b(
-      'Hold one tone for its full length, then play the same figure with each tone cut short and listen to the silence you create.',
-      'Продержите тон всю его длительность, затем сыграйте ту же фигуру короткими тонами и вслушайтесь в возникающие паузы.',
+      'Compare Full-length tones and Short detached tones at the same tempo. Listen to the gaps while the onsets stay in the same places. Instrumental articulation needs its own technique.',
+      'При одном темпе сравните тоны полной длительности и короткие раздельные тоны. Атаки остаются на тех же местах, а паузы меняются. Исполнение штрихов на инструменте требует своей техники.',
     ),
     hz: 261.625565,
     wave: 'triangle',
-    source: 'https://viva.pressbooks.pub/openmusictheory/table-of-contents/',
+    source:
+      'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/#articulations',
   },
   {
     id: 'repeats',
@@ -562,12 +568,13 @@ export const lessons = [
       ),
     ],
     experiment: b(
-      'Play a four-tone figure, repeat it, then play it again with a different last tone and count how many tones sounded in all.',
-      'Сыграйте фигуру из четырёх тонов, повторите её, затем сыграйте её же с другим последним тоном и сосчитайте, сколько тонов прозвучало.',
+      'Play the four-note figure, then compare its repeat with the version that changes the ending. Each repeated example has eight attacks; listen for the last pitch.',
+      'Проиграйте фигуру из четырёх нот, затем сравните её повтор с вариантом, где изменено окончание. В каждом примере с повтором восемь атак; вслушайтесь в последнюю высоту.',
     ),
     hz: 391.995436,
     wave: 'triangle',
-    source: 'https://www.lehrklaenge.de/PHP/Grundlagen/Noten_lesen.php',
+    source:
+      'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/#structural-features',
   },
 ];
 export const curriculum = [
@@ -745,10 +752,10 @@ export const terms = [
     lesson: 'note-names',
   },
   {
-    title: b('Scientific pitch notation', 'Названия октав'),
+    title: b('Octave notation', 'Обозначения октав'),
     body: b(
-      'The convention that appends an octave number to each letter name, counting a new number from every C.',
-      'Система, в которой октава названа словом: большая, малая, первая, вторая, третья.',
+      'Octave notation distinguishes registers. Scientific pitch uses numbers (C4), Helmholtz notation uses letter case and marks (c′), and Russian tradition uses names such as the first octave. These are different systems for identifying the same pitch.',
+      'Обозначение октавы уточняет высоту ноты. В русской традиции говорят «до первой октавы»; ту же высоту научная система обозначает C4, а система Гельмгольца — c′. Это разные системы обозначений, а не разные ноты.',
     ),
     lesson: 'note-names',
   },
@@ -1536,8 +1543,8 @@ export const exerciseModes: { kind: ExerciseKind; label: LocalText }[] = [
 export const exerciseExplanations: Record<ErrorTag, LocalText> = {
   correct: b('That is the one.', 'Именно так.'),
   'neighbour-register': b(
-    'The name is right and the register is not: every register starts at its own C.',
-    'Название верное, а октава — нет: каждая октава начинается со своего до.',
+    'An octave shift keeps the note name. Count the registers in the requested direction.',
+    'Перенос на октаву сохраняет название ступени. Отсчитайте октавы в указанном направлении.',
   ),
   'wrong-letter': b(
     'That is the neighbouring step. Count the letters, not the keys.',
@@ -1552,16 +1559,24 @@ export const exerciseExplanations: Record<ErrorTag, LocalText> = {
     'Это звучит так же, но записано от другой ступени, а изменить нужно было именно запись.',
   ),
   'forgot-the-dot': b(
-    'That is the value without its dot. The dot adds half of the value again.',
-    'Это длительность без точки. Точка прибавляет ещё половину длительности.',
+    'That is the value with no dots. The first dot adds half the original value.',
+    'Это длительность без точек. Первая точка прибавляет половину исходной длительности.',
+  ),
+  'forgot-second-dot': b(
+    'That includes the first dot only. The second dot adds half of what the first dot added.',
+    'Учтена только первая точка. Вторая прибавляет половину того, что прибавила первая.',
   ),
   'halved-instead-of-dotted': b(
     'That is how many parts the value was divided into, not how long it lasts.',
     'Это число частей, на которые поделена длительность, а не её продолжительность.',
   ),
+  'one-step-too-long': b(
+    'That value is one step longer than the group uses. The written value comes from the next larger regular division, not from the starting value.',
+    'Эта длительность на ступень длиннее той, которой записана группа. Записывают ближайшей большей регулярной длительностью, а не исходной.',
+  ),
   'counted-the-written-value': b(
-    'An irregular group is written in the next larger regular division, not in the one it sounds like.',
-    'Особое деление записывается ближайшей большей регулярной длительностью, а не той, на которую похоже звучание.',
+    'Use the stated ratio: in a 3:2 group, three written eighths fill the time of two ordinary eighths.',
+    'Учитывайте указанное отношение: в группе 3:2 три записанные восьмые занимают время двух обычных восьмых.',
   ),
   'added-wrong': b(
     'The values simply add up. Count them in the smaller of the two.',

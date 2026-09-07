@@ -1,5 +1,6 @@
 import { test } from 'vitest';
 import assert from 'node:assert/strict';
+import { exerciseExplanations } from '../lib/learning.ts';
 import {
   add,
   countIn,
@@ -15,6 +16,78 @@ import {
 const LANGS = ['en', 'ru', 'de'];
 const LEVELS = [1, 2, 3];
 const SEEDS = 250;
+
+test('Enharmonic questions state both the source pitch and the required new spelling', () => {
+  const examples = [
+    ['en', 'A♭4', 'G♯4', 'F♯4', 'G♭4'],
+    [
+      'ru',
+      'ля-бемоль, первая октава',
+      'соль-диез, первая октава',
+      'фа-диез, первая октава',
+      'соль-бемоль, первая октава',
+    ],
+    ['de', 'as′', 'gis′', 'fis′', 'ges′'],
+  ];
+  for (const [
+    lang,
+    firstSource,
+    firstAnswer,
+    secondSource,
+    secondAnswer,
+  ] of examples) {
+    for (const [seed, source, answer] of [
+      [3, firstSource, firstAnswer],
+      [10, secondSource, secondAnswer],
+    ]) {
+      const item = generateFrom('enharmonic', 1, seed, lang);
+      assert.ok(item.prompt.includes(source), item.prompt);
+      assert.equal(
+        item.options.find((o) => o.id === item.answer).label,
+        answer,
+      );
+      assert.match(item.prompt, /12|двенадцати/);
+    }
+  }
+});
+
+test('Tuplets explicitly ask for notation within the stated ratio, not ordinary sounding duration', () => {
+  for (const [lang, notation, answer] of [
+    ['en', /basic note value/, 'eighth note'],
+    ['ru', /базов.*длительност/, 'восьмая'],
+    ['de', /Notenwert.*notiert/, 'Achtelnote'],
+  ]) {
+    const item = generateFrom('tuplet', 1, 1, lang);
+    assert.match(item.prompt, /3:2/);
+    assert.match(item.prompt, notation);
+    assert.equal(item.options.find((o) => o.id === item.answer).label, answer);
+  }
+});
+
+test('Russian register questions require an octave movement instead of stating the answer', () => {
+  for (let seed = 1; seed <= 120; seed++) {
+    const item = generateFrom('octave-region', 1, seed, 'ru');
+    const answer = item.options.find((o) => o.id === item.answer).label;
+    assert.ok(!item.prompt.includes(answer), item.prompt);
+    assert.match(item.prompt, /выше|ниже/);
+  }
+});
+
+test('Double-dot feedback distinguishes omitting the second dot from omitting both', () => {
+  for (const lang of LANGS) {
+    const item = generateFrom('dotted-value', 3, 5, lang);
+    assert.equal(item.options.find((o) => o.id === item.answer).label, '7');
+    assert.equal(
+      grade(item, item.options.find((o) => o.label === '6').id).tag,
+      'forgot-second-dot',
+    );
+    assert.equal(
+      grade(item, item.options.find((o) => o.label === '4').id).tag,
+      'forgot-the-dot',
+    );
+    assert.ok(exerciseExplanations['forgot-second-dot'][lang].length > 20);
+  }
+});
 
 /** Every kind, level, language and seed the suite walks. */
 function* everyItem(seeds = SEEDS) {

@@ -1,6 +1,62 @@
 // Original German translations. Terminology and scope: docs/german-localization.md.
 // English source keys make every addition require a German translation at typecheck.
 export const german = {
+  'An octave shift keeps the note name. Count the registers in the requested direction.':
+    'Bei einer Oktavversetzung bleibt der Tonname erhalten. Zählen Sie die Oktavlagen in der angegebenen Richtung.',
+  'That is the value with no dots. The first dot adds half the original value.':
+    'Das ist der Wert ohne Punkte. Der erste Punkt fügt die Hälfte des ursprünglichen Wertes hinzu.',
+  'That includes the first dot only. The second dot adds half of what the first dot added.':
+    'Dabei ist nur der erste Punkt berücksichtigt. Der zweite Punkt fügt die Hälfte dessen hinzu, was der erste Punkt hinzugefügt hat.',
+  'Use the stated ratio: in a 3:2 group, three written eighths fill the time of two ordinary eighths.':
+    'Beachten Sie das angegebene Verhältnis: In einer 3:2-Gruppe stehen drei notierte Achtel für die Dauer von zwei regulären Achteln.',
+  'One after another': 'Nacheinander',
+  'Four steady beats': 'Vier gleichmäßige Zählzeiten',
+  'One whole note': 'Eine ganze Note',
+  'Two half notes': 'Zwei halbe Noten',
+  'Four quarter notes': 'Vier Viertelnoten',
+  'Two separate quarter notes': 'Zwei getrennte Viertelnoten',
+  'Two quarter notes tied': 'Zwei Viertelnoten mit Haltebogen',
+  'Two eighths per beat': 'Zwei Achtel je Zählzeit',
+  'Three triplet eighths per beat': 'Drei Triolenachtel je Zählzeit',
+  'Full-length tones': 'Töne in voller Dauer',
+  'Short detached tones': 'Kurze abgesetzte Töne',
+  'Four-note figure': 'Figur aus vier Tönen',
+  'Repeat the figure': 'Die Figur wiederholen',
+  'Repeat with a changed ending': 'Mit geändertem Schluss wiederholen',
+  'Successive and simultaneous notes': 'Töne nacheinander und gleichzeitig',
+  'Note values': 'Notenwerte',
+  Ties: 'Haltebögen',
+  'Beat division': 'Unterteilung der Zählzeit',
+  Articulation: 'Artikulation',
+  Repeats: 'Wiederholungen',
+  'Stop sound': 'Klang stoppen',
+  'Stop example': 'Beispiel stoppen',
+  'Compare short examples': 'Kurze Beispiele vergleichen',
+  'Experiment topic': 'Thema des Experiments',
+  'Quarter notes per minute': 'Viertelnoten pro Minute',
+  'Each button plays a finite example. Compare the attacks and gaps at the same tempo; the oscillator illustrates timing, not an instrument-specific articulation rule.':
+    'Jede Schaltfläche spielt ein begrenztes Beispiel. Vergleichen Sie die Toneinsätze und Pausen bei gleichem Tempo; der Tongenerator veranschaulicht Zeitverhältnisse, keine instrumentenspezifische Artikulationsregel.',
+  'The places just above and below the staff bring the total to eleven before ledger lines are needed. Beyond them, short ledger lines continue the same alternation of lines and spaces: the next diatonic step does not always need another line. Notes are read left to right; vertically aligned notes sound together.':
+    'Die Plätze unmittelbar über und unter dem System ergeben insgesamt elf Positionen ohne Hilfslinien. Außerhalb setzen kurze Hilfslinien den Wechsel von Linien und Zwischenräumen fort: Nicht jeder nächste diatonische Schritt braucht eine weitere Linie. Noten werden von links nach rechts gelesen; senkrecht ausgerichtete Noten erklingen gleichzeitig.',
+  'Octave notation': 'Oktavbezeichnungen',
+  'Octave notation distinguishes registers. Scientific pitch uses numbers (C4), Helmholtz notation uses letter case and marks (c′), and Russian tradition uses names such as the first octave. These are different systems for identifying the same pitch.':
+    'Oktavbezeichnungen unterscheiden die Tonlagen. Die wissenschaftliche Schreibweise verwendet Zahlen (C4), die Helmholtz-Bezeichnung Groß- und Kleinbuchstaben mit Strichen (c′); die russische Tradition verwendet Oktavnamen. Diese verschiedenen Systeme bezeichnen dieselbe Tonhöhe.',
+  'In Notes, select C in octave 4. Use the note buttons up to B, then select C in octave 5. Play and name each note.':
+    'Wählen Sie unter Noten das c′. Gehen Sie mit den Tonknöpfen bis h′ und wählen Sie dann c″. Spielen und benennen Sie jeden Ton.',
+  'Compare the two pitch examples: C4 and G4 one after another, then together. Relate these to horizontal order and simultaneous notes in the lesson; this lab currently uses note names.':
+    'Vergleichen Sie die Tonhöhenbeispiele: c′ und g′ nacheinander, dann gleichzeitig. Ordnen Sie sie der zeitlichen Folge und Gleichzeitigkeit im Unterricht zu; dieses Labor arbeitet derzeit mit Tonnamen.',
+  'Compare One whole note, Two half notes and Four quarter notes at the same tempo. The written values fill the same four quarter-note beats; count the attacks.':
+    'Vergleichen Sie bei gleichem Tempo eine ganze Note, zwei halbe Noten und vier Viertelnoten. Die notierten Werte füllen dieselben vier Viertelzählzeiten; zählen Sie die Toneinsätze.',
+  'Compare Two separate quarter notes with Two quarter notes tied. Both fill two beats; the tied example has one attack and one sustained sound.':
+    'Vergleichen Sie zwei getrennte Viertelnoten mit zwei Vierteln unter einem Haltebogen. Beide füllen zwei Zählzeiten; das gebundene Beispiel hat nur einen Toneinsatz und einen durchgehenden Klang.',
+  'At the same tempo, compare Two eighths per beat and Three triplet eighths per beat. Each example fills four beats; only the division changes.':
+    'Vergleichen Sie bei gleichem Tempo zwei Achtel und drei Triolenachtel je Zählzeit. Beide Beispiele füllen vier Zählzeiten; nur die Unterteilung ändert sich.',
+  'Choose ♩ = 60 and play Four steady beats, then repeat at ♩ = 120. Count four beats each time and compare their spacing.':
+    'Wählen Sie ♩ = 60 und spielen Sie vier gleichmäßige Zählzeiten, dann wiederholen Sie bei ♩ = 120. Zählen Sie jeweils vier Zählzeiten und vergleichen Sie die Abstände der Einsätze.',
+  'Compare Full-length tones and Short detached tones at the same tempo. Listen to the gaps while the onsets stay in the same places. Instrumental articulation needs its own technique.':
+    'Vergleichen Sie bei gleichem Tempo Töne in voller Dauer und kurze abgesetzte Töne. Die Einsätze bleiben an denselben Stellen, die Pausen ändern sich. Instrumentale Artikulation erfordert die jeweilige Spieltechnik.',
+  'Play the four-note figure, then compare its repeat with the version that changes the ending. Each repeated example has eight attacks; listen for the last pitch.':
+    'Spielen Sie die Figur aus vier Tönen und vergleichen Sie ihre Wiederholung mit der Fassung mit geändertem Schluss. Beide Wiederholungsbeispiele haben acht Einsätze; achten Sie auf den letzten Ton.',
   Navigation: 'Navigation',
   'Navigate between the music laboratories and learning pages.':
     'Zwischen den Musiklaboren und Lernseiten wechseln.',
@@ -547,7 +603,6 @@ export const german = {
   'Octave register': 'Oktavlage',
   'The stretch of pitches from one C up to the B above it, for example C4 to B4.':
     'Der Abschnitt von einem C bis zum H darüber, etwa die eingestrichene Oktave.',
-  'Scientific pitch notation': 'Helmholtz-Bezeichnung',
   'The convention that appends an octave number to each letter name, counting a new number from every C.':
     'Die Schreibweise, die die Lage durch große und kleine Buchstaben mit Strichen angibt, etwa c′.',
   'Middle C': 'Eingestrichenes c',
@@ -974,5 +1029,7 @@ export const german = {
   'IF YOU ALSO USE SOFTWARE': 'WENN SIE AUCH AM RECHNER ARBEITEN',
   'MIDI fixes the note number, not the name of its octave. The same key that is number 60 here appears as C3 in some programs, C4 in others and C5 in a few. Read the number when the names disagree.':
     'MIDI legt die Nummer eines Tons fest, nicht den Namen seiner Oktavlage. Dieselbe Taste mit der Nummer 60 heißt in manchen Programmen C3, in anderen C4 und in einigen C5. Wenn die Namen auseinandergehen, gilt die Nummer.',
+  'That value is one step longer than the group uses. The written value comes from the next larger regular division, not from the starting value.':
+    'Dieser Wert ist eine Stufe länger als der, mit dem die Gruppe notiert wird. Der Notenwert ergibt sich aus der nächstgrößeren regelmäßigen Teilung, nicht aus dem Ausgangswert.',
 } as const;
 export type GermanKey = keyof typeof german;

@@ -52,7 +52,7 @@ export function Theory({
   lang: Lang;
   lessonId: string | null;
   setLessonId: (id: string | null) => void;
-  openLab: (hz: number, wave: Wave) => void;
+  openLab: (hz: number, wave: Wave, lessonId: string) => void;
   openPractice: () => void;
 }) {
   const t = translator(lang);
@@ -91,7 +91,7 @@ export function Theory({
             <p>{lesson.experiment[lang]}</p>
             <button
               className="primary-button"
-              onClick={() => openLab(lesson.hz, lesson.wave as Wave)}
+              onClick={() => openLab(lesson.hz, lesson.wave as Wave, lesson.id)}
             >
               {t('Open this experiment', 'Открыть эксперимент')}
               <ArrowRight size={16} />

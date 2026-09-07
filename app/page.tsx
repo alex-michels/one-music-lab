@@ -20,6 +20,12 @@ import {
 import { NumberField } from '@/components/number-field';
 import { ChordsLab } from '@/components/chords-lab';
 import { NotesLab } from '@/components/notes-lab';
+import {
+  initialNotesLabState,
+  notationLessonPresets,
+  planNotationExample,
+  type NotationExampleId,
+} from '@/lib/notation-experiments';
 import { exportTone } from '@/lib/wav';
 import { registerLabTools, type LabState } from '@/lib/webmcp';
 import { Download } from 'lucide-react';
@@ -338,6 +344,7 @@ export default function Home() {
   const setPage = pageStore.set;
   const [frequency, setFrequency] = useState(440);
   const [labTab, setLabTab] = useState<'tone' | 'notes'>('tone');
+  const [notesState, setNotesState] = useState(initialNotesLabState);
   const [reference, setReference] = useState(440);
   const [tuning, setTuning] = useState<Tuning>('equal');
   const [wave, setWave] = useState<Wave>('sine');
@@ -432,10 +439,44 @@ export default function Home() {
       setExporting(false);
     }
   }
-  function openLab(hz: number, shape: Wave) {
+  function stopSound() {
+    audio.current?.stopAll();
+    setPlaying(false);
+  }
+  function changeLabTab(tab: 'tone' | 'notes') {
+    stopSound();
+    setLabTab(tab);
+  }
+  async function playNotationExample(id: NotationExampleId, tempo: number) {
+    stopSound();
+    setError(null);
+    try {
+      const plan = planNotationExample(id, tempo);
+      await engine().preview(
+        plan.midis.map((midi) => frequencyForMidi(midi, reference, tuning)),
+        'triangle',
+        volume / 100,
+        plan.duration,
+        plan.spacing,
+      );
+    } catch {
+      setError(
+        localText(
+          'Audio is unavailable in this browser.',
+          'Звук недоступен в этом браузере.',
+        ),
+      );
+    }
+  }
+  function openLab(hz: number, shape: Wave, lessonId: string) {
     navigate('lab');
     setHz(hz);
     setWave(shape);
+    const preset = Object.hasOwn(notationLessonPresets, lessonId)
+      ? notationLessonPresets[lessonId]
+      : null;
+    setLabTab(preset ? 'notes' : 'tone');
+    if (preset) setNotesState({ ...initialNotesLabState, ...preset });
   }
   function changeReference(value: number) {
     if (!Number.isFinite(value) || value < 20 || value > 2000) return;
@@ -586,7 +627,14 @@ export default function Home() {
       setPlaying(false);
       return;
     }
-    if (e.repeat || e.ctrlKey || e.metaKey || e.altKey || page !== 'lab')
+    if (
+      e.repeat ||
+      e.ctrlKey ||
+      e.metaKey ||
+      e.altKey ||
+      page !== 'lab' ||
+      labTab !== 'tone'
+    )
       return;
     const target = e.target as HTMLElement;
     if (
@@ -815,7 +863,7 @@ export default function Home() {
                   type="button"
                   className={labTab === 'tone' ? 'active' : ''}
                   aria-pressed={labTab === 'tone'}
-                  onClick={() => setLabTab('tone')}
+                  onClick={() => changeLabTab('tone')}
                 >
                   <Activity size={17} />
                   {t('Tone generator', 'Генератор тонов')}
@@ -824,7 +872,7 @@ export default function Home() {
                   type="button"
                   className={labTab === 'notes' ? 'active' : ''}
                   aria-pressed={labTab === 'notes'}
-                  onClick={() => setLabTab('notes')}
+                  onClick={() => changeLabTab('notes')}
                 >
                   <Music2 size={17} />
                   {t('Notes', 'Ноты')}
@@ -841,6 +889,10 @@ export default function Home() {
                   reference={reference}
                   tuning={tuning}
                   play={playNote}
+                  state={notesState}
+                  onChange={setNotesState}
+                  playExample={playNotationExample}
+                  stop={stopSound}
                 />
               )}
               <div
