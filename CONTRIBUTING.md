@@ -22,19 +22,28 @@ structure, and factual review; avoid artificial tests for prose wording.
 
 ### Localized music notation
 
-User-visible pitch and scale names must follow the active locale's professional
-standard. English uses letter names with accidentals and scientific octaves;
-Russian uses note names such as `до`, `ми-бемоль`, and `си-диез`, with Russian
-octave names; German uses `C-Dur`/`c-Moll`, H for English B, B for English
-B-flat, and classical octave labels such as `a′`. Scale cards must preserve
-diatonic degree
-letters (for example, C minor is C–D–E♭–F–G–A♭–B♭) instead of choosing a
-chromatic alias from the keyboard. In Russian, the rule currently binds the
-“A little
-experiment” lab; the keyboard and the ear-training panels still show English
-scientific pitch in the Russian interface, which ROADMAP P05 records as open. Keep the scope and sources in
-[music-notation.md](docs/music-notation.md), and add regression tests when a
-scale, locale, or notation rule changes.
+New educational material, laboratories and sections use professional terminology
+and notation appropriate to their language and learning context. English uses
+letter names with accidentals and scientific octaves. Russian theory, teaching
+material, trainers (prompts, answer labels and feedback) and ordinary encyclopedia
+articles use traditional Russian names such as `до`, `ми-бемоль`, `си-диез` and
+Russian octave names. Encyclopedia articles about different international systems
+use the notation of the systems being explained, with clear context. Traditional
+Russian notation has priority when creating Russian laboratory material.
+International letter names and scientific pitch (for example, `C4`, `E♭4`, `A4`)
+remain valid alternatives; their use is not a localization error. Make the convention
+clear through context or a short label; Russian duplicates for every symbol are
+not required. German uses `C-Dur`/`c-Moll`, H for English B, B for English B-flat,
+and classical octave labels such as `a′`.
+
+The owner accepts the existing displays: Russian names in “A little experiment”
+and international labels elsewhere in the Russian Sound lab, keyboard and
+ear-training panels. Preserve them. Tasks 556/557 and locale parity do not
+authorize rewriting existing sections or converting all pitch labels to Russian.
+Scale cards must still preserve diatonic degree spelling (for example, C minor
+is C–D–E♭–F–G–A♭–B♭) rather than choosing a chromatic keyboard alias. Keep the
+scope and sources in [music-notation.md](docs/music-notation.md), and add regression
+tests when a scale, locale, or notation rule actually changes in the application.
 
 The Chords lab also follows this rule. Its letter chord symbols use explicitly
 identified international lead-sheet notation beside localized pitch names and

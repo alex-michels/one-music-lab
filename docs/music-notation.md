@@ -7,8 +7,8 @@ semitone offset. The written pitch does not change with the selected tuning
 map. Enharmonic spellings are therefore preserved:
 C natural minor is `C D E♭ F G A♭ B♭ C`, while F♯ major contains E♯.
 
-English uses scientific-pitch labels such as `C4` and `E♭4`. Russian uses the
-professional note names with hyphens for accidentals, as prescribed by the
+In this experiment, English uses scientific-pitch labels such as `C4` and `E♭4`.
+Russian uses professional note names with hyphens for accidentals, as prescribed by the
 Russian orthography reference: `до`, `ми-бемоль`, `си-диез`. Russian octave
 names are shown in words (for example, `первая октава`) because Russian
 professional pitch notation does not use the English scientific octave suffix
@@ -35,6 +35,34 @@ The melodic pair follows the classical scale convention. The lab labels the
 blues collection as a 12-TET model and writes its added blue note as lowered
 scale degree 5 (for C: `G♭`), while recognizing that blues performance can use
 expressive intonation and multiple analytical spellings.
+
+## Scope of future localization work
+
+The owner accepts the current Russian Sound lab: “A little experiment” uses
+Russian note names, while the other existing panels, keyboard and ear trainer
+may use international letter names and scientific octaves. This combination is
+intentional and is not an outstanding localization defect. Preserve these
+displays; tasks 556/557 do not require rewriting existing features.
+
+For newly created Russian material, use professional terminology and the following
+notation policy by section:
+
+| Section | Note and octave notation |
+|---|---|
+| Theory and pedagogical material | Traditional Russian names and octave designations. |
+| Trainers | Traditional Russian notation in prompts, answer labels and feedback. |
+| Ordinary encyclopedia articles | Traditional Russian notation. |
+| Encyclopedia articles explaining different international systems | The notation of the systems being discussed, clearly identified in context. |
+| Laboratory material | Traditional Russian notation has priority; international notation such as `C4`, `E♭4` and `A4` remains valid and is not a localization error in itself. |
+
+The laboratory allowance does not replace the notation policy for theory,
+trainers or ordinary encyclopedia articles. In a laboratory, make the convention
+clear in context or a short label without forcing Russian duplicates for every
+pitch. Correct scale-degree spelling remains required in either convention.
+The existing displays accepted above remain unchanged; this scope decision
+changes no current pitch labels, audio, exercises or assessment answers.
+
+## Sources
 
 The formulas and terminology were checked against:
 
