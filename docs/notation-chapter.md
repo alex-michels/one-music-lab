@@ -344,6 +344,32 @@ Reference material that is a lookup, not a lesson: NA34, NA41, NA48, NA56, NA58,
 
 So the encyclopedia layer needs a **P02 schema PR before content**, and stable per-term URLs (§3). It cannot be closed by volume.
 
+### 2.4a The one article where the traditions meet
+
+The single place the naming systems appear side by side is an encyclopedia
+article — reference material a reader opens on purpose, never a lesson and
+never scored. The owner's scope for it is wider than EN/DE/RU: it may collect
+**other** writing traditions too.
+
+Contents, in one article:
+
+- The letter systems: English/international **A B C D E F G**, German with
+  **H** for English B and **B** for English B♭, and the Scandinavian, Polish,
+  Czech and Hungarian usage that follows German.
+- The syllable systems: Romance and Russian **до ре ми фа соль ля си**, and
+  solmization proper — fixed *do* against movable *do*, and the `si`/`ti`
+  split.
+- Octave conventions: Helmholtz (`c′`), scientific (`C4`), the Russian
+  register names, and MIDI numbers, as one mapping.
+- Beyond the European systems, as the article grows: Indian **sargam**,
+  Byzantine `parallage`, Arabic `dūkāh/sīkāh` naming, Japanese `iroha` and
+  numbered systems, and Chinese `gongche`. Each needs its own source before it
+  is written; none is required for the article's first version.
+- Why German has H, told as the gradual scribal development it was.
+
+Cross-linked from the accidentals and register lessons in every language, so a
+curious reader can reach it — and so no lesson has to carry the comparison.
+
 ### 2.5 What we do not ship
 
 | Atom | Reason |
@@ -703,19 +729,16 @@ Two smaller ones worth a glossary note each: **UK "pause" = fermata but German "
 
 | Module | Topic | Line | Coverage |
 |---|---|---|---|
-| **F01** | 2.3 Названия нот … октавные обозначения | 204 | The chapter supplies the German system (Stammtöne, the nine registers). **But the topic as worded conflicts with §0a — see the note below.** |
+| **F01** | 2.3 Названия нот … октавные обозначения | 204 | The chapter supplies the German system (Stammtöne, the nine registers). Its English and Russian counterparts come from elsewhere; solmization is absent from the chapter entirely. |
 | **F07** | 3.21 Порядок ключевых знаков | 309 | **placement half only** — the fifths order and fixed positions; *why* a key has those signs belongs to F07's own topics. |
 
-> **2.3 needs an owner decision before it can be worked on.** Its title commits
-> to teaching *«английская, немецкая, сольмизационная системы»* comparatively,
-> and audit item 10 (`ROADMAP.md:22`) adds *«оговариваем B/H,
-> scientific/Helmholtz/русские октавные обозначения и movable/fixed do»*. Under
-> §0a the product teaches each reader only their own system, which contradicts
-> both. Either the roadmap wording is narrowed to "each interface language
-> teaches its own naming and octave convention; the correspondence is a
-> localization invariant and, at most, one encyclopedia entry", or §0a is
-> overruled. This plan assumes the former. Solmization is a separate topic and
-> is absent from the chapter either way.
+> **On 2.3 and audit item 10.** Both name the English, German and solmization
+> systems, and audit item 10 adds B/H and scientific/Helmholtz/Russian octave
+> conventions. Those are instructions to whoever **builds and translates** the
+> site — they tell us which tradition each language version must use — not a
+> syllabus for the reader. Settled by the owner. §0a stands: each language
+> version teaches its own system, and the comparison lives in one encyclopedia
+> article (§2.4a). Solmization is absent from this chapter in any case.
 
 **Adjacent — cross-links only, do not claim coverage:** N01 2.14 (accent *sign* only; 2.10–2.13 absent) · N03 2.21 (clef-per-instrument + Akkolade) · N04 2.22/2.23 (three footnote-level facts: chant's four lines, relative vs mensural values, mensural-derived multi-bar rests) · N05 2.24/2.26 (overview depth; 2.27 absent) · N06 13.11 (real engraving conventions, but stated for the hand-writing student) and 2.28 (absent) · F08 4.21 / H03 4.22 / H04 4.18 (one comparative sentence each) · F07 3.20 (accidental order is a fifths order, but quintal kinship is never taught).
 
