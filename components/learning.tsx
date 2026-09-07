@@ -104,7 +104,7 @@ export function Theory({
           </h2>
         </div>
         <span className="count-badge">
-          6 {t('short lessons', 'коротких уроков')}
+          {count(lessons.length, lang, 'lessons')}
         </span>
       </div>
       <div className="lesson-grid">
@@ -115,7 +115,9 @@ export function Theory({
             onClick={() => setLessonId(l.id)}
           >
             <div className="tile-top">
-              <span className="panel-number">0{i + 1}</span>
+              <span className="panel-number">
+                {String(i + 1).padStart(2, '0')}
+              </span>
               <span>{l.category[lang]}</span>
               <ArrowUpRight size={18} />
             </div>
@@ -150,7 +152,9 @@ export function Theory({
       <div className="curriculum-grid">
         {curriculum.map((c, i) => (
           <div key={i} className="curriculum-item">
-            <span className="curriculum-number">0{i + 1}</span>
+            <span className="curriculum-number">
+              {String(i + 1).padStart(2, '0')}
+            </span>
             <div>
               <h3>{c.title[lang]}</h3>
               <p>{c.topics[lang]}</p>

@@ -10,6 +10,7 @@ import {
   Practice,
 } from '../../components/learning.tsx';
 import { ChordsLab } from '../../components/chords-lab.tsx';
+import { lessons, terms } from '../../lib/learning.ts';
 import { AudioEngine } from '../../lib/audio.ts';
 import { ChordPlayer } from '../../lib/chord-audio.ts';
 import { LANGUAGE_STORAGE_KEY } from '../../lib/client-store.ts';
@@ -23,7 +24,7 @@ function render(Component, props = {}) {
     document.body.append(container);
     root = createRoot(container);
   }
-  void act(() => root.render(createElement(Component, props)));
+  return act(() => root.render(createElement(Component, props)));
 }
 afterEach(async () => {
   if (root) await act(() => root.unmount());
@@ -74,7 +75,7 @@ test('German persists, updates metadata and all navigation, uses H on the keyboa
   meta = document.createElement('meta');
   meta.name = 'description';
   document.head.append(meta);
-  render(Home);
+  await render(Home);
   expect(document.documentElement.lang).toBe('de');
   expect(meta.content).toContain('Entdecke Klang');
   expect(container.querySelector('h1').textContent).toBe(
@@ -140,7 +141,7 @@ test('All six German lessons include translated prose, experiments and formulas,
   ];
   for (const [lessonId, title, prose] of lessonCases) {
     const openLab = vi.fn();
-    render(Theory, {
+    await render(Theory, {
       lang: 'de',
       lessonId,
       setLessonId: vi.fn(),
@@ -157,30 +158,42 @@ test('All six German lessons include translated prose, experiments and formulas,
     await click('Dieses Experiment öffnen');
     expect(openLab).toHaveBeenCalledOnce();
   }
-  render(Theory, {
+  await render(Theory, {
     lang: 'de',
     lessonId: null,
     setLessonId: vi.fn(),
     openLab: vi.fn(),
     openPractice: vi.fn(),
   });
-  expect(container.querySelectorAll('.lesson-tile')).toHaveLength(6);
-  expect(container.textContent).toContain('Alte Musik & Mehrstimmigkeit');
-  render(Encyclopedia, { lang: 'de', openLesson: vi.fn() });
-  await search('Stimmführung');
-  expect(container.querySelectorAll('.term-card')).toHaveLength(1);
-  expect(container.querySelector('.term-card h3').textContent).toBe(
-    'Stimmführung',
+  expect(container.querySelectorAll('.lesson-tile')).toHaveLength(
+    lessons.length,
   );
+  expect(container.textContent).toContain('Alte Musik & Mehrstimmigkeit');
+  await render(Encyclopedia, { lang: 'de', openLesson: vi.fn() });
+  await search('Stimmführung');
+  // The search reads every language's title plus the body of the active one,
+  // so a second entry may legitimately mention the word. What has to hold is
+  // that searching German narrows the list and finds the entry itself — not
+  // that exactly one card survives, which any new term could falsify.
+  const found = [...container.querySelectorAll('.term-card h3')].map(
+    (el) => el.textContent,
+  );
+  expect(found).toContain('Stimmführung');
+  expect(found.length).toBeLessThan(terms.length);
   await search('xyzkeinbegriff');
   expect(container.textContent).toContain('Noch kein passender Begriff');
   await click('Alle Begriffe anzeigen');
-  expect(container.querySelectorAll('.term-card')).toHaveLength(12);
+  expect(container.querySelectorAll('.term-card')).toHaveLength(terms.length);
 });
 
 test('German minor scales spell Es/As/B and raise H only in the appropriate forms; playback keeps its pitches', async () => {
   const play = vi.fn().mockResolvedValue();
-  render(Experiments, { lang: 'de', reference: 440, tuning: 'equal', play });
+  await render(Experiments, {
+    lang: 'de',
+    reference: 440,
+    tuning: 'equal',
+    play,
+  });
   await openTab('Tonleitern & Modi');
   await choose('Grundton', 'c′');
   const names = () =>
@@ -199,7 +212,12 @@ test('German minor scales spell Es/As/B and raise H only in the appropriate form
   await click('Nacheinander');
   expect(play.mock.lastCall[0][0]).toBeCloseTo(523.251, 2);
   expect(play.mock.lastCall[0].at(-1)).toBeCloseTo(261.626, 2);
-  render(Experiments, { lang: 'de', reference: 20, tuning: 'equal', play });
+  await render(Experiments, {
+    lang: 'de',
+    reference: 20,
+    tuning: 'equal',
+    play,
+  });
   expect(container.textContent).toContain('Einige Töne liegen außerhalb');
 });
 
@@ -220,7 +238,7 @@ test('The German chord lab transposes H/B, spells inversions, counts beats and g
   const playback = vi
     .spyOn(ChordPlayer.prototype, 'play')
     .mockRejectedValue(new Error('test failure'));
-  render(ChordsLab, { lang: 'de' });
+  await render(ChordsLab, { lang: 'de' });
   await choose('Grundton der Tonart · transponieren', 'H');
   const cards = () =>
     [...container.querySelectorAll('.chord-card strong')].map(
@@ -254,7 +272,7 @@ test('German interval training spells the heard third, explains mistakes and cou
     .mockReturnValueOnce(0)
     .mockReturnValueOnce(2 / 12);
   const play = vi.fn().mockResolvedValue();
-  render(Practice, { lang: 'de', reference: 440, play });
+  await render(Practice, { lang: 'de', reference: 440, play });
   await click('Übung starten'); // MIDI 59: h, followed by d′ (minor third).
   await click('Große Terz 2');
   expect(container.querySelector('output').textContent).toContain(

@@ -54,6 +54,15 @@ export const nouns = {
     en: { one: 'chord', other: 'chords' },
     ru: { one: 'аккорд', few: 'аккорда', many: 'аккордов' },
   },
+  lessons: {
+    de: { one: 'Lektion', other: 'Lektionen' },
+    en: { one: 'short lesson', other: 'short lessons' },
+    ru: {
+      one: 'короткий урок',
+      few: 'коротких урока',
+      many: 'коротких уроков',
+    },
+  },
   octaves: {
     de: { one: 'Oktave', other: 'Oktaven' },
     en: { one: 'octave', other: 'octaves' },
