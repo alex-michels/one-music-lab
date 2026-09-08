@@ -33,6 +33,7 @@ import {
   type Level,
 } from '@/lib/exercises';
 import { Staff } from '@/components/staff';
+import { StaffAnswer } from '@/components/staff-answer';
 import { frequencyForMidi, noteName, type Wave } from '@/lib/music';
 type Lang = import('@/lib/client-store').Lang;
 type PlaySequence = (
@@ -301,12 +302,16 @@ function NotationQuiz({ lang }: { lang: Lang }) {
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
   const item = generateFrom(kind, level, seed, lang);
-  const verdict = chosen === null ? null : grade(item, chosen);
+  const resultFor = (id: string) =>
+    id === 'written-wrong'
+      ? { correct: false, tag: 'wrong-written-note' as const }
+      : grade(item, id);
+  const verdict = chosen === null ? null : resultFor(chosen);
   const answer = (id: string) => {
     if (chosen !== null) return;
     setChosen(id);
     setTotal((n) => n + 1);
-    if (grade(item, id).correct) setScore((n) => n + 1);
+    if (resultFor(id).correct) setScore((n) => n + 1);
   };
   const restart = (next: { kind?: ExerciseKind; level?: Level }) => {
     if (next.kind) setKind(next.kind);
@@ -344,42 +349,54 @@ function NotationQuiz({ lang }: { lang: Lang }) {
             </button>
           ))}
         </div>
-        {item.staff && (
-          <div className="exercise-staff">
-            <Staff
-              pitches={item.staff.pitches}
-              clef={item.staff.clef}
-              barlines={item.staff.barlines}
-              lang={lang}
-              space={13}
-              label={t('The note to name', 'Нота, которую нужно назвать')}
-            />
-          </div>
+        {kind === 'read-pitch' ? (
+          <StaffAnswer
+            key={`${seed}-${level}-${lang}`}
+            item={item}
+            chosen={chosen}
+            onAnswer={answer}
+          />
+        ) : (
+          <>
+            {item.staff && (
+              <div className="exercise-staff">
+                <Staff
+                  pitches={item.staff.pitches}
+                  clef={item.staff.clef}
+                  barlines={item.staff.barlines}
+                  accidentalVisibility={item.staff.accidentalVisibility}
+                  lang={lang}
+                  space={13}
+                  label={t('The note to name', 'Нота, которую нужно назвать')}
+                />
+              </div>
+            )}
+            <h2 className="exercise-prompt">{item.prompt}</h2>
+            <div className="answer-grid">
+              {item.options.map((option) => (
+                <button
+                  key={option.id}
+                  disabled={chosen !== null}
+                  onClick={() => answer(option.id)}
+                  className={
+                    chosen !== null && option.id === item.answer
+                      ? 'answer-correct'
+                      : chosen === option.id
+                        ? 'answer-wrong'
+                        : ''
+                  }
+                >
+                  <span>{option.label}</span>
+                  {chosen !== null && option.id === item.answer ? (
+                    <Check size={18} />
+                  ) : chosen === option.id ? (
+                    <X size={18} />
+                  ) : null}
+                </button>
+              ))}
+            </div>
+          </>
         )}
-        <h2 className="exercise-prompt">{item.prompt}</h2>
-        <div className="answer-grid">
-          {item.options.map((option) => (
-            <button
-              key={option.id}
-              disabled={chosen !== null}
-              onClick={() => answer(option.id)}
-              className={
-                chosen !== null && option.id === item.answer
-                  ? 'answer-correct'
-                  : chosen === option.id
-                    ? 'answer-wrong'
-                    : ''
-              }
-            >
-              <span>{option.label}</span>
-              {chosen !== null && option.id === item.answer ? (
-                <Check size={18} />
-              ) : chosen === option.id ? (
-                <X size={18} />
-              ) : null}
-            </button>
-          ))}
-        </div>
         {verdict && (
           <output
             className={

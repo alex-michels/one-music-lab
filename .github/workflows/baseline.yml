@@ -33,6 +33,8 @@ jobs:
         run: npx playwright install --with-deps chromium firefox webkit
       - name: Unit tests and roadmap integrity
         run: npm test
+      - name: Reproduce notation glyphs from pinned Verovio
+        run: npm run glyphs:check
       - name: Browser, audio and accessibility tests (Chromium, Firefox, WebKit)
         run: npm run test:browser
       - name: Coverage over all authored code (no threshold gate yet)
@@ -99,5 +101,6 @@ jobs:
             outputs/coverage/coverage-summary.json
             outputs/coverage/lcov.info
             outputs/site-server.txt
+            outputs/notation-553/
           if-no-files-found: warn
           retention-days: 14

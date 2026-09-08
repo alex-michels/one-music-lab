@@ -528,6 +528,8 @@ Fix the ergonomics instead of the format: **retire the duplicated `{de: german['
 
 ---
 
+> Implementation note (2026-09-08): the executable contract and verified limits for №553 are now in [notation-engine.md](notation-engine.md). In particular, MEI export is not lossless for unsupported elements; retain originals. The sections below preserve the earlier design analysis.
+
 ## 4. Notation technology — rendering and learner input
 
 ### 4.1 Candidates (licences verified 2026-09-07 against the npm registry; sizes measured from the official tarballs and reproduced independently)

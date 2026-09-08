@@ -79,25 +79,36 @@ is still pending. System font selection does not bundle font binaries.
 
 ## Music glyphs and the notation engine
 
-`lib/glyphs.ts` holds eleven glyph outlines — two clefs plus the C clef, three
-note heads and the five accidentals — as SVG path data. They are the shapes of
-the **Leipzig** music font, which Verovio bundles under the SIL Open Font
-License, extracted once from Verovio's own SVG output by
-`scripts/extract-glyphs.mjs` and committed as paths.
+The eleven outlines in `lib/glyphs.json`, imported by `lib/glyphs.ts`, come from
+Verovio 6.3.0's **Leipzig** font (explicitly selected by the extractor). Copyright
+(c) 2014 Etienne Darbellay, Jean-Francois Marti and Laurent Pugin; Reserved Font
+Name "Leipzig". Preserve the upstream wording in
+[Leipzig-OFL-1.1](LICENSES/Leipzig-OFL-1.1.txt). The outline data retains **SIL OFL
+1.1**; it is not relabeled as original Apache-2.0 code. The original React and
+geometry code remains Apache-2.0. No font binary is shipped.
 
-No font file is shipped and nothing is fetched at run time. Embedding outlines
-in a document is what the OFL permits without the document inheriting the
-licence; shipping a subset font file would instead be redistribution and would
-carry the notice and reserved-font-name conditions. That is why the outlines
-are used, and it is also why the static export has no webfont to fail and no
-CDN to depend on.
+`npm run glyphs:generate` extracts these outlines from an original MEI probe;
+`npm run glyphs:check` proves the committed data reproduces from the pinned
+version. Quarter-tone and long-layout fixtures produce ignored review artifacts,
+not copied score illustrations. The browser uses only the committed outlines,
+with no font download, CDN, or engraving runtime.
 
-**Verovio** 6.3.0 is a development dependency only, used to produce those paths
-and available for build-time engraving of longer examples. It never reaches the
-browser, so no LGPL library is distributed with the site. Its npm package ships
-no licence text; the LGPL-3.0-or-later terms must be taken from the upstream
-`COPYING` and `COPYING.LESSER`, not copied out of `node_modules`. Record this in
-the dependency and bundle audit before the first public release.
+**Verovio 6.3.0** remains an unmodified development dependency under
+**LGPL-3.0-or-later**. Its upstream license texts are retained verbatim as
+[GPL-3.0](LICENSES/verovio-GPL-3.0.txt) and
+[LGPL-3.0](LICENSES/verovio-LGPL-3.0.txt), retrieved from the `version-6.3.0`
+tag's `COPYING` and `COPYING.LESSER`. Upstream source:
+[Verovio version-6.3.0](https://github.com/rism-digital/verovio/tree/version-6.3.0).
+The npm package retains its upstream metadata and license; its absence of bundled
+license files no longer leaves this repository without those texts. A future
+change that distributes the engine needs its own distribution review.
+
+Sources checked 2026-09-08: upstream
+[font inventory](https://github.com/rism-digital/verovio/blob/version-6.3.0/fonts/README.md)
+and Leipzig license blob `9cb387723ea5009cf9793f5cf5ad2edebb0b939e`.
+[Task 553 evidence](docs/notation-engine.md) documents the precise runtime and
+artifact boundary. This resolves the notation prototype's notice work; it does
+not close the separate site-wide dependency or content-rights audit.
 
 ## Research and learning sources
 

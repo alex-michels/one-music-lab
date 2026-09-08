@@ -408,20 +408,24 @@ test('The app opens the chords hash, switches EN/RU, links from Sound lab, and d
     getComputedStyle(container.querySelector('[data-slot="sidebar-container"]'))
       .position,
   ).toBe('fixed');
+  // The chords lab is the play lens of one subject, so the heading is that
+  // subject rather than a slogan about the page it happens to be on.
   await expect
     .element(
-      page.getByRole('heading', { name: 'Chords, connected.', exact: true }),
+      page.getByRole('heading', { name: 'Building a chord', exact: true }),
     )
     .toBeVisible();
   await button('RU').click();
   await expect
     .element(
-      page.getByRole('heading', { name: 'Аккорды в движении.', exact: true }),
+      page.getByRole('heading', { name: 'Как построить аккорд', exact: true }),
     )
     .toBeVisible();
   await button('Лаборатория').click();
   await button('Лаборатория аккордов · создайте последовательность').click();
-  expect(window.location.hash).toBe('#chords');
+  // The chords lab is the play lens of one topic, and the address says which
+  // language it is being read in.
+  expect(window.location.hash).toBe('#/ru/t/chords/play');
   await button('EN').click();
   await button('Play progression').click();
   const close = vi.spyOn(context, 'close');
@@ -435,7 +439,7 @@ test('The app opens the chords hash, switches EN/RU, links from Sound lab, and d
     .toBeVisible();
   await button('Sound lab').click();
   await button('Open Chords lab · build a progression').click();
-  expect(window.location.hash).toBe('#chords');
+  expect(window.location.hash).toBe('#/en/t/chords/play');
 });
 
 test('Loading another example replaces the phrase, and one Undo brings it back', async () => {

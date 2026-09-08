@@ -62,7 +62,8 @@ test('The Notes tab replaces the generator and reads a written note as a pitch',
   expect(readout('Sounding pitch')).toContain('261.63');
 
   // Raising the note changes the spelling and the number together.
-  await click('♯');
+  // The button draws the sign and says the word, so the word is its name.
+  await click('sharp');
   expect(readout('Written')).toBe('C♯');
   expect(readout('MIDI number')).toBe('61');
   expect(container.querySelector('.note-name').textContent).toBe('C♯4');
@@ -78,7 +79,8 @@ test('The reference pitch moves the frequency and leaves the written note alone'
   await mount();
   await click('Notes');
   await click('F');
-  await click('♯');
+  // The button draws the sign and says the word, so the word is its name.
+  await click('sharp');
   await click('octave 5');
   const written = readout('Written');
   const midi = readout('MIDI number');
@@ -211,7 +213,10 @@ test('Each rhythmic lesson selects its actual controls and dynamics retains the 
     ).toBe(true);
   }
   await click(/Music theory/);
-  await click('All foundations');
+  // The index is an address of its own now, so arriving at it already closes
+  // whatever lesson was open; the guard keeps the test honest either way.
+  if (container.querySelector('.lesson-article'))
+    await click('All foundations');
   await click(/Loudness without a number/);
   await click('Open this experiment');
   expect(container.querySelector('.notes-lab')).toBeNull();

@@ -18,11 +18,9 @@ type Lang = import('@/lib/client-store').Lang;
  * outlines. No engine runs in the browser and no font is fetched, so the static
  * export stays self-contained.
  *
- * The reason for drawing it here rather than handing the job to a library is
- * accessibility. A staff is a picture of a list of pitches, and a reader who
- * cannot see it still needs that list: this one carries the names in the
- * reader's own language, which no notation library produces because none of
- * them knows the language the site is being read in.
+ * Localized title/aria-labelledby follow W3C WAI's SVG text-alternative
+ * pattern. Exercise descriptions name positions and signs without revealing
+ * the answer; longer score navigation remains outside this small prototype.
  */
 
 const clefGlyph: Record<Clef, GlyphName> = {
@@ -69,6 +67,8 @@ export function Staff({
   space = 9,
   label,
   barlines = [],
+  accidentalVisibility = [],
+  range,
 }: {
   pitches: SpelledPitch[];
   clef?: Clef;
@@ -80,9 +80,20 @@ export function Staff({
   label?: string;
   /** Note indices a barline is drawn after, for showing how far a sign reaches. */
   barlines?: number[];
+  /** Explicit/courtesy signs are independent of the sounding pitch. */
+  accidentalVisibility?: boolean[];
+  range?: readonly [number, number];
 }) {
   const titleId = useId();
-  const plan: StaffLayout = layout(pitches, clef, values);
+  if (!Number.isFinite(space) || space < 4 || space > 64)
+    throw new RangeError('Staff space must be 4–64 pixels');
+  const plan: StaffLayout = layout(
+    pitches,
+    clef,
+    values,
+    accidentalVisibility,
+    range,
+  );
   const names = plan.notes.map((n) => pitchLabel(n.pitch, lang)).join(', ');
   const lineY = (line: number) => stepY(line * 2, plan.top);
   return (
@@ -91,9 +102,6 @@ export function Staff({
       viewBox={`0 0 ${plan.width * space} ${plan.height * space}`}
       width={plan.width * space}
       height={plan.height * space}
-      // A titled, labelled graphic rather than role="img": an inline SVG
-      // cannot become an <img> without losing currentColor theming, and a
-      // <title> the label points at is what readers actually announce.
       aria-labelledby={titleId}
     >
       <title id={titleId}>{label ?? names}</title>
@@ -114,13 +122,14 @@ export function Staff({
         y={stepY(clefStep[clef], plan.top)}
         space={space}
       />
-      {barlines.map((index) => {
+      {[...new Set(barlines)].map((index) => {
         const note = plan.notes[index];
         const next = plan.notes[index + 1];
         if (!note) return null;
         const x = next ? (note.x + next.x) / 2 : plan.width - 0.5;
         return (
           <line
+            data-barline={index}
             key={`bar-${index}`}
             x1={x * space}
             x2={x * space}

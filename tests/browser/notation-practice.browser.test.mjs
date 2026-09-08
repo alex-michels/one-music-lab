@@ -5,6 +5,8 @@ import { createRoot } from 'react-dom/client';
 import { Practice } from '../../components/learning.tsx';
 import { exerciseModes } from '../../lib/learning.ts';
 import { generateFrom, grade } from '../../lib/exercises.ts';
+import { pitchName } from '../../lib/notation.ts';
+import '../../app/globals.css';
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 let root, container;
@@ -151,4 +153,50 @@ test('A sign that stops at the barline is drawn with the barline', async () => {
   expect(staff.querySelectorAll('path').length).toBeGreaterThanOrEqual(4);
   expect(prompt().length).toBeGreaterThan(10);
   expect(answers().length).toBe(2);
+});
+
+test('Typed and placed answers update the session score and reset for the next question', async () => {
+  await render('en');
+  await click('Reading notation');
+  await click('Read a note');
+  const first = generateFrom('read-pitch', 1, 102, 'en');
+  const wrong = first.options.find((option) => option.id !== first.answer);
+  await click('Type a name');
+  await act(() =>
+    page.getByRole('textbox', { name: 'Note name' }).fill(wrong.label),
+  );
+  await click('Check answer');
+  expect(container.querySelector('.answer-feedback').className).toContain(
+    'incorrect',
+  );
+  expect(container.querySelector('.score').textContent).toBe('0/ 1');
+  expect(container.querySelector('input').disabled).toBe(true);
+  await click('Next question');
+  expect(container.querySelector('.answer-feedback')).toBeNull();
+  await click('Type a name');
+  expect(container.querySelector('input').value).toBe('');
+  const second = generateFrom('read-pitch', 1, 203, 'en');
+  await act(() =>
+    page
+      .getByRole('textbox', { name: 'Note name' })
+      .fill(pitchName(second.staff.pitches[0], 'en')),
+  );
+  await click('Check answer');
+  expect(container.querySelector('.answer-feedback').className).toContain(
+    'correct',
+  );
+  expect(container.querySelector('.score').textContent).toBe('1/ 2');
+  await click('Next question');
+  await click('Place on the staff');
+  await click('Line 1');
+  await click('Check answer');
+  expect(container.querySelector('.score').textContent).toMatch(/^[12]\/ 3$/);
+  await click('Next question');
+  await click('Place on the staff');
+  expect(
+    container.querySelector('.staff-position [aria-pressed="true"]'),
+  ).toBeNull();
+  expect(
+    page.getByRole('button', { name: 'Check answer' }).element().disabled,
+  ).toBe(true);
 });

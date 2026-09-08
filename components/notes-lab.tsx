@@ -16,6 +16,7 @@ import {
 } from '@/lib/notation';
 import { frequencyForMidi, type Tuning } from '@/lib/music';
 import { Staff } from '@/components/staff';
+import { GLYPH_UNITS_PER_SPACE, glyphs, type GlyphName } from '@/lib/glyphs';
 import type { Clef } from '@/lib/staff';
 type Lang = import('@/lib/client-store').Lang;
 
@@ -45,6 +46,48 @@ function spell(
     octave,
     midi: (octave + 1) * 12 + NATURAL_STEPS[letter] + accidental,
   };
+}
+
+/**
+ * The five signs, drawn rather than typed, at the size and the vertical
+ * relationship they have on a staff: a double sharp is a small mark on the
+ * note's own line, a flat reaches well above it.
+ *
+ * The width of each glyph is its own; the vertical window is shared, measured
+ * from the committed outlines after the flip from y-up font units to y-down
+ * SVG. One staff space is `GLYPH_UNITS_PER_SPACE` units, so the path is scaled
+ * by its reciprocal and mirrored.
+ */
+const SIGN_TOP = -1.9;
+const SIGN_HEIGHT = 2.85;
+const SIGN_SPACE = 9;
+const signGlyphs: { name: GlyphName; width: number }[] = [
+  { name: 'accidentalDoubleFlat', width: 1.552 },
+  { name: 'accidentalFlat', width: 0.792 },
+  { name: 'accidentalNatural', width: 0.628 },
+  { name: 'accidentalSharp', width: 0.788 },
+  { name: 'accidentalDoubleSharp', width: 1.028 },
+];
+
+function AccidentalSign({ index }: { index: number }) {
+  const { name, width } = signGlyphs[index];
+  const scale = 1 / GLYPH_UNITS_PER_SPACE;
+  return (
+    <svg
+      className="accidental-sign"
+      viewBox={`0 ${SIGN_TOP} ${width} ${SIGN_HEIGHT}`}
+      width={width * SIGN_SPACE}
+      height={SIGN_HEIGHT * SIGN_SPACE}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d={glyphs[name]}
+        transform={`scale(${scale} ${-scale})`}
+        fill="currentColor"
+      />
+    </svg>
+  );
 }
 
 const clefs: Clef[] = ['treble', 'bass', 'alto', 'tenor'];
@@ -84,10 +127,18 @@ export function NotesLab({
   const pitch = spell(letter, accidental, octave);
   const hz = frequencyForMidi(pitch.midi, reference, tuning);
   const audible = hz >= 20 && hz <= 20000;
-  // The reader's own signs. English shows the symbols, Russian and German name
-  // the alteration the way each language names it.
-  const signs: Record<Lang, string[]> = {
-    en: ['𝄫', '♭', '♮', '♯', '𝄪'],
+  /*
+   * The sign is what is printed on a staff, and it is the same mark in every
+   * language: German names the alteration inside the note name (es, is) and
+   * Russian names it in words, but nobody writes those on the staff. So the
+   * button shows the mark and says the word, in the reader's own language.
+   *
+   * Drawing the marks also closes the one hole in the font stack: the English
+   * row used U+1D12B and U+1D12A, which are Supplementary-Plane characters that
+   * Segoe UI and Arial do not have, so those two buttons were empty boxes.
+   */
+  const signNames: Record<Lang, string[]> = {
+    en: ['double flat', 'flat', 'natural', 'sharp', 'double sharp'],
     ru: ['дубль-бемоль', 'бемоль', 'без знака', 'диез', 'дубль-диез'],
     de: ['eses', 'es', 'ohne', 'is', 'isis'],
   };
@@ -124,9 +175,10 @@ export function NotesLab({
               key={value}
               className={value === accidental ? 'selected' : ''}
               aria-pressed={value === accidental}
+              aria-label={signNames[lang][value + 2]}
               onClick={() => setNote({ accidental: value })}
             >
-              {signs[lang][value + 2]}
+              <AccidentalSign index={value + 2} />
             </button>
           ))}
         </fieldset>
