@@ -11,7 +11,9 @@ import {
   ArrowUpRight,
   BookOpen,
   Check,
+  ChevronDown,
   ChevronRight,
+  ChevronUp,
   Headphones,
   Play,
   Search,
@@ -47,6 +49,8 @@ type PlaySequence = (
   spacing?: number,
   wave?: Wave,
 ) => Promise<void>;
+
+type SortBy = 'term' | 'kind';
 
 export { Experiments } from './experiments';
 
@@ -172,6 +176,9 @@ export function Encyclopedia({
   const [kind, setKind] = useState<TopicKind | null>(null);
   const [topic, setTopic] = useState<TopicId | null>(null);
   const [opened, setOpened] = useState<string | null>(null);
+  // The index opens alphabetically, which is what a reference is for.
+  const [sortBy, setSortBy] = useState<SortBy>('term');
+  const [ascending, setAscending] = useState(true);
 
   const kindOf = (term: (typeof terms)[number]) =>
     topicById[term.lesson as TopicId].kind;
@@ -199,7 +206,7 @@ export function Encyclopedia({
   const offeredTopics = TOPIC_IDS.filter(
     (id) => kind === null || topicById[id].kind === kind,
   );
-  const filtered = terms.filter(
+  const matching = terms.filter(
     (term) =>
       (kind === null || kindOf(term) === kind) &&
       (topic === null || term.lesson === topic) &&
@@ -207,9 +214,56 @@ export function Encyclopedia({
         .toLowerCase()
         .includes(query.toLowerCase()),
   );
+  /*
+   * Alphabetical in the reader's own alphabet: a collator for the language
+   * being read, not for English. Ä sorts with A in German and the Cyrillic
+   * order is not the Latin one, so comparing the raw strings would file half
+   * the Russian index in the wrong place.
+   *
+   * Sorting by kind sorts by the translated kind name, so the groups come out
+   * in the order the reader sees written beside each row, with the term as the
+   * tiebreaker inside a group.
+   */
+  const collator = new Intl.Collator(lang);
+  const filtered = [...matching].sort((a, b) => {
+    const byTerm = collator.compare(a.title[lang], b.title[lang]);
+    const value =
+      sortBy === 'kind'
+        ? collator.compare(kindName[kindOf(a)], kindName[kindOf(b)]) || byTerm
+        : byTerm;
+    return ascending ? value : -value;
+  });
   const entry =
     filtered.find((term) => term.title.en === opened) ?? filtered[0];
   const filtering = kind !== null || topic !== null;
+
+  const sortColumn = (key: SortBy, label: string) => {
+    const active = sortBy === key;
+    const direction = ascending
+      ? t('ascending', 'по возрастанию')
+      : t('descending', 'по убыванию');
+    return (
+      <button
+        type="button"
+        className={active ? 'sort-by selected' : 'sort-by'}
+        aria-pressed={active}
+        // The direction is only true of the column actually doing the sorting;
+        // saying it on the other one would describe a state that is not on.
+        aria-label={active ? `${label}, ${direction}` : label}
+        onClick={() => {
+          if (active) setAscending(!ascending);
+          else {
+            setSortBy(key);
+            setAscending(true);
+          }
+        }}
+      >
+        {label}
+        {active &&
+          (ascending ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
+      </button>
+    );
+  };
 
   const chip = (
     label: string,
@@ -274,6 +328,15 @@ export function Encyclopedia({
                 has: the one place that names the site's scope is elsewhere. */}
             <span className="num">{filtered.length}</span>
           </label>
+          {/* The two things a row shows are the two things it can be ordered
+              by, so the column names are the controls. */}
+          <fieldset
+            className="index-head"
+            aria-label={t('Sort the index', 'Сортировка списка')}
+          >
+            {sortColumn('term', t('Term', 'Термин'))}
+            {sortColumn('kind', t('Kind', 'Вид'))}
+          </fieldset>
           <ul role="list">
             {filtered.map((term) => (
               <li key={term.title.en}>

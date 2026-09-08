@@ -1065,5 +1065,10 @@ export const german = {
   'Clear the search': 'Suche löschen',
   'Clear the filters': 'Filter löschen',
   'Terms and where they are taught': 'Begriffe und wo sie erklärt werden',
+  // Sorting the define lens's index.
+  'Term': 'Begriff',
+  'ascending': 'aufsteigend',
+  'descending': 'absteigend',
+  'Sort the index': 'Index sortieren',
 } as const;
 export type GermanKey = keyof typeof german;

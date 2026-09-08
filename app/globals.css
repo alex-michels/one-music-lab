@@ -3049,6 +3049,38 @@ h1 {
   max-height: 60vh;
   overflow-y: auto;
 }
+/* The two things a row shows are the two things it can be ordered by, so the
+   column names are the controls. They line up with the row beneath them. */
+.index-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  border: 0;
+  margin: 0;
+  padding: var(--sp-2) var(--sp-3);
+  min-inline-size: 0;
+  border-bottom: var(--bw) solid var(--c-rule-strong);
+}
+.sort-by {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font-size: var(--t-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  color: var(--c-ink-3);
+}
+.sort-by:hover {
+  color: var(--c-ink);
+}
+.sort-by.selected {
+  color: var(--c-ink);
+  font-weight: var(--w-medium);
+}
 .term-row {
   display: flex;
   align-items: center;
