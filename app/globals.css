@@ -2216,37 +2216,6 @@ h1 {
   padding-top: 17px;
   margin-top: 27px;
 }
-.curriculum-heading {
-  margin-top: 48px;
-}
-.curriculum-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 28px;
-}
-.curriculum-item {
-  display: flex;
-  gap: 18px;
-  padding: 24px 0;
-  border-top: 1px solid var(--c-rule);
-  overflow-wrap: anywhere;
-}
-.curriculum-number {
-  font-family: var(--type-mono), monospace;
-  font-size: 13px;
-  color: var(--c-ink-3);
-  padding-top: 3px;
-}
-.curriculum-item h3 {
-  font-size: 17px;
-  font-weight: 500;
-}
-.curriculum-item p {
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--c-ink-2);
-  margin: 9px 0 13px;
-}
 .available,
 .planned {
   font-size: 12px;
@@ -2357,49 +2326,6 @@ h1 {
 }
 .search-field > span {
   font-size: 12px;
-}
-.terms-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 17px;
-}
-.term-card {
-  padding: 25px;
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  overflow-wrap: anywhere;
-}
-.term-card h3 {
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: -0.4px;
-}
-.term-card p {
-  font-size: 16px;
-  line-height: 1.8;
-  color: var(--c-ink-2);
-  margin: 19px 0;
-  flex: 1;
-}
-.term-card .text-button {
-  font-size: 13px;
-}
-.empty-state {
-  padding: 45px;
-  text-align: center;
-}
-.empty-state > svg {
-  margin: 0 auto 20px;
-  color: var(--c-ink-3);
-}
-.empty-state h3 {
-  font-size: 22px;
-  margin-bottom: 15px;
-}
-.empty-state p {
-  font-size: 16px;
-  color: var(--c-ink-2);
 }
 .practice-layout {
   display: grid;
@@ -2558,9 +2484,6 @@ h1 {
 }
 @media (max-width: 1150px) {
   .lesson-grid,
-  .terms-grid {
-    grid-template-columns: 1fr 1fr;
-  }
   .practice-layout {
     grid-template-columns: minmax(0, 1fr) 245px;
   }
@@ -2600,9 +2523,6 @@ h1 {
     grid-template-columns: 1fr 1fr;
     gap: 20px;
   }
-  .curriculum-grid {
-    grid-template-columns: 1fr;
-  }
   .content-section-heading {
     align-items: flex-start;
   }
@@ -2615,9 +2535,6 @@ h1 {
 }
 @media (max-width: 767px) {
   .lesson-grid,
-  .terms-grid {
-    grid-template-columns: 1fr 1fr;
-  }
   .content-section-heading h2 {
     font-size: 25px;
   }
@@ -2661,9 +2578,6 @@ h1 {
     padding: 25px 20px;
   }
   .lesson-tile,
-  .term-card {
-    padding: 20px;
-  }
   .lesson-tile h3 {
     font-size: 19px;
   }
@@ -2686,9 +2600,6 @@ h1 {
 }
 @media (max-width: 520px) {
   .lesson-grid,
-  .terms-grid {
-    grid-template-columns: 1fr;
-  }
   .practice-layout > aside {
     grid-template-columns: 1fr;
   }
@@ -3055,4 +2966,196 @@ h1 {
 .note-chooser .accidental-sign {
   display: block;
   margin: 0 auto;
+}
+
+/* ── define · the encyclopedia ───────────────────────────────────────────────
+   Achieved by deleting the card wrapper rather than by adding anything: the
+   borders were already hairlines. Ninety-seven terms in one dense index, at the
+   tightest density on the site, beside the one entry that is open. */
+.define-lens {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  max-width: var(--m-index);
+}
+.facet-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-5);
+}
+.facet-bar fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-inline-size: 0;
+}
+.facet-label {
+  font-size: var(--t-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  color: var(--c-ink-3);
+  margin-right: var(--sp-1);
+}
+.facet {
+  border: var(--bw) solid var(--c-rule);
+  border-radius: 999px;
+  padding: var(--sp-1) var(--sp-3);
+  font-size: var(--t-meta);
+  color: var(--c-ink-2);
+  background: transparent;
+}
+.facet:hover {
+  border-color: var(--c-rule-strong);
+  color: var(--c-ink);
+}
+/* Hue on a pressed chip is the kind's own, and the chip still says which. */
+.facet.selected {
+  color: var(--c-ink);
+  border-color: var(--c-ink);
+}
+.facet.selected[data-kind='sign'] {
+  border-color: var(--k-sign);
+  background: var(--k-sign-wash);
+}
+.facet.selected[data-kind='concept'] {
+  border-color: var(--k-concept);
+  background: var(--k-concept-wash);
+}
+.facet.selected[data-kind='measure'] {
+  border-color: var(--k-measure);
+  background: var(--k-measure-wash);
+}
+.facet.selected[data-kind='tone'] {
+  border-color: var(--k-tone);
+  background: var(--k-tone-wash);
+}
+.define-body {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  align-items: start;
+}
+.term-index {
+  border-right: var(--bw) solid var(--c-rule);
+  padding-right: var(--sp-3);
+}
+.term-index ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.term-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  text-align: left;
+  padding: var(--sp-2) var(--sp-3);
+  border: 0;
+  border-bottom: var(--bw) solid var(--c-rule);
+  border-radius: var(--r-0);
+  background: transparent;
+  font-size: var(--t-ui);
+  line-height: var(--lh-ui);
+  color: var(--c-ink);
+}
+.term-row:hover {
+  background: var(--c-surface);
+}
+.term-row.selected {
+  background: var(--c-surface-sunk);
+}
+.term-row.empty {
+  color: var(--c-ink-3);
+  cursor: default;
+}
+.term-name {
+  flex-grow: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.term-kind {
+  font-size: var(--t-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  color: var(--c-ink-3);
+  white-space: nowrap;
+}
+/* Two pixels of hue, never the only channel: the kind is written beside it. */
+.kind-bar {
+  flex-shrink: 0;
+  width: var(--bw-2);
+  height: 14px;
+  background: var(--c-rule-strong);
+}
+.kind-bar[data-kind='sign'] {
+  background: var(--k-sign);
+}
+.kind-bar[data-kind='concept'] {
+  background: var(--k-concept);
+}
+.kind-bar[data-kind='measure'] {
+  background: var(--k-measure);
+}
+.kind-bar[data-kind='tone'] {
+  background: var(--k-tone);
+}
+.index-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  font-size: var(--t-meta);
+  color: var(--c-ink-3);
+}
+.index-actions p {
+  margin: 0;
+}
+.term-entry {
+  padding: var(--sp-1) var(--sp-6) var(--sp-5);
+  max-width: var(--m-prose);
+}
+.term-entry h2 {
+  font-size: var(--t-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  font-weight: var(--w-bold);
+  margin: 0 0 var(--sp-3);
+}
+.term-entry p {
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  margin: 0 0 var(--sp-4);
+}
+.term-entry-kind {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--t-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  color: var(--c-ink-3);
+  margin: 0 0 var(--sp-2);
+}
+@media (max-width: 1000px) {
+  /* Stacked rather than swapped: replacing the index with the entry leaves no
+     visible way back, and the browser's own Back is not an affordance. */
+  .define-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .term-index {
+    border-right: 0;
+    border-bottom: var(--bw) solid var(--c-rule);
+    padding-right: 0;
+    padding-bottom: var(--sp-3);
+  }
+  .term-entry {
+    padding: var(--sp-4) 0 var(--sp-5);
+  }
 }

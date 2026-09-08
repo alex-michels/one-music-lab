@@ -170,22 +170,24 @@ test('All six German lessons include translated prose, experiments and formulas,
   expect(container.querySelectorAll('.lesson-tile')).toHaveLength(
     lessons.length,
   );
-  expect(container.textContent).toContain('Alte Musik & Mehrstimmigkeit');
   await render(Encyclopedia, { lang: 'de', openLesson: vi.fn() });
   await search('Stimmführung');
   // The search reads every language's title plus the body of the active one,
   // so a second entry may legitimately mention the word. What has to hold is
   // that searching German narrows the list and finds the entry itself — not
-  // that exactly one card survives, which any new term could falsify.
-  const found = [...container.querySelectorAll('.term-card h3')].map(
+  // that exactly one row survives, which any new term could falsify.
+  const found = [...container.querySelectorAll('.term-name')].map(
     (el) => el.textContent,
   );
   expect(found).toContain('Stimmführung');
   expect(found.length).toBeLessThan(terms.length);
   await search('xyzkeinbegriff');
-  expect(container.textContent).toContain('Noch kein passender Begriff');
-  await click('Alle Begriffe anzeigen');
-  expect(container.querySelectorAll('.term-card')).toHaveLength(terms.length);
+  expect(container.textContent).toContain('Kein Begriff passt');
+  // The hint is German through and through: it used to offer a Russian word
+  // inside an English sentence.
+  expect(container.textContent).toContain('Tonhöhe');
+  await click('Suche löschen');
+  expect(container.querySelectorAll('.term-row')).toHaveLength(terms.length);
 });
 
 test('German minor scales spell Es/As/B and raise H only in the appropriate forms; playback keeps its pitches', async () => {

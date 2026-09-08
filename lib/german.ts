@@ -1053,5 +1053,17 @@ export const german = {
   Indexes: 'Übersichten',
   'Skip to content': 'Zum Inhalt springen',
   'not written': 'nicht geschrieben',
+  // The define lens: its facets and its empty state (roadmap step 8).
+  'Kind': 'Art',
+  'Topic': 'Thema',
+  'All': 'Alle',
+  'sign': 'Zeichen',
+  'concept': 'Begriff',
+  'measure': 'Maß',
+  'tone': 'Klang',
+  'No term matches': 'Kein Begriff passt',
+  'Clear the search': 'Suche löschen',
+  'Clear the filters': 'Filter löschen',
+  'Terms and where they are taught': 'Begriffe und wo sie erklärt werden',
 } as const;
 export type GermanKey = keyof typeof german;
