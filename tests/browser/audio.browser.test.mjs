@@ -148,8 +148,13 @@ audioTest(
 midRenderTest('Stopping fades the tone out and leaves silence', async () => {
   const engine = offlineEngine(0.6);
   await engine.start(440, 'sine', 1);
+  // The suspension is scheduled before rendering starts. Asking for it
+  // afterwards is a race the renderer usually wins on a quiet machine and
+  // loses on a busy one: once it has passed 0.2 s of audio time, WebKit
+  // rejects the frame as already behind it.
+  const suspended = engine.context.suspend(0.2);
   const rendering = engine.context.render();
-  await engine.context.suspend(0.2);
+  await suspended;
   engine.stop();
   void engine.context.resume();
   const channel = (await rendering).getChannelData(0);

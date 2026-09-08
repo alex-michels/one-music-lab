@@ -77,6 +77,28 @@ The preliminary findings and per-material evidence still needed are in
 existing license/notice files, but a complete audit of shipped dependency notices
 is still pending. System font selection does not bundle font binaries.
 
+## Music glyphs and the notation engine
+
+`lib/glyphs.ts` holds eleven glyph outlines — two clefs plus the C clef, three
+note heads and the five accidentals — as SVG path data. They are the shapes of
+the **Leipzig** music font, which Verovio bundles under the SIL Open Font
+License, extracted once from Verovio's own SVG output by
+`scripts/extract-glyphs.mjs` and committed as paths.
+
+No font file is shipped and nothing is fetched at run time. Embedding outlines
+in a document is what the OFL permits without the document inheriting the
+licence; shipping a subset font file would instead be redistribution and would
+carry the notice and reserved-font-name conditions. That is why the outlines
+are used, and it is also why the static export has no webfont to fail and no
+CDN to depend on.
+
+**Verovio** 6.3.0 is a development dependency only, used to produce those paths
+and available for build-time engraving of longer examples. It never reaches the
+browser, so no LGPL library is distributed with the site. Its npm package ships
+no licence text; the LGPL-3.0-or-later terms must be taken from the upstream
+`COPYING` and `COPYING.LESSER`, not copied out of `node_modules`. Record this in
+the dependency and bundle audit before the first public release.
+
 ## Research and learning sources
 
 German terminology was checked against Beck/Bauser (BBMV/VBSM), Gorski, Helke

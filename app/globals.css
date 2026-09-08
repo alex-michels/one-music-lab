@@ -2227,11 +2227,6 @@ h1 {
   font-weight: 500;
   letter-spacing: -0.4px;
 }
-.alternate-term {
-  color: #95a186;
-  font-size: 12px;
-  margin-top: 7px;
-}
 .term-card p {
   font-size: 16px;
   line-height: 1.8;
@@ -2694,4 +2689,162 @@ h1 {
 .black-key:disabled {
   cursor: not-allowed;
   opacity: 0.45;
+}
+/* Notation trainer (roadmap №558). The mode switch sits above whichever
+   exercise is showing; the kind and level rows are inside its card. */
+.practice-modes {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.practice-modes button,
+.exercise-kinds button,
+.exercise-levels button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border: 1px solid #d8ded6;
+  border-radius: 999px;
+  background: #fff;
+  color: #4a544d;
+  font-size: 13px;
+  cursor: pointer;
+}
+.practice-modes button:hover,
+.exercise-kinds button:hover,
+.exercise-levels button:hover {
+  border-color: #294f3c;
+  color: #294f3c;
+}
+.practice-modes .selected,
+.exercise-kinds .selected,
+.exercise-levels .selected {
+  background: #294f3c;
+  border-color: #294f3c;
+  color: #fff;
+}
+.exercise-kinds,
+.exercise-levels {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.exercise-levels button {
+  font-size: 12px;
+  padding: 5px 11px;
+}
+.exercise-prompt {
+  text-align: center;
+  text-wrap: balance;
+  margin: 6px 0 14px;
+}
+/* The Sound lab's second tab replaces the generator rather than sitting under
+   it, so the hidden half leaves the accessibility tree with it. */
+.is-hidden {
+  display: none;
+}
+.notes-lab > .panel {
+  padding: 25px;
+}
+.notes-lab {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+.notes-lab .note-caveat {
+  grid-column: 1 / -1;
+}
+.note-chooser {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 14px;
+}
+.note-chooser button {
+  padding: 7px 12px;
+  border: 1px solid #d8ded6;
+  border-radius: 8px;
+  background: #fff;
+  color: #4a544d;
+  font-size: 13px;
+  cursor: pointer;
+}
+.note-chooser button:hover {
+  border-color: #294f3c;
+  color: #294f3c;
+}
+.note-chooser .selected {
+  background: #294f3c;
+  border-color: #294f3c;
+  color: #fff;
+}
+.note-name {
+  font-size: 40px;
+  font-weight: 600;
+  color: #294f3c;
+  margin: 6px 0 14px;
+}
+.note-readout dl {
+  display: grid;
+  gap: 9px;
+  margin: 0 0 16px;
+}
+.note-readout dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #eef1ec;
+  padding-bottom: 7px;
+}
+.note-readout dt {
+  color: #74847b;
+  font-size: 13px;
+}
+.note-readout dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.note-caption,
+.note-caveat p {
+  color: #74847b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+@media (max-width: 900px) {
+  .notes-lab {
+    grid-template-columns: 1fr;
+  }
+}
+.notation-examples {
+  grid-column: 1 / -1;
+}
+.notation-example-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+/* The staff drawing (roadmap №553) and its clef chooser. */
+.staff-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0 4px;
+}
+.staff {
+  color: #1a201c;
+  max-width: 100%;
+  height: auto;
+}
+.exercise-staff {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0 10px;
 }
