@@ -28,6 +28,8 @@ and still requires the owner's authorization.
 
 ## Included
 
+- **Notation prototype (№553):** the Notes lab draws four clefs, ledger lines and accidentals locally. Practice → Reading notation → Read a note supports choices, typed EN/RU/DE note names and pointer/keyboard placement. See the [user guide, engine evidence and limits](docs/notation-engine.md).
+
 - **Chords lab** (`/#chords`): editable and transposable progressions with full undo and redo, 16 chord types through ninths, inversions, EN/RU/DE pitch spelling, a visual keyboard, applied-dominant marking, and a sourced library of 22 starting points — cadences, classical schemas, pop and rock loops, jazz turnarounds, blues forms and mode mixture — with a per-chord register control, one-click fitting of a progression to its scale, eight accompaniment figures (block chords, arpeggios, Alberti bass, afterbeats, offbeats) and root-identification feedback. See the [user guide, research and limitations](docs/chords-lab.md).
 - Continuous 20–20,000 Hz oscillator, four waveforms, logarithmic frequency control, cents readout and live analyser waveform.
 - Editable A4 reference from 20–2,000 Hz, presets, and 12-TET plus specific A-anchored just and Pythagorean chromatic ratio maps.
@@ -39,7 +41,7 @@ and still requires the owner's authorization.
 - Russian Sound lab intentionally combines Russian names in “A little experiment” with international labels in its other existing panels. These displays are accepted. New Russian theory, teaching material, trainers and ordinary encyclopedia articles use traditional Russian notation; articles about international systems show those systems' notation. In new Russian laboratory material, traditional Russian notation has priority and international notation remains valid. See the [notation scope](docs/music-notation.md#scope-of-future-localization-work).
 - An explicitly marked curriculum roadmap covering early music, European traditions 1600–1900, blues/jazz/pop, world traditions and contemporary musical languages.
 
-This is the first product slice, not an exhaustive encyclopedia or a universal instrument synthesizer. Real instrument synthesis, additive synthesis, noise, arbitrary temperament imports, detailed rhythmic training, notation, historical courses and culturally contextualized world-music modules are future work. No medical or special-health claims are made for alternate concert pitches.
+This is the first product slice, not an exhaustive encyclopedia or a universal instrument synthesizer. Real instrument synthesis, additive synthesis, noise, arbitrary temperament imports, detailed rhythmic training, full score editing, historical courses and culturally contextualized world-music modules are future work. No medical or special-health claims are made for alternate concert pitches.
 
 ## Deutsch
 

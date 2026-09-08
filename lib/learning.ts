@@ -1548,6 +1548,10 @@ export const exerciseModes: { kind: ExerciseKind; label: LocalText }[] = [
 /** One sentence per way of being wrong, keyed by the generator's own tag. */
 export const exerciseExplanations: Record<ErrorTag, LocalText> = {
   correct: b('That is the one.', 'Именно так.'),
+  'wrong-written-note': b(
+    'Compare the clef, position and accidental with the correct note.',
+    'Сравните ключ, положение на стане и знак альтерации с правильной нотой.',
+  ),
   'neighbour-register': b(
     'An octave shift keeps the note name. Count the registers in the requested direction.',
     'Перенос на октаву сохраняет название ступени. Отсчитайте октавы в указанном направлении.',

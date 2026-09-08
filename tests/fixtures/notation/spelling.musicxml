@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<score-partwise version="4.0"><work><work-title>OML original spelling probe</work-title></work>
+<part-list><score-part id="P1"><part-name>Probe</part-name></score-part></part-list>
+<part id="P1"><measure number="1"><attributes><divisions>1</divisions><key><fifths>0</fifths></key><time><beats>4</beats><beat-type>4</beat-type></time><clef><sign>G</sign><line>2</line></clef></attributes>
+<note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><type>quarter</type><accidental>sharp</accidental></note>
+<note><pitch><step>E</step><alter>-1</alter><octave>4</octave></pitch><duration>1</duration><type>quarter</type><accidental>flat</accidental></note>
+<note><pitch><step>B</step><alter>-2</alter><octave>3</octave></pitch><duration>1</duration><type>quarter</type><accidental>flat-flat</accidental></note>
+<note><rest/><duration>1</duration><type>quarter</type></note>
+</measure></part></score-partwise>

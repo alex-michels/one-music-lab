@@ -38,9 +38,11 @@ export const authoredProductionCode = [
   'components/chords-lab.tsx',
   'components/notes-lab.tsx',
   'components/staff.tsx',
+  'components/staff-answer.tsx',
   'components/number-field.tsx',
   'hooks/**/*.{ts,tsx}',
   'lib/**/*.{ts,tsx}',
+  'scripts/*.mjs',
   'next.config.ts',
   'vite.config.ts',
 ];

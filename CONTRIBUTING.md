@@ -20,6 +20,10 @@ Infrastructure and migration changes also need automated validation and, where
 appropriate, a tested dry run or rollback. Documentation-only changes need link,
 structure, and factual review; avoid artificial tests for prose wording.
 
+For changes to the notation prototype (№553), run `npm run glyphs:check` and follow
+the [engine contract and reproduction guide](docs/notation-engine.md). The
+Verovio adapter is build-time only; keep it out of client imports.
+
 ### Localized music notation
 
 New educational material, laboratories and sections use professional terminology
