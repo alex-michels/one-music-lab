@@ -7,7 +7,7 @@ import {
   type SpelledPitch,
 } from './notation';
 import { count } from './plural';
-import type { Clef } from './staff';
+import { pitchAtStep, type Clef } from './staff';
 
 /**
  * Generated notation exercises (roadmap №558).
@@ -51,7 +51,32 @@ export type ErrorTag =
   | 'added-wrong'
   | 'read-the-other-clef'
   | 'ignored-the-sign'
-  | 'carried-the-sign-too-far';
+  | 'carried-the-sign-too-far'
+  | 'wrong-written-note';
+
+/**
+ * The rules the generator can test, one per item. Listing them makes `Item.rule`
+ * a closed set rather than a free string, so a new builder cannot quietly invent
+ * a rule that no topic teaches: `ruleTopic` in lib/topics.ts has to name it, and
+ * tsc says so at the point the rule is added.
+ */
+export const RULES = [
+  'register-1',
+  'register-2',
+  'register-3',
+  'natural-name',
+  'alteration-name',
+  'enharmonic-respelling',
+  'dot-adds-half',
+  'second-dot-adds-half-the-first',
+  'tied-values-add',
+  'irregular-group-written-value',
+  'read-a-notated-pitch',
+  'same-place-other-clef',
+  'sign-stops-at-the-barline',
+  'sign-holds-to-the-barline',
+] as const;
+export type Rule = (typeof RULES)[number];
 
 export type Option = { id: string; label: string; tag: ErrorTag };
 
@@ -60,6 +85,7 @@ export type StaffSpec = {
   clef: Clef;
   /** Note indices a barline follows, for showing how far a sign reaches. */
   barlines?: number[];
+  accidentalVisibility?: boolean[];
 };
 
 export type Item = {
@@ -72,7 +98,7 @@ export type Item = {
   /** Option id. Never an array index: an index cannot survive shuffling. */
   answer: string;
   /** The single rule the item tests, for choosing what to ask next. */
-  rule: string;
+  rule: Rule;
   /** Present when the question is a picture rather than a sentence. */
   staff?: StaffSpec;
 };
@@ -591,12 +617,8 @@ function readablePitch(
   clef: Clef,
   alterations: readonly number[],
 ): SpelledPitch {
-  const bottom = { treble: 30, bass: 18, alto: 24, tenor: 22 }[clef];
   const step = READ_LOW + Math.floor(next() * (READ_HIGH - READ_LOW + 1));
-  const value = bottom + step;
-  const letter = ((value % 7) + 7) % 7;
-  const octave = Math.floor(value / 7);
-  return spelled(letter, pick(next, alterations), octave);
+  return pitchAtStep(step, clef, pick(next, alterations));
 }
 
 function readPitch(
@@ -635,7 +657,7 @@ function readPitch(
   // Reading the same place in the wrong clef is the mistake worth naming.
   const otherClef = readingClefs.find((c) => c !== clef) as Clef;
   const shift = { treble: 30, bass: 18, alto: 24, tenor: 22 };
-  const misread = shift[clef] - shift[otherClef];
+  const misread = shift[otherClef] - shift[clef];
   others.push({
     id: '',
     label: pitchName(
@@ -732,12 +754,10 @@ function accidentalScope(
   const base = readablePitch(next, clef, [0]);
   const altered = spelled(base.letter, sign, base.octave);
   // A neighbour so the bar is a bar rather than one note repeated.
-  const other = readablePitch(next, clef, [0]);
+  const other = spelled((base.letter + 1) % 7, 0, base.octave);
   // Beyond the barline the sign is spent; inside it, it still holds.
   const beyond = next() < 0.5;
-  const pitches = beyond
-    ? [altered, other, { ...base }]
-    : [altered, other, { ...base }];
+  const pitches = [altered, other, beyond ? base : altered];
   const answerPitch = beyond ? base : altered;
   const correct = pitchName(answerPitch, lang);
   const options: Option[] = [
@@ -753,7 +773,12 @@ function accidentalScope(
     options: shuffle(next, options),
     answer: 'a',
     rule: beyond ? 'sign-stops-at-the-barline' : 'sign-holds-to-the-barline',
-    staff: { pitches, clef, barlines: beyond ? [1] : [2] },
+    staff: {
+      pitches,
+      clef,
+      barlines: beyond ? [1] : [2],
+      accidentalVisibility: [true, false, false],
+    },
   };
 }
 

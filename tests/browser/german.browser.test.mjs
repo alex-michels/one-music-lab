@@ -101,7 +101,9 @@ test('German persists, updates metadata and all navigation, uses H on the keyboa
   );
   expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBe('de');
   for (const [label, heading] of [
-    ['Akkordlabor', 'Akkorde verbinden.'],
+    // The chords lab is the play lens of one subject, so its heading is the
+    // subject's own title; the other four are indexes and keep theirs.
+    ['Akkordlabor', 'Einen Akkord aufbauen'],
     ['Musiktheorie', 'Die Ideen hinter der Musik.'],
     ['Gehörbildung', 'Hören lernen.'],
     ['Lexikon', 'Die Sprache der Musik.'],

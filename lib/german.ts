@@ -1042,5 +1042,16 @@ export const german = {
     'Das Zeichen endete am Taktstrich. Dahinter steht der Ton wieder ohne Zeichen, sofern es nicht erneut gesetzt wird.',
   'The note to name': 'Der zu benennende Ton',
   'Search a term…': 'Begriff suchen …',
+  'Compare the clef, position and accidental with the correct note.':
+    'Vergleichen Sie Schlüssel, Position und Versetzungszeichen mit dem richtigen Ton.',
+  // The four lenses and the shell around them (roadmap step 7).
+  Read: 'Lesen',
+  Play: 'Spielen',
+  Drill: 'Üben',
+  Define: 'Nachschlagen',
+  'Views of this topic': 'Ansichten dieses Themas',
+  Indexes: 'Übersichten',
+  'Skip to content': 'Zum Inhalt springen',
+  'not written': 'nicht geschrieben',
 } as const;
 export type GermanKey = keyof typeof german;

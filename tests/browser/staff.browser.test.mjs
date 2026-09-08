@@ -2,6 +2,7 @@ import { afterEach, expect, test, vi } from 'vitest';
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Staff } from '../../components/staff.tsx';
+import Home from '../../app/page.tsx';
 import { layout, stepY } from '../../lib/staff.ts';
 import '../../app/globals.css';
 
@@ -9,23 +10,56 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 let root, container;
 const SPACE = 12;
 
-function draw(props) {
+function render(element) {
   if (!container) {
     container = document.createElement('div');
     document.body.append(container);
     root = createRoot(container);
   }
-  return act(() =>
-    root.render(createElement(Staff, { lang: 'en', space: SPACE, ...props })),
-  );
+  return act(() => root.render(element));
+}
+function draw(props) {
+  return render(createElement(Staff, { lang: 'en', space: SPACE, ...props }));
 }
 afterEach(async () => {
   if (root) await act(() => root.unmount());
   root = null;
   container?.remove();
   container = null;
+  // documentElement outlives the iframe a test file runs in, so a theme left
+  // behind would decide how an unrelated file's first render looks.
+  delete document.documentElement.dataset.theme;
+  document.documentElement.classList.remove('dark');
   vi.restoreAllMocks();
 });
+
+const setTheme = (theme) => {
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.classList.toggle('dark', theme === 'dark');
+};
+/** What the browser actually paints, rather than what a rule says. */
+const paint = (element) => {
+  const style = getComputedStyle(element);
+  return {
+    color: style.color,
+    background: style.backgroundColor,
+    borderColor: style.borderTopColor,
+  };
+};
+const luminance = (colour) =>
+  (colour.match(/[\d.]+/g) ?? [])
+    .slice(0, 3)
+    .map((value) => {
+      const channel = Number(value) / 255;
+      return channel <= 0.03928
+        ? channel / 12.92
+        : ((channel + 0.055) / 1.055) ** 2.4;
+    })
+    .reduce((total, c, i) => total + c * [0.2126, 0.7152, 0.0722][i], 0);
+const contrast = (a, b) => {
+  const [high, low] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (high + 0.05) / (low + 0.05);
+};
 
 const at = (letter, octave, accidental = 0) => ({
   letter,
@@ -130,4 +164,69 @@ test('Every clef renders, and German names the pitches its own way', async () =>
     container?.remove();
     container = null;
   }
+});
+
+/**
+ * Notation is black ink on white paper in both themes. It holds because the
+ * staff and the piano live in the --s-* token namespace, which no theme block
+ * redefines. A stylesheet cannot state that invariant, so it is asserted here
+ * against what the browser computes: before the staff carried its own paper it
+ * borrowed a chrome panel's, and rendered at 1.07:1 in the dark theme.
+ */
+test('A staff is the same ink on the same paper in either theme', async () => {
+  await draw({ pitches: [at(0, 4), at(4, 4)], clef: 'treble' });
+  setTheme('light');
+  const light = paint(svg());
+  setTheme('dark');
+  const dark = paint(svg());
+
+  expect(dark, 'the score namespace does not flip').toEqual(light);
+  // Equal is not enough: the old failure was equal ink on unequal paper.
+  expect(contrast(dark.color, dark.background)).toBeGreaterThan(15);
+});
+
+test('A staff keeps its paper whatever chrome it is dropped onto', async () => {
+  await render(
+    createElement(
+      'div',
+      { className: 'panel' },
+      createElement(Staff, {
+        pitches: [at(2, 4)],
+        lang: 'en',
+        space: SPACE,
+      }),
+    ),
+  );
+  const panel = container.querySelector('.panel');
+  setTheme('light');
+  const lightStaff = paint(svg());
+  const lightPanel = paint(panel);
+  setTheme('dark');
+  const darkStaff = paint(svg());
+
+  expect(darkStaff).toEqual(lightStaff);
+  expect(paint(panel).background, 'the chrome around it does flip').not.toBe(
+    lightPanel.background,
+  );
+  expect(contrast(darkStaff.color, darkStaff.background)).toBeGreaterThan(15);
+});
+
+test('The piano is an instrument in both themes, and its panel is not', async () => {
+  await render(createElement(Home));
+  const white = container.querySelector('.white-key');
+  const black = container.querySelector('.black-key');
+  const panel = container.querySelector('.keyboard-panel');
+  expect(white, 'the keyboard is rendered').not.toBeNull();
+
+  setTheme('light');
+  const light = [paint(white), paint(black), paint(panel)];
+  setTheme('dark');
+  const dark = [paint(white), paint(black), paint(panel)];
+
+  expect(dark[0], 'a white key stays white').toEqual(light[0]);
+  expect(dark[1], 'a black key stays black').toEqual(light[1]);
+  // The keys are the instrument; the card under them is chrome and carries
+  // controls whose colours have to follow the theme.
+  expect(dark[2].background).not.toBe(light[2].background);
+  expect(contrast(dark[0].background, dark[1].background)).toBeGreaterThan(15);
 });

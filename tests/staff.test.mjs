@@ -8,6 +8,8 @@ import {
   staffStep,
   stemDirection,
   stepY,
+  pitchAtStep,
+  assertStaffPitch,
 } from '../lib/staff.ts';
 import { glyphs, GLYPH_UNITS_PER_SPACE } from '../lib/glyphs.ts';
 import { keyboardPitch, spellPattern } from '../lib/notation.ts';
@@ -175,9 +177,98 @@ test('A run of notes is laid out left to right without overlap', () => {
   for (let i = 1; i < xs.length; i += 1)
     assert.ok(xs[i] > xs[i - 1], 'notes are not in order');
   assert.ok(plan.width > xs.at(-1), 'the last note falls outside the drawing');
+  // The clef is drawn from one space in and the widest of them, the F clef, is
+  // 2.78 spaces across; a head reaches 0.6 to the left of its own x. Anything
+  // closer and the first note touches the sign that names the staff.
+  for (const clef of ['treble', 'bass', 'alto', 'tenor']) {
+    const first = layout([at(0, 4)], clef).notes[0];
+    assert.ok(
+      first.x - 0.6 > 1 + 2.78,
+      `${clef}: the first head at ${first.x} overlaps the clef`,
+    );
+  }
   // A whole note has no stem; the others do.
   assert.equal(plan.notes[2].stem, null);
   assert.equal(plan.notes[2].head, 'noteheadWhole');
   assert.equal(plan.notes[1].head, 'noteheadHalf');
   assert.equal(plan.notes[0].head, 'noteheadBlack');
+});
+
+test('A natural sign can be explicit and an in-bar sign can remain implicit', () => {
+  const plan = layout(
+    [at(0, 4, 1), at(0, 4, 1), at(0, 4)],
+    'treble',
+    [],
+    [true, false, true],
+  );
+  assert.deepEqual(
+    plan.notes.map((n) => n.accidental),
+    ['accidentalSharp', null, 'accidentalNatural'],
+  );
+  assert.equal(
+    plan.notes[1].pitch.midi,
+    61,
+    'the absent repeated sign does not cancel the sharp',
+  );
+});
+
+test('Pointer positions invert staff spelling, preserving double accidentals', () => {
+  for (const clef of ['treble', 'bass', 'alto', 'tenor'])
+    for (let step = -3; step <= 11; step++)
+      for (const sign of [-2, -1, 0, 1, 2]) {
+        const pitch = pitchAtStep(step, clef, sign);
+        assert.equal(staffStep(pitch, clef), step);
+        assert.equal(pitch.accidental, sign);
+        assertStaffPitch(pitch);
+      }
+  assert.deepEqual(pitchAtStep(-2, 'treble'), at(0, 4));
+  assert.deepEqual(pitchAtStep(10, 'bass', -1), at(0, 4, -1));
+});
+
+test('Malformed spellings and unsupported microtones fail before drawing misleading notation', () => {
+  for (const bad of [
+    { letter: -1 },
+    { letter: 7 },
+    { letter: 0.5 },
+    { octave: -1 },
+    { octave: 9 },
+    { octave: NaN },
+    { accidental: 3 },
+    { accidental: -3 },
+    { accidental: 0.5 },
+    { midi: 61 },
+    { midi: Infinity },
+  ])
+    assert.throws(
+      () => layout([{ ...at(0, 4), ...bad }], 'treble'),
+      RangeError,
+    );
+  for (const step of [Infinity, -29, 43, 1.5])
+    assert.throws(() => pitchAtStep(step, 'treble'), RangeError);
+  assert.throws(() => pitchAtStep(0, 'unknown'), RangeError);
+  assert.throws(() => pitchAtStep(-28, 'bass'), RangeError);
+  assert.throws(() => pitchAtStep(42, 'treble'), RangeError);
+  for (const args of [
+    [[], 'none'],
+    [Array(129).fill(at(0, 4)), 'treble'],
+    [[], 'treble', ['quarter']],
+    [[at(0, 4)], 'treble', ['invalid']],
+    [[], 'treble', [], [true]],
+    [[at(0, 4)], 'treble', [], [1]],
+    [[], 'treble', [], [], [-29, 8]],
+    [[], 'treble', [], [], [0, 43]],
+    [[], 'treble', [], [], [8, 0]],
+    [[], 'treble', [], [], [0.5, 8]],
+  ])
+    assert.throws(() => layout(...args), RangeError);
+});
+
+test('An empty staff and whole-note extremes still have room for their clef and signs', () => {
+  const empty = layout([], 'treble');
+  assert.ok(empty.width >= 7);
+  for (const step of [-3, 11]) {
+    const plan = layout([pitchAtStep(step, 'treble', -2)], 'treble', ['whole']);
+    assert.ok(stepY(step, plan.top) >= 2);
+    assert.ok(stepY(step, plan.top) < plan.height - 0.5);
+  }
 });

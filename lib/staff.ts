@@ -46,6 +46,50 @@ export const clefAnchor: Record<
 export const staffStep = (pitch: SpelledPitch, clef: Clef): number =>
   diatonic(pitch) - bottomLine[clef];
 
+/** Inverse staff mapping; alteration changes sound, never the staff position. */
+export function pitchAtStep(
+  step: number,
+  clef: Clef,
+  accidental = 0,
+): SpelledPitch {
+  if (
+    !Number.isInteger(step) ||
+    step < -28 ||
+    step > 42 ||
+    !Object.hasOwn(bottomLine, clef)
+  )
+    throw new RangeError('Unsupported staff position or clef');
+  const value = bottomLine[clef] + step;
+  const letter = ((value % 7) + 7) % 7;
+  const octave = Math.floor(value / 7);
+  const pitch = {
+    letter,
+    octave,
+    accidental,
+    midi: (octave + 1) * 12 + [0, 2, 4, 5, 7, 9, 11][letter] + accidental,
+  };
+  assertStaffPitch(pitch);
+  return pitch;
+}
+
+export function assertStaffPitch(pitch: SpelledPitch) {
+  const { letter, octave, accidental, midi } = pitch;
+  if (
+    !Number.isInteger(letter) ||
+    letter < 0 ||
+    letter > 6 ||
+    !Number.isInteger(octave) ||
+    octave < 0 ||
+    octave > 8 ||
+    !Number.isInteger(accidental) ||
+    Math.abs(accidental) > 2 ||
+    midi !== (octave + 1) * 12 + [0, 2, 4, 5, 7, 9, 11][letter] + accidental
+  )
+    throw new RangeError(
+      'Staff pitch must have a consistent octave, MIDI value and spelling through double accidentals',
+    );
+}
+
 /**
  * Ledger lines needed for a note, as step values. A note sitting in the space
  * just outside the staff needs none; the lines continue the staff's own
@@ -101,7 +145,19 @@ export type StaffLayout = {
   top: number;
 };
 
-const CLEF_WIDTH = 3;
+/**
+ * The clef glyphs measured from the committed outlines: the F clef is the
+ * widest at 2.78 staff spaces, the G clef 2.59, the C clef 2.42.
+ */
+const CLEF_WIDTH = 2.8;
+/**
+ * Air between the clef and the first thing after it. Without it the head sat
+ * 0.4 spaces inside the clef and the two read as one mark: a clef names the
+ * staff, and a note is not part of that sign.
+ */
+const CLEF_GAP = 0.8;
+/** Half a note head, because `x` is the centre and the head extends both ways. */
+const HEAD_RADIUS = 0.6;
 const NOTE_SPACING = 3.2;
 const ACCIDENTAL_WIDTH = 1.75;
 const MARGIN = 1;
@@ -127,11 +183,31 @@ export function layout(
   pitches: SpelledPitch[],
   clef: Clef,
   values: NoteValue[] = [],
+  accidentalVisibility: boolean[] = [],
+  range: readonly [number, number] = [0, 8],
 ): StaffLayout {
-  let x = MARGIN + CLEF_WIDTH;
+  if (
+    !range.every(Number.isInteger) ||
+    range[0] < -28 ||
+    range[1] > 42 ||
+    range[0] > range[1]
+  )
+    throw new RangeError('Invalid staff range');
+  if (
+    !Object.hasOwn(bottomLine, clef) ||
+    pitches.length > 128 ||
+    values.length > pitches.length ||
+    accidentalVisibility.length > pitches.length ||
+    values.some((value) => !Object.hasOwn(heads, value)) ||
+    accidentalVisibility.some((value) => typeof value !== 'boolean')
+  )
+    throw new RangeError('Unsupported staff layout');
+  // The head's left edge, not its centre, is what has to clear the clef.
+  let x = MARGIN + CLEF_WIDTH + CLEF_GAP + HEAD_RADIUS;
   const notes: PlacedNote[] = pitches.map((pitch, i) => {
+    assertStaffPitch(pitch);
     const step = staffStep(pitch, clef);
-    const showAccidental = pitch.accidental !== 0;
+    const showAccidental = accidentalVisibility[i] ?? pitch.accidental !== 0;
     const accidentalX = showAccidental ? x : null;
     if (showAccidental) x += ACCIDENTAL_WIDTH;
     const value = values[i] ?? 'quarter';
@@ -154,16 +230,17 @@ export function layout(
   // The drawing has to be tall enough for whatever sits outside the staff,
   // including the stem, or a note far above the lines is clipped by its own box.
   const steps = notes.flatMap((n) => [
-    n.step,
-    n.stem === 'up' ? n.step + 7 : n.step - 7,
+    n.step + (n.accidental ? 4 : 1),
+    n.step - 2,
+    n.stem ? n.step + (n.stem === 'up' ? 7 : -7) : n.step,
   ]);
-  const highest = Math.max(8, clefExtent[clef].high, ...steps);
-  const lowest = Math.min(0, clefExtent[clef].low, ...steps);
+  const highest = Math.max(8, range[1] + 4, clefExtent[clef].high, ...steps);
+  const lowest = Math.min(0, range[0] - 4, clefExtent[clef].low, ...steps);
   const top = (highest - 8) / 2 + MARGIN;
   return {
     clef,
     notes,
-    width: x - NOTE_SPACING + MARGIN + 2,
+    width: Math.max(7, x - NOTE_SPACING + MARGIN + 2),
     height: (highest - lowest) / 2 + 2 * MARGIN,
     top,
   };
