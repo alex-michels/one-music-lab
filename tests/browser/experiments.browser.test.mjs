@@ -27,8 +27,28 @@ afterEach(() => {
   void act(() => root.unmount());
   container.remove();
 });
+// The third copy of this helper, and the one with no gate at all. A Base UI
+// select keeps its option list in the document for good, so `getByRole` finds
+// an option whether or not the popup is open, and a click that failed to open
+// it left the next click waiting on something unreachable for the whole test
+// budget. Ask the trigger, and reopen if it says shut — a click that did not
+// open leaves the popup closed, so clicking again opens rather than toggles.
+// Same fix as chords-lab.browser.test.mjs and german.browser.test.mjs.
 async function choose(label, option) {
-  await page.getByRole('combobox', { name: label, exact: true }).click();
+  const combobox = page.getByRole('combobox', { name: label, exact: true });
+  for (let attempt = 1; ; attempt += 1) {
+    await combobox.click();
+    try {
+      await expect
+        .poll(() => combobox.element().getAttribute('aria-expanded'), {
+          timeout: 2000,
+        })
+        .toBe('true');
+      break;
+    } catch (error) {
+      if (attempt === 3) throw error;
+    }
+  }
   await page.getByRole('option', { name: option, exact: true }).click();
 }
 function pitchLabels() {
