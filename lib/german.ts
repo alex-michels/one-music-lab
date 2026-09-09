@@ -93,20 +93,10 @@ export const german = {
   'Just intonation · A': 'Reine Stimmung · A',
   'Pythagorean · A': 'Pythagoreische Stimmung · A',
   'Open navigation': 'Navigation öffnen',
-  Workspace: 'Arbeitsbereich',
-  'A LITTLE CURIOSITY GOES A LONG WAY': 'NEUGIER IST EIN GUTER ANFANG',
-  'LISTEN. EXPLORE. UNDERSTAND.': 'HÖREN. ENTDECKEN. VERSTEHEN.',
   'Sound, at your fingertips.': 'Klang in deinen Händen.',
   'Chords, connected.': 'Akkorde verbinden.',
   'The ideas behind the music.': 'Die Ideen hinter der Musik.',
-  'Make listening a skill.': 'Hören lernen.',
   'The language of music.': 'Die Sprache der Musik.',
-  'A space to play with sound and discover the music inside it.':
-    'Ein Ort, um mit Klängen zu spielen und die Musik darin zu entdecken.',
-  'Build a chord. Shape a progression. Hear what changes.':
-    'Baue einen Akkord. Gestalte eine Akkordfolge. Höre, was sich verändert.',
-  'Connected ideas. Audible examples. A little discovery every day.':
-    'Zusammenhänge verstehen. Beispiele hören. Jeden Tag etwas entdecken.',
   'Tone generator': 'Tongenerator',
   'FROM FREQUENCY TO FEELING': 'VON DER FREQUENZ ZUM HÖREINDRUCK',
   Playing: 'Wiedergabe läuft',
@@ -157,24 +147,11 @@ export const german = {
   'Try it in the lab': 'Im Labor ausprobieren',
   'Open this experiment': 'Dieses Experiment öffnen',
   'Train your ear': 'Dein Gehör trainieren',
-  'START WITH THE FOUNDATIONS': 'MIT DEN GRUNDLAGEN BEGINNEN',
-  'Understand what you hear.': 'Verstehe, was du hörst.',
   'short lessons': 'kurze Lektionen',
-  'Read → listen → try': 'Lesen → hören → ausprobieren',
-  'THE BIGGER PICTURE': 'DER GRÖSSERE ZUSAMMENHANG',
-  'A world of musical knowledge.': 'Eine Welt voller Musikwissen.',
-  'The first chapter is here. This is the direction for the growing library.':
-    'Das erste Kapitel ist da. In diese Richtung wächst die Bibliothek.',
   'Musical traditions deserve their own context, terminology and sources. A raga or maqam is not simply a scale preset.':
     'Musikalische Traditionen brauchen ihren eigenen Kontext, ihre Begriffe und Quellen. Ein Raga oder Maqam ist mehr als eine vorgegebene Tonleiter.',
-  'A SMALL, GROWING REFERENCE': 'EIN KLEINES, WACHSENDES NACHSCHLAGEWERK',
-  'Find the words for what you hear.': 'Finde Worte für das, was du hörst.',
   'Search musical terms': 'Musikalische Begriffe suchen',
   'Explore the idea': 'Den Begriff erkunden',
-  'No matching term yet': 'Noch kein passender Begriff',
-  'Try “pitch”, “interval”, “строй” or a shorter search.':
-    'Versuche „Tonhöhe“, „Intervall“, „Stimmung“ oder einen kürzeren Suchbegriff.',
-  'Show all terms': 'Alle Begriffe anzeigen',
   'Minor third': 'Kleine Terz',
   'Major third': 'Große Terz',
   'Perfect fifth': 'Reine Quinte',
@@ -188,14 +165,8 @@ export const german = {
   'Keep listening.': 'Höre noch einmal hin.',
   'Next interval': 'Nächstes Intervall',
   'THIS SESSION': 'DIESE ÜBUNGSRUNDE',
-  'correct answers': 'richtige Antworten',
-  'Correct answer percentage': 'Anteil richtiger Antworten in Prozent',
-  'Reset session': 'Übungsrunde zurücksetzen',
-  'A listening habit': 'Eine Hörgewohnheit entwickeln',
   'Sing the first note, then the second. Notice the distance, not just whether it sounds familiar.':
     'Singe erst den ersten, dann den zweiten Ton. Achte auf den Abstand und nicht nur darauf, ob der Klang vertraut wirkt.',
-  'Exercises use 12-tone equal temperament. Your chosen A4 is captured when each question starts. Results stay in this session.':
-    'Die Übungen verwenden die zwölfstufige gleichstufige Stimmung. Die gewählte Frequenz für a′ wird zu Beginn jeder Frage übernommen. Ergebnisse bleiben in dieser Übungsrunde.',
   'A little experiment': 'Ein kleines Experiment',
   'Listen to relationships': 'Tonverhältnisse hören',
   Intervals: 'Intervalle',
@@ -393,26 +364,6 @@ export const german = {
     'Mit einer zusätzlichen Septime entsteht ein Vierklang. Ein Dominantseptakkord hat in gleichstufiger Stimmung die Halbtonabstände 0, 4, 7 und 10 vom Grundton. Die Bedeutung eines Akkords hängt auch von Kontext, Lage, Rhythmus und Stimmführung ab. Ein einzelner Akkord erklärt noch keinen harmonischen Stil.',
   'Compare major and minor on the same root, first as an arpeggio and then together.':
     'Vergleiche Dur und Moll über demselben Grundton, zuerst als Arpeggio und dann gleichzeitig.',
-  'Sound & musical foundations': 'Klang & musikalische Grundlagen',
-  'Acoustics · pitch · intervals · rhythm · notation':
-    'Akustik · Tonhöhe · Intervalle · Rhythmus · Notation',
-  '6 introductory lessons available': '6 einführende Lektionen verfügbar',
-  'Early music & polyphony': 'Alte Musik & Mehrstimmigkeit',
-  'Modal practices · chant · counterpoint · mensural notation':
-    'Modale Praxis · Choral · Kontrapunkt · Mensuralnotation',
-  'Curriculum planned': 'Lehrinhalte geplant',
-  'European traditions, 1600–1900': 'Europäische Traditionen, 1600–1900',
-  'Tonal harmony · voice leading · form · orchestration':
-    'Tonale Harmonik · Stimmführung · Form · Orchestrierung',
-  'Blues, jazz & popular music': 'Blues, Jazz & populäre Musik',
-  'Groove · extended harmony · song form · improvisation':
-    'Groove · erweiterte Harmonik · Songformen · Improvisation',
-  'Musical worlds': 'Musikalische Welten',
-  'Maqam · raga · gamelan · oral traditions · rhythmic systems':
-    'Maqam · Raga · Gamelan · mündliche Überlieferung · rhythmische Systeme',
-  'New musical languages': 'Neue musikalische Sprachen',
-  'Post-tonality · microtonality · synthesis · experimental notation':
-    'Posttonalität · Mikrotonalität · Klangsynthese · experimentelle Notation',
   'The number of cycles per second of a periodic signal, measured in hertz.':
     'Anzahl der Schwingungen eines periodischen Signals pro Sekunde, gemessen in Hertz.',
   Pitch: 'Tonhöhe',
@@ -572,8 +523,6 @@ export const german = {
   '{tonic} blues (12-TET)': 'Bluestonleiter auf {tonic} (12-TET)',
   Language: 'Sprache',
   Space: 'Leertaste',
-  'Search a term in English, Russian or German…':
-    'Begriff auf Deutsch, Englisch oder Russisch suchen …',
   'T = 1 / f': 'T = 1 / f',
   'f(n) = A4 × 2^((n − 69) / 12)': 'f(n) = f(a′) × 2^((n − 69) / 12)',
   'cents = 1200 × log₂(f₂ / f₁)': 'Cent = 1200 × log₂(f₂ / f₁)',
@@ -581,7 +530,6 @@ export const german = {
   'Major: 2 – 2 – 1 – 2 – 2 – 2 – 1': 'Dur: 2 – 2 – 1 – 2 – 2 – 2 – 1',
   'Major: 0 · 4 · 7   /   Minor: 0 · 3 · 7':
     'Dur: 0 · 4 · 7   /   Moll: 0 · 3 · 7',
-  'Introductory lessons available': 'Einführende Lektionen verfügbar',
   // Notation programme (roadmap №558).
   'Note names and octaves': 'Tonnamen und Oktavlagen',
   Notation: 'Notenschrift',
@@ -592,26 +540,18 @@ export const german = {
     'Sieben Namen tragen die Stammtöne: C, D, E, F, G, A und H. Nach dem H beginnt die Reihe wieder bei C, und dieses C schwingt doppelt so schnell wie das C darunter. Dieser wiederkehrende Abstand heißt Oktave.',
   'A name alone does not fix a pitch, because every octave repeats it. Scientific pitch notation adds a number: middle C is C4, and the number rises at each C, so B4 lies just below C5. The reference pitch of this lab is A4 at 440 Hz.':
     'Ein Name allein legt noch keine Tonhöhe fest, denn jede Oktave wiederholt ihn. Die Helmholtz-Bezeichnung ergänzt deshalb die Lage: große Oktave C bis H, kleine Oktave c bis h, eingestrichene Oktave c′ bis h′, zweigestrichene Oktave c″ bis h″. Jede Oktave beginnt bei ihrem C, das h′ liegt also unmittelbar unter dem c″. Der Kammerton dieses Labors ist a′ mit 440 Hz.',
-  'Play C4, then every white key up to C5, saying each name with its octave number aloud.':
-    'Spiele c′, dann jede weiße Taste hinauf bis c″, und sprich dabei jeden Namen mit seiner Oktavlage aus.',
   'Natural note': 'Stammton',
   'A note carrying one of the seven plain letter names, with no sharp or flat attached.':
     'Ein Ton mit einem der sieben schlichten Grundnamen, ohne Endung auf -is oder -es.',
   'Note name': 'Tonname',
   'A name that identifies a note in every octave at once, not one single pitch.':
     'Ein Name, der einen Ton in allen Oktaven zugleich bezeichnet und nicht eine einzelne Tonhöhe.',
-  'The distance from a note to the next note of the same name, a 2:1 frequency ratio here.':
-    'Der Abstand von einem Ton zum nächsten gleichnamigen Ton, hier im Frequenzverhältnis 2:1.',
   'Octave register': 'Oktavlage',
   'The stretch of pitches from one C up to the B above it, for example C4 to B4.':
     'Der Abschnitt von einem C bis zum H darüber, etwa die eingestrichene Oktave.',
-  'The convention that appends an octave number to each letter name, counting a new number from every C.':
-    'Die Schreibweise, die die Lage durch große und kleine Buchstaben mit Strichen angibt, etwa c′.',
   'Middle C': 'Eingestrichenes c',
   'The C nearest the middle of a piano keyboard, written C4 and sounding at about 261.6 Hz.':
     'Das c in der Mitte der Klaviatur, geschrieben c′, mit etwa 261,6 Hz.',
-  'The note whose frequency is fixed first, from which the others follow; here A4 at 440 Hz.':
-    'Der Ton, dessen Frequenz zuerst festgelegt wird und an dem sich alle anderen ausrichten; hier a′ mit 440 Hz.',
   'Five lines, four spaces': 'Fünf Linien, vier Zwischenräume',
   'Read where a note sits on the staff.':
     'Den Platz einer Note im Notensystem bestimmen.',
@@ -619,10 +559,6 @@ export const german = {
     '5 Linien + 4 Zwischenräume = 9 Plätze · je ein Platz darüber und darunter = 11 · von unten gezählt',
   'A staff is five parallel lines with four spaces between them, nine places in all. Lines and spaces are both counted from the bottom: the lowest line is the first line, the lowest space the first space. A note head sits on a line, crossed by it, or inside a space.':
     'Das Notensystem besteht aus fünf waagerechten Linien und vier Zwischenräumen, zusammen neun Plätzen. Beide werden von unten nach oben gezählt: die unterste Linie ist die erste Linie, der unterste Zwischenraum der erste Zwischenraum. Ein Notenkopf steht auf einer Linie, die ihn durchschneidet, oder in einem Zwischenraum.',
-  'The place just above the top line and the place just below the bottom line also belong to the staff, which makes eleven in all. Past them, short ledger lines extend it one step at a time. Notes are read left to right, and heads aligned vertically sound together.':
-    'Der Platz unmittelbar über der fünften Linie und der Platz unmittelbar unter der ersten gehören ebenfalls zum System; damit sind es elf. Darüber hinaus verlängern kurze Hilfslinien das System Schritt für Schritt. Noten werden von links nach rechts gelesen; senkrecht übereinanderstehende Notenköpfe erklingen gleichzeitig.',
-  'Play C4 and G4 one after the other, then together, and compare reading across with reading down.':
-    'Spiele c′ und g′ zuerst nacheinander und dann gleichzeitig und vergleiche das Lesen von links nach rechts mit dem senkrechten Übereinander.',
   Staff: 'Notensystem',
   'The staff is the set of five lines and four spaces on which pitches are written.':
     'Das Notensystem ist die Folge von fünf Linien und vier Zwischenräumen, auf denen Tonhöhen notiert werden.',
@@ -773,8 +709,6 @@ export const german = {
     'Ein Notenwert sagt, wie lange eine Note im Verhältnis zu den anderen klingt, nicht in Sekunden. Jeder Wert enthält zwei des nächstkleineren: ganze Note, halbe Note, Viertelnote, Achtelnote, Sechzehntelnote und so weiter durch Halbieren. Erst das Tempo macht daraus messbare Zeit.',
   'The shape of a note carries its value. An open head without a stem is a whole note; with a stem it is a half; a filled head a quarter, and each added flag halves the value again. Every value has its own rest, and the whole rest also stands for a silent bar.':
     'Die Form der Note trägt ihren Wert. Ein leerer Kopf ohne Hals ist eine ganze Note, mit Hals eine halbe, ein ausgefüllter Kopf eine Viertelnote, und jedes weitere Fähnchen halbiert den Wert erneut. Zu jedem Wert gehört eine eigene Pause; die ganze Pause gilt außerdem als Taktpause, gleich wie lang der Takt ist.',
-  'Hold a steady pulse in the lab and count one whole, two halves, then four quarters across the same span.':
-    'Halte im Labor einen gleichmäßigen Puls und zähle über dieselbe Strecke eine Ganze, zwei Halbe, dann vier Viertel.',
   'Note value': 'Notenwert',
   'The written length of a note, given in relation to the other values rather than in seconds.':
     'Die geschriebene Dauer einer Note, die im Verhältnis zu den anderen Werten steht und nicht in Sekunden.',
@@ -799,8 +733,6 @@ export const german = {
     'Ein Punkt hinter dem Notenkopf verlängert die Note um die Hälfte ihres Wertes. Eine punktierte Note dauert deshalb so lange wie drei des nächstkleineren Wertes: eine punktierte Halbe entspricht drei Vierteln. Ein zweiter Punkt fügt die Hälfte des ersten Punktes hinzu. Für Pausen gilt dieselbe Regel.',
   'A tie joins two notes of the same pitch into one sound, and their values add. Because the tie carries a value across a barline, a note can last longer than the bar allows. The slur is a different sign: it joins notes of different pitch and asks for legato.':
     'Ein Haltebogen verbindet zwei Noten derselben Tonhöhe zu einem Klang; ihre Werte werden addiert. So trägt er einen Wert über den Taktstrich, und ein Ton kann länger dauern, als ein Takt es zulässt. Der Bindebogen ist ein anderes Zeichen: er verbindet Noten verschiedener Tonhöhe und verlangt ein Legato.',
-  'Play a note, then the same pitch twice under a tie, and hear one long sound instead of two attacks.':
-    'Spiele einen Ton, dann dieselbe Tonhöhe zweimal unter einem Haltebogen, und höre einen langen Klang statt zwei Anschlägen.',
   'Dotted note': 'Punktierte Note',
   'A note followed by a dot, lasting three of the next smaller unit.':
     'Eine Note mit Punkt, die drei nächstkleinere Werte lang dauert.',
@@ -826,8 +758,6 @@ export const german = {
     'Die Notenwerte teilen sich durch zwei; eine Teilung der Zählzeit in drei, fünf oder sieben Teile muss deshalb gekennzeichnet werden. Eine Triole schreibt drei Noten dort, wo zwei desselben Wertes stehen. Unregelmäßige Gruppen erhalten den Wert der nächstgrößeren regelmäßigen Teilung; ein Verhältnis wie 7:4 wird gedruckt, wenn der geschriebene Wert missverstanden werden könnte.',
   'A beam replaces the flags on notes shorter than a quarter: one beam for each flag the note would carry. Beams group notes so that the beat can be seen at a glance, which is why grouping follows the metre rather than the melody. Modern vocal music is beamed by beat, like instrumental music.':
     'Ein Balken ersetzt die Fähnchen bei Noten unter dem Viertelwert: ein Balken für jedes Fähnchen. Die Balkengruppen machen die Zählzeiten auf einen Blick sichtbar, deshalb richtet sich die Gruppierung nach dem Metrum und nicht nach der Melodie. Moderne Vokalmusik wird wie Instrumentalmusik nach Zählzeiten gebalkt; die Balkung nach Silben ist ältere Praxis.',
-  'Play two eighths on one beat, then three triplet eighths, and hear the beat keep its length.':
-    'Spiele auf eine Zählzeit zwei Achtel, dann drei Achtel als Triole, und höre, dass die Zählzeit gleich lang bleibt.',
   Beat: 'Zählzeit',
   'The unit of pulse that the written note values are counted against.':
     'Die Einheit des Pulses, gegen die die geschriebenen Notenwerte gezählt werden.',
@@ -859,8 +789,6 @@ export const german = {
     'Ein Tempowort am Anfang eines Stückes bestimmt die Geschwindigkeit und gilt so lange, bis ein anderes Wort es ablöst. Largo und Adagio sind langsam, Andante gehend, Moderato mäßig, Allegro schnell, Presto noch schneller. Die Wörter benennen zugleich den Charakter; ihre Bereiche überschneiden sich und bilden keine Skala.',
   'A metronome mark fixes the speed in beats per minute against a named note value, as in ♩ = 120. Gradual change has its own vocabulary — accelerando faster, ritardando slower — and the return to the main speed is marked a tempo. A fermata holds a note or rest as long as the performer takes.':
     'Eine Metronomzahl legt das Tempo in Schlägen pro Minute bei einem genannten Notenwert fest, etwa ♩ = 120. Die allmähliche Änderung hat eigene Wörter — accelerando schneller, ritardando langsamer —, und die Rückkehr zum Haupttempo steht als a tempo oder Tempo I. Eine Fermate hält eine Note oder Pause so lange, wie der Vortragende sie nimmt.',
-  'Set the pulse to 60 beats per minute, then to 120, and count four beats at each speed.':
-    'Stelle den Puls auf 60 Schläge pro Minute, dann auf 120, und zähle in jedem Tempo vier Zählzeiten.',
   'The speed at which the beats of a piece follow one another.':
     'Die Geschwindigkeit, mit der die Zählzeiten eines Stückes aufeinander folgen.',
   'Metronome mark': 'Metronomzahl',
@@ -927,8 +855,6 @@ export const german = {
     'Artikulation beschreibt, wie ein Ton mit dem nächsten verbunden oder von ihm getrennt wird. Ein Bindebogen über einer Gruppe verlangt legato: Die Töne folgen ohne Unterbrechung aufeinander. Ein Punkt verlangt Staccato; der Ton wird verkürzt und abgesetzt, und die Stille geht von seiner eigenen notierten Dauer ab, nicht von der des folgenden Tons.',
   'Between the poles lie tenuto, portato and non legato. In modern engraving a dot means staccato and a wedge the shorter staccatissimo, but scores written before about 1850 do not separate the two reliably. Older parts carry few marks of any kind, so an unmarked line is not an unarticulated one.':
     'Zwischen den Polen liegen Tenuto, Portato und non legato. Im modernen Notensatz steht der Punkt für Staccato und der Keil für das kürzere Staccatissimo; in Noten, die vor etwa 1850 entstanden sind, ist diese Unterscheidung nicht verlässlich. Ältere Stimmen tragen ohnehin wenige Zeichen, eine unbezeichnete Stimme ist deshalb keine Musik ohne Artikulation.',
-  'Hold one tone for its full length, then play the same figure with each tone cut short and listen to the silence you create.':
-    'Halten Sie einen Ton über seine volle Dauer, spielen Sie dann dieselbe Figur mit verkürzten Tönen und hören Sie auf die entstehende Stille.',
   articulation: 'Artikulation',
   'Articulation is how one note joins or separates from the note after it.':
     'Artikulation ist die Art, wie ein Ton mit dem folgenden verbunden oder von ihm getrennt wird.',
@@ -956,8 +882,6 @@ export const german = {
     'Ein Doppelstrich trennt einen Abschnitt vom nächsten; ein dünner Strich mit folgendem dicken beendet das Stück. Das Wiederholungszeichen ist ein Doppelstrich mit zwei Punkten, wobei die Punkte zu der Musik zeigen, die noch einmal erklingt. Treffen zwei zu wiederholende Abschnitte aufeinander, teilen sich beide Zeichen einen Strich.',
   'First and second endings choose a different continuation: play the bracketed first ending, take the repeat, then skip to the second. Da capo sends the reader back to the beginning and dal segno to the marked place, each playing on to the word fine. The printed order and the played order differ.':
     'Erste und zweite Wiederholungsklammer wählen einen anderen Fortgang: Man spielt die erste Klammer, nimmt die Wiederholung und überspringt sie danach zugunsten der zweiten. Da capo führt zum Anfang zurück, dal segno zum Segno, und beide Male wird bis zum Wort fine gespielt. Notierte und gespielte Reihenfolge fallen dadurch auseinander.',
-  'Play a four-tone figure, repeat it, then play it again with a different last tone and count how many tones sounded in all.':
-    'Spielen Sie eine Figur aus vier Tönen, wiederholen Sie sie, spielen Sie sie dann mit einem anderen Schlusston und zählen Sie, wie viele Töne insgesamt erklungen sind.',
   'double bar': 'Doppelstrich',
   'A double bar is two thin lines marking the end of a section rather than the end of the piece.':
     'Der Doppelstrich besteht aus zwei dünnen Strichen und markiert das Ende eines Abschnitts, nicht das des Stücks.',
@@ -987,32 +911,21 @@ export const german = {
   Level: 'Stufe',
   'Next question': 'Nächste Frage',
   'Not quite.': 'Nicht ganz.',
-  'Read, then check': 'Erst lesen, dann prüfen',
-  'Name the answer to yourself before looking at the options. The options are there to be checked against, not to be chosen from.':
-    'Nenne die Antwort erst für dich selbst und sieh dann auf die Auswahl. Die Auswahl dient der Prüfung, nicht der Wahl.',
   Exercise: 'Übung',
-  'Ear training': 'Gehörbildung',
-  'Reading notation': 'Notentext lesen',
   Registers: 'Oktavlagen',
   'Altered notes': 'Versetzungszeichen',
   'Dotted values': 'Punktierte Werte',
   'Irregular groups': 'Unregelmäßige Teilungen',
   'Tied values': 'Übergebundene Werte',
   'That is the one.': 'Genau der ist es.',
-  'The name is right and the register is not: every register starts at its own C.':
-    'Der Name stimmt, die Oktavlage nicht: jede Oktavlage beginnt bei ihrem eigenen C.',
   'That is the neighbouring step. Count the letters, not the keys.':
     'Das ist die Nachbarstufe. Zähle die Stufen, nicht die Tasten.',
   'The step is right, the sign is not. Check how far the sign moves the note.':
     'Die Stufe stimmt, das Vorzeichen nicht. Prüfe, wie weit das Zeichen den Ton versetzt.',
   'That sounds the same but is written on another step, which is what the task asked to change.':
     'Das klingt gleich, steht aber auf einer anderen Stufe — und genau die Schreibweise war zu ändern.',
-  'That is the value without its dot. The dot adds half of the value again.':
-    'Das ist der Wert ohne Punkt. Der Punkt fügt die Hälfte des Wertes noch einmal hinzu.',
   'That is how many parts the value was divided into, not how long it lasts.':
     'Das ist die Anzahl der Teile, nicht die Dauer eines Teils.',
-  'An irregular group is written in the next larger regular division, not in the one it sounds like.':
-    'Eine unregelmäßige Teilung wird im nächstgrößeren regelmäßigen Wert geschrieben, nicht in dem, nach dem sie klingt.',
   'The values simply add up. Count them in the smaller of the two.':
     'Die Werte addieren sich einfach. Zähle sie im kleineren der beiden.',
   // Notes lab (roadmap №558).
@@ -1066,7 +979,6 @@ export const german = {
   'No term matches': 'Kein Begriff passt',
   'Clear the search': 'Suche löschen',
   'Clear the filters': 'Filter löschen',
-  'Terms and where they are taught': 'Begriffe und wo sie erklärt werden',
   // Sorting the define lens's index.
   Term: 'Begriff',
   ascending: 'aufsteigend',

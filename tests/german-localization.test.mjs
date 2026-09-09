@@ -1,3 +1,7 @@
+import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import { expect, test } from 'vitest';
 import { german } from '../lib/german.ts';
 import {
@@ -243,4 +247,66 @@ test('German decimal readouts use a comma without changing the value or other lo
   expect(fixedNumber(440, 2, 'en')).toBe('440.00');
   expect(fixedNumber(440, 2, 'ru')).toBe('440.00');
   expect(() => fixedNumber(440, -1, 'de')).toThrow(RangeError);
+});
+
+test('German counters decline the drill lens nouns too', () => {
+  for (const [noun, one, other] of [
+    ['questions', 'Frage', 'Fragen'],
+    ['mistakes', 'Fehler', 'Fehler'],
+    ['terms', 'Begriff', 'Begriffe'],
+    ['lessons', 'Lektion', 'Lektionen'],
+  ]) {
+    expect(count(1, 'de', noun)).toBe(`1 ${one}`);
+    for (const n of [0, 2, 11, 21])
+      expect(count(n, 'de', noun)).toBe(`${n} ${other}`);
+  }
+});
+
+/**
+ * The catalogue is a gate in one direction already: `GermanKey` makes an
+ * English string with no entry a `tsc` failure, so nothing ships untranslated.
+ * Nothing enforced the other direction, and 56 keys had outlived the copy they
+ * translated — a reviewer reading the file could not tell which German was
+ * live. A key nobody uses is a translation nobody can check.
+ */
+const root = fileURLToPath(new URL('../', import.meta.url));
+/**
+ * What git tracks, and nothing else.
+ *
+ * Walking the directory instead was wrong in a way that only CI could see: a
+ * scratch `/work/` full of old migration scripts is gitignored here and absent
+ * there, so two dead keys stayed alive on this machine and the gate passed
+ * locally while failing in the run that matters. Build output under `dist/`
+ * would have done the same, inlining every key it is looking for. Asking git
+ * makes the corpus exactly what ships, and identical in both places.
+ */
+function sourceFiles() {
+  const listed = execFileSync(
+    'git',
+    ['ls-files', '-z', '*.ts', '*.tsx', '*.mjs', '*.mts'],
+    { cwd: root, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 },
+  );
+  return (
+    listed
+      .split('\0')
+      .filter(Boolean)
+      // Tests are excluded on purpose: a key kept alive only by a test that
+      // mentions it is exactly the dead key this is looking for.
+      .filter((path) => !path.startsWith('tests/'))
+      .filter((path) => path !== 'lib/german.ts')
+      .map((path) => join(root, path))
+  );
+}
+
+test('Every German entry translates a string the site still says', () => {
+  const files = sourceFiles(root);
+  expect(files.length).toBeGreaterThan(20);
+  const corpus = files.map((file) => readFileSync(file, 'utf8')).join(' ');
+  const orphans = Object.keys(german).filter((key) => !corpus.includes(key));
+  expect(
+    orphans,
+    'delete these from lib/german.ts, or use them: nothing outside the catalogue says them',
+  ).toEqual([]);
+  // And the catalogue is the size the site needs, not a historical record.
+  expect(Object.keys(german).length).toBeGreaterThan(600);
 });
