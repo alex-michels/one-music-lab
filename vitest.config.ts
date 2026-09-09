@@ -35,6 +35,7 @@ export const authoredProductionCode = [
   'app/**/*.{ts,tsx}',
   'components/learning.tsx',
   'components/experiments.tsx',
+  'components/ear-training.tsx',
   'components/chords-lab.tsx',
   'components/notes-lab.tsx',
   'components/staff.tsx',

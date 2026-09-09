@@ -1,3 +1,5 @@
+import type { ErrorTag, Rule } from './exercises';
+
 /**
  * Browser state that the server cannot know: the page selected through the URL
  * hash, and the language, sidebar width and theme saved in localStorage. Each
@@ -275,6 +277,146 @@ export function resolveTheme(
 export function localStorageOrNull(): Pick<Storage, 'getItem'> | null {
   try {
     return globalThis.localStorage ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The drill's memory of this session, keyed on the rule each item tests.
+ *
+ * `Rule` and `ErrorTag` arrive as types only, so this module still knows
+ * nothing about the curriculum at run time: the import is erased and the
+ * bundle carries no edge from browser state to the exercise generator. What
+ * the types buy is that a fifteenth rule cannot slip into a saved ledger
+ * without `tsc` naming the place it has to be handled.
+ */
+export const DRILL_STORAGE_KEY = 'oml-drill-session';
+
+/**
+ * One rule's standing. `tag` is the last mistake made on it, because a row
+ * with no mistake has nothing to explain and the site does not print an
+ * explanation that answers a question the reader did not get wrong.
+ */
+export type LedgerRow = {
+  asked: number;
+  missed: number;
+  tag: ErrorTag | null;
+};
+export type Ledger = ReadonlyMap<Rule, LedgerRow>;
+
+export const EMPTY_LEDGER: Ledger = new Map();
+
+/** A count that survived the trip through storage: whole, non-negative, finite. */
+function wholeCount(value: unknown): number | null {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0
+    ? value
+    : null;
+}
+
+/**
+ * Reads a saved ledger. Everything is checked rather than trusted: the key is
+ * `sessionStorage`, which any script on the origin can write, and a row that
+ * claims a rule nobody generates or a negative tally would print a tidy lie.
+ *
+ * `rules` and `tags` are passed in for the same reason `routeFromHash` is
+ * handed its topics — the vocabulary belongs to the generator, not here.
+ */
+export function ledgerFromStorage(
+  storage: Pick<Storage, 'getItem'> | null | undefined,
+  vocabulary: { rules: readonly string[]; tags: readonly string[] },
+): Ledger {
+  let parsed: unknown;
+  try {
+    const saved = storage?.getItem(DRILL_STORAGE_KEY);
+    if (saved === null || saved === undefined || saved === '')
+      return EMPTY_LEDGER;
+    parsed = JSON.parse(saved);
+  } catch {
+    return EMPTY_LEDGER;
+  }
+  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed))
+    return EMPTY_LEDGER;
+  const ledger = new Map<Rule, LedgerRow>();
+  for (const [rule, row] of Object.entries(parsed)) {
+    if (!vocabulary.rules.includes(rule)) continue;
+    if (row === null || typeof row !== 'object' || Array.isArray(row)) continue;
+    const { asked, missed, tag } = row as Record<string, unknown>;
+    const askedCount = wholeCount(asked);
+    const missedCount = wholeCount(missed);
+    // More misses than questions is not a ledger, it is corruption.
+    if (askedCount === null || missedCount === null || missedCount > askedCount)
+      continue;
+    ledger.set(rule as Rule, {
+      asked: askedCount,
+      missed: missedCount,
+      tag:
+        typeof tag === 'string' && vocabulary.tags.includes(tag)
+          ? (tag as ErrorTag)
+          : null,
+    });
+  }
+  return ledger;
+}
+
+/** The ledger as `sessionStorage` holds it. */
+export function serializeLedger(ledger: Ledger): string {
+  return JSON.stringify(Object.fromEntries(ledger));
+}
+
+/** The ledger after one answer, as a new map: the old one is never mutated. */
+export function recordAnswer(
+  ledger: Ledger,
+  rule: Rule,
+  verdict: { correct: boolean; tag: ErrorTag },
+): Ledger {
+  const previous = ledger.get(rule) ?? { asked: 0, missed: 0, tag: null };
+  const next = new Map(ledger);
+  next.set(rule, {
+    asked: previous.asked + 1,
+    missed: previous.missed + (verdict.correct ? 0 : 1),
+    // A right answer does not erase the mistake that came before it; the row
+    // keeps explaining the last thing that actually went wrong.
+    tag: verdict.correct ? previous.tag : verdict.tag,
+  });
+  return next;
+}
+
+/**
+ * The next rule to ask. Uniform over the eligible rules, except that a rule
+ * missed this session is drawn twice as often — the only place the ledger
+ * changes what happens, and stated in one sentence beside it.
+ *
+ * `roll` is a number in `[0, 1)`, so the caller owns the randomness and a test
+ * can name the rule it wants.
+ */
+export function drawRule(
+  rules: readonly Rule[],
+  ledger: Ledger,
+  roll: number,
+): Rule {
+  if (rules.length === 0) throw new RangeError('No rule to draw from');
+  const weight = (rule: Rule) => ((ledger.get(rule)?.missed ?? 0) > 0 ? 2 : 1);
+  const total = rules.reduce((sum, rule) => sum + weight(rule), 0);
+  // A roll of exactly 1 would otherwise spend the whole total and fall off the
+  // end of the loop, so it is pulled just inside the last rule's share.
+  let remaining = Math.min(Math.max(roll, 0), 1 - Number.EPSILON) * total;
+  let chosen = rules[0];
+  for (const rule of rules) {
+    chosen = rule;
+    remaining -= weight(rule);
+    if (remaining < 0) break;
+  }
+  return chosen;
+}
+
+/** sessionStorage when the browser exposes it; null when access throws or is absent. */
+export function sessionStorageOrNull(): Pick<
+  Storage,
+  'getItem' | 'setItem'
+> | null {
+  try {
+    return globalThis.sessionStorage ?? null;
   } catch {
     return null;
   }

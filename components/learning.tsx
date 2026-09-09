@@ -1,57 +1,57 @@
 'use client';
-import { localNumber, translator } from '@/lib/i18n';
-import { intervalLabels } from '@/lib/notation';
-import { german } from '@/lib/german';
+import { translator, type Translate } from '@/lib/i18n';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { count } from '@/lib/plural';
 import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
-  BookOpen,
   Check,
   ChevronDown,
   ChevronRight,
   ChevronUp,
   Headphones,
-  Play,
   Search,
-  Volume2,
   X,
 } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
-import {
-  exerciseExplanations,
-  exerciseModes,
-  lessons,
-  terms,
-} from '@/lib/learning';
+import { exerciseExplanations, lessons, terms } from '@/lib/learning';
 import {
   TOPIC_IDS,
   TOPIC_KINDS,
   paragraphAnchors,
   ruleKind,
+  ruleTopic,
   topicById,
   topics,
   type TopicId,
   type TopicKind,
 } from '@/lib/topics';
 import {
+  RULES,
   generateFrom,
   grade,
   type ExerciseKind,
+  type Item,
   type Level,
+  type Rule,
 } from '@/lib/exercises';
+import {
+  DRILL_STORAGE_KEY,
+  EMPTY_LEDGER,
+  createClientStore,
+  drawRule,
+  hashOf,
+  ledgerFromStorage,
+  recordAnswer,
+  serializeLedger,
+  sessionStorageOrNull,
+  type Ledger,
+} from '@/lib/client-store';
 import { Staff } from '@/components/staff';
 import { StaffAnswer } from '@/components/staff-answer';
-import { frequencyForMidi, noteName, type Wave } from '@/lib/music';
+import type { Wave } from '@/lib/music';
 type Lang = import('@/lib/client-store').Lang;
-type PlaySequence = (
-  frequencies: number[],
-  spacing?: number,
-  wave?: Wave,
-) => Promise<void>;
 
 type SortBy = 'term' | 'kind';
 
@@ -69,18 +69,31 @@ export { Experiments } from './experiments';
 function InlineExercise({
   lang,
   topic,
-  openPractice,
+  anchor,
 }: {
   lang: Lang;
   topic: string;
-  openPractice: () => void;
+  /**
+   * The rule a ledger row asked for. A topic can teach four rules and this
+   * paragraph shows one, so without the anchor three of the ledger's exits
+   * would land on a question about something else.
+   */
+  anchor: string | null;
 }) {
   const t = translator(lang);
   const [chosen, setChosen] = useState<string | null>(null);
+  const here = useRef<HTMLElement>(null);
   const rules = Object.hasOwn(paragraphAnchors, topic)
     ? paragraphAnchors[topic as TopicId]
     : [];
-  const rule = rules[0];
+  const rule = rules.find((candidate) => candidate === anchor) ?? rules[0];
+  // The address names a paragraph, and the browser will not scroll to it: the
+  // anchor is written after a `~` precisely so the fragment stays one piece,
+  // which means nothing native matches it.
+  useEffect(() => {
+    if (rule && anchor === rule)
+      here.current?.scrollIntoView({ block: 'center' });
+  }, [anchor, rule]);
   if (!rule) return null;
   const item = generateFrom(ruleKind[rule], 1, 1, lang);
   if (!item) return null;
@@ -88,7 +101,7 @@ function InlineExercise({
   return (
     // The paragraph that states the rule carries its id, so a ledger row can
     // link to the sentence rather than to the top of a lesson.
-    <section className="inline-exercise" id={rule}>
+    <section className="inline-exercise" id={rule} ref={here}>
       <span className="eyebrow">{t('Try it here', 'Попробуйте здесь')}</span>
       <p className="exercise-prompt">{item.prompt}</p>
       {item.staff && (
@@ -100,6 +113,7 @@ function InlineExercise({
             accidentalVisibility={item.staff.accidentalVisibility}
             lang={lang}
             space={13}
+            label={staffPrompt(item.kind, t)}
           />
         </div>
       )}
@@ -130,10 +144,15 @@ function InlineExercise({
           {exerciseExplanations[verdict.tag][lang]}
         </p>
       )}
-      <button className="text-button" onClick={openPractice}>
+      {/* Into the drill scoped to this topic, not to the whole trainer: the
+          reader asked about this rule, so this is the rule to practise. */}
+      <a
+        className="text-button"
+        href={hashOf({ lang, lens: 'drill', topic, anchor: null })}
+      >
         {t('Practise this rule', 'Потренировать это правило')}
         <ChevronRight size={16} />
-      </button>
+      </a>
     </section>
   );
 }
@@ -143,13 +162,13 @@ export function Theory({
   lessonId,
   setLessonId,
   openLab,
-  openPractice,
+  anchor,
 }: {
   lang: Lang;
   lessonId: string | null;
   setLessonId: (id: string | null) => void;
   openLab: (hz: number, wave: Wave, lessonId: string) => void;
-  openPractice: () => void;
+  anchor: string | null;
 }) {
   const t = translator(lang);
   const lesson = lessons.find((l) => l.id === lessonId);
@@ -167,11 +186,7 @@ export function Theory({
         ))}
         {/* The rule this topic teaches, asked right where it is stated, rather
             than saved up for a page the reader has to go and find. */}
-        <InlineExercise
-          lang={lang}
-          topic={lesson.id}
-          openPractice={openPractice}
-        />
+        <InlineExercise lang={lang} topic={lesson.id} anchor={anchor} />
         <div className="formula">{lesson.formula[lang]}</div>
         {/* The instrument is the other half of the page, not an illustration
             inside it: it breaks out to twice the prose measure. */}
@@ -188,10 +203,9 @@ export function Theory({
               {t('Open this experiment', 'Открыть эксперимент')}
               <ArrowRight size={16} />
             </button>
-            <button className="text-button" onClick={openPractice}>
-              {t('Train your ear', 'Тренировать слух')}
-              <ChevronRight size={16} />
-            </button>
+            {/* “Train your ear” used to point at the trainer, which is where
+                ear training no longer is: it is an experiment in the lab now,
+                one button up. A second link to the same place is not a route. */}
           </div>
         </aside>
         <a
@@ -272,14 +286,25 @@ export function Theory({
 export function Encyclopedia({
   lang,
   openLesson,
+  subject,
 }: {
   lang: Lang;
   openLesson: (id: string) => void;
+  /**
+   * The topic the address names, which preselects the topic facet. Without it
+   * a ledger row's second exit — the terms that govern the rule — would land
+   * on the whole index and leave the reader to find them.
+   */
+  subject: string | null;
 }) {
   const t = translator(lang);
   const [query, setQuery] = useState('');
   const [kind, setKind] = useState<TopicKind | null>(null);
-  const [topic, setTopic] = useState<TopicId | null>(null);
+  const [topic, setTopic] = useState<TopicId | null>(
+    subject !== null && (TOPIC_IDS as readonly string[]).includes(subject)
+      ? (subject as TopicId)
+      : null,
+  );
   const [opened, setOpened] = useState<string | null>(null);
   // The index opens alphabetically, which is what a reference is for.
   const [sortBy, setSortBy] = useState<SortBy>('term');
@@ -517,46 +542,118 @@ export function Encyclopedia({
   );
 }
 
-const quizIntervals = [
-  {
-    de: german['Minor third'],
-    en: 'Minor third',
-    ru: 'Малая терция',
-    step: 3,
-    degree: 2,
-  },
-  {
-    de: german['Major third'],
-    en: 'Major third',
-    ru: 'Большая терция',
-    step: 4,
-    degree: 2,
-  },
-  {
-    de: german['Perfect fifth'],
-    en: 'Perfect fifth',
-    ru: 'Чистая квинта',
-    step: 7,
-    degree: 4,
-  },
-  { de: german['Octave'], en: 'Octave', ru: 'Октава', step: 12, degree: 7 },
-];
 /**
- * The generated notation exercises. Items are pure values from
- * `lib/exercises.ts`, so what happens here is only choosing a seed, showing the
- * item and reporting the tag its own generator attached to the chosen option.
+ * The tags the generator can attach to an option, as a value rather than a
+ * union: the explanations table is keyed by the whole of `ErrorTag`, so its own
+ * keys are the list, and a fifteenth tag joins it without being remembered.
  */
-function NotationQuiz({ lang }: { lang: Lang }) {
+const ERROR_TAGS = Object.keys(exerciseExplanations);
+
+/**
+ * The ledger, above the lens rather than inside it: a reader who follows a row
+ * out to the passage that teaches the rule and comes back has not lost the
+ * reason they left. It is `sessionStorage` and not `localStorage` on purpose —
+ * a permanent record of a reader's mistakes is a mastery record by the back
+ * door, and this site does not keep one.
+ */
+const drillStore = createClientStore<Ledger>(
+  () =>
+    ledgerFromStorage(sessionStorageOrNull(), {
+      rules: RULES,
+      tags: ERROR_TAGS,
+    }),
+  EMPTY_LEDGER,
+);
+
+function saveLedger(next: Ledger) {
+  drillStore.set(next);
+  try {
+    sessionStorageOrNull()?.setItem(DRILL_STORAGE_KEY, serializeLedger(next));
+  } catch {}
+}
+
+/**
+ * An item that tests the drawn rule.
+ *
+ * Two of the kinds ask about more than one rule — `octave-region` carries the
+ * register in its rule and `dotted-value` asks about the first dot or the
+ * second — so the level and the seed are both searched until the generator
+ * emits the rule that was asked for. When no combination does, the item that
+ * comes back is still a real item; the ledger is written from `item.rule`
+ * rather than from the draw, so what it records is what was actually asked.
+ */
+function itemForRule(rule: Rule, seed: number, lang: Lang): Item {
+  const kind = ruleKind[rule];
+  for (let i = 0; i < 12; i += 1) {
+    const level = ((i % 3) + 1) as Level;
+    const item = generateFrom(kind, level, seed + i * 31, lang);
+    if (item.rule === rule) return item;
+  }
+  return generateFrom(kind, 1, seed, lang);
+}
+
+/**
+ * A picture of a question must not read the answer out.
+ *
+ * `components/staff.tsx` names itself from the pitches it drew, which is the
+ * right description of an illustration and exactly the wrong one of a question:
+ * a screen-reader user was told the note before being asked to name it. Every
+ * engraved kind passes its own neutral sentence instead.
+ */
+function staffPrompt(kind: ExerciseKind, t: Translate): string {
+  if (kind === 'clef-transform')
+    return t(
+      'The place to read in another clef',
+      'Место для чтения в другом ключе',
+    );
+  if (kind === 'accidental-scope')
+    return t('The bar the sign stands in', 'Такт, в котором стоит знак');
+  return t('The note to name', 'Нота, которую нужно назвать');
+}
+
+/**
+ * DRILL. One question at a time and a ledger of the rules behind them.
+ *
+ * What the trainer used to show was a score, a progress bar and a percentage —
+ * three ways of saying the same number, none of which tells a reader what to do
+ * next. They are gone. What is here instead is a count of what each rule has
+ * cost, the explanation of the last mistake made on it, and two ways out of the
+ * drill and into the text: the paragraph that states the rule, and the terms
+ * that govern it.
+ *
+ * `topic` scopes it. `#/<lang>/drill` interleaves every rule, because
+ * interleaved practice builds retrieval strength and blocked practice does not;
+ * `#/<lang>/t/<topic>/drill` narrows it to the rules one passage teaches.
+ */
+export function Practice({
+  lang,
+  topic,
+}: {
+  lang: Lang;
+  topic: string | null;
+}) {
   const t = translator(lang);
-  const [kind, setKind] = useState<ExerciseKind>('octave-region');
-  const [level, setLevel] = useState<Level>(1);
+  const ledger = useSyncExternalStore(
+    drillStore.subscribe,
+    drillStore.getSnapshot,
+    drillStore.getServerSnapshot,
+  );
+  const scoped =
+    topic !== null && Object.hasOwn(paragraphAnchors, topic)
+      ? paragraphAnchors[topic as TopicId]
+      : null;
+  const eligible = scoped && scoped.length > 0 ? scoped : RULES;
   // The seed is the item. Keeping it in state means a reader can be sent back
   // to the exact question they saw, and the tests can reproduce it.
-  const [seed, setSeed] = useState(1);
+  const [drawn, setDrawn] = useState<{ rule: Rule; seed: number }>(() => ({
+    rule: eligible[0],
+    seed: 1,
+  }));
   const [chosen, setChosen] = useState<string | null>(null);
-  const [score, setScore] = useState(0);
-  const [total, setTotal] = useState(0);
-  const item = generateFrom(kind, level, seed, lang);
+  // A scope change is a different drill; the first question has to come from
+  // the rules the address now names rather than from the ones it used to.
+  const rule = eligible.includes(drawn.rule) ? drawn.rule : eligible[0];
+  const item = itemForRule(rule, drawn.seed, lang);
   const resultFor = (id: string) =>
     id === 'written-wrong'
       ? { correct: false, tag: 'wrong-written-note' as const }
@@ -565,48 +662,34 @@ function NotationQuiz({ lang }: { lang: Lang }) {
   const answer = (id: string) => {
     if (chosen !== null) return;
     setChosen(id);
-    setTotal((n) => n + 1);
-    if (resultFor(id).correct) setScore((n) => n + 1);
+    // Written from the item, not from the draw: the item knows which rule it
+    // actually asked about, and the ledger may only claim what happened.
+    saveLedger(recordAnswer(ledger, item.rule, resultFor(id)));
   };
-  const restart = (next: { kind?: ExerciseKind; level?: Level }) => {
-    if (next.kind) setKind(next.kind);
-    if (next.level) setLevel(next.level);
-    setSeed((n) => n + 101);
+  const nextQuestion = () => {
+    setDrawn((previous) => ({
+      rule: drawRule(eligible, ledger, Math.random()),
+      seed: previous.seed + 101,
+    }));
     setChosen(null);
   };
+  const startOver = () => {
+    saveLedger(EMPTY_LEDGER);
+    setDrawn({ rule: eligible[0], seed: 1 });
+    setChosen(null);
+  };
+  const missedAny = eligible.some((r) => (ledger.get(r)?.missed ?? 0) > 0);
   return (
-    <div className="practice-layout">
-      <section className="panel practice-card">
+    <div className="lens-drill" data-lens="drill">
+      <section className="drill-question">
         <div className="eyebrow">
-          {t('READING NOTATION', 'ЧТЕНИЕ НОТНОЙ ЗАПИСИ')}
+          {scoped
+            ? topicById[topic as TopicId].title[lang]
+            : t('READING NOTATION', 'ЧТЕНИЕ НОТНОЙ ЗАПИСИ')}
         </div>
-        <div className="exercise-kinds">
-          {exerciseModes.map((mode) => (
-            <button
-              key={mode.kind}
-              className={mode.kind === kind ? 'selected' : ''}
-              aria-pressed={mode.kind === kind}
-              onClick={() => restart({ kind: mode.kind })}
-            >
-              {mode.label[lang]}
-            </button>
-          ))}
-        </div>
-        <div className="exercise-levels">
-          {([1, 2, 3] as const).map((value) => (
-            <button
-              key={value}
-              className={value === level ? 'selected' : ''}
-              aria-pressed={value === level}
-              onClick={() => restart({ level: value })}
-            >
-              {t('Level', 'Уровень')} {value}
-            </button>
-          ))}
-        </div>
-        {kind === 'read-pitch' ? (
+        {item.kind === 'read-pitch' ? (
           <StaffAnswer
-            key={`${seed}-${level}-${lang}`}
+            key={`${drawn.seed}-${item.level}-${lang}`}
             item={item}
             chosen={chosen}
             onAnswer={answer}
@@ -622,7 +705,7 @@ function NotationQuiz({ lang }: { lang: Lang }) {
                   accidentalVisibility={item.staff.accidentalVisibility}
                   lang={lang}
                   space={13}
-                  label={t('The note to name', 'Нота, которую нужно назвать')}
+                  label={staffPrompt(item.kind, t)}
                 />
               </div>
             )}
@@ -666,286 +749,119 @@ function NotationQuiz({ lang }: { lang: Lang }) {
             {exerciseExplanations[verdict.tag][lang]}
           </output>
         )}
+        {/* Never on a timer. The explanation is the point of getting it wrong,
+            and a question that advances itself takes it away from a slow
+            reader before they have finished it. */}
         {verdict && (
-          <button className="primary-button" onClick={() => restart({})}>
+          <button className="primary-button" onClick={nextQuestion}>
             {t('Next question', 'Следующий вопрос')}
             <ArrowRight size={17} />
           </button>
         )}
       </section>
-      <aside>
-        <section className="panel practice-progress">
-          <span className="eyebrow">{t('THIS SESSION', 'ЭТА СЕССИЯ')}</span>
-          <div className="score">
-            {score}
-            <span>/ {total}</span>
-          </div>
-          <p>{t('correct answers', 'правильных ответов')}</p>
-          <Progress
-            aria-label={t(
-              'Correct answer percentage',
-              'Процент правильных ответов',
-            )}
-            value={total ? (score / total) * 100 : 0}
-          />
-          <div className="progress-caption">
-            <span>{total ? Math.round((score / total) * 100) : 0}%</span>
-            <button
-              onClick={() => {
-                setScore(0);
-                setTotal(0);
-                restart({});
-              }}
-            >
-              {t('Reset session', 'Сбросить сессию')}
-            </button>
-          </div>
-        </section>
-        <div className="practice-tip">
-          <h3>{t('Read, then check', 'Сначала прочитайте')}</h3>
-          <p>
-            {t(
-              'Name the answer to yourself before looking at the options. The options are there to be checked against, not to be chosen from.',
-              'Сначала ответьте себе, а потом смотрите на варианты. Варианты нужны для проверки, а не для выбора.',
-            )}
-          </p>
-        </div>
-      </aside>
+      <RuleLedger
+        lang={lang}
+        rules={eligible}
+        ledger={ledger}
+        missedAny={missedAny}
+        onStartOver={startOver}
+      />
     </div>
   );
 }
 
-export function Practice({
+/**
+ * The rule ledger: one row per rule the drill can ask about, whether or not it
+ * has been asked yet.
+ *
+ * A `<details>` at every width rather than a panel that becomes one below
+ * 900 px. The rail may never be disclosed, but this may: it is a record of
+ * work, not a way to get anywhere, and one element that behaves the same at
+ * both widths is one fewer thing that can be open on a phone and closed on a
+ * desk.
+ */
+function RuleLedger({
   lang,
-  reference,
-  play,
+  rules,
+  ledger,
+  missedAny,
+  onStartOver,
 }: {
   lang: Lang;
-  reference: number;
-  play: PlaySequence;
+  rules: readonly Rule[];
+  ledger: Ledger;
+  missedAny: boolean;
+  onStartOver: () => void;
 }) {
   const t = translator(lang);
-  const [mode, setMode] = useState<'ear' | 'notation'>('ear');
-  const [question, setQuestion] = useState<{
-    index: number;
-    root: number;
-    reference: number;
-  } | null>(null);
-  const [answer, setAnswer] = useState<number | null>(null);
-  const [score, setScore] = useState(0);
-  const [total, setTotal] = useState(0);
-  const [hasHeard, setHasHeard] = useState(false);
-  const replay = async (q = question) => {
-    if (q) {
-      try {
-        await play(
-          [
-            frequencyForMidi(q.root, q.reference),
-            frequencyForMidi(q.root + quizIntervals[q.index].step, q.reference),
-          ],
-          0.75,
-          'sine',
-        );
-        setHasHeard(true);
-      } catch {
-        setHasHeard(false);
-      }
-    }
-  };
-  const next = () => {
-    const q = {
-      index: Math.floor(Math.random() * quizIntervals.length),
-      root: 57 + Math.floor(Math.random() * 12),
-      reference,
-    };
-    setQuestion(q);
-    setAnswer(null);
-    setHasHeard(false);
-    void replay(q);
-  };
-  const choose = (i: number) => {
-    if (!question || answer !== null || !hasHeard) return;
-    setAnswer(i);
-    setTotal((n) => n + 1);
-    if (i === question.index) setScore((n) => n + 1);
-  };
   return (
-    <>
-      <fieldset
-        className="practice-modes"
-        aria-label={t('Exercise', 'Упражнение')}
-      >
-        <button
-          className={mode === 'ear' ? 'selected' : ''}
-          aria-pressed={mode === 'ear'}
-          onClick={() => setMode('ear')}
-        >
-          <Headphones size={16} />
-          {t('Ear training', 'Тренировка слуха')}
-        </button>
-        <button
-          className={mode === 'notation' ? 'selected' : ''}
-          aria-pressed={mode === 'notation'}
-          onClick={() => setMode('notation')}
-        >
-          <BookOpen size={16} />
-          {t('Reading notation', 'Чтение нотной записи')}
-        </button>
-      </fieldset>
-      {mode === 'notation' ? <NotationQuiz lang={lang} /> : practiceEar()}
-    </>
-  );
-  function practiceEar() {
-    return (
-      <div className="practice-layout">
-        <section className="panel practice-card">
-          <div className="eyebrow">
-            {t('EAR TRAINING · INTERVALS', 'ТРЕНИРОВКА СЛУХА · ИНТЕРВАЛЫ')}
-          </div>
-          <span className="practice-icon">
-            <Headphones size={38} strokeWidth={1.4} />
-          </span>
-          <h2>
-            {t(
-              'Listen to the space between.',
-              'Услышьте расстояние между нотами.',
-            )}
-          </h2>
-          <p>
-            {t(
-              'Two notes, played one after the other. Which interval do you hear?',
-              'Две ноты звучат последовательно. Какой интервал вы слышите?',
-            )}
-          </p>
-          <div className="quiz-pitch">
-            <span>♪</span>
-            <span className="quiz-dashes">· · · · ·</span>
-            <span>?</span>
-          </div>
-          {!question ? (
-            <button className="primary-button" onClick={next}>
-              <Play size={17} />
-              {t('Start listening', 'Начать тренировку')}
-            </button>
-          ) : (
-            <>
-              <button
-                className="secondary-button"
-                onClick={() => void replay()}
-              >
-                <Volume2 size={18} />
-                {t('Listen again', 'Послушать ещё раз')}
-              </button>
-              <div className="answer-grid">
-                {quizIntervals.map((option, i) => (
-                  <button
-                    key={i}
-                    disabled={answer !== null || !hasHeard}
-                    onClick={() => choose(i)}
-                    className={
-                      answer !== null && i === question.index
-                        ? 'answer-correct'
-                        : answer === i
-                          ? 'answer-wrong'
-                          : ''
-                    }
-                  >
-                    <span>{option[lang]}</span>
-                    {answer !== null && i === question.index ? (
-                      <Check size={18} />
-                    ) : answer === i ? (
-                      <X size={18} />
-                    ) : (
-                      <span className="answer-number">{i + 1}</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-              {answer !== null && (
-                <output
-                  className={
-                    'answer-feedback ' +
-                    (answer === question.index ? 'correct' : 'incorrect')
-                  }
-                >
-                  <strong>
-                    {answer === question.index
-                      ? t('That’s right.', 'Верно.')
-                      : t('Keep listening.', 'Продолжайте слушать.')}
-                  </strong>{' '}
-                  {quizIntervals[question.index][lang]} ·{' '}
-                  {count(quizIntervals[question.index].step, lang, 'semitones')}
-                  .
-                  <span className="answer-detail">
-                    {lang === 'de'
-                      ? intervalLabels(
-                          question.root,
-                          quizIntervals[question.index].step,
-                          quizIntervals[question.index].degree,
-                          lang,
-                        ).join(' → ')
-                      : `${noteName(question.root)} → ${noteName(question.root + quizIntervals[question.index].step)}`}{' '}
-                    · {lang === 'de' ? 'a′' : 'A4'} ={' '}
-                    {localNumber(question.reference, lang)} Hz
-                  </span>
-                </output>
-              )}
-              {answer !== null && (
-                <button className="primary-button" onClick={next}>
-                  {t('Next interval', 'Следующий интервал')}
-                  <ArrowRight size={17} />
-                </button>
-              )}
-            </>
+    <details className="drill-ledger" open>
+      <summary>
+        <span className="eyebrow">
+          {t('RULES THIS SESSION', 'ПРАВИЛА ЭТОЙ СЕССИИ')}
+        </span>
+      </summary>
+      {missedAny && (
+        <p className="ledger-note">
+          {t(
+            'A rule you have missed comes up twice as often as one you have not.',
+            'Правило, в котором вы ошиблись, встречается вдвое чаще остальных.',
           )}
-        </section>
-        <aside>
-          <section className="panel practice-progress">
-            <span className="eyebrow">{t('THIS SESSION', 'ЭТА СЕССИЯ')}</span>
-            <div className="score">
-              {score}
-              <span>/ {total}</span>
+        </p>
+      )}
+      <dl className="ledger-rows">
+        {rules.map((rule) => {
+          const row = ledger.get(rule);
+          const topic = ruleTopic[rule];
+          return (
+            <div
+              key={rule}
+              className="ledger-row"
+              data-missed={row && row.missed > 0 ? 'yes' : undefined}
+            >
+              <dt>
+                <code className="num">{rule}</code>
+              </dt>
+              <dd>
+                <p className="ledger-tally">
+                  {row
+                    ? `${count(row.asked, lang, 'questions')} · ${count(row.missed, lang, 'mistakes')}`
+                    : t('not yet asked', 'ещё не спрашивали')}
+                </p>
+                {row?.tag && <p>{exerciseExplanations[row.tag][lang]}</p>}
+                {/* Two exits, because a rule is taught in a passage and named
+                    in the glossary, and a reader who missed it may want
+                    either. */}
+                <p className="ledger-exits">
+                  <a
+                    href={hashOf({
+                      lang,
+                      lens: 'read',
+                      topic,
+                      anchor: rule,
+                    })}
+                  >
+                    {t('the passage', 'к тексту')}
+                  </a>
+                  <a
+                    href={hashOf({
+                      lang,
+                      lens: 'define',
+                      topic,
+                      anchor: null,
+                    })}
+                  >
+                    {t('the terms', 'к терминам')}
+                  </a>
+                </p>
+              </dd>
             </div>
-            <p>{t('correct answers', 'правильных ответов')}</p>
-            <Progress
-              aria-label={t(
-                'Correct answer percentage',
-                'Процент правильных ответов',
-              )}
-              value={total ? (score / total) * 100 : 0}
-            />
-            <div className="progress-caption">
-              <span>{total ? Math.round((score / total) * 100) : 0}%</span>
-              <button
-                onClick={() => {
-                  setScore(0);
-                  setTotal(0);
-                  setQuestion(null);
-                  setAnswer(null);
-                  setHasHeard(false);
-                }}
-              >
-                {t('Reset session', 'Сбросить сессию')}
-              </button>
-            </div>
-          </section>
-          <div className="practice-tip">
-            <h3>{t('A listening habit', 'Слуховая привычка')}</h3>
-            <p>
-              {t(
-                'Sing the first note, then the second. Notice the distance, not just whether it sounds familiar.',
-                'Спойте первую ноту, затем вторую. Обращайте внимание на расстояние, а не только на знакомое звучание.',
-              )}
-            </p>
-            <p>
-              {t(
-                'Exercises use 12-tone equal temperament. Your chosen A4 is captured when each question starts. Results stay in this session.',
-                'Упражнения используют 12-ступенный равномерный строй. Выбранная A4 фиксируется в начале вопроса. Результаты хранятся в этой сессии.',
-              )}
-            </p>
-          </div>
-        </aside>
-      </div>
-    );
-  }
+          );
+        })}
+      </dl>
+      <button className="text-button" onClick={onStartOver}>
+        {t('Start a new session', 'Начать новую сессию')}
+      </button>
+    </details>
+  );
 }

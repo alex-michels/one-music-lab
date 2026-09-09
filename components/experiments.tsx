@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { EarTraining } from '@/components/ear-training';
 import { patterns } from '@/lib/learning';
 import { scales } from '@/lib/scales';
 import {
@@ -215,6 +216,12 @@ export function Experiments({
                 </>
               )}
             </p>
+            {/* Hearing an interval belongs beside building one, not in the
+                trainer: it has no rule to file under and no way to be answered
+                without sound, which is an instrument's bargain, not a drill's. */}
+            {key === 'intervals' && (
+              <EarTraining lang={lang} reference={reference} play={play} />
+            )}
           </TabsContent>
         ))}
       </Tabs>

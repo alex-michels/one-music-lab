@@ -103,7 +103,12 @@ import {
   type Route,
   type Theme,
 } from '@/lib/client-store';
-import { TOPIC_IDS, topicById, type TopicId } from '@/lib/topics';
+import {
+  TOPIC_IDS,
+  drilledTopics,
+  topicById,
+  type TopicId,
+} from '@/lib/topics';
 import {
   frequencyForMidi,
   nearestNote,
@@ -264,10 +269,16 @@ function SubjectLine({
     drill: t('Drill', 'Упражнение'),
     define: t('Define', 'Определения'),
   };
-  // Two lenses can show a subject today. The trainer and the encyclopedia are
-  // not scoped to one yet, so on a subject they say so.
+  // Every lens is scoped now except that a subject only has a drill if the
+  // generator can ask about it: eight of the nineteen topics have a rule, and
+  // for the other eleven the rail says so rather than opening a drill that
+  // would have to invent a question.
   const shows = (lens: Lens) =>
-    route.topic === null || lens === 'read' || lens === 'play';
+    route.topic === null ||
+    lens === 'read' ||
+    lens === 'play' ||
+    lens === 'define' ||
+    (drilledTopics as readonly string[]).includes(route.topic);
   return (
     <>
       {module && <p className="subject-module num">{module}</p>}
@@ -945,7 +956,9 @@ export default function Home() {
     lab: t('Sound, at your fingertips.', 'Звук в ваших руках.'),
     chords: t('Chords, connected.', 'Аккорды в движении.'),
     theory: t('The ideas behind the music.', 'Идеи, из которых звучит музыка.'),
-    practice: t('Make listening a skill.', 'Превратите слушание в навык.'),
+    // The trainer used to open on ear training, and its heading said so. Ear
+    // training is an experiment in the lab now, and what is here is the drill.
+    practice: t('One rule at a time.', 'По одному правилу за раз.'),
     encyclopedia: t('The language of music.', 'Язык музыки.'),
   };
   const subjectTitle = openTopic ? openTopic.title[lang] : pageHeading[page];
@@ -1545,12 +1558,20 @@ export default function Home() {
                 lessonId={lessonId}
                 setLessonId={setLessonId}
                 openLab={openLab}
-                openPractice={() => navigate('practice')}
+                anchor={route.anchor}
               />
             ) : page === 'practice' ? (
-              <Practice lang={lang} reference={reference} play={playSequence} />
+              <Practice lang={lang} topic={route.topic} />
             ) : (
-              <Encyclopedia lang={lang} openLesson={setLessonId} />
+              // Keyed on the subject so that arriving from a second ledger row
+              // reselects the facet: the initial state of a mounted component
+              // is not re-read when only a prop changes.
+              <Encyclopedia
+                key={route.topic ?? ''}
+                lang={lang}
+                openLesson={setLessonId}
+                subject={route.topic}
+              />
             )}
           </main>
         </div>

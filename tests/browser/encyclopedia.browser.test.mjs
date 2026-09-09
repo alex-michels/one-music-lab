@@ -23,7 +23,13 @@ const render = (props) => {
     root = createRoot(container);
   }
   return act(() =>
-    root.render(createElement(Encyclopedia, { openLesson: vi.fn(), ...props })),
+    root.render(
+      createElement(Encyclopedia, {
+        openLesson: vi.fn(),
+        subject: null,
+        ...props,
+      }),
+    ),
   );
 };
 afterEach(async () => {

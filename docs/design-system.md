@@ -829,7 +829,7 @@ Every step below is shippable on its own.
 | 5 | **`lib/topics.ts`, the primary key.** 19 rows: id, order, kind, title, module, plus `termsByTopic`, `paragraphAnchors`, `drilledTopics` and `toneBedTopics`. `RULES` and the narrowed `Item.rule` go in `lib/exercises.ts`, which owns them; `ruleTopic` and `ruleKind` go in `lib/topics.ts`, which keeps the dependency one-way. | `lib/exercises.ts`, `lib/topics.ts`, `tests/topics.test.mjs` | No content is authored — every field derives from what exists. The id is the bare slug (decision 1). |
 | 6 | **Routing.** `Route` / `routeFromHash` / `hashOf`; language in the hash; `pushState`; the `hashchange` listener the repo lacks; `configureLab` writing the same address the nav does; `document.title` per topic per language. `DEFAULT_LENS` stays `play` until step 8 builds the read index — see below. | `lib/client-store.ts`, `app/page.tsx`, two tests | Breaks `chords-lab.browser.test.mjs:424` and `:438`, which assert `location.hash === '#chords'` after a click. |
 | 7 | **Shell.** Delete `.page-heading`, the `01` badge, `.breadcrumb` and `.beta-label`; add the skip link, `SubjectLine`, the lens rail with `aria-current`, the route announcer and focus-on-navigation. Bind the open lesson to `route.topic`, so a subject address opens that subject and the rail is real. **The nav rename moves to step 8** — see below. | `app/page.tsx`, `app/globals.css`, `lib/german.ts`, four browser tests | The chords lab is the play lens of one topic, so its heading becomes the topic's title: that is the `german.browser.test.mjs` breakage, and `notes-lab` loses its assumption that a lesson survives a page switch. All four of `navigation.browser.test.mjs`'s tests survive, because the nav labels do not change. |
-| 8 | **The surface fork, then the lens layouts, one PR each, cheapest first:** delete `.panel` — all 26 of its sites are chrome cards, so which of `.paper`, `.bed`, `.inset` or `.index` each becomes is a question only the lens layouts can answer, and it moved here from step 3. Then DEFINE (pure subtraction), READ (named-line grid plus the serif), DRILL (the ledger; delete Progress and the percentages; neutral staff labels), PLAY (the bed, the insets, unmount instead of `.is-hidden`). | `components/learning.tsx` (split), `components/play-lens.tsx` (new), `components/chords-lab.tsx`, `lib/learning.ts`, `app/globals.css` | `chords-lab.tsx` is the largest file in the repo at 1229 lines with a 686-line test that queries headings by accessible name. See open question 3. |
+| 8 | **The surface fork, then the lens layouts, one PR each, cheapest first:** delete `.panel` — all 26 of its sites are chrome cards, so which of `.paper`, `.bed`, `.inset` or `.index` each becomes is a question only the lens layouts can answer, and it moved here from step 3. Then DEFINE (pure subtraction, **done**), READ (named-line grid plus the serif, **done**), DRILL (the ledger; delete Progress and the percentages; neutral staff labels — **done**, and ear training left for the lab with it), PLAY (the bed, the insets, unmount instead of `.is-hidden`). | `components/learning.tsx` (split), `components/play-lens.tsx` (new), `components/chords-lab.tsx`, `lib/learning.ts`, `app/globals.css` | `chords-lab.tsx` is the largest file in the repo at 1229 lines with a 686-line test that queries headings by accessible name. See open question 3. |
 | 9 | **German and cleanup.** ~40 new keys: 4 lens names, 4 lens-absent sentences, the skip link, the rail's `aria-label`, the kind words, the facet names, the ledger labels, the two read → play labels, the neutral staff labels. Delete the 15 orphaned keys; add a usage assertion. | `lib/german.ts`, `tests/german-localization.test.mjs` | A **hard gate**, not cleanup: a missing entry is a `tsc` and `oxlint` failure. Author the German in each step above; this step only prunes. |
 | 10 | **Deferred, blocked by nothing above:** per-language route roots `app/[lang]/page.tsx` with `generateStaticParams`, three canonicals plus `hreflang`, `<html lang>` from the segment. | `app/[lang]/page.tsx`, `app/layout.tsx`, two tests | The only real fix for crawlability and first-paint `lang`. `Route` reads the same shape, so no lens changes. |
 
@@ -1067,11 +1067,78 @@ These need the project owner, not a developer. Both are assumed **A** below unle
    keep the existing Experiments component. Cheapest, keeps the test mostly intact.
    **B** — it becomes the play lens of all three, which is cleaner but means deciding what its
    workbench shows for a topic that is not chords. Roughly a week more.
-4. **Whether ear training leaves the trainer.**
-   **A** (specified) — move it to the play lens of `intervals`. Its four intervals carry no
-   rule and no tag, so they cannot feed the ledger, and `choose()` is gated on `hasHeard`.
-   **B** — keep it in the trainer and rewrite it against `lib/exercises.ts` with real rules and
-   tags. More work, but it gives ear training a ledger of its own and would need a non-audio
-   route designed in anyway.
-   Not an option: leaving it in the trainer untagged — the ledger would quietly ignore half of
-   what the reader did.
+4. ~~**Whether ear training leaves the trainer.**~~ **Settled as A, and built.** It is
+   `components/ear-training.tsx`, rendered on the `intervals` tab of `Experiments` — the play
+   surface of that topic today, and the play lens of it after the next step. Option B was not
+   taken because the third option, leaving it in the trainer untagged, was the one thing ruled
+   out: the ledger would have quietly ignored half of what the reader did. Its score panel went
+   with it rather than moving, on the same rule as the drill's. The German nav label followed:
+   `Practice` was `Gehörbildung`, which `docs/notation-chapter.md` had flagged as wrong since
+   the notation trainer landed; it is `Übungen` now that nothing on the page is heard.
+
+### What the drill lens actually became
+
+**The ledger is keyed on `Rule`, and `Item.rule` is what writes it — not the rule that was
+drawn.** The draw picks a rule; `itemForRule` then searches the three levels and a few seeds
+for an item the generator will emit for it, because two kinds carry more than one rule
+(`octave-region` puts the register in its rule, `dotted-value` asks about the first dot or the
+second). When no combination produces the drawn rule the reader still gets a real question,
+and the row that is credited is the one the item itself names. A ledger that recorded the
+draw could claim a rule was practised when it was not.
+
+**The row shape is `{asked, missed, tag}`, one field more than specified.** `exerciseExplanations`
+is keyed on `ErrorTag` and the ledger is keyed on `Rule`, so `{asked, missed}` alone had no
+explanation to show. The row therefore remembers the **last mistake made on that rule**, and a
+right answer afterwards does not erase it — the reader still has the thing that went wrong in
+front of them. A row that has been asked and never missed shows a tally and nothing else:
+there is no mistake to explain, and printing one would be answering a question nobody got
+wrong. Rows never asked read *not yet asked* rather than `0 · 0`, which reads as a score.
+
+**Everything read back from `sessionStorage` is checked, not trusted.** It is an origin-wide
+store any script can write, so `ledgerFromStorage` drops unknown rules, unknown tags,
+fractions, negatives, and any row claiming more misses than questions. Thirteen shapes of
+corruption are asserted to produce no row at all; a bad tag alone loses the explanation and
+keeps the tally, because the counts are still true. The vocabulary is handed in rather than
+imported, the same way `routeFromHash` is handed its topics — `lib/client-store.ts` imports
+`Rule` and `ErrorTag` as **types only**, so the bundle carries no edge from browser state to
+the generator while `tsc` still names the place a fifteenth rule has to be handled.
+
+**Two exits per row, and both of them land.** The read exit needed two fixes that were not in
+the spec. `InlineExercise` showed `rules[0]` of the topic, so three of `note-names`' four
+ledger rows would have arrived at a question about something else; it now generates the rule
+the anchor names. And nothing scrolled to it — the anchor is written after a `~` precisely so
+the URL keeps one fragment, which means no native target matches — so the section scrolls
+itself into view. The define exit needed the encyclopedia to accept the subject and preselect
+its topic facet, keyed on the subject so a second row reselects rather than keeping the first.
+Verified end to end on the running site: a missed `dot-adds-half` → the passage that states it,
+scrolled to, with that rule's question → back to the scoped drill with the tally intact → the
+five terms of `dots-ties`.
+
+**The disclosure is one `<details>` at every width, not a panel that becomes one.** The spec
+asked for a sticky column above 900 px and a `<details>` below it. Two different elements
+would need a `matchMedia` subscription and would re-announce themselves on a resize; one
+`<details open>` that stops being sticky below 900 px behaves the same at both widths, and a
+reader who closes it has closed it. The rail may never be disclosed; this may — it is a record
+of work, not a way to get anywhere.
+
+**The kind and level rows went with the score.** The drill interleaves — that is the whole
+argument for `#/<lang>/drill` — and scope now comes from the address, so buttons that pick a
+kind contradicted the lens. `#/<lang>/t/<topic>/drill` is the scoped variant, reached from the
+rail (now open on the eight topics that have a rule) and from *Practise this rule* in the
+passage. A topic with no rule falls back to the interleaved drill rather than showing an empty
+ledger.
+
+**The staff no longer reads its own answer out.** `StaffAnswer` built its `<title>` as
+`Clef: treble; Line 1; Accidental: none`, which is a complete spelling of the note a
+screen-reader user was about to be asked to name — worse than the generated label the spec
+named, and it was the case the existing test asserted, with a comment claiming it did not leak.
+The staff is neutral until the answer is given and spells the notation afterwards, where it is
+feedback. `NotationQuiz`'s single neutral label became three, one per engraved kind, and
+`InlineExercise` got one too. A browser test walks all 14 rules and fails if any staff title
+contains any option offered beside it.
+
+**Deleted, not restyled:** `<Progress>` (the component is now unused anywhere), both
+`{score}/{total}` blocks, both percentages, the `.score` 60 px counter, `.progress-caption`,
+`.practice-progress`, `.practice-layout`, `.practice-card`, `.practice-tip`, `.practice-modes`,
+`.exercise-kinds` and `.exercise-levels` — 12 rules and their four responsive counterparts. A
+test asserts the drill renders no `[role="progressbar"]` and matches no `\d+%` anywhere.
