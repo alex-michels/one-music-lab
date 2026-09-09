@@ -1164,6 +1164,25 @@ gutters needed for the same reason. Measured after: the bed's `scrollWidth` equa
 `display: flex` and a gap; the inactive button set nothing, so its icon sat above its label
 rather than beside it. Two near-black labels on white hid it; the bed did not.
 
+**A resize forked the draw loop, and only one fork could be cancelled.** The resize handler
+called the drawing function directly and that function scheduled the next frame, so a resize
+started a second chain while the first was still pending and the cleanup could only cancel
+whichever frame id it had last been given. Every resize left another 60 fps loop running, and
+unmounting stopped exactly one of them. Painting and scheduling are separate now, and a resize
+cancels before it restarts. It surfaced only when this lens's test file was consolidated from
+eight full-application mounts to four — the leftover loop from one test arrived in the next one
+as frames nobody had scheduled — which is also why the file is four mounts: the browser suite
+runs three engines in CI and its slowest test already spends most of a sixty-second budget, so
+a file that costs four times what it needs to is taken out of somebody else's timeout.
+
+**The live-signal reader is an effect event, not a dependency.** It is a function declared in
+the page, so it is a new value on every render; as an effect dependency it tore the loop down
+and rebuilt it each time, taking a `getComputedStyle` for the ink with it on every keystroke in
+the frequency field. A ref written during render is the obvious fix and the react-compiler rule
+refuses it, correctly — `useEffectEvent` is the one the repo already uses in `app/page.tsx`.
+The effect depends on the wave, the playing flag and the canvas, which are the three things
+that actually change what it draws.
+
 **`prefers-reduced-motion` is read in JS, and the scope still draws.** The site's
 `@media (prefers-reduced-motion: reduce)` block turns off animations and transitions, and a
 `requestAnimationFrame` loop is neither — a reader who asked for less motion was still shown a

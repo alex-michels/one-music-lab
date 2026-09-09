@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, type RefObject } from 'react';
+import { useEffect, useEffectEvent, useRef, type RefObject } from 'react';
 import {
   Activity,
   ArrowDown,
@@ -90,6 +90,15 @@ function useOscilloscope(
   playing: boolean,
   readSamples: () => WaveSamples | null,
 ) {
+  /**
+   * The reader for the live signal is an effect event rather than a
+   * dependency. It is a function declared in the page, so it is a new value on
+   * every render; as a dependency it tore the loop down and built it again
+   * each time, taking a `getComputedStyle` for the ink with it on every
+   * keystroke in the frequency field. What the loop needs is the latest
+   * reader, not a reason to restart.
+   */
+  const currentSamples = useEffectEvent(() => readSamples());
   useEffect(() => {
     let frame = 0;
     const still = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -140,7 +149,7 @@ function useOscilloscope(
           ctx.moveTo(0, height / 2);
           ctx.lineTo(width, height / 2);
           ctx.stroke();
-          const samples = playing ? readSamples() : null;
+          const samples = playing ? currentSamples() : null;
           let peak = 1;
           if (samples)
             for (const sample of samples)
@@ -203,7 +212,7 @@ function useOscilloscope(
       still.removeEventListener('change', restart);
       window.removeEventListener('resize', restart);
     };
-  }, [canvas, wave, playing, readSamples]);
+  }, [canvas, wave, playing]);
 }
 
 /**
