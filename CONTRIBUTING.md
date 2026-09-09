@@ -24,6 +24,20 @@ For changes to the notation prototype (№553), run `npm run glyphs:check` and f
 the [engine contract and reproduction guide](docs/notation-engine.md). The
 Verovio adapter is build-time only; keep it out of client imports.
 
+### Connected learning
+
+Organize every teaching topic into a coherent section, chapter and lesson route,
+like a book. State prerequisites and learning goals, build on earlier explanations,
+and prepare the next lesson. Provide a chapter contents view, current position,
+previous/next links and meaningful transitions across chapter boundaries. Connect
+each lesson to its experiment, practice and definitions with a route back to the
+same explanation. Keep free exploration and direct links available. This applies
+to all subjects and EN/RU/DE, including future material; the thirteen notation
+lessons are an initial route, not an exception. Preserve topic IDs and test ordering,
+links, route boundaries and mobile/keyboard navigation. Requirements and remaining
+general implementation are [№537/542](docs/engineering.md#task-537), assessed in
+[gate G](docs/release-criteria.md).
+
 ### Localized music notation
 
 New educational material, laboratories and sections use professional terminology

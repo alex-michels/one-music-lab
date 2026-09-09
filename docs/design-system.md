@@ -8,6 +8,33 @@ disagrees with your memory of the code, the code was measured.
 
 ---
 
+## Connected chapters and the Notes lab — owner update, 2026-09-09
+
+The learning structure must read like a book: sections, chapters and ordered
+lessons, with prerequisites, visible position, contents, previous/next transitions
+and practical links back to the same explanation. This is a requirement for every
+subject, including future material, rather than a special case for notation.
+[№537/542](engineering.md#task-537) specify the general work; gate G applies it to
+each topic. The historical implementation notes below do not override this rule.
+
+The Notes lab uses the Sound lab's surface, type and spacing tokens. Group note
+choices under visible labels; put octave and clef in full-width, labelled Base UI
+selects. Keep the score and pitch readout together, group playback/stop controls,
+and separate settings, results and the subsequent barline example. Secondary
+actions stay visually quieter than the selected example. Use a 24/32 px rhythm
+between groups and at least 44 px for ordinary buttons and menu options; staff
+placement keeps its precise line/space targets and arrow-key alternative.
+
+Long EN/RU/DE labels wrap in triggers and portalled menus, with explicit theme
+colours for normal, highlighted and selected states. Text contrast is at least
+4.5:1; focus is visible. Columns collapse on narrow screens without moving controls
+away from their labels or introducing page overflow. Dark scores use light ink
+with no white rectangle or border; piano keys retain their existing colours.
+The lab is a bounded learning instrument, not a score editor. Its existing musical
+rules, ranges, example playback and contextual lesson presets are preserved.
+
+---
+
 ## 1 · The thesis
 
 The theory text is the site, and **a topic id is its primary key**. Lab, theory,

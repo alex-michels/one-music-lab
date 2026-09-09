@@ -11,6 +11,28 @@ import { Staff } from '../components/staff.tsx';
 import { StaffPosition } from '../components/staff-answer.tsx';
 import { generateFrom } from '../lib/exercises.ts';
 
+// Isolate musical state/boundary tests from portal positioning. Real menu
+// interaction, focus, contrast and responsiveness are exercised in browsers.
+vi.mock('../components/notation-select.tsx', () => ({
+  NotationSelect: ({ label, value, options, onChange }) =>
+    createElement(
+      'label',
+      null,
+      label,
+      createElement(
+        'select',
+        { value, onChange: (e) => onChange(e.target.value) },
+        options.map((option) =>
+          createElement(
+            'option',
+            { key: option.value, value: option.value },
+            option.label,
+          ),
+        ),
+      ),
+    ),
+}));
+
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 const originalScrollIntoView = Object.getOwnPropertyDescriptor(
   Element.prototype,

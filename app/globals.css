@@ -2678,59 +2678,202 @@ h1 {
 .is-hidden {
   display: none;
 }
-.notes-lab > .panel {
-  padding: 25px;
-}
+/* The notation lab uses the Sound lab's chrome, with one control group per
+   experiment and separate, quiet score surfaces. Piano tokens stay untouched. */
 .notes-lab {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  align-items: start;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
 }
-.notes-lab .note-caveat {
-  grid-column: 1 / -1;
+.notes-lab > .panel {
+  min-width: 0;
+  padding: clamp(20px, 3vw, 32px);
+}
+.notes-lab h3,
+.notation-workbench h3 {
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 600;
+  text-wrap: balance;
+}
+.notes-lab .panel-heading {
+  margin-bottom: 24px;
+}
+.notes-lab .panel-heading h3 {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.note-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.note-builder .panel-heading {
+  margin-bottom: 0;
 }
 .note-chooser {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
-  margin-bottom: 14px;
+  gap: 8px;
+  min-width: 0;
+  margin: 0 0 24px;
+  padding: 0;
+  border: 0;
 }
-.note-chooser button {
-  padding: 7px 12px;
+.note-builder .note-chooser {
+  margin: 0;
+}
+.note-chooser legend,
+.notation-field > label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.5;
+  color: var(--c-ink-2);
+}
+.note-chooser button,
+.notation-example-button,
+.notation-stop {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px 14px;
   border: 1px solid var(--c-rule-strong);
   border-radius: 8px;
   background: var(--c-surface);
-  color: var(--c-ink-2);
-  font-size: 13px;
+  color: var(--c-ink);
+  font-size: 14px;
+  line-height: 1.5;
   cursor: pointer;
 }
-.note-chooser button:hover {
+.note-letters button {
+  flex: 1 0 44px;
+  font-size: 17px;
+}
+.note-signs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+  gap: 6px;
+}
+.note-chooser button:hover,
+.notation-example-button:hover,
+.notation-stop:hover {
   border-color: var(--c-link);
-  color: var(--c-link);
 }
 .note-chooser .selected {
   background: var(--c-link);
   border-color: var(--c-link);
   color: var(--c-surface);
 }
+.note-register-controls {
+  display: grid;
+  gap: 20px;
+}
+.notation-field {
+  min-width: 0;
+}
+.notation-field .notation-select-trigger {
+  width: 100%;
+  min-height: 48px;
+  height: auto;
+  padding: 12px 14px;
+  border: 1px solid var(--c-rule-strong);
+  border-radius: 8px;
+  background: var(--c-ground);
+  color: var(--c-ink);
+  font-size: 15px;
+  line-height: 1.5;
+  white-space: normal;
+}
+.notation-select-trigger [data-slot='select-value'] {
+  display: flex;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  min-width: 0;
+  text-align: left;
+}
+.notation-select-trigger svg {
+  color: var(--c-ink-2);
+}
+/* Base UI portals the popup outside .notes-lab and .dark; use the actual
+   document theme tokens here, including highlighted options and scroll arrows. */
+.notation-select-content {
+  background: var(--c-surface);
+  color: var(--c-ink);
+  border: 1px solid var(--c-rule-strong);
+  padding: 4px;
+  max-width: calc(100vw - 24px);
+  box-shadow: var(--shadow-lift);
+}
+.notation-select-content [data-slot='select-item'] {
+  min-height: 44px;
+  padding: 10px 32px 10px 12px;
+  color: var(--c-ink);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.notation-select-content [data-slot='select-item'] > * {
+  white-space: normal;
+  min-width: 0;
+  text-align: left;
+}
+.notation-select-content [data-highlighted] {
+  background: var(--c-link);
+  color: var(--c-surface);
+}
+.notation-select-content [data-highlighted] * {
+  color: inherit;
+}
+.notation-select-content [data-slot='select-scroll-up-button'],
+.notation-select-content [data-slot='select-scroll-down-button'] {
+  background: var(--c-surface);
+  color: var(--c-ink);
+}
+.notes-lab button:focus-visible,
+.notation-workbench button:focus-visible,
+.notation-range input:focus-visible {
+  outline: 2px solid var(--c-link);
+  outline-offset: 3px;
+}
+.note-identity {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+}
+.staff-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+.staff-frame .staff {
+  max-height: 250px;
+}
 .note-name {
-  font-size: 40px;
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.2;
   font-weight: 600;
   color: var(--c-link);
-  margin: 6px 0 14px;
+  margin-bottom: 20px;
+  overflow-wrap: anywhere;
 }
 .note-readout dl {
   display: grid;
-  gap: 9px;
-  margin: 0 0 16px;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 .note-readout dl > div {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 12px;
-  border-bottom: 1px solid var(--c-rule);
-  padding-bottom: 7px;
+  gap: 4px 12px;
 }
 .note-readout dt {
   color: var(--c-ink-2);
@@ -2738,49 +2881,149 @@ h1 {
 }
 .note-readout dd {
   margin: 0;
+  font-size: 14px;
+  font-weight: 550;
   font-variant-numeric: tabular-nums;
+}
+.notation-transport,
+.notation-example-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.notes-lab .primary-button,
+.notes-lab .text-button,
+.notation-workbench .primary-button,
+.notation-workbench .text-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: normal;
+}
+.notes-lab button svg,
+.notation-workbench button svg {
+  flex-shrink: 0;
 }
 .note-caption,
 .note-caveat p {
   color: var(--c-ink-2);
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 14px;
+  line-height: 1.65;
+  margin-top: 20px;
 }
-@media (max-width: 900px) {
-  .notes-lab {
-    grid-template-columns: 1fr;
-  }
-}
-.notation-examples {
+.notation-examples,
+.note-placement,
+.notes-lab .notation-workbench,
+.note-caveat {
   grid-column: 1 / -1;
 }
-.notation-example-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 1rem;
+.notation-example-score {
+  padding: 20px 0;
+  margin-bottom: 8px;
+  border-block: 1px solid var(--c-rule);
 }
-/* The staff drawing (roadmap №553) and its clef chooser. */
-.staff-frame {
+.notation-score-label {
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--c-ink-2);
+  margin-bottom: 12px;
+}
+.notation-example-score .notation-figure > div > svg {
+  margin-inline: auto;
+}
+.note-placement-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 32px;
+  margin-top: 20px;
+}
+.note-placement-canvas p {
+  font-size: 14px;
+  color: var(--c-ink-2);
+  line-height: 1.65;
+}
+.notation-range {
+  display: grid;
+  gap: 20px;
+  padding: 20px;
+  background: var(--c-ground);
+  border-radius: 10px;
+}
+.notation-range > span {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 14px 0 4px;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.notation-range output {
+  padding: 4px 10px;
+  background: var(--c-surface);
+  border-radius: 6px;
+  color: var(--c-link);
+  font-variant-numeric: tabular-nums;
+}
+.notation-range input {
+  width: 100%;
+  min-height: 32px;
+  accent-color: var(--c-link);
+}
+@media (max-width: 1000px) {
+  .notes-lab {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .note-register-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .note-identity {
+    grid-template-columns: minmax(100px, 1fr) minmax(0, 2fr);
+  }
+}
+@media (max-width: 600px) {
+  .notes-lab {
+    gap: 16px;
+  }
+  .note-register-controls,
+  .note-placement-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .note-identity {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .staff-frame .staff {
+    max-height: 160px;
+  }
+  .notation-transport,
+  .notation-example-actions {
+    align-items: stretch;
+  }
+  .notation-transport > button,
+  .notation-example-actions > button {
+    flex: 1 1 160px;
+  }
 }
 /* Notation has its own theme-local surface. Keeping these variables on score
    selectors prevents a dark-mode score change from recolouring piano keys. */
 .staff,
 .notation-figure,
-.notation-workbench > svg {
+.notation-signature {
   --notation-paper: var(--s-paper);
   --notation-ink: var(--s-ink);
   --notation-rule: var(--s-rule);
 }
 :root[data-theme='dark'] .staff,
 :root[data-theme='dark'] .notation-figure,
-:root[data-theme='dark'] .notation-workbench > svg {
+:root[data-theme='dark'] .notation-signature {
   --notation-paper: var(--c-surface);
   --notation-ink: #e7fff1;
   --notation-rule: #91b6a7;
@@ -3322,21 +3565,6 @@ h1 {
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
-.notation-workbench {
-  display: grid;
-  gap: var(--sp-3);
-}
-.accidental-sequence {
-  list-style: decimal;
-  padding-left: 1.5rem;
-}
-.notation-workbench label {
-  display: grid;
-  gap: var(--sp-1);
-}
-.notation-workbench select {
-  width: 100%;
-}
 .notation-response fieldset {
   margin-block: var(--sp-3);
   border: 0;
@@ -3359,11 +3587,121 @@ h1 {
   }
 }
 
-.notation-workbench > svg {
+.notation-signature {
   color: var(--notation-ink);
   background: var(--notation-paper);
   border: 0;
 }
 .ottava-bracket {
   display: block;
+}
+
+/* Settings and their audible result stay together; the barline example is a
+   separate reading step, rather than another control in the same column. */
+.notation-workbench {
+  display: grid;
+  gap: 24px;
+}
+.notation-comparison {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  gap: 32px;
+}
+.notation-settings {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+.notation-signature {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+.notation-result {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  min-width: 0;
+  border-left: 1px solid var(--c-rule);
+  padding-left: 32px;
+}
+.notation-result-score {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+}
+.notation-result-score .staff {
+  max-height: 200px;
+}
+.notation-result output {
+  display: block;
+  text-align: center;
+  color: var(--c-link);
+  font-size: 18px;
+  font-weight: 550;
+}
+.notation-result p,
+.notation-sequence-study p {
+  color: var(--c-ink-2);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.notation-result .text-button {
+  margin-top: auto;
+}
+.notation-sequence-study {
+  border-top: 1px solid var(--c-rule);
+  padding-top: 24px;
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.notation-sequence-study h4 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.notation-sequence-study > .staff {
+  justify-self: center;
+}
+.accidental-sequence {
+  list-style: decimal;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  list-style-position: inside;
+  padding: 0;
+}
+.accidental-sequence li {
+  background: var(--c-ground);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.accidental-sequence li::marker {
+  color: var(--c-ink-2);
+}
+@media (max-width: 600px) {
+  .notation-comparison {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+  .notation-result {
+    border-left: 0;
+    border-top: 1px solid var(--c-rule);
+    padding: 24px 0 0;
+  }
+  .notation-result .notation-transport {
+    width: 100%;
+  }
+  .accidental-sequence {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
