@@ -36,6 +36,7 @@ export const authoredProductionCode = [
   'components/learning.tsx',
   'components/experiments.tsx',
   'components/ear-training.tsx',
+  'components/play-lens.tsx',
   'components/chords-lab.tsx',
   'components/notes-lab.tsx',
   'components/staff.tsx',
@@ -108,6 +109,20 @@ export default defineConfig({
         },
         test: {
           name: 'browser',
+          /**
+           * The sixty seconds above were chosen for the unit project, where
+           * the long pole is a policy test spawning the real linter. A browser
+           * test is a different animal: it drives three engines through
+           * Playwright, and CI runs all three at once on a shared runner.
+           * `chords-lab.browser.test.mjs` measures ~100s for its fourteen
+           * tests on Firefox with the machine to itself, and under CI's
+           * contention individual tests in it were reaching sixty seconds and
+           * failing on the budget rather than on an assertion — on branches
+           * that had not touched it. This is headroom for that contention, not
+           * permission to write a slow test; a browser test that genuinely
+           * needs two minutes is still a bug.
+           */
+          testTimeout: 120_000,
           include: ['tests/browser/*.test.mjs'],
           browser: {
             enabled: true,

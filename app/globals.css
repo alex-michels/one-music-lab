@@ -1213,14 +1213,79 @@ h1 {
   color: var(--c-ink-3);
   padding-bottom: 12px;
 }
+/* PLAY. The lens is a bed — one dark surface inside the reader's chosen chrome,
+   not a whole-canvas override. A reader on light mode is often there for
+   photophobia or astigmatism, and the site does not overrule that across a
+   quarter of its pages; what it does is give the instrument a ground of its
+   own, the way `.scope` already had one. The panels and the keyboard keep
+   their chrome and sit on it, which is what makes the notation and the keys
+   the brightest objects on the page. */
+.lens-play {
+  display: grid;
+  /* Explicitly minmax(0, 1fr): a grid item's automatic minimum is its
+     min-content width, so the notes lab — four panels with a staff in them —
+     sized the single column to itself and ran off the side of the phone. */
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: var(--sp-5);
+  align-content: start;
+}
+/* Chrome that sits straight on the bed rather than inside a panel: the ink
+   tokens are near-black in the light theme, so inheriting them here would put
+   dark grey on dark green. Everything inside a `.panel` keeps its own. */
+.lens-play > .section-tabs,
+.lens-play > .export-row,
+.lens-play > .lab-footer {
+  color: var(--s-on-ground);
+}
+.lens-play > .section-tabs {
+  border-bottom-color: var(--s-ground-2);
+  margin-bottom: 0;
+}
+/* The inactive tab never had the active one's layout, so its icon sat above
+   its label rather than beside it — invisible while both were near-black on
+   white, plain once the tabs moved onto the bed. */
+.lens-play > .section-tabs > button {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  font-size: 14px;
+  padding: 0 4px 15px;
+  color: var(--s-on-ground-2);
+}
+.lens-play > .section-tabs > .active {
+  color: var(--s-live);
+  border-bottom-color: var(--s-live);
+}
+.lens-play > .section-tabs > .section-caption,
+.lens-play > .export-row > span,
+.lens-play > .lab-footer > span {
+  color: var(--s-on-ground-2);
+}
+.lens-play > .export-row,
+.lens-play > .chord-lab-link,
+.lens-play > .lab-footer {
+  margin-top: 0;
+}
 .instrument-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 296px;
-  gap: 22px;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: var(--sp-5);
   align-items: start;
 }
+/* Instrument left, controls right, down to 1000px. Below it the controls go
+   under the instrument rather than squeezing it. */
+@media (max-width: 1000px) {
+  .instrument-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* A panel paints a surface, so it has to paint the ink that goes on it. It
+   never set one, which was invisible while everything a panel sat on was the
+   same near-white — and stopped being invisible the moment the play lens gave
+   itself a dark bed, which every panel on it then inherited the ink of. */
 .panel {
   background: var(--c-surface);
+  color: var(--c-ink);
   border: 1px solid var(--c-rule);
   border-radius: 12px;
   box-shadow: var(--shadow-card);
@@ -1280,7 +1345,8 @@ h1 {
 }
 .frequency-input input {
   width: 6ch;
-  font-size: 61px;
+  font-family: var(--type-mono), monospace;
+  font-size: var(--t-display);
   font-weight: 450;
   letter-spacing: -3px;
   text-align: center;
@@ -1564,14 +1630,20 @@ h1 {
   min-height: 42px;
   white-space: normal;
 }
+/* The only prose on the play lens, and an inset rather than a tinted strip: a
+   sheet set into the surface, capped at the width prose is readable at. A
+   third one of these would mean the material belongs in the read lens. */
+.inset,
 .tuning-explanation {
   display: flex;
-  gap: 8px;
+  gap: var(--sp-2);
   background: var(--c-surface-sunk);
-  padding: 11px 9px;
-  margin-top: 14px;
-  border-radius: 5px;
+  border: var(--bw) solid var(--c-rule);
+  padding: var(--sp-3);
+  margin-top: var(--sp-3);
+  border-radius: var(--r-3);
   color: var(--c-ink-2);
+  max-width: 420px;
 }
 .tuning-explanation svg {
   flex-shrink: 0;
@@ -1595,7 +1667,8 @@ h1 {
 .current-note {
   display: flex;
   align-items: baseline;
-  font-size: 57px;
+  font-family: var(--type-mono), monospace;
+  font-size: var(--t-display);
   font-weight: 400;
   line-height: 1;
   margin: 20px 0;

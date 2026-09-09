@@ -40,20 +40,17 @@ test('The Notes tab replaces the generator and reads a written note as a pitch',
   await mount();
   // The generator is what the lab opens on.
   expect(container.querySelector('.notes-lab')).toBeNull();
-  expect(container.querySelector('.instrument-grid').className).not.toContain(
-    'is-hidden',
-  );
+  expect(container.querySelector('.instrument-grid')).not.toBeNull();
+  expect(container.querySelector('.scope canvas')).not.toBeNull();
 
   await click('Notes');
   expect(container.querySelector('.notes-lab')).not.toBeNull();
-  // Hidden rather than stacked underneath: `display: none` takes the generator
-  // out of the accessibility tree with it.
-  expect(container.querySelector('.instrument-grid').className).toContain(
-    'is-hidden',
-  );
-  expect(
-    getComputedStyle(container.querySelector('.instrument-grid')).display,
-  ).toBe('none');
+  // Unmounted rather than hidden. `display: none` took the generator out of
+  // the accessibility tree, but it left the oscilloscope's 60 fps loop
+  // running against a canvas of zero size for as long as the reader stayed on
+  // this tab. Removing the canvas is what actually cancels the frame.
+  expect(container.querySelector('.instrument-grid')).toBeNull();
+  expect(container.querySelector('.scope canvas')).toBeNull();
 
   // C4 is MIDI 60 at the default reference, and the panel says so.
   expect(container.querySelector('.note-name').textContent).toBe('C4');
@@ -70,9 +67,7 @@ test('The Notes tab replaces the generator and reads a written note as a pitch',
 
   await click('Tone generator');
   expect(container.querySelector('.notes-lab')).toBeNull();
-  expect(container.querySelector('.instrument-grid').className).not.toContain(
-    'is-hidden',
-  );
+  expect(container.querySelector('.instrument-grid')).not.toBeNull();
 });
 
 test('The reference pitch moves the frequency and leaves the written note alone', async () => {
@@ -141,9 +136,9 @@ test('Switching tabs stops continuous audio and Notes keeps a visible stop contr
   stop.mockClear();
   await click('Notes');
   expect(stop).toHaveBeenCalled();
-  expect(container.querySelector('.play-button').className).not.toContain(
-    'is-playing',
-  );
+  // The transport goes with the generator, so what has to hold is that the
+  // sound stopped and cannot be restarted from here.
+  expect(container.querySelector('.play-button')).toBeNull();
   start.mockClear();
   await act(() =>
     document.body.dispatchEvent(
@@ -220,9 +215,7 @@ test('Each rhythmic lesson selects its actual controls and dynamics retains the 
   await click(/Loudness without a number/);
   await click('Open this experiment');
   expect(container.querySelector('.notes-lab')).toBeNull();
-  expect(
-    getComputedStyle(container.querySelector('.instrument-grid')).display,
-  ).not.toBe('none');
+  expect(container.querySelector('.instrument-grid')).not.toBeNull();
 });
 
 test('German shows its own register names and the software caveat', async () => {

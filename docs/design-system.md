@@ -829,7 +829,7 @@ Every step below is shippable on its own.
 | 5 | **`lib/topics.ts`, the primary key.** 19 rows: id, order, kind, title, module, plus `termsByTopic`, `paragraphAnchors`, `drilledTopics` and `toneBedTopics`. `RULES` and the narrowed `Item.rule` go in `lib/exercises.ts`, which owns them; `ruleTopic` and `ruleKind` go in `lib/topics.ts`, which keeps the dependency one-way. | `lib/exercises.ts`, `lib/topics.ts`, `tests/topics.test.mjs` | No content is authored — every field derives from what exists. The id is the bare slug (decision 1). |
 | 6 | **Routing.** `Route` / `routeFromHash` / `hashOf`; language in the hash; `pushState`; the `hashchange` listener the repo lacks; `configureLab` writing the same address the nav does; `document.title` per topic per language. `DEFAULT_LENS` stays `play` until step 8 builds the read index — see below. | `lib/client-store.ts`, `app/page.tsx`, two tests | Breaks `chords-lab.browser.test.mjs:424` and `:438`, which assert `location.hash === '#chords'` after a click. |
 | 7 | **Shell.** Delete `.page-heading`, the `01` badge, `.breadcrumb` and `.beta-label`; add the skip link, `SubjectLine`, the lens rail with `aria-current`, the route announcer and focus-on-navigation. Bind the open lesson to `route.topic`, so a subject address opens that subject and the rail is real. **The nav rename moves to step 8** — see below. | `app/page.tsx`, `app/globals.css`, `lib/german.ts`, four browser tests | The chords lab is the play lens of one topic, so its heading becomes the topic's title: that is the `german.browser.test.mjs` breakage, and `notes-lab` loses its assumption that a lesson survives a page switch. All four of `navigation.browser.test.mjs`'s tests survive, because the nav labels do not change. |
-| 8 | **The surface fork, then the lens layouts, one PR each, cheapest first:** delete `.panel` — all 26 of its sites are chrome cards, so which of `.paper`, `.bed`, `.inset` or `.index` each becomes is a question only the lens layouts can answer, and it moved here from step 3. Then DEFINE (pure subtraction, **done**), READ (named-line grid plus the serif, **done**), DRILL (the ledger; delete Progress and the percentages; neutral staff labels — **done**, and ear training left for the lab with it), PLAY (the bed, the insets, unmount instead of `.is-hidden`). | `components/learning.tsx` (split), `components/play-lens.tsx` (new), `components/chords-lab.tsx`, `lib/learning.ts`, `app/globals.css` | `chords-lab.tsx` is the largest file in the repo at 1229 lines with a 686-line test that queries headings by accessible name. See open question 3. |
+| 8 | **The surface fork, then the lens layouts, one PR each, cheapest first:** delete `.panel` — all 26 of its sites are chrome cards, so which of `.paper`, `.bed`, `.inset` or `.index` each becomes is a question only the lens layouts can answer, and it moved here from step 3. Then DEFINE (pure subtraction, **done**), READ (named-line grid plus the serif, **done**), DRILL (the ledger; delete Progress and the percentages; neutral staff labels — **done**, and ear training left for the lab with it), PLAY (the bed, the insets, unmount instead of `.is-hidden` — **done**). Step 8 is complete. | `components/learning.tsx` (split), `components/play-lens.tsx` (new), `components/chords-lab.tsx`, `lib/learning.ts`, `app/globals.css` | `chords-lab.tsx` is the largest file in the repo at 1229 lines with a 686-line test that queries headings by accessible name. See open question 3. |
 | 9 | **German and cleanup.** ~40 new keys: 4 lens names, 4 lens-absent sentences, the skip link, the rail's `aria-label`, the kind words, the facet names, the ledger labels, the two read → play labels, the neutral staff labels. Delete the 15 orphaned keys; add a usage assertion. | `lib/german.ts`, `tests/german-localization.test.mjs` | A **hard gate**, not cleanup: a missing entry is a `tsc` and `oxlint` failure. Author the German in each step above; this step only prunes. |
 | 10 | **Deferred, blocked by nothing above:** per-language route roots `app/[lang]/page.tsx` with `generateStaticParams`, three canonicals plus `hreflang`, `<html lang>` from the segment. | `app/[lang]/page.tsx`, `app/layout.tsx`, two tests | The only real fix for crawlability and first-paint `lang`. `Route` reads the same shape, so no lens changes. |
 
@@ -1142,3 +1142,87 @@ contains any option offered beside it.
 `.practice-progress`, `.practice-layout`, `.practice-card`, `.practice-tip`, `.practice-modes`,
 `.exercise-kinds` and `.exercise-levels` — 12 rules and their four responsive counterparts. A
 test asserts the drill renders no `[role="progressbar"]` and matches no `\d+%` anywhere.
+
+### What the play lens actually became
+
+**The extraction found a bug in `.panel` that had been invisible for as long as it existed.**
+`.panel` painted a background and never painted an ink to go on it, so a panel took whatever
+colour it inherited. That was harmless while everything a panel sat on was the same near-white
+— and stopped being harmless the moment the play lens gave itself a dark bed, at which point
+every panel on it inherited `--s-on-ground` and rendered pale green text on white. The fix is
+one declaration, `color: var(--c-ink)` on `.panel`, and it belongs there rather than on the
+lens: a surface that paints a ground owes an ink.
+
+**The bed had to be told to contain what is on it.** `.lens-play` is a grid, and a grid item's
+automatic minimum is its min-content width, so the single column sized itself to the widest
+thing on it — the notes lab, four panels with a staff inside them — and ran 255 px off the
+side of a 375 px phone. `grid-template-columns: minmax(0, 1fr)`, the same fix the read lens's
+gutters needed for the same reason. Measured after: the bed's `scrollWidth` equals its
+`clientWidth` on both tabs at 375 px, which is now a test.
+
+**The inactive tab never had the active one's layout.** `.section-tabs .active` set
+`display: flex` and a gap; the inactive button set nothing, so its icon sat above its label
+rather than beside it. Two near-black labels on white hid it; the bed did not.
+
+**A resize forked the draw loop, and only one fork could be cancelled.** The resize handler
+called the drawing function directly and that function scheduled the next frame, so a resize
+started a second chain while the first was still pending and the cleanup could only cancel
+whichever frame id it had last been given. Every resize left another 60 fps loop running, and
+unmounting stopped exactly one of them. Painting and scheduling are separate now, and a resize
+cancels before it restarts. It surfaced only when this lens's test file was consolidated from
+eight full-application mounts to four — the leftover loop from one test arrived in the next one
+as frames nobody had scheduled — which is also why the file is four mounts: the browser suite
+runs three engines in CI and its slowest test already spends most of a sixty-second budget, so
+a file that costs four times what it needs to is taken out of somebody else's timeout.
+
+**The browser project has its own timeout now, and that is not a papering-over.** The sixty
+seconds in `vitest.config.ts` were chosen for the *unit* project, where the long pole is a
+policy test spawning the real linter — the comment beside the value says so. Browser tests
+drive three engines through Playwright and CI runs all three at once on a shared runner.
+Measured on one machine with nothing else running, `chords-lab.browser.test.mjs` takes ~100 s
+for its fourteen tests on Firefox; under CI's contention individual tests inside it were hitting
+sixty seconds and failing on the budget rather than on an assertion. Measured on both branches:
+97.8 s on this one against 100.0 s on the drill lens, so the extra file is not what made it
+slow — it is what made an existing edge tip. The browser project is 120 s; a browser test that
+genuinely needs two minutes is still a bug, and the number is headroom for contention rather
+than permission.
+
+**The live-signal reader is an effect event, not a dependency.** It is a function declared in
+the page, so it is a new value on every render; as an effect dependency it tore the loop down
+and rebuilt it each time, taking a `getComputedStyle` for the ink with it on every keystroke in
+the frequency field. A ref written during render is the obvious fix and the react-compiler rule
+refuses it, correctly — `useEffectEvent` is the one the repo already uses in `app/page.tsx`.
+The effect depends on the wave, the playing flag and the canvas, which are the three things
+that actually change what it draws.
+
+**`prefers-reduced-motion` is read in JS, and the scope still draws.** The site's
+`@media (prefers-reduced-motion: reduce)` block turns off animations and transitions, and a
+`requestAnimationFrame` loop is neither — a reader who asked for less motion was still shown a
+waveform moving at 60 fps. The hook now draws one static cycle at mount, on every parameter
+change and on resize, and schedules nothing. The test asserts the frame count **stops growing**
+rather than that it is zero, because React and the sidebar schedule frames of their own.
+
+**Unmounting, not hiding, and the canvas had to move for it to mean anything.** `.is-hidden`
+took the generator out of the accessibility tree but left the loop drawing into a zero-sized
+canvas for as long as the reader stayed on the notes tab. The scope is its own component now,
+so removing the instrument removes the canvas and the effect cleanup cancels the frame. The
+three assertions in `notes-lab.browser.test.mjs` that asserted the `is-hidden`/`display: none`
+pair are rewritten to assert the absence, as the spec said they would be.
+
+**Audio equivalence is a live region, not a colour.** The `Playing` badge was a decorated
+`<span>`, so a reader who could not hear the tone was told nothing when it started. It is an
+`<output aria-live="polite">` naming the state, the pitch and the frequency in ink.
+
+**`.paper` on the keyboards was already settled the other way, and stays settled.** Step 4
+decided the surface goes on `.staff` itself and deliberately not on `.keyboard-panel`, whose
+card holds chrome controls while the keys themselves are already score tokens. That decision
+survives the bed unchanged: the piano does not flip while the card under it does, which is what
+makes the keys and the notation the brightest objects on a dark ground without a class being
+remembered at each call site.
+
+**The lens is 33 explicit props.** The state stays in `app/page.tsx` because the read lens
+writes it — *Open this experiment* sets a frequency, a waveform, a tab and a notes-lab preset
+from a lesson — and because the audio engine is silenced by `go()` on every navigation. The
+analyser's buffer is handed over as a function rather than as data: it is written in place
+sixty times a second, so passing the array itself would give the lens a value React sees as
+unchanged. `app/page.tsx` loses 490 lines.
