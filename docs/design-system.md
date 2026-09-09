@@ -1175,6 +1175,18 @@ as frames nobody had scheduled — which is also why the file is four mounts: th
 runs three engines in CI and its slowest test already spends most of a sixty-second budget, so
 a file that costs four times what it needs to is taken out of somebody else's timeout.
 
+**The browser project has its own timeout now, and that is not a papering-over.** The sixty
+seconds in `vitest.config.ts` were chosen for the *unit* project, where the long pole is a
+policy test spawning the real linter — the comment beside the value says so. Browser tests
+drive three engines through Playwright and CI runs all three at once on a shared runner.
+Measured on one machine with nothing else running, `chords-lab.browser.test.mjs` takes ~100 s
+for its fourteen tests on Firefox; under CI's contention individual tests inside it were hitting
+sixty seconds and failing on the budget rather than on an assertion. Measured on both branches:
+97.8 s on this one against 100.0 s on the drill lens, so the extra file is not what made it
+slow — it is what made an existing edge tip. The browser project is 120 s; a browser test that
+genuinely needs two minutes is still a bug, and the number is headroom for contention rather
+than permission.
+
 **The live-signal reader is an effect event, not a dependency.** It is a function declared in
 the page, so it is a new value on every render; as an effect dependency it tore the loop down
 and rebuilt it each time, taking a `getComputedStyle` for the ink with it on every keystroke in
