@@ -245,6 +245,14 @@ publication and deployment remain separate from personal-use readiness.
 
 ### Final validation, 2026-09-09
 
+Reviewed implementation: [`fe4ef68`](https://github.com/alex-michels/one-music-lab/commit/fe4ef689a4eb77a3738821ed7b4a652c04a3b91c),
+[PR #35](https://github.com/alex-michels/one-music-lab/pull/35). It follows the
+programme and assessment work in `0a8aa98`, `ac619b4` and `5ffaf88`.
+The Roadmap closure records the personal-learning scope clarified by the
+owner, with the bounded content and checks below. To undo this release,
+revert its PR commits on a separate branch and re-run the same checks;
+building an artifact does not publish it.
+
 Local environment: Windows, Node 24.18.0. Heavy suites ran sequentially with
 two workers; no test, engine or production file was filtered out to make the
 full runs pass. The final source-wording change was also checked by the full
