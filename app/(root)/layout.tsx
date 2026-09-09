@@ -1,11 +1,18 @@
 import type { Metadata } from 'next';
 import { siteDescription } from '@/lib/i18n';
-import './globals.css';
+import { SITE_ORIGIN, languageAlternates } from '@/lib/site';
+import '../globals.css';
 
 export const metadata: Metadata = {
   title: 'OML — One Music Lab',
-  metadataBase: new URL('https://onemusiclab.org'),
-  alternates: { canonical: '/' },
+  metadataBase: new URL(SITE_ORIGIN),
+  // `/` is the language-neutral entry — it opens in the reader's saved
+  // language — so it is its own canonical and names the three language roots
+  // rather than claiming to be one of them.
+  alternates: {
+    canonical: '/',
+    languages: { ...languageAlternates(), 'x-default': '/' },
+  },
   description: siteDescription.en,
 };
 

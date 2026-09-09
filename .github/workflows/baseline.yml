@@ -73,7 +73,12 @@ jobs:
         run: |
           npm run build:static
           npm run test:static
-          tar -czf outputs/one-music-lab-static.tgz -C dist/client index.html index.rsc 404.html favicon.svg _next -C ../.. LICENSE NOTICE CONTENT-LICENSE.md THIRD-PARTY-NOTICES.md LICENSES
+          # The three language roots are documents in their own right, not
+          # variants of index.html: en/ru/de each carry their own lang, their
+          # own description and their own canonical. Packing the list without
+          # them would ship an English-only site under the name "portable".
+          # Add a line here when LANGUAGES grows.
+          tar -czf outputs/one-music-lab-static.tgz -C dist/client index.html index.rsc 404.html favicon.svg _next en.html en.rsc ru.html ru.rsc de.html de.rsc -C ../.. LICENSE NOTICE CONTENT-LICENSE.md THIRD-PARTY-NOTICES.md LICENSES
           cd outputs
           sha256sum one-music-lab-static.tgz > one-music-lab-static.tgz.sha256
       - name: Attach portable artifact for private staging review

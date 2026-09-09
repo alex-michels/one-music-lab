@@ -62,6 +62,7 @@ import {
   clampSidebarWidth,
   createClientStore,
   hashOf,
+  langFromPath,
   langFromStorage,
   localStorageOrNull,
   pageForRoute,
@@ -91,21 +92,30 @@ import {
 } from '@/lib/music';
 // The selected route and language live in browser state the server cannot see.
 // Each is read once on the client and changes only through navigate/setLang.
+//
+// The address is the source of truth for the language, and it has two halves
+// now: the hash is the more specific one, the path is the one a shared link
+// actually carries, and the saved language is the fallback for an address that
+// names none. Reading all three here rather than reconciling afterwards keeps
+// the two stores agreeing from the first snapshot.
+function addressedLang(): Lang {
+  return (
+    langFromPath(window.location.pathname) ??
+    langFromStorage(localStorageOrNull())
+  );
+}
 const routeStore = createClientStore<Route>(
   () =>
     routeFromHash(window.location.hash, {
-      lang: langFromStorage(localStorageOrNull()),
+      lang: addressedLang(),
       topics: TOPIC_IDS,
     }),
   { lang: 'en', lens: DEFAULT_LENS, topic: null, anchor: null },
 );
-// The address is the source of truth for the language, and the saved one is the
-// fallback for an address that does not name it. Reading it here rather than
-// reconciling afterwards keeps the two stores agreeing from the first snapshot.
 const langStore = createClientStore<Lang>(
   () =>
     routeFromHash(window.location.hash, {
-      lang: langFromStorage(localStorageOrNull()),
+      lang: addressedLang(),
       topics: TOPIC_IDS,
     }).lang,
   'en',

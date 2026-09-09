@@ -52,10 +52,47 @@ await test('The lab home link presents the chosen name visually and accessibly',
   assert.doesNotMatch(brand, /OPEN MUSIC LAB/);
 });
 
+await test('Each language root is served as its own document', async () => {
+  // The export writes en.html, ru.html and de.html; whether the thing actually
+  // serving the site hands them back at /en, /ru and /de is a separate
+  // question, and the only place it can be asked is here, against the built
+  // Worker. Everything else about step 10 was checked by reading files.
+  for (const [lang, opening] of [
+    ['en', 'Explore sound'],
+    ['ru', 'Исследуйте звук'],
+    ['de', 'Entdecke Klang'],
+  ]) {
+    const at = new URL(`/${lang}`, target);
+    const page = await fetch(at, {
+      redirect: 'follow',
+      signal: AbortSignal.timeout(60_000),
+    });
+    assert.equal(page.status, 200, at.href);
+    const body = await page.text();
+    assert.match(body, new RegExp(`<html lang="${lang}"`), lang);
+    const description = body.match(
+      /<meta name="description" content="([^"]+)"/,
+    )?.[1];
+    assert.ok(description?.startsWith(opening), `${lang}: ${description}`);
+    // Absolute, on the public domain, naming this language and no other.
+    const canonical = (body.match(/<link\b[^>]*>/g) ?? []).filter((link) =>
+      /\brel="canonical"/.test(link),
+    );
+    assert.equal(canonical.length, 1, lang);
+    assert.equal(
+      new URL(canonical[0].match(/\bhref="([^"]+)"/)[1]).href,
+      `https://onemusiclab.org/${lang}`,
+    );
+  }
+});
+
 await test('The rendered page does not load fonts, scripts or styles from third parties', () => {
   const resourceTags = html.match(/<(?:link|script|iframe)\b[^>]*>/g) ?? [];
   for (const tag of resourceTags) {
-    if (/\brel="canonical"/.test(tag)) continue;
+    // The canonical and the hreflang alternates name the public origin on
+    // purpose — they are claims about where this document lives, not
+    // resources the page fetches. Everything else must come from this origin.
+    if (/\brel="(?:canonical|alternate)"/.test(tag)) continue;
     const url = tag.match(/\b(?:src|href)="([^"]+)"/)?.[1];
     if (url) assert.equal(new URL(url, target).origin, target.origin, tag);
   }

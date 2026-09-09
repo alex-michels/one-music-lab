@@ -831,7 +831,7 @@ Every step below is shippable on its own.
 | 7 | **Shell.** Delete `.page-heading`, the `01` badge, `.breadcrumb` and `.beta-label`; add the skip link, `SubjectLine`, the lens rail with `aria-current`, the route announcer and focus-on-navigation. Bind the open lesson to `route.topic`, so a subject address opens that subject and the rail is real. **The nav rename moves to step 8** — see below. | `app/page.tsx`, `app/globals.css`, `lib/german.ts`, four browser tests | The chords lab is the play lens of one topic, so its heading becomes the topic's title: that is the `german.browser.test.mjs` breakage, and `notes-lab` loses its assumption that a lesson survives a page switch. All four of `navigation.browser.test.mjs`'s tests survive, because the nav labels do not change. |
 | 8 | **The surface fork, then the lens layouts, one PR each, cheapest first:** delete `.panel` — all 26 of its sites are chrome cards, so which of `.paper`, `.bed`, `.inset` or `.index` each becomes is a question only the lens layouts can answer, and it moved here from step 3. Then DEFINE (pure subtraction, **done**), READ (named-line grid plus the serif, **done**), DRILL (the ledger; delete Progress and the percentages; neutral staff labels — **done**, and ear training left for the lab with it), PLAY (the bed, the insets, unmount instead of `.is-hidden` — **done**). **All four lens layouts are built; two pieces of this step are not.** `.panel` still exists at 26 sites: the lenses added `.bed` and `.inset` beside the existing `.paper`, which is what the fork needed in order to be decidable, but retiring `.panel` onto them is its own change. And the nav is still five pages rather than four verbs plus a topic list — the condition for it (every lens has somewhere to send a topic) is met now, but it drops *Chords lab* from the sidebar, which is an IA decision rather than cleanup. | `components/learning.tsx` (split), `components/play-lens.tsx` (new), `components/chords-lab.tsx`, `lib/learning.ts`, `app/globals.css` | `chords-lab.tsx` is the largest file in the repo at 1229 lines with a 686-line test that queries headings by accessible name. See open question 3. |
 | 9 | **German and cleanup — done.** The ~40 new keys were authored in the steps that needed them, as planned. The orphans turned out to be **59**, not 15, because four lens layouts each retired copy of their own. The usage assertion is `tests/german-localization.test.mjs`; it reads `git ls-files` and excludes `tests/` deliberately. | `lib/german.ts`, `tests/german-localization.test.mjs` | A **hard gate**, not cleanup: a missing entry is a `tsc` and `oxlint` failure. Author the German in each step above; this step only prunes. |
-| 10 | **Deferred, blocked by nothing above:** per-language route roots `app/[lang]/page.tsx` with `generateStaticParams`, three canonicals plus `hreflang`, `<html lang>` from the segment. | `app/[lang]/page.tsx`, `app/layout.tsx`, two tests | The only real fix for crawlability and first-paint `lang`. `Route` reads the same shape, so no lens changes. |
+| 10 | **Done.** Per-language route roots `app/[lang]/page.tsx` with `generateStaticParams`, three canonicals plus `hreflang`, `<html lang>` from the segment — and a second **root** layout, in a route group, because only a root layout may render `<html>`. | `app/[lang]/page.tsx`, `app/layout.tsx`, two tests | The only real fix for crawlability and first-paint `lang`. `Route` reads the same shape, so no lens changes. |
 
 ---
 
@@ -1253,3 +1253,35 @@ still named in the browser tests that drive the trainer.
 
 The estimate of 15 was made before the lens layouts existed. It was not wrong about the kind
 of debt, only about how much of the old copy four new layouts would replace.
+
+### What the language routes needed that the plan did not name
+
+**Two root layouts, not one layout and a nested one.** Next lets exactly one layout per tree
+render `<html>`, so a layout nested under `app/[lang]` could not set the attribute the whole
+route exists to set. The fix is route groups: `app/(root)` serves `/` and `app/[lang]` serves
+`/en`, `/ru` and `/de`, and each is a root of its own tree. The export now writes
+`en.html`, `ru.html` and `de.html`, each carrying its language in the markup before a line of
+JavaScript runs. Until now the only record of a reader's language was `localStorage`, so every
+crawler, every screen reader reading the markup and every translation service saw one English
+page.
+
+**`metadataBase` twice.** The `[lang]` tree inherits nothing from `app/(root)`, so without its
+own base every canonical and every hreflang on the three language pages stayed a relative URL
+— the one thing hreflang may not be. Caught by reading the built HTML, not by the build.
+
+**The client had to learn to read the path.** The address was the source of truth for language
+already, but only its hash half. `/de/` with no hash is the link a reader is actually sent,
+and it opened in whatever the browser had stored. `langFromPath` reads the first segment and
+nothing else — a topic called `ru` deeper in a path must not change what the reader is reading
+— and the hash still wins where both name a language, because it is the more specific of the
+two. Verified on the running site: `/ru` opens in Russian with `<html lang="ru">` and no
+stored preference; `/de#/en/t/staff/read` opens the English passage.
+
+**`/` claims no language.** It keeps the reader's saved one, so it is its own canonical and
+carries `x-default` rather than pretending to be the English page. The three language roots
+each declare themselves canonical and name the other two.
+
+The static-export test now reads all four documents and asserts the language, the description,
+exactly one absolute canonical naming that language, and the complete four-entry hreflang set
+with every href absolute. The existing resource check had to learn that `rel="alternate"`
+names the public origin on purpose, the way it already knew that about `rel="canonical"`.
