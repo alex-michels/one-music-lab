@@ -830,7 +830,7 @@ Every step below is shippable on its own.
 | 6 | **Routing.** `Route` / `routeFromHash` / `hashOf`; language in the hash; `pushState`; the `hashchange` listener the repo lacks; `configureLab` writing the same address the nav does; `document.title` per topic per language. `DEFAULT_LENS` stays `play` until step 8 builds the read index — see below. | `lib/client-store.ts`, `app/page.tsx`, two tests | Breaks `chords-lab.browser.test.mjs:424` and `:438`, which assert `location.hash === '#chords'` after a click. |
 | 7 | **Shell.** Delete `.page-heading`, the `01` badge, `.breadcrumb` and `.beta-label`; add the skip link, `SubjectLine`, the lens rail with `aria-current`, the route announcer and focus-on-navigation. Bind the open lesson to `route.topic`, so a subject address opens that subject and the rail is real. **The nav rename moves to step 8** — see below. | `app/page.tsx`, `app/globals.css`, `lib/german.ts`, four browser tests | The chords lab is the play lens of one topic, so its heading becomes the topic's title: that is the `german.browser.test.mjs` breakage, and `notes-lab` loses its assumption that a lesson survives a page switch. All four of `navigation.browser.test.mjs`'s tests survive, because the nav labels do not change. |
 | 8 | **The surface fork, then the lens layouts, one PR each, cheapest first:** delete `.panel` — all 26 of its sites are chrome cards, so which of `.paper`, `.bed`, `.inset` or `.index` each becomes is a question only the lens layouts can answer, and it moved here from step 3. Then DEFINE (pure subtraction, **done**), READ (named-line grid plus the serif, **done**), DRILL (the ledger; delete Progress and the percentages; neutral staff labels — **done**, and ear training left for the lab with it), PLAY (the bed, the insets, unmount instead of `.is-hidden` — **done**). **All four lens layouts are built; two pieces of this step are not.** `.panel` still exists at 26 sites: the lenses added `.bed` and `.inset` beside the existing `.paper`, which is what the fork needed in order to be decidable, but retiring `.panel` onto them is its own change. And the nav is still five pages rather than four verbs plus a topic list — the condition for it (every lens has somewhere to send a topic) is met now, but it drops *Chords lab* from the sidebar, which is an IA decision rather than cleanup. | `components/learning.tsx` (split), `components/play-lens.tsx` (new), `components/chords-lab.tsx`, `lib/learning.ts`, `app/globals.css` | `chords-lab.tsx` is the largest file in the repo at 1229 lines with a 686-line test that queries headings by accessible name. See open question 3. |
-| 9 | **German and cleanup — done.** The ~40 new keys were authored in the steps that needed them, as planned. The orphans turned out to be **57**, not 15, because four lens layouts each retired copy of their own. The usage assertion is `tests/german-localization.test.mjs`, and it excludes `tests/` deliberately. | `lib/german.ts`, `tests/german-localization.test.mjs` | A **hard gate**, not cleanup: a missing entry is a `tsc` and `oxlint` failure. Author the German in each step above; this step only prunes. |
+| 9 | **German and cleanup — done.** The ~40 new keys were authored in the steps that needed them, as planned. The orphans turned out to be **59**, not 15, because four lens layouts each retired copy of their own. The usage assertion is `tests/german-localization.test.mjs`; it reads `git ls-files` and excludes `tests/` deliberately. | `lib/german.ts`, `tests/german-localization.test.mjs` | A **hard gate**, not cleanup: a missing entry is a `tsc` and `oxlint` failure. Author the German in each step above; this step only prunes. |
 | 10 | **Deferred, blocked by nothing above:** per-language route roots `app/[lang]/page.tsx` with `generateStaticParams`, three canonicals plus `hreflang`, `<html lang>` from the segment. | `app/[lang]/page.tsx`, `app/layout.tsx`, two tests | The only real fix for crawlability and first-paint `lang`. `Route` reads the same shape, so no lens changes. |
 
 ---
@@ -1231,16 +1231,25 @@ unchanged. `app/page.tsx` loses 490 lines.
 
 The catalogue was already a gate in one direction: `GermanKey` is `keyof typeof german`, so an
 English string with no entry is a `tsc` **and** an `oxlint` failure and nothing ships
-untranslated. Nothing enforced the other direction, and **57** keys had outlived the copy they
+untranslated. Nothing enforced the other direction, and **59** keys had outlived the copy they
 translated — the roadmap module cards, the old lesson tiles, the ear-training tip, the
-trainer's score panel, three superseded exercise explanations, and ten lesson experiment
-sentences. A reviewer opening `lib/german.ts` could not tell which German was live, which
-means a translation nobody could check. 720 entries remain, all of them said by the site.
+trainer's score panel, three superseded exercise explanations, ten lesson experiment sentences,
+a definition of octave numbering and a paragraph about ledger lines. A reviewer opening
+`lib/german.ts` could not tell which German was live, which means a translation nobody could
+check. 718 entries remain, all of them said by the site.
 
-The assertion scans the repository and **excludes `tests/` on purpose**: a key kept alive only
-by a test that mentions it is exactly the dead key being looked for. That exclusion found one
-more orphan than a scan including tests did — `Ear training`, the label of the mode switch the
-drill lens deleted, still named in the browser tests that drive the trainer.
+**The corpus is `git ls-files`, not the directory tree**, and the first version got that wrong
+in a way only CI could see. Walking the tree reads whatever happens to be on the machine: this
+one has a gitignored `/work/` full of old migration scripts, and two of the fifty-nine were
+alive in those. The gate passed locally and failed in the run that matters, which is the wrong
+way round for a check whose whole job is to notice that something is unused — and `dist/`
+would have done the same, inlining every key it looks for. Asking git makes the corpus exactly
+what ships, and identical in both places.
+
+It **excludes `tests/` on purpose**: a key kept alive only by a test that mentions it is
+exactly the dead key being looked for. That exclusion found one more orphan than a scan
+including tests did — `Ear training`, the label of the mode switch the drill lens deleted,
+still named in the browser tests that drive the trainer.
 
 The estimate of 15 was made before the lens layouts existed. It was not wrong about the kind
 of debt, only about how much of the old copy four new layouts would replace.
