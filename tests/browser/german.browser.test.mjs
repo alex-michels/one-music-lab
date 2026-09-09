@@ -11,6 +11,7 @@ import {
 } from '../../components/learning.tsx';
 import { ChordsLab } from '../../components/chords-lab.tsx';
 import { lessons, terms } from '../../lib/learning.ts';
+import { topicById } from '../../lib/topics.ts';
 import { AudioEngine } from '../../lib/audio.ts';
 import { ChordPlayer } from '../../lib/chord-audio.ts';
 import { LANGUAGE_STORAGE_KEY } from '../../lib/client-store.ts';
@@ -150,10 +151,11 @@ test('All six German lessons include translated prose, experiments and formulas,
       openLab,
       openPractice: vi.fn(),
     });
-    expect(container.querySelector('h2').textContent).toBe(title);
-    expect(container.querySelector('.lesson-body').textContent).toContain(
-      prose,
-    );
+    // The title is the shell's subject line now, not something the lens
+    // repeats; the first test above is what checks it reaches the page.
+    expect(topicById[lessonId].title.de).toBe(title);
+    // The prose is the lens itself, not a panel inside a two-column grid.
+    expect(container.querySelector('.lens-read').textContent).toContain(prose);
     expect(container.querySelector('.formula').textContent).not.toMatch(
       /Major|Minor|A4|cents/,
     );
@@ -167,9 +169,7 @@ test('All six German lessons include translated prose, experiments and formulas,
     openLab: vi.fn(),
     openPractice: vi.fn(),
   });
-  expect(container.querySelectorAll('.lesson-tile')).toHaveLength(
-    lessons.length,
-  );
+  expect(container.querySelectorAll('.topic-row')).toHaveLength(lessons.length);
   await render(Encyclopedia, { lang: 'de', openLesson: vi.fn() });
   await search('Stimmführung');
   // The search reads every language's title plus the body of the active one,

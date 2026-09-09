@@ -30,7 +30,10 @@ import {
 import {
   TOPIC_IDS,
   TOPIC_KINDS,
+  paragraphAnchors,
+  ruleKind,
   topicById,
+  topics,
   type TopicId,
   type TopicKind,
 } from '@/lib/topics';
@@ -54,6 +57,87 @@ type SortBy = 'term' | 'kind';
 
 export { Experiments } from './experiments';
 
+/**
+ * One generated question, set in the prose immediately after the rule it tests.
+ *
+ * The generator already writes the rule onto every item and the topics table
+ * says which topic teaches which rule, so a topic that has a rule can ask about
+ * it here rather than sending the reader to a separate page. A topic with no
+ * rule simply renders nothing: the site does not manufacture a question it
+ * cannot mark honestly.
+ */
+function InlineExercise({
+  lang,
+  topic,
+  openPractice,
+}: {
+  lang: Lang;
+  topic: string;
+  openPractice: () => void;
+}) {
+  const t = translator(lang);
+  const [chosen, setChosen] = useState<string | null>(null);
+  const rules = Object.hasOwn(paragraphAnchors, topic)
+    ? paragraphAnchors[topic as TopicId]
+    : [];
+  const rule = rules[0];
+  if (!rule) return null;
+  const item = generateFrom(ruleKind[rule], 1, 1, lang);
+  if (!item) return null;
+  const verdict = chosen ? grade(item, chosen) : null;
+  return (
+    // The paragraph that states the rule carries its id, so a ledger row can
+    // link to the sentence rather than to the top of a lesson.
+    <section className="inline-exercise" id={rule}>
+      <span className="eyebrow">{t('Try it here', 'Попробуйте здесь')}</span>
+      <p className="exercise-prompt">{item.prompt}</p>
+      {item.staff && (
+        <div className="exercise-staff">
+          <Staff
+            pitches={item.staff.pitches}
+            clef={item.staff.clef}
+            barlines={item.staff.barlines}
+            accidentalVisibility={item.staff.accidentalVisibility}
+            lang={lang}
+            space={13}
+          />
+        </div>
+      )}
+      <div className="answer-grid">
+        {item.options.map((option) => (
+          <button
+            key={option.id}
+            disabled={chosen !== null}
+            className={
+              chosen === option.id
+                ? verdict?.correct
+                  ? 'answer-correct'
+                  : 'answer-wrong'
+                : ''
+            }
+            onClick={() => setChosen(option.id)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+      {verdict && (
+        <p
+          className={
+            verdict.correct ? 'answer-feedback' : 'answer-feedback incorrect'
+          }
+        >
+          {exerciseExplanations[verdict.tag][lang]}
+        </p>
+      )}
+      <button className="text-button" onClick={openPractice}>
+        {t('Practise this rule', 'Потренировать это правило')}
+        <ChevronRight size={16} />
+      </button>
+    </section>
+  );
+}
+
 export function Theory({
   lang,
   lessonId,
@@ -71,36 +155,32 @@ export function Theory({
   const lesson = lessons.find((l) => l.id === lessonId);
   if (lesson)
     return (
-      <article className="lesson-article">
+      <article className="lens-read lesson-article">
         <button className="text-button" onClick={() => setLessonId(null)}>
           <ArrowLeft size={16} />
           {t('All foundations', 'Все основы')}
         </button>
-        <div className="lesson-layout">
-          <div className="panel lesson-body">
-            <span className="eyebrow">{lesson.category[lang]}</span>
-            <h2>{lesson.title[lang]}</h2>
-            {lesson.paragraphs.map((p, i) => (
-              <p key={i}>{p[lang]}</p>
-            ))}
-            <div className="formula">{lesson.formula[lang]}</div>
-            <a
-              className="source-link"
-              href={lesson.source}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {t('Further reading', 'Для дальнейшего чтения')}
-              <ArrowUpRight size={15} />
-            </a>
-          </div>
-          <aside className="lesson-experiment">
-            <div className="eyebrow">
-              {t('MAKE IT AUDIBLE', 'УСЛЫШЬТЕ ЭТО')}
-            </div>
-            <Headphones size={32} />
-            <h3>{t('Try it in the lab', 'Попробуйте в лаборатории')}</h3>
-            <p>{lesson.experiment[lang]}</p>
+        {lesson.paragraphs.map((p, i) => (
+          <p className="prose" key={i}>
+            {p[lang]}
+          </p>
+        ))}
+        {/* The rule this topic teaches, asked right where it is stated, rather
+            than saved up for a page the reader has to go and find. */}
+        <InlineExercise
+          lang={lang}
+          topic={lesson.id}
+          openPractice={openPractice}
+        />
+        <div className="formula">{lesson.formula[lang]}</div>
+        {/* The instrument is the other half of the page, not an illustration
+            inside it: it breaks out to twice the prose measure. */}
+        <aside className="breakout bed lesson-experiment">
+          <div className="eyebrow">{t('MAKE IT AUDIBLE', 'УСЛЫШЬТЕ ЭТО')}</div>
+          <Headphones size={32} />
+          <h3>{t('Try it in the lab', 'Попробуйте в лаборатории')}</h3>
+          <p>{lesson.experiment[lang]}</p>
+          <div className="lesson-experiment-actions">
             <button
               className="primary-button"
               onClick={() => openLab(lesson.hz, lesson.wave as Wave, lesson.id)}
@@ -112,55 +192,80 @@ export function Theory({
               {t('Train your ear', 'Тренировать слух')}
               <ChevronRight size={16} />
             </button>
-          </aside>
-        </div>
+          </div>
+        </aside>
+        <a
+          className="source-link"
+          href={lesson.source}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {t('Further reading', 'Для дальнейшего чтения')}
+          <ArrowUpRight size={15} />
+        </a>
       </article>
     );
+  const groupName: Record<TopicKind, string> = {
+    sign: t('Signs on the page', 'Знаки на бумаге'),
+    concept: t('Ideas and definitions', 'Понятия и определения'),
+    measure: t('Rhythm and duration', 'Ритм и длительность'),
+    tone: t('Sound itself', 'Сам звук'),
+  };
   return (
-    <>
-      <div className="content-section-heading">
-        <div>
-          <span className="eyebrow">
-            {t('START WITH THE FOUNDATIONS', 'НАЧНИТЕ С ОСНОВ')}
-          </span>
-          <h2>
-            {t('Understand what you hear.', 'Понимайте то, что слышите.')}
-          </h2>
-        </div>
-        <span className="count-badge">
-          {count(lessons.length, lang, 'lessons')}
-        </span>
-      </div>
-      <div className="lesson-grid">
-        {lessons.map((l, i) => (
-          <button
-            key={l.id}
-            className="panel lesson-tile"
-            onClick={() => setLessonId(l.id)}
-          >
-            <div className="tile-top">
-              <span className="panel-number">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span>{l.category[lang]}</span>
-              <ArrowUpRight size={18} />
-            </div>
-            <h3>{l.title[lang]}</h3>
-            <p>{l.summary[lang]}</p>
-            <div className="tile-bottom">
-              <BookOpen size={14} />
-              {t('Read → listen → try', 'Прочитать → услышать → попробовать')}
-            </div>
-          </button>
-        ))}
-      </div>
+    <div className="lens-read">
+      {/* In reading order, grouped by what they are about. The only sequence
+          marker on the site is the one pointer at the first topic. */}
+      {TOPIC_KINDS.map((group) => {
+        const inGroup = topics.filter((topic) => topic.kind === group);
+        if (!inGroup.length) return null;
+        return (
+          <section className="topic-group" key={group}>
+            <h2>{groupName[group]}</h2>
+            <ul role="list">
+              {inGroup.map((topic) => (
+                <li key={topic.id}>
+                  <button
+                    className="topic-row"
+                    onClick={() => setLessonId(topic.id)}
+                  >
+                    <span className="topic-name">{topic.title[lang]}</span>
+                    {topic.order === 0 && (
+                      <span className="start-here">
+                        {t('Start here', 'Начните здесь')}
+                      </span>
+                    )}
+                    <ArrowUpRight size={16} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
       <p className="culture-note">
         {t(
           'Musical traditions deserve their own context, terminology and sources. A raga or maqam is not simply a scale preset.',
           'Музыкальные традиции требуют собственного контекста, терминологии и источников. Рага или макам — не просто настройка звукоряда.',
         )}
       </p>
-    </>
+      {/* The one place on the site that says how big it is, and it counts what
+          exists rather than showing a fraction of what does not. */}
+      <p className="scope-line">
+        {count(terms.length, lang, 'terms')} ·{' '}
+        {count(lessons.length, lang, 'lessons')} ·{' '}
+        {t('written so far', 'написано на сегодня')}.{' '}
+        <a
+          href="https://github.com/alex-michels/one-music-lab/blob/main/ROADMAP.md"
+          target="_blank"
+          rel="noreferrer"
+        >
+          {t(
+            'The plan for the rest is in the roadmap.',
+            'План на всё остальное — в дорожной карте.',
+          )}
+        </a>
+      </p>
+    </div>
   );
 }
 
