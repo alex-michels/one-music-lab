@@ -60,11 +60,24 @@ const openTab = async (name) => {
     .poll(() => tab.element().getAttribute('aria-selected'))
     .toBe('true');
 };
+// The option list never leaves the document, so its presence says nothing
+// about whether a click opened anything, and a click that quietly failed to
+// open used to be found out only by the whole test budget running out. The
+// trigger knows; a shut popup is reopened by clicking again. See the fuller
+// account beside the same helper in chords-lab.browser.test.mjs.
 async function choose(label, option) {
   const box = page.getByRole('combobox', { name: label, exact: true });
-  await act(async () => box.click());
+  const expanded = () => box.element().getAttribute('aria-expanded');
+  for (let attempt = 1; ; attempt += 1) {
+    await act(async () => box.click());
+    try {
+      await expect.poll(expanded, { timeout: 2000 }).toBe('true');
+      break;
+    } catch (error) {
+      if (attempt === 3) throw error;
+    }
+  }
   const item = page.getByRole('option', { name: option, exact: true });
-  await expect.element(item).toBeInTheDocument();
   await act(async () => item.click());
   await expect.poll(() => box.element().textContent).toContain(option);
 }

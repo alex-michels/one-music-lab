@@ -54,13 +54,42 @@ const button = (name) => {
     });
   return locator;
 };
+/**
+ * Open a select and pick an option.
+ *
+ * The precondition used to be that the option is in the document, which is
+ * true whether or not anything opened: a Base UI select portals its list on
+ * `mounted || forceMount`, and `forceMount` is armed the first time the
+ * trigger takes focus and never cleared, so the options never leave. When a
+ * click failed to open the popup — on Firefox the trigger's own mousedown /
+ * mouseup handling can cancel an open that has already begun — the helper
+ * sailed past that check and handed Playwright an option that no role query
+ * could reach, because the closed positioner carries `hidden`. It then waited
+ * out the entire test budget: 59 s under a 60 s timeout, 119 s under a 120 s
+ * one. The CI log is the tell — it repeats `waiting for locator` and never
+ * once says `locator resolved to`.
+ *
+ * So ask the trigger instead, which is the only thing that knows. A click that
+ * did not open the popup leaves it shut, so clicking again opens rather than
+ * toggles closed; that is why re-asking is sound here and not a retry papering
+ * over a race. Three attempts, then fail with the control's name in ~6 s
+ * instead of hanging for two minutes.
+ */
 async function choose(label, option) {
   const combobox = page.getByRole('combobox', { name: label, exact: true });
-  await act(async () => {
-    await combobox.click();
-  });
+  const expanded = () => combobox.element().getAttribute('aria-expanded');
+  for (let attempt = 1; ; attempt += 1) {
+    await act(async () => {
+      await combobox.click();
+    });
+    try {
+      await expect.poll(expanded, { timeout: 2000 }).toBe('true');
+      break;
+    } catch (error) {
+      if (attempt === 3) throw error;
+    }
+  }
   const item = page.getByRole('option', { name: option, exact: true });
-  await expect.element(item).toBeInTheDocument();
   await act(async () => {
     // No manual scrolling here: the click already scrolls the option into
     // view, and moving it first can shift it between the point being computed
