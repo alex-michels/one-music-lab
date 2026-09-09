@@ -2,7 +2,7 @@ import type { Item, Level, Option } from './exercises';
 import type { LocalText } from './i18n';
 import { pitchAtStep } from './staff';
 import { pitchLabel, type MusicLanguage, type SpelledPitch } from './notation';
-import { resolveAccidentalSequence } from './notation-workbench';
+import { resolveAccidentalSequence, signature } from './notation-workbench';
 
 export const nt = (en: string, ru: string, de: string): LocalText => ({
   en,
@@ -89,17 +89,24 @@ export const notationSources = {
 type Built = Omit<Item, 'kind' | 'level' | 'seed' | 'lang'>;
 const pick = <T>(next: () => number, values: readonly T[]): T =>
   values[Math.floor(next() * values.length)];
+/**
+ * `tag` may be a function of the label. A single tag is right when every
+ * distractor really is the same mistake, and wrong the moment they are not:
+ * the tag is the sentence a reader is answered with, so naming a mistake they
+ * did not make is worse than saying nothing.
+ */
 function options(
   answer: string,
   others: string[],
   next: () => number,
-  tag: Option['tag'],
+  tag: Option['tag'] | ((label: string) => Option['tag']),
 ): Option[] {
+  const tagFor = typeof tag === 'function' ? tag : () => tag;
   const result: Option[] = [
     { id: answer, label: answer, tag: 'correct' },
     ...others
       .filter((x, i) => x !== answer && others.indexOf(x) === i)
-      .map((label) => ({ id: label, label, tag })),
+      .map((label) => ({ id: label, label, tag: tagFor(label) })),
   ];
   /*
    * Shuffle, not rotate. Rotating avoids the unstable random comparator, which
@@ -128,6 +135,9 @@ export function shuffle<T>(next: () => number, items: T[]): T[] {
   return out;
 }
 
+/** Every written value the figures can show, each one flag from its neighbour. */
+const durationScale = [1, 2, 4, 8, 16, 32, 64, 128];
+
 export function valueIdentification(
   next: () => number,
   level: Level,
@@ -147,6 +157,7 @@ export function valueIdentification(
   const answer = wholeBar
     ? `${meter}/${meter === 3 ? 4 : 8}`
     : `1/${denominator}`;
+  const scaleIndex = durationScale.indexOf(denominator);
   return {
     rule: 'identify-written-duration',
     prompt: nt(
@@ -162,9 +173,18 @@ export function valueIdentification(
       answer,
       wholeBar
         ? ['1/1', '1/2', '1/8']
-        : ['1/1', '1/2', '1/4', '1/8', '1/16', '1/32', '1/64', '1/128']
-            .filter((x) => x !== answer)
-            .slice(0, 3),
+        : // The neighbours of the written value, not the head of a fixed list.
+          // Taking the first three of an ascending list always offered 1/1,
+          // 1/2 and 1/4, so at level 3 — where the answer is a 128th to an
+          // eighth — the answer was the only short value on screen and "pick
+          // the smallest fraction" won without reading anything. One flag
+          // more or fewer is the misreading `duration-symbol` actually names.
+          durationScale
+            .map((d, index) => ({ d, apart: Math.abs(index - scaleIndex) }))
+            .filter((entry) => entry.apart > 0)
+            .sort((a, b) => a.apart - b.apart || a.d - b.d)
+            .slice(0, 3)
+            .map((entry) => `1/${entry.d}`),
       next,
       'duration-symbol',
     ),
@@ -398,10 +418,10 @@ export function performanceMarks(
     ]);
     const beats = level === 1 ? 1 : pick(next, [1, 2, 4]);
     const total = `${beats * unit.num}/${unit.den}`;
-    const answer = String((60 * beats) / bpm).replace(
-      '.',
-      lang === 'de' ? ',' : '.',
-    );
+    const show = (value: number) =>
+      String(Number(value.toFixed(3))).replace('.', lang === 'de' ? ',' : '.');
+    const seconds = (clicks: number) => (60 * clicks) / bpm;
+    const answer = show(seconds(beats));
     return {
       rule: 'metronome-unit',
       prompt: nt(
@@ -412,7 +432,25 @@ export function performanceMarks(
       answer,
       options: options(
         answer,
-        ['0', '3', '6', '12'].filter((x) => x !== answer).slice(0, 3),
+        // The three misreadings the item exists to catch, rather than round
+        // numbers: reading the marked unit as a plain quarter, inverting
+        // 60/bpm, and counting written values instead of clicks. The old pool
+        // offered "0" in every scored item — a duration no sound can have —
+        // and none of its options could be arrived at by any of these.
+        [
+          seconds(((beats * unit.num) / unit.den) * 4),
+          (beats * bpm) / 60,
+          seconds(beats * 2),
+          seconds(beats / 2),
+          seconds(beats * 4),
+          seconds(beats + 1),
+        ]
+          .map(show)
+          .filter(
+            (label, index, all) =>
+              label !== answer && all.indexOf(label) === index,
+          )
+          .slice(0, 3),
         next,
         'tempo-unit',
       ),
@@ -674,10 +712,35 @@ export function accidentalContext(
   ];
   const scenario = pick(next, scenarios);
   const index = pick(next, scenario.targets);
-  const pitch = resolveAccidentalSequence(scenario.events, scenario.signature)[
-    index
-  ];
+  const resolved = resolveAccidentalSequence(
+    scenario.events,
+    scenario.signature,
+  );
+  const pitch = resolved[index];
   const answer = pitchLabel(pitch, lang);
+  // The two distractors that are a named mistake rather than a wrong sign: the
+  // pitch the signature alone would give, and the pitch held over from the
+  // previous event on the same letter and octave.
+  const spelling = (accidental: number) =>
+    pitchLabel(
+      {
+        ...pitch,
+        accidental,
+        midi: pitch.midi - pitch.accidental + accidental,
+      },
+      lang,
+    );
+  const signatureReading = spelling(
+    signature(scenario.signature).find((sign) => sign.letter === pitch.letter)
+      ?.accidental ?? 0,
+  );
+  const previous = resolved[index - 1];
+  const carriedOver =
+    previous &&
+    previous.letter === pitch.letter &&
+    previous.octave === pitch.octave
+      ? spelling(previous.accidental)
+      : null;
   return {
     rule: scenario.stops
       ? 'sign-stops-at-the-barline'
@@ -704,7 +767,17 @@ export function accidentalContext(
           ),
         ),
       next,
-      'ignored-the-sign',
+      // Every distractor used to be answered with "that is the note without
+      // its sign", which is true of exactly one of them: a double sharp is
+      // emphatically not the note with its sign ignored. Name the mistake the
+      // reader actually made — the signature reading, the pitch carried past
+      // the barline, or simply the wrong alteration.
+      (label) =>
+        label === signatureReading
+          ? 'ignored-the-sign'
+          : label === carriedOver
+            ? 'carried-the-sign-too-far'
+            : 'wrong-alteration',
     ),
     explanation: nt(
       `Event ${index + 1}: ${answer}. A natural or a single accidental replaces, never adds to, a signature or double accidental. Local scope does not jump octaves. At a barline the signature resumes for fresh attacks; only the actual tied continuation retains the old sound. These rule labels describe the stated convention, not every historical accidental practice.`,
@@ -848,6 +921,10 @@ function contextualExcerpt(
     if (event.letter !== null) {
       const pitch = pitches[pitchIndex++];
       const answer = pitchLabel(pitch, lang);
+      const octaveAbove = pitchLabel(
+        { ...pitch, octave: pitch.octave + 1, midi: pitch.midi + 12 },
+        lang,
+      );
       parts.push({
         kind: 'pitch',
         prompt: nt(
@@ -870,14 +947,13 @@ function contextualExcerpt(
                 lang,
               ),
             )
-            .concat(
-              pitchLabel(
-                { ...pitch, octave: pitch.octave + 1, midi: pitch.midi + 12 },
-                lang,
-              ),
-            ),
+            .concat(octaveAbove),
           next,
-          'wrong-alteration',
+          // The octave option is not a wrong alteration: its step and its sign
+          // are both right and only the register is wrong, which is exactly
+          // what `neighbour-register` says and `wrong-alteration` denies.
+          (label) =>
+            label === octaveAbove ? 'neighbour-register' : 'wrong-alteration',
         ),
         explanation: nt(
           `${answer}: keep the written letter and register. ${event.tieFromPrevious ? 'This is a tied continuation of the previous pitch, not a new attack.' : 'Apply explicit accidentals at this register; after a barline a fresh attack returns to the signature (none here).'} A correct rhythm cannot cancel a pitch-reading error.`,

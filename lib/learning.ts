@@ -1569,10 +1569,14 @@ export const exerciseExplanations: Record<ErrorTag, LocalText> = {
     'Отличайте точку стаккато от черты тенуто.',
     'Unterscheide Staccatopunkt und Tenutostrich.',
   ),
+  // Convention-neutral on purpose. Four of the five repeat figures carry no
+  // endings at all, so a sentence about skipping ending 1 answered a reader
+  // who had misread a D.S. or a percent bar with advice about volte that were
+  // not on the page. The figure's own explanation supplies the specifics.
   'repeat-route': nt(
-    'On the second pass, skip ending 1 and take ending 2.',
-    'При втором проведении пропустите первую вольту и перейдите ко второй.',
-    'Überspringe beim zweiten Durchgang die erste Klammer und spiele die zweite.',
+    'Re-read the sign that sends you back, the sign that stops you, and which of them count on this pass.',
+    'Перечитайте знак, отправляющий назад, знак, останавливающий движение, и то, какие из них действуют на этом проведении.',
+    'Lies erneut, welches Zeichen zurückschickt, welches anhält und welche davon in diesem Durchgang gelten.',
   ),
   correct: b('That is the one.', 'Именно так.'),
   'wrong-written-note': b(
