@@ -1070,5 +1070,15 @@ export const german = {
   ascending: 'aufsteigend',
   descending: 'absteigend',
   'Sort the index': 'Index sortieren',
+  // The read lens: its index, its scope line and its inline exercise.
+  'written so far': 'bisher geschrieben',
+  'The plan for the rest is in the roadmap.':
+    'Der Plan für alles Weitere steht in der Roadmap.',
+  'Signs on the page': 'Zeichen auf dem Papier',
+  'Ideas and definitions': 'Begriffe und Definitionen',
+  'Rhythm and duration': 'Rhythmus und Dauer',
+  'Sound itself': 'Der Klang selbst',
+  'Try it here': 'Hier ausprobieren',
+  'Practise this rule': 'Diese Regel üben',
 } as const;
 export type GermanKey = keyof typeof german;
