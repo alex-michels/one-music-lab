@@ -213,4 +213,14 @@ test('Clef and octave menus preserve the pitch model, and comparison audio can b
     page.getByRole('button', { name: 'Stop comparison', exact: true }).click(),
   );
   expect(stop).toHaveBeenCalledOnce();
+  await act(() =>
+    page.getByRole('button', { name: 'Note values', exact: true }).click(),
+  );
+  expect(stop).toHaveBeenCalledTimes(2);
+  expect(
+    container
+      .querySelector('.notation-example-score figure')
+      .getAttribute('aria-label'),
+  ).toBe('One whole note');
+  expect(container.querySelector('.note-name').textContent).toBe('C4');
 });
