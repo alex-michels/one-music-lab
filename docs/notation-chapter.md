@@ -38,7 +38,7 @@ dependencies and links across these documents.
 | `tests/roadmap.test.mjs:23-40` asserts exactly **511** ids, each matching `^- \[[ x]\] (\d+\.\d+\|[A-D]\d+) — ` exactly once; `:66-75` validates every module's `Источники для разработки:` S-codes against the section-7 table | — | Inventing, moving or duplicating a topic id is a red test. |
 | `tests/static-export.mjs` asserts root-relative asset refs, no `fonts.googleapis/gstatic`, no `sourceMappingURL=`, no `.map`/`.pem` | `:15-58` | It does **not** assert "no external fetches". A renderer that fetches its glyph font at runtime would pass this suite and still break offline. |
 | Playwright WebKit has no Web Audio at all; the audio suite skips there | `tests/browser/audio.browser.test.mjs:15-16, 23`; `CONTRIBUTING.md:106` | House rule is honest engine-specific skip, not exclusion. |
-| DE nav label: `Practice: 'Gehörbildung'` | `lib/german.ts:14` | A visual notation trainer under a page literally named *ear training* is wrong. Rename in the first notation PR. |
+| ~~DE nav label: `Practice: 'Gehörbildung'`~~ | `lib/german.ts` | Done. Renamed to `Übungen` when the drill lens was built and ear training moved to the lab. |
 | No notation/engraving dependency; no rational-duration model | `package.json`; only `beats` 1–8 + `rate` in `lib/chords.ts` | Both prerequisites are real. |
 | `translator`/`localText` accept only `GermanKey` | `lib/i18n.ts:5-14` | An untranslated string is a typecheck failure, not a fallback. |
 | `nouns` holds only `beats`, `chords`, `octaves`, `semitones` | `lib/plural.ts:46-73` | New counters needed: bars, beams, ledger lines, rests, dots, notes. |
@@ -495,7 +495,9 @@ Theory / Practice / Glossary each get an area index. Promotion rule: **a topic g
 
 Replace the three nested page-title / H1 / subtitle ternary chains (`app/page.tsx:701-713, 762-793`) with a lookup keyed by area. Delete the hard-coded `6`, `0{i+1}` and `01`; derive counts through `lib/plural.ts`.
 
-**Rename the German Practice label.** `lib/german.ts:14` has `Practice: 'Gehörbildung'`. Thirteen notation lessons whose exercises are visual would sit under a page called *ear training*. Proposal: `Übungen` (with `Gehörbildung` remaining the name of the ear-training *mode* inside it). This is a catalog-key value change plus a `docs/german-localization.md:5` update, and it belongs in the first notation PR.
+**Rename the German Practice label — done.** `Practice` is `Übungen`; ear training left the page entirely for the intervals experiment in the lab. Original note follows.
+
+`lib/german.ts:14` had `Practice: 'Gehörbildung'`. Thirteen notation lessons whose exercises are visual would sit under a page called *ear training*. Proposal: `Übungen` (with `Gehörbildung` remaining the name of the ear-training *mode* inside it). This is a catalog-key value change plus a `docs/german-localization.md:5` update, and it belongs in the first notation PR.
 
 ### 3.3 Content layout — TypeScript modules, and why not JSON or MDX
 

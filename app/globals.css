@@ -848,8 +848,8 @@
   --focus: #6cc6ff; /* 9.66:1 */
   --focus-halo: #6cc6ff40;
 }
-/* The two namespaces, carried onto elements. Named .paper and not .score
-   because .score is already the trainer's counter further down this file. */
+/* The two namespaces, carried onto elements. Named .paper and not .score:
+   a score is a document here, and the word is needed for one. */
 .paper {
   --focus: var(--focus-paper);
   --focus-halo: var(--focus-halo-paper);
@@ -2242,16 +2242,25 @@ h1 {
 .search-field > span {
   font-size: 12px;
 }
-.practice-layout {
+/* DRILL. Question left, rule ledger right, and the ledger stays in view while
+   the questions go past: it is the only thing on the site that accumulates
+   across items, so scrolling it away would leave the drill saying nothing.
+   Below 900px it falls under the question, still a <details>. */
+.lens-drill {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 290px;
-  gap: 24px;
+  grid-template-columns: min(var(--m-drill), 100%) minmax(220px, 300px);
+  gap: var(--sp-5);
+  align-items: start;
 }
-.practice-card {
-  padding: 33px;
+.drill-question {
+  min-width: 0;
+  padding: var(--sp-5);
   text-align: center;
+  border: var(--bw) solid var(--c-rule);
+  border-radius: var(--r-1);
+  background: var(--c-surface);
 }
-.practice-card > .eyebrow {
+.drill-question > .eyebrow {
   justify-content: center;
 }
 .practice-icon {
@@ -2265,14 +2274,7 @@ h1 {
   color: var(--c-link);
   margin: 32px auto 24px;
 }
-.practice-card h2 {
-  font-size: 27px;
-  font-weight: 500;
-  letter-spacing: -0.6px;
-  line-height: 1.4;
-  margin-bottom: 17px;
-}
-.practice-card > p {
+.ear-training > p {
   font-size: 16px;
   line-height: 1.8;
   color: var(--c-ink-2);
@@ -2351,56 +2353,82 @@ h1 {
   background: var(--st-wrong-wash);
   color: var(--st-wrong);
 }
-.practice-progress {
-  padding: 27px;
+/* The ledger. Hairlines and one mono column, because it is a record rather
+   than a card: the rule's own id is the heading, so a reader can match a row
+   to the anchor it links to. */
+.drill-ledger {
+  position: sticky;
+  top: var(--sp-4);
+  min-width: 0;
+  border: var(--bw) solid var(--c-rule);
+  border-radius: var(--r-1);
+  background: var(--c-surface);
+  padding: var(--sp-4);
+  max-height: calc(100vh - var(--sp-6));
+  overflow-y: auto;
 }
-.score {
-  font-size: 60px;
-  line-height: 1;
-  letter-spacing: -2px;
-  margin: 24px 0 8px;
+.drill-ledger > summary {
+  cursor: pointer;
+  list-style-position: inside;
 }
-.score > span {
-  font-size: 27px;
-  color: var(--c-ink-3);
-  letter-spacing: 0;
-  margin-left: 9px;
+/* The eyebrow is a flex row of its own, which on its own line would push the
+   disclosure triangle above the words it belongs to. */
+.drill-ledger > summary > .eyebrow {
+  display: inline-flex;
+  vertical-align: middle;
 }
-.practice-progress > p {
-  font-size: 14px;
+.ledger-note {
+  font-size: var(--t-ui);
   color: var(--c-ink-2);
-  margin-bottom: 23px;
+  margin: var(--sp-3) 0 0;
 }
-.progress-caption {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--c-ink-3);
-  margin-top: 12px;
+.ledger-rows {
+  margin: var(--sp-3) 0 var(--sp-4);
 }
-.progress-caption button {
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.ledger-row {
+  border-top: var(--bw) solid var(--c-rule);
+  padding: var(--sp-3) 0;
 }
-.practice-tip {
-  padding: 29px 10px;
+.ledger-row > dt > .num {
+  font-size: var(--t-ui);
   overflow-wrap: anywhere;
 }
-.practice-tip h3 {
-  font-size: 17px;
-  font-weight: 500;
-  margin-bottom: 12px;
+.ledger-row[data-missed] > dt > .num {
+  color: var(--st-wrong);
 }
-.practice-tip p {
-  font-size: 14px;
-  line-height: 1.9;
+.ledger-row > dd {
+  margin: 0;
+  font-size: var(--t-ui);
+  line-height: 1.6;
   color: var(--c-ink-2);
-  margin-bottom: 15px;
+}
+.ledger-row > dd > p {
+  margin: var(--sp-2) 0 0;
+}
+.ledger-tally {
+  color: var(--c-ink-3);
+}
+.ledger-exits {
+  display: flex;
+  gap: var(--sp-3);
+}
+/* Ear training left the trainer for the lab: it has no rule to file under and
+   cannot be answered without sound, which is an instrument's bargain. */
+.ear-training {
+  text-align: center;
+  border-top: var(--bw) solid var(--c-rule);
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-4);
+}
+.ear-training > .eyebrow {
+  justify-content: center;
+}
+.ear-training h3 {
+  font-size: 21px;
+  font-weight: 500;
+  margin-bottom: var(--sp-2);
 }
 @media (max-width: 1150px) {
-  .practice-layout {
-    grid-template-columns: minmax(0, 1fr) 245px;
-  }
   .lesson-experiment {
     max-width: none;
   }
@@ -2425,15 +2453,18 @@ h1 {
     font-size: 13px;
   }
 }
-@media (max-width: 960px) {
-  .practice-layout {
+/* The ledger stops being a column and becomes a disclosure under the
+   question. It was already a <details>, so nothing has to be re-announced. */
+@media (max-width: 900px) {
+  .lens-drill {
     grid-template-columns: 1fr;
   }
-  .practice-layout > aside {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+  .drill-ledger {
+    position: static;
+    max-height: none;
   }
+}
+@media (max-width: 960px) {
   .content-section-heading {
     align-items: flex-start;
   }
@@ -2478,8 +2509,8 @@ h1 {
   .experiments .soft-badge {
     display: none;
   }
-  .practice-card {
-    padding: 25px 20px;
+  .drill-question {
+    padding: var(--sp-4) var(--sp-3);
   }
   .scope-header {
     font-size: 10px;
@@ -2493,12 +2524,6 @@ h1 {
   }
 }
 @media (max-width: 520px) {
-  .practice-layout > aside {
-    grid-template-columns: 1fr;
-  }
-  .practice-card h2 {
-    font-size: 24px;
-  }
   .answer-grid {
     grid-template-columns: 1fr;
   }
@@ -2543,53 +2568,6 @@ h1 {
 .black-key:disabled {
   cursor: not-allowed;
   opacity: 0.45;
-}
-/* Notation trainer (roadmap №558). The mode switch sits above whichever
-   exercise is showing; the kind and level rows are inside its card. */
-.practice-modes {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-}
-.practice-modes button,
-.exercise-kinds button,
-.exercise-levels button {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 13px;
-  border: 1px solid var(--c-rule-strong);
-  border-radius: 999px;
-  background: var(--c-surface);
-  color: var(--c-ink-2);
-  font-size: 13px;
-  cursor: pointer;
-}
-.practice-modes button:hover,
-.exercise-kinds button:hover,
-.exercise-levels button:hover {
-  border-color: var(--c-link);
-  color: var(--c-link);
-}
-.practice-modes .selected,
-.exercise-kinds .selected,
-.exercise-levels .selected {
-  background: var(--c-link);
-  border-color: var(--c-link);
-  color: var(--c-surface);
-}
-.exercise-kinds,
-.exercise-levels {
-  display: flex;
-  gap: 7px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-.exercise-levels button {
-  font-size: 12px;
-  padding: 5px 11px;
 }
 .exercise-prompt {
   text-align: center;

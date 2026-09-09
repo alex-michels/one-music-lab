@@ -56,8 +56,10 @@ test('Typing validates localized names, rejects blanks, grades spelling and lock
     expect(picture.getAttribute('aria-labelledby')).toBe(
       picture.querySelector('title').id,
     );
-    // Accessible description conveys the notation, without leaking the note name.
-    expect(picture.querySelector('title').textContent).toContain(t.clef);
+    // The picture is the question, so while it is unanswered it says only what
+    // is being asked. Reading out the clef and the position, as it used to,
+    // spelled the answer to a screen-reader user before they had answered.
+    expect(picture.querySelector('title').textContent).toBe(t.unsolved);
     await click(t.type);
     await click(t.check);
     expect(container.querySelector('[role="alert"]').textContent).toBe(
@@ -70,6 +72,11 @@ test('Typing validates localized names, rejects blanks, grades spelling and lock
     expect(onAnswer).toHaveBeenCalledExactlyOnceWith(item.answer);
     expect(container.querySelector('input').disabled).toBe(true);
     expect(container.textContent).toContain(t.answer);
+    // Once it has been answered the description is feedback, not the key, so
+    // the notation is spelled out in full.
+    const named = container.querySelector('svg.staff title').textContent;
+    expect(named).toContain(t.clef);
+    expect(named).toContain(t.sign);
     await clean();
   }
 });

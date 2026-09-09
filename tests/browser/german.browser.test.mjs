@@ -7,7 +7,6 @@ import {
   Experiments,
   Theory,
   Encyclopedia,
-  Practice,
 } from '../../components/learning.tsx';
 import { ChordsLab } from '../../components/chords-lab.tsx';
 import { lessons, terms } from '../../lib/learning.ts';
@@ -106,7 +105,7 @@ test('German persists, updates metadata and all navigation, uses H on the keyboa
     // subject's own title; the other four are indexes and keep theirs.
     ['Akkordlabor', 'Einen Akkord aufbauen'],
     ['Musiktheorie', 'Die Ideen hinter der Musik.'],
-    ['Gehörbildung', 'Hören lernen.'],
+    ['Übungen', 'Eine Regel nach der anderen.'],
     ['Lexikon', 'Die Sprache der Musik.'],
     ['Klanglabor', 'Klang in deinen Händen.'],
   ]) {
@@ -149,7 +148,7 @@ test('All six German lessons include translated prose, experiments and formulas,
       lessonId,
       setLessonId: vi.fn(),
       openLab,
-      openPractice: vi.fn(),
+      anchor: null,
     });
     // The title is the shell's subject line now, not something the lens
     // repeats; the first test above is what checks it reaches the page.
@@ -167,10 +166,14 @@ test('All six German lessons include translated prose, experiments and formulas,
     lessonId: null,
     setLessonId: vi.fn(),
     openLab: vi.fn(),
-    openPractice: vi.fn(),
+    anchor: null,
   });
   expect(container.querySelectorAll('.topic-row')).toHaveLength(lessons.length);
-  await render(Encyclopedia, { lang: 'de', openLesson: vi.fn() });
+  await render(Encyclopedia, {
+    lang: 'de',
+    openLesson: vi.fn(),
+    subject: null,
+  });
   await search('Stimmführung');
   // The search reads every language's title plus the body of the active one,
   // so a second entry may legitimately mention the word. What has to hold is
@@ -271,23 +274,30 @@ test('The German chord lab transposes H/B, spells inversions, counts beats and g
   );
 });
 
-test('German interval training spells the heard third, explains mistakes and counts the result', async () => {
+test('German interval training spells the heard third and explains the mistake, in the lab', async () => {
   vi.spyOn(Math, 'random')
     .mockReturnValueOnce(0)
     .mockReturnValueOnce(2 / 12);
   const play = vi.fn().mockResolvedValue();
-  await render(Practice, { lang: 'de', reference: 440, play });
+  // Ear training is an experiment on the intervals tab now, not half of the
+  // trainer: it carries no rule, so it has nothing to file in the drill's
+  // ledger, and it cannot be answered without sound.
+  await render(Experiments, {
+    lang: 'de',
+    reference: 440,
+    tuning: 'equal',
+    play,
+  });
   await click('Übung starten'); // MIDI 59: h, followed by d′ (minor third).
   await click('Große Terz 2');
-  expect(container.querySelector('output').textContent).toContain(
-    'Kleine Terz · 3 Halbtöne',
-  );
+  const feedback = container.querySelector('.ear-training output');
+  expect(feedback.textContent).toContain('Kleine Terz · 3 Halbtöne');
   expect(container.querySelector('.answer-detail').textContent).toContain(
     'h → d′',
   );
   expect(container.querySelector('.answer-detail').textContent).toContain(
     'a′ = 440 Hz',
   );
-  await click('Übungsrunde zurücksetzen');
-  expect(container.textContent).toContain('Übung starten');
+  await click('Nächstes Intervall');
+  expect(container.querySelector('.ear-training output')).toBeNull();
 });

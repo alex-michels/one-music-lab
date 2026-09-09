@@ -28,6 +28,7 @@ export const staffWords = {
     signs: ['double flat', 'flat', 'none', 'sharp', 'double sharp'],
     help: 'Click a position or use the arrow keys. Home and End reach the lowest and highest positions. Then check your answer.',
     answer: 'Correct note:',
+    unsolved: 'The note to name',
     clefs: { treble: 'treble', bass: 'bass', alto: 'alto', tenor: 'tenor' },
   },
   ru: {
@@ -50,6 +51,7 @@ export const staffWords = {
     signs: ['дубль-бемоль', 'бемоль', 'без знака', 'диез', 'дубль-диез'],
     help: 'Нажмите на нужное место или используйте стрелки. Home и End — крайние положения. Затем проверьте ответ.',
     answer: 'Правильная нота:',
+    unsolved: 'Нота, которую нужно назвать',
     clefs: {
       treble: 'скрипичный',
       bass: 'басовый',
@@ -77,6 +79,7 @@ export const staffWords = {
     signs: ['Doppel-Be', 'Be', 'ohne', 'Kreuz', 'Doppelkreuz'],
     help: 'Klicken Sie auf eine Position oder verwenden Sie die Pfeiltasten. Pos1 und Ende erreichen die tiefste und höchste Position. Prüfen Sie dann Ihre Antwort.',
     answer: 'Richtiger Ton:',
+    unsolved: 'Der zu benennende Ton',
     clefs: {
       treble: 'Violinschlüssel',
       bass: 'Bassschlüssel',
@@ -224,12 +227,18 @@ export function StaffAnswer({
         />
       ) : (
         <div className="exercise-staff">
+          {/* The picture must not read the answer out. `Staff` names itself
+              from the pitches it drew, which is the right description of an
+              illustration and exactly the wrong one of a question: a screen
+              reader was told the note before being asked to name it. The full
+              description arrives once the answer has been given, where it is
+              feedback rather than the answer key. */}
           <Staff
             pitches={staff.pitches}
             clef={staff.clef}
             lang={lang}
             space={18}
-            label={description}
+            label={done ? description : t.unsolved}
           />
         </div>
       )}

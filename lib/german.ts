@@ -67,7 +67,9 @@ export const german = {
   'Sound lab': 'Klanglabor',
   'Chords lab': 'Akkordlabor',
   'Music theory': 'Musiktheorie',
-  Practice: 'Gehörbildung',
+  // Not 'Gehörbildung': ear training moved to the lab and everything left in
+  // this page is read off the page rather than heard (docs/notation-chapter.md).
+  Practice: 'Übungen',
   Encyclopedia: 'Lexikon',
   'YOUR MUSIC WORKSPACE': 'DEIN RAUM FÜR MUSIK',
   'EXPLORE BY DOING': 'DURCH AUSPROBIEREN ENTDECKEN',
@@ -1080,5 +1082,21 @@ export const german = {
   'Sound itself': 'Der Klang selbst',
   'Try it here': 'Hier ausprobieren',
   'Practise this rule': 'Diese Regel üben',
+  // The drill lens: the rule ledger and the two exits out of it.
+  'RULES THIS SESSION': 'REGELN IN DIESER SITZUNG',
+  'A rule you have missed comes up twice as often as one you have not.':
+    'Eine Regel, bei der Ihnen ein Fehler unterlaufen ist, kommt doppelt so oft an die Reihe wie eine fehlerfreie.',
+  'not yet asked': 'noch nicht gefragt',
+  'the passage': 'zum Text',
+  'the terms': 'zu den Begriffen',
+  'Start a new session': 'Neue Sitzung beginnen',
+  'One rule at a time.': 'Eine Regel nach der anderen.',
+  // Neutral names for an engraved question, so that the picture does not read
+  // the answer out to a screen reader before it has been asked.
+  'The place to read in another clef':
+    'Die Stelle, die im anderen Schlüssel zu lesen ist',
+  'The bar the sign stands in': 'Der Takt, in dem das Vorzeichen steht',
+  'Exercises use 12-tone equal temperament. Your chosen A4 is captured when each question starts.':
+    'Die Übungen verwenden die zwölfstufige gleichstufige Stimmung. Die gewählte Frequenz für a′ wird zu Beginn jeder Frage übernommen.',
 } as const;
 export type GermanKey = keyof typeof german;

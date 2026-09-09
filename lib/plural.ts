@@ -63,10 +63,20 @@ export const nouns = {
       many: 'коротких уроков',
     },
   },
+  mistakes: {
+    de: { one: 'Fehler', other: 'Fehler' },
+    en: { one: 'mistake', other: 'mistakes' },
+    ru: { one: 'ошибка', few: 'ошибки', many: 'ошибок' },
+  },
   octaves: {
     de: { one: 'Oktave', other: 'Oktaven' },
     en: { one: 'octave', other: 'octaves' },
     ru: { one: 'октаву', few: 'октавы', many: 'октав' },
+  },
+  questions: {
+    de: { one: 'Frage', other: 'Fragen' },
+    en: { one: 'question', other: 'questions' },
+    ru: { one: 'вопрос', few: 'вопроса', many: 'вопросов' },
   },
   semitones: {
     de: { one: 'Halbton', other: 'Halbtöne' },
