@@ -12,8 +12,8 @@ export const nt = (en: string, ru: string, de: string): LocalText => ({
 export const notationSources = {
   names: {
     title:
-      'Open Music Theory 2 · Pitch and Pitch Class · Octave designation and enharmonic equivalence',
-    url: 'https://viva.pressbooks.pub/openmusictheory/chapter/pitch-and-pitch-class/',
+      'Chelsey Hamm / Bryn Hughes · Open Music Theory 2 · American Standard Pitch Notation · ASPN and Octave Designations',
+    url: 'https://viva.pressbooks.pub/openmusictheory/chapter/aspn/',
   },
   accidentals: {
     title:
@@ -51,7 +51,7 @@ export const notationSources = {
   },
   rhythm: {
     title:
-      'Open Music Theory 2 · Notating Rhythm · Note Values / Rest Values / Dots and ties',
+      'Gotham / Hamm / Hughes · Open Music Theory 2 · Notating Rhythm · Note Values / Rest Values / Dots and ties',
     url: 'https://viva.pressbooks.pub/openmusictheory/chapter/notating-rhythm/',
   },
   tuplets: {
@@ -65,8 +65,13 @@ export const notationSources = {
   },
   marks: {
     title:
-      'Open Music Theory 2 · Other Aspects of Notation · Dynamics / Articulations / Tempo',
+      'Mark Gotham / Chelsey Hamm · Open Music Theory 2 · Other Aspects of Notation · Dynamics / Articulations / Tempo / Structural Features',
     url: 'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/',
+  },
+  tempo: {
+    title:
+      'Dolmetsch Online · Music Theory §5 Tempo · Table of Tempo Markings / Metronome Marks',
+    url: 'https://www.dolmetsch.com/musictheory5.htm',
   },
   beams: {
     title: 'LilyPond 2.24.4 · §1.2.4 Beams',
@@ -81,8 +86,9 @@ export const notationSources = {
     url: 'https://lilypond.org/doc/v2.24/Documentation/notation/repeats',
   },
   pitch: {
-    title: 'Open Music Theory 2 · Reading Clefs · Clefs and Ranges',
-    url: 'https://viva.pressbooks.pub/openmusictheory/chapter/reading-clefs/',
+    title:
+      'Chelsey Hamm · Open Music Theory 2 · Reading Clefs · Clefs and Ranges / Reading Treble, Bass, Alto and Tenor Clef',
+    url: 'https://viva.pressbooks.pub/openmusictheory/chapter/clefs/',
   },
 } as const;
 
@@ -402,7 +408,7 @@ export function performanceMarks(
               'Punkte und Keile zeigen Abstufungen des Absetzens, Tenuto ein Aushalten oder Gewichten, der Akzent eine Betonung. Ein Bogen kann Bindung oder Phrasierung bedeuten; zwischen verschiedenen Tonhöhen ist er kein Haltebogen. Das Atemzeichen regt eine Unterbrechung ohne universelle Millisekundenzahl an. Zeichen können zusammentreffen; Instrument, Stil und Phrase bestimmen die Ausführung. Ohne Bewertung.',
             )[lang],
       source: tempo
-        ? notationSources.terms
+        ? notationSources.tempo
         : dynamic
           ? notationSources.marks
           : notationSources.curves,
@@ -459,7 +465,7 @@ export function performanceMarks(
         `Единица метронома — ${unit.num}/${unit.den} целой ноты, не обязательно четверть: (${total}) ÷ (${unit.num}/${unit.den}) = ${beats}; ${beats} × 60 / ${bpm} = ${answer} с.`,
         `Die Metronomeinheit ist ${unit.num}/${unit.den} einer ganzen Note, nicht zwingend eine Viertel: (${total}) ÷ (${unit.num}/${unit.den}) = ${beats} Schläge; ${beats} × 60 / ${bpm} = ${answer} Sekunden.`,
       )[lang],
-      source: notationSources.marks,
+      source: notationSources.tempo,
     };
   }
   if (shape === 'dynamics') {
@@ -775,7 +781,7 @@ export function accidentalContext(
       (label) =>
         label === signatureReading
           ? 'ignored-the-sign'
-          : label === carriedOver
+          : scenario.stops && label === carriedOver
             ? 'carried-the-sign-too-far'
             : 'wrong-alteration',
     ),

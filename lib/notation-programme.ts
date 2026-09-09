@@ -54,6 +54,32 @@ export const notationContentSources = {
     title: 'Lehrklänge · Grundlagen · Notenschlüssel · Instrument examples',
     url: 'https://www.lehrklaenge.de/PHP/Grundlagen/Notenschluessel.php',
   },
+  bassoon: {
+    title: 'Vienna Symphonic Library Academy · Bassoon · Notation',
+    url: 'https://www.vsl.co.at/academy/woodwinds/bassoon',
+  },
+  trombone: {
+    title: 'Vienna Symphonic Library Academy · Tenor trombone · Notation',
+    url: 'https://www.vsl.co.at/academy/brass/tenor-trombone',
+  },
+  expression: {
+    title:
+      'Dolmetsch Online · Music Theory §21 · Tables of Dynamic and General Musical Markings',
+    url: 'https://www.dolmetsch.com/musictheory21.htm',
+  },
+  mancando: {
+    title: 'Dolmetsch Online · Music Dictionary M–Ma · mancando',
+    url: 'https://www.dolmetsch.com/defsm.htm',
+  },
+  tumultuoso: {
+    title: 'Dolmetsch Online · Music Dictionary Ts–Tz · tumultuoso',
+    url: 'https://www.dolmetsch.com/defst5.htm',
+  },
+  graphicHistory: {
+    title:
+      'Zach Gist / Chelsey Hamm · Open Music Theory 2 · Graphic Notation and Scores · A Brief History / Measuring Time and Hybrid Scores (chapter in development)',
+    url: 'https://viva.pressbooks.pub/openmusictheory/chapter/graphic-notation-and-scores/',
+  },
   ornamentNames: {
     title:
       'Lehrklänge · Lexikon · Verzierungen · Praller, Mordent, Doppelschlag, Schleifer, Arpeggio, Acciaccatura',
@@ -283,7 +309,7 @@ export const notationProgramme = {
     tasks: ['019'],
     module: 'F04',
     pages: '23–26',
-    source: notationSources.marks,
+    source: notationSources.tempo,
     text: nt(
       'Always read the note unit next to the metronome number. At quarter = 60 one quarter lasts one second; at eighth = 60 one eighth lasts one second. a tempo returns to the preceding tempo; Tempo I to the initial one. A fermata suspends regular timing without specifying a fixed multiplier. Tempo words also carry character and cannot be ranked as exact BPM values.',
       'Всегда читайте длительность рядом с числом метронома. При четверть = 60 четверть длится секунду; при восьмая = 60 секунду длится восьмая. A tempo возвращает предыдущий темп, Tempo I — первоначальный. Фермата нарушает регулярный отсчёт, не задавая точного множителя длительности. Темповые слова передают и характер, поэтому их нельзя ранжировать как точные значения метронома.',
@@ -514,6 +540,48 @@ export const notationForwardLinks: Record<string, string> = {
 };
 
 export const notationReferences = [
+  {
+    title: nt(
+      'Metronome history',
+      'История метронома',
+      'Geschichte des Metronoms',
+    ),
+    aliases: nt(
+      'Mälzel; Maelzel; Winkel; M.M.',
+      'Мельцель; Винкель; М. М.',
+      'Mälzel; Maelzel; Winkel; M. M.',
+    ),
+    body: nt(
+      'M.M. refers to Mälzel’s metronome. The development of the portable mechanical instrument involved both Winkel and Mälzel; Brian Blood’s account distinguishes technical improvements from Mälzel’s wider commercialization and reports disputed priority. In a score, the practical information remains the marked note value and its count per minute.',
+      'М. М. отсылает к метроному Мельцеля. В создании переносного механического прибора участвовали Винкель и Мельцель; Брайан Блад различает технические усовершенствования и широкое распространение прибора Мельцелем, отмечая спор о первенстве. Для чтения нот главное — указанная длительность и число её отсчётов в минуту.',
+      'M. M. verweist auf Mälzels Metronom. An der Entwicklung des tragbaren mechanischen Geräts waren Winkel und Mälzel beteiligt; Brian Blood unterscheidet technische Verbesserungen von Mälzels breiter Vermarktung und berichtet von umstrittener Priorität. Für das Notenlesen zählen der angegebene Notenwert und seine Anzahl pro Minute.',
+    ),
+    lesson: 'tempo',
+    source: notationSources.tempo,
+  },
+  {
+    title: nt(
+      'Unmarked articulation',
+      'Артикуляция без обозначений',
+      'Artikulation ohne Spielzeichen',
+    ),
+    aliases: nt(
+      'historical performance; default articulation',
+      'историческое исполнительство; нон легато',
+      'historische Aufführungspraxis; Non legato',
+    ),
+    body: nt(
+      'Missing slurs or dots do not prescribe identical playing in every period. Brian Blood contrasts Türk’s 1789 keyboard advice, which leaves a small gap in ordinary playing, with Clementi’s 1801 preference for sustained values. These are specific keyboard traditions, not a rule for all instruments or all eighteenth- and nineteenth-century music. Check the edition and performance context before choosing a default articulation.',
+      'Отсутствие лиг и точек не предписывает одинакового исполнения во все эпохи. Брайан Блад сопоставляет клавирные рекомендации Тюрка 1789 года, допускающие небольшой промежуток при обычном исполнении, с предпочтением Клементи 1801 года выдерживать длительности. Это конкретные клавирные традиции, а не правило для всех инструментов и всей музыки XVIII–XIX веков. Уточняйте редакцию и исполнительский контекст.',
+      'Fehlende Bögen oder Punkte verlangen nicht in jeder Epoche dasselbe Spiel. Brian Blood stellt Türks Klavierlehre von 1789, die beim gewöhnlichen Vortrag eine kleine Trennung vorsieht, Clementis Empfehlung von 1801 zum Aushalten der Notenwerte gegenüber. Das sind bestimmte Klaviertraditionen, keine Regel für alle Instrumente oder die gesamte Musik des 18. und 19. Jahrhunderts. Prüfe Ausgabe und Aufführungskontext.',
+    ),
+    lesson: 'articulation',
+    source: {
+      title:
+        'Brian Blood · Dolmetsch Online · Music Theory §21 · Slur & Phrase (Türk 1789 / Clementi 1801 comparison)',
+      url: 'https://www.dolmetsch.com/musictheory21.htm',
+    },
+  },
   {
     title: nt('Tempo words', 'Словесные обозначения темпа', 'Tempowörter'),
     body: nt(
@@ -765,6 +833,10 @@ export const notationReferences = [
     ),
     lesson: 'clefs',
     source: notationContentSources.instruments,
+    furtherSources: [
+      notationContentSources.bassoon,
+      notationContentSources.trombone,
+    ],
     forwardModules: ['N03'],
   },
   {
@@ -868,6 +940,7 @@ export const notationReferences = [
     ),
     lesson: 'tempo',
     source: notationSources.terms,
+    furtherSources: [notationSources.tempo],
   },
   {
     title: nt(
@@ -887,6 +960,7 @@ export const notationReferences = [
     ),
     lesson: 'tempo',
     source: notationSources.terms,
+    furtherSources: [notationSources.tempo],
   },
   {
     title: nt(
@@ -925,6 +999,7 @@ export const notationReferences = [
     ),
     lesson: 'tempo',
     source: notationSources.terms,
+    furtherSources: [notationSources.tempo],
   },
   {
     title: nt(
@@ -944,6 +1019,7 @@ export const notationReferences = [
     ),
     lesson: 'dynamics',
     source: notationSources.terms,
+    furtherSources: [notationContentSources.expression],
   },
   {
     title: nt(
@@ -963,6 +1039,10 @@ export const notationReferences = [
     ),
     lesson: 'dynamics',
     source: notationSources.terms,
+    furtherSources: [
+      notationContentSources.expression,
+      notationContentSources.tumultuoso,
+    ],
   },
   {
     title: nt(
@@ -982,6 +1062,7 @@ export const notationReferences = [
     ),
     lesson: 'dynamics',
     source: notationSources.terms,
+    furtherSources: [notationSources.tempo, notationContentSources.expression],
   },
   {
     title: nt(
@@ -991,16 +1072,20 @@ export const notationReferences = [
     ),
     aliases: nt('mancando', 'манкандо; ослабевая', 'mancando'),
     body: nt(
-      'In Wolf’s 1985 text, mancando combines a decrease in strength and movement. This is an attributed historical reading, not a universal playback rule. Independent current-source verification is pending; consult the edition before deciding how the passage should subside.',
-      'В тексте Вольфа редакции 1985 года mancando объединяет ослабление силы и движения. Это историческое толкование с указанием источника, а не универсальное правило воспроизведения. Независимая современная сверка ещё не завершена; способ угасания уточняйте по редакции.',
-      'In Wolfs Textfassung von 1985 verbindet mancando ein Nachlassen von Stärke und Bewegung. Das ist eine zugeschriebene historische Lesart, keine allgemeine Wiedergaberegel. Die unabhängige Prüfung an einer aktuellen Quelle steht aus; kläre das Nachlassen anhand der Ausgabe.',
+      'Mancando asks the sound to lose strength. Dolmetsch’s dictionary describes fading, while its tempo table includes slowing as well as softening, as does Wolf’s 1985 account. These descriptions guide interpretation; they do not prescribe a numerical tempo or gain curve. Decide how the passage subsides from its phrase, instrument and edition.',
+      'Mancando — ослабевая. Словарь Dolmetsch описывает угасание, а таблица темпов того же издания включает замедление вместе с ослаблением звучности, как и изложение Вольфа 1985 года. Эти толкования направляют исполнение, но не задают числовой кривой темпа или громкости. Характер угасания определяют фраза, инструмент и редакция.',
+      'Mancando verlangt ein Nachlassen der Klangstärke. Das Dolmetsch-Wörterbuch beschreibt ein Verlöschen; seine Tempotabelle nennt zusätzlich eine Verlangsamung, ebenso wie Wolfs Darstellung von 1985. Daraus folgt keine feste Tempo- oder Lautstärkekurve. Phrase, Instrument und Ausgabe bestimmen, wie die Passage nachlässt.',
     ),
     lesson: 'dynamics',
-    source: {
-      title:
-        'S33 · Erich Wolf · Allgemeine Musiklehre · 7., korrigierte Auflage 1985, Nachdruck 2016 · §15b, p.28 · Historical wording only',
-      url: 'https://github.com/alex-michels/one-music-lab/blob/main/docs/sources.md',
-    },
+    source: notationContentSources.mancando,
+    furtherSources: [
+      notationSources.tempo,
+      {
+        title:
+          'S33 · Erich Wolf · Allgemeine Musiklehre · 7., korrigierte Auflage 1985, Nachdruck 2016 · §15b, p.28 · Historical wording only',
+        url: 'https://github.com/alex-michels/one-music-lab/blob/main/docs/sources.md',
+      },
+    ],
   },
   {
     title: nt(
@@ -1098,7 +1183,10 @@ export const notationReferences = [
     ),
     lesson: 'staff',
     source: notationSources.graphic,
-    furtherSources: [notationContentSources.pitches],
+    furtherSources: [
+      notationContentSources.pitches,
+      notationContentSources.graphicHistory,
+    ],
     forwardModules: ['N05'],
   },
   {

@@ -3,10 +3,10 @@ import { page, userEvent } from 'vitest/browser';
 import { act, createElement, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { NotesLab } from '../../components/notes-lab.tsx';
-import { Encyclopedia, Practice } from '../../components/learning.tsx';
+import { Encyclopedia, Practice, Theory } from '../../components/learning.tsx';
 import Home from '../../app/(root)/page.tsx';
 import { initialNotesLabState } from '../../lib/notation-experiments.ts';
-import { terms } from '../../lib/learning.ts';
+import { lessons, terms } from '../../lib/learning.ts';
 import { termAnchor, termSearchText, TOPIC_IDS } from '../../lib/topics.ts';
 import { routeFromHash } from '../../lib/client-store.ts';
 import { notationForwardLinks } from '../../lib/notation-programme.ts';
@@ -42,7 +42,82 @@ function ControlledLab(props) {
   });
 }
 
+// The module-scoped application stores read an initial address once per page load.
+test('A pasted term address opens the same reference after application hydration', async () => {
+  const target = terms.find((term) => term.title.en === 'Key signature');
+  window.history.replaceState(
+    null,
+    '',
+    `#/en/t/${target.lesson}/define~${termAnchor(target)}`,
+  );
+  await mount(Home);
+  expect(container.querySelector('.term-entry h2').textContent).toBe(
+    'Key signature',
+  );
+  expect(container.querySelector('.term-entry .source-link')).not.toBeNull();
+});
+
 for (const lang of ['en', 'ru', 'de']) {
+  test(`The thirteen notation lessons form a complete reading route in ${lang}`, async () => {
+    const order = [
+      'note-names',
+      'staff',
+      'clefs',
+      'accidental-signs',
+      'accidental-scope',
+      'enharmonics',
+      'durations',
+      'dots-ties',
+      'beat-division',
+      'tempo',
+      'dynamics',
+      'articulation',
+      'repeats',
+    ];
+    await page.viewport(390, 844);
+    await mount(Home);
+    await act(async () => {
+      window.history.replaceState(null, '', `#/${lang}/t/note-names/read`);
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    for (let index = 0; index < order.length; index++) {
+      const nav = container.querySelector('.lesson-navigation');
+      expect(nav).not.toBeNull();
+      expect(nav.querySelector('p').textContent).toContain(`${index + 1} / 13`);
+      const previous = nav.querySelector('[rel="prev"]');
+      const next = nav.querySelector('[rel="next"]');
+      expect(previous?.hash ?? null).toBe(
+        index ? `#/${lang}/t/${order[index - 1]}/read` : null,
+      );
+      expect(next?.hash ?? null).toBe(
+        index < 12 ? `#/${lang}/t/${order[index + 1]}/read` : null,
+      );
+      expect(nav.scrollWidth).toBeLessThanOrEqual(nav.clientWidth + 1);
+      if (next) {
+        expect(next.textContent).toContain(
+          lessons.find((lesson) => lesson.id === order[index + 1]).title[lang],
+        );
+        await act(async () => {
+          await page.elementLocator(next).click();
+        });
+        await expect
+          .poll(() => window.location.hash)
+          .toBe(`#/${lang}/t/${order[index + 1]}/read`);
+        const heading = container.querySelector('.subject-title');
+        expect(document.activeElement).toBe(heading);
+        const bounds = heading.getBoundingClientRect();
+        expect(bounds.top).toBeGreaterThanOrEqual(0);
+        expect(bounds.bottom).toBeLessThanOrEqual(window.innerHeight);
+      }
+    }
+    const previous = container.querySelector('.lesson-navigation [rel="prev"]');
+    await act(async () => {
+      await page.elementLocator(previous).click();
+    });
+    await expect
+      .poll(() => window.location.hash)
+      .toBe(`#/${lang}/t/articulation/read`);
+  });
   test(`Reference entries expose their related lessons, future modules and additional sources in ${lang}`, async () => {
     for (const title of [
       'Figured bass',
@@ -148,6 +223,61 @@ for (const lang of ['en', 'ru', 'de']) {
   });
 }
 
+test('Notation navigation is absent from the index, unrelated lessons and unknown lesson IDs', async () => {
+  for (const lessonId of [null, 'sound', 'missing']) {
+    await mount(Theory, {
+      lang: 'en',
+      lessonId,
+      anchor: null,
+      setLessonId: vi.fn(),
+      openLab: vi.fn(),
+    });
+    expect(container.querySelector('.lesson-navigation')).toBeNull();
+  }
+});
+
+test('The lesson experiment heading remains readable on its card in both themes', async () => {
+  const theme = document.documentElement.dataset.theme;
+  const luminance = (color) =>
+    color
+      .match(/[\d.]+/g)
+      .slice(0, 3)
+      .map((value) => {
+        const channel = Number(value) / 255;
+        return channel <= 0.04045
+          ? channel / 12.92
+          : ((channel + 0.055) / 1.055) ** 2.4;
+      })
+      .reduce(
+        (sum, channel, index) =>
+          sum + channel * [0.2126, 0.7152, 0.0722][index],
+        0,
+      );
+  try {
+    for (const mode of ['light', 'dark']) {
+      document.documentElement.dataset.theme = mode;
+      for (const lang of ['en', 'ru', 'de']) {
+        await mount(Theory, {
+          lang,
+          lessonId: 'staff',
+          anchor: null,
+          setLessonId: vi.fn(),
+          openLab: vi.fn(),
+        });
+        const card = container.querySelector('.lesson-experiment');
+        const [high, low] = [
+          luminance(getComputedStyle(card.querySelector('h3')).color),
+          luminance(getComputedStyle(card).backgroundColor),
+        ].sort((a, b) => b - a);
+        expect((high + 0.05) / (low + 0.05)).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  } finally {
+    if (theme === undefined) delete document.documentElement.dataset.theme;
+    else document.documentElement.dataset.theme = theme;
+  }
+});
+
 test('Advancing the actual trainer reaches the mixed pitch-and-rhythm excerpts', async () => {
   // Staff has a single-pitch rule followed by the excerpt rule. Choose the latter.
   vi.spyOn(Math, 'random').mockReturnValue(0.9999);
@@ -180,20 +310,6 @@ test('Advancing the actual trainer reaches the mixed pitch-and-rhythm excerpts',
   expect(
     container.querySelector('.notation-response [aria-live]').textContent,
   ).toContain('Rhythm:');
-});
-
-test('A pasted term address opens the same reference after application hydration', async () => {
-  const target = terms.find((term) => term.title.en === 'Key signature');
-  window.history.replaceState(
-    null,
-    '',
-    `#/en/t/${target.lesson}/define~${termAnchor(target)}`,
-  );
-  await mount(Home);
-  expect(container.querySelector('.term-entry h2').textContent).toBe(
-    'Key signature',
-  );
-  expect(container.querySelector('.term-entry .source-link')).not.toBeNull();
 });
 
 test('Search includes localized aliases without mixing interface languages', () => {

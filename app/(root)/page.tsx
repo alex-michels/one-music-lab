@@ -651,7 +651,11 @@ export default function Home() {
     // is not one. Someone who followed a link is already where they meant to be.
     if (!moved.current) return;
     moved.current = false;
+    // A lesson link can be at the bottom of a long article. WebKit can leave
+    // this heading focused during a pointer click, so focus alone may not
+    // scroll. Move the viewport explicitly as well as announcing the topic.
     headingRef.current?.focus({ preventScroll: true });
+    headingRef.current?.scrollIntoView({ block: 'start' });
   }, [route.lens, route.topic]);
   // The first hashchange listener this app has had. Back and Forward move
   // through the site now instead of leaving it, and a pasted address is read

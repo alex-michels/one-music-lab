@@ -1,6 +1,9 @@
 'use client';
 import { nt } from '@/lib/notation-tasks';
-import { notationForwardLinks } from '@/lib/notation-programme';
+import {
+  notationForwardLinks,
+  notationProgramme,
+} from '@/lib/notation-programme';
 import { termAnchor, termSearchText } from '@/lib/topics';
 import { translator, type Translate } from '@/lib/i18n';
 
@@ -58,6 +61,7 @@ import { NotationResponse } from './notation-response';
 import { NotationReading } from './notation-reading';
 import type { Wave } from '@/lib/music';
 type Lang = import('@/lib/client-store').Lang;
+const notationOrder = Object.keys(notationProgramme);
 
 type SortBy = 'term' | 'kind';
 
@@ -189,6 +193,9 @@ export function Theory({
 }) {
   const t = translator(lang);
   const lesson = lessons.find((l) => l.id === lessonId);
+  const position = notationOrder.indexOf(lessonId ?? '');
+  const previous = topicById[notationOrder[position - 1] as TopicId];
+  const next = topicById[notationOrder[position + 1] as TopicId];
   if (lesson)
     return (
       <article className="lens-read lesson-article">
@@ -211,9 +218,8 @@ export function Theory({
         />
         <div className="formula">{lesson.formula[lang]}</div>
         <NotationReading topic={lesson.id} lang={lang} />
-        {/* The instrument is the other half of the page, not an illustration
-            inside it: it breaks out to twice the prose measure. */}
-        <aside className="breakout bed lesson-experiment">
+        {/* The experiment card links the explanation to its laboratory. */}
+        <aside className="breakout lesson-experiment">
           <div className="eyebrow">{t('MAKE IT AUDIBLE', 'УСЛЫШЬТЕ ЭТО')}</div>
           <Headphones size={32} />
           <h3>{t('Try it in the lab', 'Попробуйте в лаборатории')}</h3>
@@ -240,6 +246,59 @@ export function Theory({
           {t('Further reading', 'Для дальнейшего чтения')}
           <ArrowUpRight size={15} />
         </a>
+        {position >= 0 && (
+          <nav
+            className="lesson-navigation"
+            aria-label={
+              nt(
+                'Notation programme',
+                'Программа нотной записи',
+                'Notenschrift lernen',
+              )[lang]
+            }
+          >
+            <p className="eyebrow">
+              {nt('Lesson', 'Урок', 'Lektion')[lang]} {position + 1} /{' '}
+              {notationOrder.length}
+            </p>
+            {previous && (
+              <a
+                rel="prev"
+                href={hashOf({
+                  lang,
+                  lens: 'read',
+                  topic: previous.id,
+                  anchor: null,
+                })}
+              >
+                <span>
+                  {
+                    nt('Previous lesson', 'Предыдущий урок', 'Vorige Lektion')[
+                      lang
+                    ]
+                  }
+                </span>
+                {previous.title[lang]}
+              </a>
+            )}
+            {next && (
+              <a
+                rel="next"
+                href={hashOf({
+                  lang,
+                  lens: 'read',
+                  topic: next.id,
+                  anchor: null,
+                })}
+              >
+                <span>
+                  {nt('Next lesson', 'Следующий урок', 'Nächste Lektion')[lang]}
+                </span>
+                {next.title[lang]}
+              </a>
+            )}
+          </nav>
+        )}
       </article>
     );
   const groupName: Record<TopicKind, string> = {
@@ -250,8 +309,7 @@ export function Theory({
   };
   return (
     <div className="lens-read">
-      {/* In reading order, grouped by what they are about. The only sequence
-          marker on the site is the one pointer at the first topic. */}
+      {/* Grouped by subject; the notation lessons also have a reading route. */}
       {TOPIC_KINDS.map((group) => {
         const inGroup = topics.filter((topic) => topic.kind === group);
         if (!inGroup.length) return null;

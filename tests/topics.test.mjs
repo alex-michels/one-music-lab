@@ -78,7 +78,7 @@ test('The kind census accounts for every term exactly once', () => {
   const census = { sign: 0, concept: 0, measure: 0, tone: 0 };
   for (const topic of topics)
     census[topic.kind] += termsByTopic[topic.id].length;
-  assert.deepEqual(census, { sign: 45, concept: 51, measure: 36, tone: 7 });
+  assert.deepEqual(census, { sign: 45, concept: 52, measure: 37, tone: 7 });
   assert.equal(
     Object.values(census).reduce((a, b) => a + b, 0),
     terms.length,

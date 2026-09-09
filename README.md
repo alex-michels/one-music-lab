@@ -30,7 +30,7 @@ and still requires the owner's authorization.
 
 - **Notation prototype (№553):** the Notes lab draws four clefs, ledger lines and accidentals locally. Practice → Reading notation → Read a note supports choices, typed EN/RU/DE note names and pointer/keyboard placement. See the [user guide, engine evidence and limits](docs/notation-engine.md).
 
-- **Notation programme (№558):** thirteen notation lessons, localized reading, bounded Notes-lab experiments, per-note practice feedback and sourced reference entries. The [PDF coverage and evidence record](docs/notation-programme.md) distinguishes implemented material, scoped exclusions and outstanding acceptance requirements; this is not a gate-G release.
+- **Notation programme (№558):** thirteen connected EN/RU/DE lessons, bounded Notes-lab experiments, per-note practice feedback and sourced reference entries. Start with **Read → Note names and octaves** and follow the previous/next lesson links; use the four views of each topic to read, experiment, practise and look up terms. The [PDF coverage and evidence record](docs/notation-programme.md) explains the programme's scope and checks for personal learning. Public release remains separate.
 
 - **Chords lab** (`/#chords`): editable and transposable progressions with full undo and redo, 16 chord types through ninths, inversions, EN/RU/DE pitch spelling, a visual keyboard, applied-dominant marking, and a sourced library of 22 starting points — cadences, classical schemas, pop and rock loops, jazz turnarounds, blues forms and mode mixture — with a per-chord register control, one-click fitting of a progression to its scale, eight accompaniment figures (block chords, arpeggios, Alberti bass, afterbeats, offbeats) and root-identification feedback. See the [user guide, research and limitations](docs/chords-lab.md).
 - Continuous 20–20,000 Hz oscillator, four waveforms, logarithmic frequency control, cents readout and live analyser waveform.
@@ -98,6 +98,12 @@ the narrow lint allowance for explicit native-list roles. See the
 yet, so an untested module appears at 0% instead of disappearing. The current
 measurement is complete, the coverage itself is not. Task-specific results and
 remaining gaps are recorded in the [notation programme evidence](docs/notation-programme.md).
+
+The notation regression suites also check that feedback describes the selected
+mistake, that all thirteen lessons are connected in reading order, that duration
+options require reading similar symbols, and that metronome questions respect
+the printed beat unit. Source links distinguish
+current terminology from historically bounded performance conventions.
 
 `npm run test:browser` runs the audio and component suites in real Chromium,
 Firefox and WebKit, so run `npx playwright install` once first. The audio tests

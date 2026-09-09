@@ -34,6 +34,10 @@ displays or adding Russian duplicates for every pitch label (see CONTRIBUTING.md
   must pass.
 - Keep setup instructions reproducible on Windows, macOS, and Linux. Update the
   README and relevant developer/user documentation in the same PR as changes.
+- The current product is for the owner’s personal learning. External subject or
+  language approval is not a prerequisite for personal-use completion. Keep
+  source verification, musical correctness, usable learning paths and tests;
+  apply the personal-use scope of gate G below. Public release is separate.
 - A topic is complete only after gate G (docs/release-criteria.md): sourced
   EN/RU/DE theory, working laboratory, meaningful practice with feedback, encyclopedia, tests, rights,
   accessibility, review, documentation, and a publishable artifact.

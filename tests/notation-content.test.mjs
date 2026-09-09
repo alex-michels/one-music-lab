@@ -159,7 +159,7 @@ test('Corrected reading does not reinstate universal tuplet ratios or cross-syst
       .paragraphs[1][lang];
     expect(returns).toContain('al Coda');
   }
-  expect(reference('Mancando: historical vocabulary').body.en).toContain(
-    'verification is pending',
+  expect(reference('Mancando: historical vocabulary').source.url).toBe(
+    'https://www.dolmetsch.com/defsm.htm',
   );
 });

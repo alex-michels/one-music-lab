@@ -107,4 +107,6 @@ The PR contains the implementation, localized controls, regression tests,
 reproduction instructions, rights notices and CI artifacts. The exact PR, commit,
 validation results and any remaining platform limitations are recorded in that
 PR's description and linked CI run. This engineering acceptance does not substitute
-for the named musical/language reviewers required for publishing curriculum topics.
+for source and language checking of curriculum topics. The owner's current
+personal-learning scope does not require external subject/language sign-off;
+public publication remains a separate decision under [gate G](release-criteria.md).

@@ -157,6 +157,9 @@ test('Mixed excerpt feedback preserves pitch successes when a duration answer is
       })),
     ],
   };
+  // The Item contract also accepts pitch parts without a kind. They must
+  // still count toward pitch success when combined with rhythm questions.
+  delete item.parts[0].kind;
   const complete = vi.fn();
   await mount(NotationResponse, { item, onComplete: complete });
   const fields = [...container.querySelectorAll('fieldset')];

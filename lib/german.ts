@@ -43,8 +43,8 @@ export const german = {
     'Oktavbezeichnungen unterscheiden die Tonlagen. Die wissenschaftliche Schreibweise verwendet Zahlen (C4), die Helmholtz-Bezeichnung Groß- und Kleinbuchstaben mit Strichen (c′); die russische Tradition verwendet Oktavnamen. Diese verschiedenen Systeme bezeichnen dieselbe Tonhöhe.',
   'In Notes, select C in octave 4. Use the note buttons up to B, then select C in octave 5. Play and name each note.':
     'Wählen Sie unter Noten das c′. Gehen Sie mit den Tonknöpfen bis h′ und wählen Sie dann c″. Spielen und benennen Sie jeden Ton.',
-  'Compare the two pitch examples: C4 and G4 one after another, then together. Relate these to horizontal order and simultaneous notes in the lesson; this lab currently uses note names.':
-    'Vergleichen Sie die Tonhöhenbeispiele: c′ und g′ nacheinander, dann gleichzeitig. Ordnen Sie sie der zeitlichen Folge und Gleichzeitigkeit im Unterricht zu; dieses Labor arbeitet derzeit mit Tonnamen.',
+  'Compare the two pitch examples: C4 and G4 one after another, then together. Relate what you hear to the order and alignment of notes on the staff.':
+    'Vergleichen Sie die Tonhöhenbeispiele: c′ und g′ nacheinander, dann gleichzeitig. Vergleichen Sie das Gehörte mit der Reihenfolge und vertikalen Anordnung der Noten im Notensystem.',
   'Compare One whole note, Two half notes and Four quarter notes at the same tempo. The written values fill the same four quarter-note beats; count the attacks.':
     'Vergleichen Sie bei gleichem Tempo eine ganze Note, zwei halbe Noten und vier Viertelnoten. Die notierten Werte füllen dieselben vier Viertelzählzeiten; zählen Sie die Toneinsätze.',
   'Compare Two separate quarter notes with Two quarter notes tied. Both fill two beats; the tied example has one attack and one sustained sound.':
@@ -935,10 +935,6 @@ export const german = {
   'Change of clef': 'Schlüsselwechsel',
   'That is what the same place would mean in another clef. The clef at the start decides which pitch each line and space carries.':
     'So läse sich dieselbe Stelle in einem anderen Schlüssel. Der Schlüssel am Anfang bestimmt, welcher Ton auf jeder Linie und in jedem Zwischenraum steht.',
-  'That is the note without its sign. The sign belongs to the note it stands in front of.':
-    'Das ist der Ton ohne sein Zeichen. Das Zeichen gehört zu der Note, vor der es steht.',
-  'The sign stopped at the barline. Beyond it the note is plain again unless it is written anew.':
-    'Das Zeichen endete am Taktstrich. Dahinter steht der Ton wieder ohne Zeichen, sofern es nicht erneut gesetzt wird.',
   'The note to name': 'Der zu benennende Ton',
   'Search a term…': 'Begriff suchen …',
   'Compare the clef, position and accidental with the correct note.':

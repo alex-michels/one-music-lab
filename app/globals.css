@@ -2255,6 +2255,30 @@ h1 {
   margin: 28px 0;
   overflow-x: auto;
 }
+.lesson-navigation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--c-rule);
+}
+.lesson-navigation > p {
+  grid-column: 1 / -1;
+}
+.lesson-navigation a {
+  color: var(--c-link);
+  overflow-wrap: anywhere;
+}
+.lesson-navigation a span {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.lesson-navigation a[rel='next'] {
+  grid-column: 2;
+  text-align: right;
+}
 .source-link {
   display: inline-flex;
   align-items: center;
@@ -2860,6 +2884,7 @@ h1 {
   color: var(--c-ink-3);
 }
 .subject-title {
+  scroll-margin-block-start: var(--sp-4);
   font-size: var(--t-h1);
   line-height: var(--lh-h1);
   letter-spacing: var(--ls-h1);

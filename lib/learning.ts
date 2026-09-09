@@ -241,8 +241,8 @@ export const lessons = [
       ),
     ],
     experiment: b(
-      'Compare the two pitch examples: C4 and G4 one after another, then together. Relate these to horizontal order and simultaneous notes in the lesson; this lab currently uses note names.',
-      'Сравните два примера: до и соль первой октавы по очереди, затем одновременно. Соотнесите их с последовательностью и одновременным звучанием в уроке; сейчас лаборатория работает с названиями нот.',
+      'Compare the two pitch examples: C4 and G4 one after another, then together. Relate what you hear to the order and alignment of notes on the staff.',
+      'Сравните два примера: до и соль первой октавы по очереди, затем одновременно. Соотнесите услышанное с порядком и вертикальным расположением нот на стане.',
     ),
     hz: 261.625565,
     wave: 'triangle',
@@ -495,7 +495,7 @@ export const lessons = [
     hz: 440,
     wave: 'sine',
     source:
-      'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/#tempo',
+      'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/#chapter-4083-section-3',
   },
   {
     id: 'dynamics',
@@ -524,7 +524,7 @@ export const lessons = [
     hz: 440,
     wave: 'sine',
     source:
-      'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/#dynamics',
+      'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/#chapter-4083-section-1',
   },
   {
     id: 'articulation',
@@ -556,7 +556,7 @@ export const lessons = [
     hz: 261.625565,
     wave: 'triangle',
     source:
-      'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/#articulations',
+      'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/#chapter-4083-section-2',
   },
   {
     id: 'repeats',
@@ -588,7 +588,7 @@ export const lessons = [
     hz: 391.995436,
     wave: 'triangle',
     source:
-      'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/#structural-features',
+      'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/#chapter-4083-section-4',
   },
 ];
 export const terms = [
@@ -1615,13 +1615,15 @@ export const exerciseExplanations: Record<ErrorTag, LocalText> = {
     'That is what the same place would mean in another clef. The clef at the start decides which pitch each line and space carries.',
     'Так это место читалось бы в другом ключе. Ключ в начале определяет, какая нота стоит на каждой линейке и в каждом промежутке.',
   ),
-  'ignored-the-sign': b(
-    'That is the note without its sign. The sign belongs to the note it stands in front of.',
-    'Это нота без знака. Знак относится к той ноте, перед которой он стоит.',
+  'ignored-the-sign': nt(
+    'Check the effective accidental. A local sign replaces the signature at that letter and octave; it can still apply to a later note in the bar or a tied continuation.',
+    'Проверьте действующий знак. Случайный знак заменяет ключевой на той же ступени в той же октаве; он может сохраняться у последующей ноты в такте или у связанного продолжения.',
+    'Prüfe das geltende Versetzungszeichen. Es ersetzt das Tonartvorzeichen für denselben Stammton in derselben Oktave und kann noch für eine spätere Note im Takt oder eine gebundene Fortsetzung gelten.',
   ),
-  'carried-the-sign-too-far': b(
-    'The sign stopped at the barline. Beyond it the note is plain again unless it is written anew.',
-    'Знак закончился на тактовой черте. За ней нота снова без знака, если он не выставлен заново.',
+  'carried-the-sign-too-far': nt(
+    'For a new attack after the barline, read the key signature again unless a new local sign applies. A tied continuation retains the previous pitch but does not set a local accidental for later attacks.',
+    'При новой атаке после тактовой черты снова учитывайте ключевые знаки, если не действует новый случайный знак. Связанное продолжение сохраняет прежнюю высоту, но не устанавливает случайный знак для последующих атак.',
+    'Für einen neuen Anschlag nach dem Taktstrich gilt wieder die Tonart, sofern kein neues Versetzungszeichen gilt. Eine gebundene Fortsetzung behält die vorherige Tonhöhe, setzt aber kein Versetzungszeichen für spätere Anschläge.',
   ),
   'one-step-too-long': b(
     'That value is one step longer than the group uses. The written value comes from the next larger regular division, not from the starting value.',
