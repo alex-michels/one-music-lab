@@ -90,6 +90,12 @@ export function assertStaffPitch(pitch: SpelledPitch) {
     );
 }
 
+export function placementRange(ledgerLines: number): readonly [number, number] {
+  if (!Number.isInteger(ledgerLines) || ledgerLines < 0 || ledgerLines > 6)
+    throw new RangeError('Use 0–6 ledger lines per side');
+  return [-2 * ledgerLines - 1, 9 + 2 * ledgerLines];
+}
+
 /**
  * Ledger lines needed for a note, as step values. A note sitting in the space
  * just outside the staff needs none; the lines continue the staff's own

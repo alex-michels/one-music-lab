@@ -102,10 +102,10 @@ patches it per language (`app/page.tsx:516-518`).
 ## 3 · Tokens
 
 Two namespaces, per Soundslice: `--c-*` is **chrome** and flips with the theme;
-`--s-*` is **score and instrument** and never flips. Notation is black ink on white
-paper in both themes *by construction*, not by hardcoding — today it survives a theme
-flip only by accident (`.staff { color: #1a201c }` at `globals.css:2842` over
-`.panel`'s literal `white`).
+`--s-*` is **score and instrument** and stays stable so the keyboard remains the same
+instrument in both themes. Notation surfaces add local `--notation-*` tokens: light
+ink on the panel surface in dark mode, and the score palette in light mode. This keeps
+the notes legible without recolouring the keys.
 
 Every ink token carries its measured ratio. Floor: 4.5:1 for text under 18 px, 3:1 for
 borders and focus rings.
@@ -226,7 +226,8 @@ borders and focus rings.
   --font-geist-sans: var(--type-sans); --font-geist-mono: var(--type-mono);
 }
 
-/* No --s-* token is redefined here, so notation stays #14181a on #ffffff. */
+/* No --s-* token is redefined here: instruments stay stable. Notation overrides
+   are scoped to score selectors below. */
 :root[data-theme='dark'] {
   color-scheme: dark;
   --c-ground: #101715; --c-surface: #17201d; --c-surface-sunk: #0c1211;
@@ -242,6 +243,19 @@ borders and focus rings.
   --st-right: #7fce9f; --st-wrong: #e88a7a;
   --st-right-wash: #152420; --st-wrong-wash: #2a1a17;
   --focus: #6cc6ff; --focus-halo: #6cc6ff40;  /* 9.66:1 */
+}
+
+.staff,
+.notation-figure,
+.notation-workbench > svg {
+  --notation-paper: var(--s-paper);
+  --notation-ink: var(--s-ink);
+}
+:root[data-theme='dark'] .staff,
+:root[data-theme='dark'] .notation-figure,
+:root[data-theme='dark'] .notation-workbench > svg {
+  --notation-paper: var(--c-surface);
+  --notation-ink: #e7fff1;
 }
 
 /* One ring, outline + halo, so it survives an unknown ground. Each ground
@@ -264,7 +278,7 @@ borders and focus rings.
   border-radius: var(--r-0);
   padding: var(--sp-3) var(--sp-4);
 }
-.paper .staff { color: var(--s-ink); }  /* replaces the literal #1a201c at 2842 */
+.staff { color: var(--notation-ink); background: var(--notation-paper); border: 0; }
 
 .bed {
   background: var(--s-ground);
@@ -542,8 +556,9 @@ appears here.
 **Colour:** one accent, `--s-live`, meaning exactly "this is sounding". Nothing else on
 this lens may be chromatic.
 
-**Paper:** the staff and both keyboards get `.paper` — a white rectangle on the dark bed,
-the highest-contrast object on the page, which is correct because it is the notation.
+**Paper:** the staff and notation figures use a local score surface. In dark mode it
+matches the panel and uses light ink, with no rectangular border; the keyboard keys keep
+their stable score palette while the keyboard panel follows chrome.
 
 **The one thing no other lens does:** it reads CSS custom properties into a canvas 2D
 context. `app/page.tsx:565/579/589-591` hardcode the oscilloscope's three colours; a canvas
@@ -825,7 +840,7 @@ Every step below is shippable on its own.
 | 1 | **Token layer, with aliases.** Replace `:root` 634-637, `:root` 672-682 and `.dark` 683-692. Leave `@custom-variant dark` and `@theme inline` untouched. Delete `globals.css:725-732` in the same commit. | `app/globals.css` | ~610 semantic-colour utilities across 60 vendored files resolve through `@theme inline`. Delete it and Select, Slider, Progress, Sidebar, Tabs and Dialog break site-wide. |
 | 2 | **Theme plumbing.** A `themeStore` beside `langStore`; `data-theme` **and** the `dark` class both written on `documentElement`; `color-scheme` in `layout.tsx`. `DEFAULT_THEME` is `'light'`, **not** `'system'` — see below. | `lib/client-store.ts`, `app/page.tsx`, `app/layout.tsx`, two tests | Writing only one channel leaves 23 vendored files rendering light values on a dark ground. |
 | 3 | **Literal sweep.** Retire every hardcoded colour onto the tokens, including `.panel`, which wrote literal `white` and `#e0e7e2` in place of the two tokens that exist for it. Point the oscilloscope's canvas at `--s-grid`/`--s-axis`/`--s-live`. Add `tests/tokens.test.mjs`. **Then flip `DEFAULT_THEME` to `'system'`** and `layout.tsx`'s meta to `light dark`, which is only honest once the sweep is done. | `app/globals.css`, `app/page.tsx`, `app/layout.tsx`, `lib/client-store.ts`, two tests | The sweep is a real palette change, not a rename — see below. |
-| 4 | **The paper namespace, with a regression test** asserting the staff's computed ink, paper and border are byte-identical under both themes, and that the chrome around it is not. The surface goes on `.staff` itself rather than on a `.paper` wrapper at each call site — see below. | `app/globals.css`, `tests/browser/staff.browser.test.mjs` | This test is the only thing that turns "notation never flips" from a promise into a regression test. |
+| 4 | **The notation surface, with a regression test** asserting the staff's computed ink and surface adapt to dark mode, the score has no border, and the chrome around it still flips. The local surface goes on `.staff` and notation figures rather than on a wrapper at each call site — see below. | `app/globals.css`, `tests/browser/staff.browser.test.mjs`, `tests/browser/notation-programme.browser.test.mjs` | These tests keep notation readable without changing the keyboard's instrument palette. |
 | 5 | **`lib/topics.ts`, the primary key.** 19 rows: id, order, kind, title, module, plus `termsByTopic`, `paragraphAnchors`, `drilledTopics` and `toneBedTopics`. `RULES` and the narrowed `Item.rule` go in `lib/exercises.ts`, which owns them; `ruleTopic` and `ruleKind` go in `lib/topics.ts`, which keeps the dependency one-way. | `lib/exercises.ts`, `lib/topics.ts`, `tests/topics.test.mjs` | No content is authored — every field derives from what exists. The id is the bare slug (decision 1). |
 | 6 | **Routing.** `Route` / `routeFromHash` / `hashOf`; language in the hash; `pushState`; the `hashchange` listener the repo lacks; `configureLab` writing the same address the nav does; `document.title` per topic per language. `DEFAULT_LENS` stays `play` until step 8 builds the read index — see below. | `lib/client-store.ts`, `app/page.tsx`, two tests | Breaks `chords-lab.browser.test.mjs:424` and `:438`, which assert `location.hash === '#chords'` after a click. |
 | 7 | **Shell.** Delete `.page-heading`, the `01` badge, `.breadcrumb` and `.beta-label`; add the skip link, `SubjectLine`, the lens rail with `aria-current`, the route announcer and focus-on-navigation. Bind the open lesson to `route.topic`, so a subject address opens that subject and the rail is real. **The nav rename moves to step 8** — see below. | `app/page.tsx`, `app/globals.css`, `lib/german.ts`, four browser tests | The chords lab is the play lens of one topic, so its heading becomes the topic's title: that is the `german.browser.test.mjs` breakage, and `notes-lab` loses its assumption that a lesson survives a page switch. All four of `navigation.browser.test.mjs`'s tests survive, because the nav labels do not change. |
@@ -986,19 +1001,19 @@ it were all caught. `lib/topics.ts` measures 100% on statements, branches, funct
 
 ### Where the score surface actually lives
 
-The staff paints every line and glyph with `currentColor` and had no background of its own,
-so it took whichever surface its container happened to paint. Every one of those containers —
-`.staff-frame`, `.exercise-staff`, `.staff-position`, all inside a `.panel` — is chrome, and
-chrome now flips. Measured on the running site the moment the dark theme was switched on:
-`--s-ink` **#14181a on #17201d, 1.07:1**. The notation was invisible, and no contrast audit
-caught it because a staff is not text.
+Before the local notation tokens were introduced, the staff painted every line and glyph with
+`currentColor` and had no background of its own, so it took whichever surface its container
+painted. Every one of those containers — `.staff-frame`, `.exercise-staff`, `.staff-position`,
+all inside a `.panel` — is chrome and flips. The old dark combination, `--s-ink` **#14181a on
+#17201d**, measured only 1.07:1; the notation was effectively invisible, and no contrast
+audit caught it because a staff is not text.
 
 The surface therefore goes on `.staff` itself, not on a `.paper` wrapper added at each call
 site. Six call sites exist today and more arrive with every lens; a rule that has to be
-remembered is a rule that will be forgotten, and forgetting it is invisible in the light theme
-where paper and card are the same white. `.staff` now carries `--s-paper`, `--s-ink` and an
-`--s-rule` hairline, all from the namespace no theme redefines. Light and dark both measure
-**17.87:1**.
+remembered is a rule that will be forgotten. `.staff`, notation figures and the workbench
+SVG define local `--notation-paper` and `--notation-ink` values. Light mode uses the score
+palette; dark mode uses the panel surface and light ink, with contrast above 10:1 and no
+score border.
 
 `.paper` stays a container class for the lens layouts, where a bed needs a sheet of paper set
 into it. It is deliberately not applied to `.keyboard-panel`: that card holds the keyboard's
@@ -1213,12 +1228,10 @@ pair are rewritten to assert the absence, as the spec said they would be.
 `<span>`, so a reader who could not hear the tone was told nothing when it started. It is an
 `<output aria-live="polite">` naming the state, the pitch and the frequency in ink.
 
-**`.paper` on the keyboards was already settled the other way, and stays settled.** Step 4
-decided the surface goes on `.staff` itself and deliberately not on `.keyboard-panel`, whose
-card holds chrome controls while the keys themselves are already score tokens. That decision
-survives the bed unchanged: the piano does not flip while the card under it does, which is what
-makes the keys and the notation the brightest objects on a dark ground without a class being
-remembered at each call site.
+**The keyboard palette stays settled.** Step 4 deliberately leaves `.keyboard-panel` as
+chrome and keeps the keys on the stable `--s-*` tokens. The piano does not flip while the
+card under it does; notation alone opts into the dark surface and light ink through its
+local selectors.
 
 **The lens is 33 explicit props.** The state stays in `app/page.tsx` because the read lens
 writes it — *Open this experiment* sets a frequency, a waveform, a tab and a notes-lab preset

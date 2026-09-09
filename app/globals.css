@@ -632,10 +632,10 @@
 }
 /* Design tokens; docs/design-system.md carries the reasoning. Two namespaces:
    --c-* is chrome and flips with the theme, --s-* is score and instrument and
-   never flips, so notation is black ink on white paper in both themes by
-   construction rather than by hardcoding. Ink tokens carry the contrast ratio
-   they were measured at; the floor is 4.5:1 for text under 18px and 3:1 for
-   borders and focus rings. */
+   never flips, so the keyboard remains the same instrument in both themes.
+   Notation surfaces opt into their own theme-local tokens below. Ink tokens
+   carry the contrast ratio they were measured at; the floor is 4.5:1 for text
+   under 18px and 3:1 for borders and focus rings. */
 :root {
   color-scheme: light;
 
@@ -652,7 +652,8 @@
   --c-alert: #963e34; /* the one site-wide role="alert" */
   --c-alert-wash: #fbeceb;
 
-  /* Score and instrument. Nothing below redefines these in the dark theme. */
+  /* Score and instrument. These stay stable so piano keys and instrument
+     controls do not change when the surrounding chrome changes theme. */
   --s-paper: #fff;
   --s-ink: #14181a; /* 17.87:1 on paper */
   --s-ink-faint: #5d6669; /* 5.88:1 on paper */
@@ -819,7 +820,8 @@
   --radius-lg: 10px;
   --radius-xl: 14px;
 }
-/* Only chrome flips. Every --s-* token is absent here on purpose. */
+/* Only chrome flips with dark mode. Notation declares local overrides on its
+   own surfaces so the keyboard and other instruments retain their palette. */
 :root[data-theme='dark'] {
   color-scheme: dark;
   --c-ground: #101715;
@@ -2253,6 +2255,30 @@ h1 {
   margin: 28px 0;
   overflow-x: auto;
 }
+.lesson-navigation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--c-rule);
+}
+.lesson-navigation > p {
+  grid-column: 1 / -1;
+}
+.lesson-navigation a {
+  color: var(--c-link);
+  overflow-wrap: anywhere;
+}
+.lesson-navigation a span {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.lesson-navigation a[rel='next'] {
+  grid-column: 2;
+  text-align: right;
+}
 .source-link {
   display: inline-flex;
   align-items: center;
@@ -2743,16 +2769,26 @@ h1 {
   gap: 10px;
   padding: 14px 0 4px;
 }
-/* The staff carries its own paper rather than borrowing its container's. Every
-   container it sits in — a panel, an exercise card, a lesson — is chrome and
-   flips with the theme, so ink alone left the notation at 1.07:1 in the dark
-   theme: near-black on near-black. Both tokens are in the score namespace,
-   which no theme redefines, so this is black ink on white paper in either one.
-   tests/browser/staff.browser.test.mjs is what keeps that true. */
+/* Notation has its own theme-local surface. Keeping these variables on score
+   selectors prevents a dark-mode score change from recolouring piano keys. */
+.staff,
+.notation-figure,
+.notation-workbench > svg {
+  --notation-paper: var(--s-paper);
+  --notation-ink: var(--s-ink);
+  --notation-rule: var(--s-rule);
+}
+:root[data-theme='dark'] .staff,
+:root[data-theme='dark'] .notation-figure,
+:root[data-theme='dark'] .notation-workbench > svg {
+  --notation-paper: var(--c-surface);
+  --notation-ink: #e7fff1;
+  --notation-rule: #91b6a7;
+}
 .staff {
-  color: var(--s-ink);
-  background: var(--s-paper);
-  border: var(--bw) solid var(--s-rule);
+  color: var(--notation-ink);
+  background: var(--notation-paper);
+  border: 0;
   border-radius: var(--r-0);
   max-width: 100%;
   height: auto;
@@ -2848,6 +2884,7 @@ h1 {
   color: var(--c-ink-3);
 }
 .subject-title {
+  scroll-margin-block-start: var(--sp-4);
   font-size: var(--t-h1);
   line-height: var(--lh-h1);
   letter-spacing: var(--ls-h1);
@@ -3250,6 +3287,69 @@ h1 {
   color: var(--c-link);
   border-bottom: var(--bw) solid var(--c-rule-strong);
 }
+.notation-reading,
+.notation-response {
+  min-width: 0;
+}
+.notation-reading p,
+.notation-workbench p {
+  line-height: var(--lh-prose);
+}
+.notation-figure {
+  margin: 0;
+  overflow-x: auto;
+  color: var(--notation-ink);
+  background: var(--notation-paper);
+  border: 0;
+  max-width: 100%;
+}
+.notation-figure > div > svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  max-height: 220px;
+}
+.notation-figure-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: var(--sp-3);
+}
+.notation-figure-grid figure {
+  margin: 0;
+  border-bottom: var(--bw) solid var(--c-rule);
+}
+.notation-figure-grid figcaption {
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.notation-workbench {
+  display: grid;
+  gap: var(--sp-3);
+}
+.accidental-sequence {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.notation-workbench label {
+  display: grid;
+  gap: var(--sp-1);
+}
+.notation-workbench select {
+  width: 100%;
+}
+.notation-response fieldset {
+  margin-block: var(--sp-3);
+  border: 0;
+  padding: 0;
+}
+.notation-response output {
+  display: block;
+  margin-block: var(--sp-2);
+}
+.notation-example-score {
+  flex-basis: 100%;
+  min-width: 0;
+}
 @media (max-width: 600px) {
   /* Nothing is hidden at any width: a breakout resolves to the prose column
      and whatever is inside it scrolls in its own container. */
@@ -3257,4 +3357,13 @@ h1 {
   .lens-read > .bleed {
     grid-column: prose;
   }
+}
+
+.notation-workbench > svg {
+  color: var(--notation-ink);
+  background: var(--notation-paper);
+  border: 0;
+}
+.ottava-bracket {
+  display: block;
 }

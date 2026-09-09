@@ -43,8 +43,8 @@ export const german = {
     'Oktavbezeichnungen unterscheiden die Tonlagen. Die wissenschaftliche Schreibweise verwendet Zahlen (C4), die Helmholtz-Bezeichnung Groß- und Kleinbuchstaben mit Strichen (c′); die russische Tradition verwendet Oktavnamen. Diese verschiedenen Systeme bezeichnen dieselbe Tonhöhe.',
   'In Notes, select C in octave 4. Use the note buttons up to B, then select C in octave 5. Play and name each note.':
     'Wählen Sie unter Noten das c′. Gehen Sie mit den Tonknöpfen bis h′ und wählen Sie dann c″. Spielen und benennen Sie jeden Ton.',
-  'Compare the two pitch examples: C4 and G4 one after another, then together. Relate these to horizontal order and simultaneous notes in the lesson; this lab currently uses note names.':
-    'Vergleichen Sie die Tonhöhenbeispiele: c′ und g′ nacheinander, dann gleichzeitig. Ordnen Sie sie der zeitlichen Folge und Gleichzeitigkeit im Unterricht zu; dieses Labor arbeitet derzeit mit Tonnamen.',
+  'Compare the two pitch examples: C4 and G4 one after another, then together. Relate what you hear to the order and alignment of notes on the staff.':
+    'Vergleichen Sie die Tonhöhenbeispiele: c′ und g′ nacheinander, dann gleichzeitig. Vergleichen Sie das Gehörte mit der Reihenfolge und vertikalen Anordnung der Noten im Notensystem.',
   'Compare One whole note, Two half notes and Four quarter notes at the same tempo. The written values fill the same four quarter-note beats; count the attacks.':
     'Vergleichen Sie bei gleichem Tempo eine ganze Note, zwei halbe Noten und vier Viertelnoten. Die notierten Werte füllen dieselben vier Viertelzählzeiten; zählen Sie die Toneinsätze.',
   'Compare Two separate quarter notes with Two quarter notes tied. Both fill two beats; the tied example has one attack and one sustained sound.':
@@ -624,13 +624,13 @@ export const german = {
     'Ein Zeichen, das den Stammton um einen Halbton erhöht; der Name erhält die Endung -is.',
   Flat: 'Be',
   'A sign that lowers the written note by one semitone.':
-    'Ein Zeichen, das den Stammton um einen Halbton erniedrigt; der Name erhält die Endung -es.',
+    'Ein Zeichen, das den Stammton um einen Halbton erniedrigt. Meist wird -es angehängt; die gebräuchlichen Ausnahmen sind Es, As und B (das erniedrigte H).',
   'Double sharp': 'Doppelkreuz',
   'A sign that raises the written note by two semitones.':
     'Ein Zeichen, das den Stammton um einen Ganzton erhöht; der Name erhält die Endung -isis.',
   'Double flat': 'Doppel-Be',
   'A sign that lowers the written note by two semitones.':
-    'Ein Zeichen, das den Stammton um einen Ganzton erniedrigt; der Name erhält die Endung -eses.',
+    'Ein Zeichen, das den Stammton um einen Ganzton erniedrigt. Die Namen lauten Ceses, Deses, Eses, Feses, Geses, Ases und Heses; für Ases kommt auch Asas vor.',
   Natural: 'Auflösungszeichen',
   'A sign that removes an earlier raising or lowering of a note.':
     'Ein Zeichen, das eine Erhöhung oder Erniedrigung zurücknimmt.',
@@ -646,8 +646,6 @@ export const german = {
     'Vorzeichnung: ganzes Stück, alle Oktaven · Versetzungszeichen: bis zum Taktstrich, eine Oktave',
   'A key signature stands at the start of every system, after the clef. Each of its signs applies to its letter for the whole piece and in every octave, until a new signature replaces it. Signs do not add up: a flat in the signature and a flat in the bar are still one flat.':
     'Die Vorzeichnung steht am Anfang jeder Notenzeile hinter dem Schlüssel. Jedes ihrer Zeichen gilt für seinen Stammton im ganzen Stück und in allen Oktaven, bis eine neue Vorzeichnung sie ersetzt. Zeichen addieren sich nicht: Ein Be in der Vorzeichnung und ein Be im Takt ergeben zusammen ein Be, keine doppelte Erniedrigung.',
-  'A sign written inside a bar holds only to the next barline and only in the octave where it stands; a tie carries it past the barline for the tied note alone. Modern engraving rarely relies on that rule: it rewrites the sign in the other octave and prints courtesy accidentals.':
-    'Ein Versetzungszeichen im Takt gilt nur bis zum nächsten Taktstrich und nur in der Oktave, in der es steht; über den Taktstrich hinaus wirkt es allein durch einen Haltebogen auf den gebundenen Ton. Der heutige Notensatz verlässt sich kaum auf diese Regel: Er wiederholt das Zeichen in der anderen Oktave und setzt zur Sicherheit Vorsichtszeichen.',
   'Play B4, then B♭4, then the same pair an octave lower: one signature sign would cover both octaves.':
     'Spiele h′, dann b′ und danach dasselbe Paar eine Oktave tiefer: Ein einziges Vorzeichen würde für beide Oktaven gelten.',
   'Key signature': 'Vorzeichnung',
@@ -675,8 +673,6 @@ export const german = {
     'Cis = Des · Fis = Ges · E = Fes · in gleichstufiger Stimmung',
   'In twelve-tone equal temperament one pitch can be written in more than one way. C sharp and D flat sound the same; so do F sharp and G flat, and E and F flat. Each spelling names a different letter, and the letter decides which scale degree the note occupies.':
     'In der zwölfstufigen gleichstufigen Stimmung lässt sich derselbe Klang unterschiedlich schreiben. Cis und Des klingen gleich, ebenso Fis und Ges oder E und Fes. Jede Schreibweise nennt einen anderen Stammton, und der Stammton bestimmt, welche Stufe der Ton in der Tonleiter einnimmt.',
-  'The spelling carries an expectation. A raised degree written with a sharp tends to continue upward; a lowered degree written with a flat tends to continue downward. Interval names follow the letters too, so C–D sharp is a second and C–E flat is a third, whatever the keyboard shows.':
-    'Die Schreibweise weckt eine Erwartung. Eine erhöhte Stufe mit der Endung -is führt in der Regel weiter aufwärts, eine erniedrigte Stufe mit der Endung -es weiter abwärts. Auch Intervallnamen zählen nach Stammtönen: C–Dis ist eine Sekunde, C–Es eine Terz, obwohl beide auf derselben Taste enden.',
   'Set the lab to F♯4, then look for G♭4, and notice that both names point at one frequency.':
     'Stelle fis′ ein, suche danach ges′ und stelle fest, dass beide Namen auf dieselbe Frequenz führen.',
   'Enharmonic spelling': 'Enharmonische Verwechslung',
@@ -731,8 +727,6 @@ export const german = {
     'punktierte Note = 3 × nächstkleinerer Wert  ·  Haltebogen: Wert + Wert',
   "A dot after a note head adds half of that note's value. A dotted note therefore lasts as long as three of the next smaller unit: a dotted half equals three quarters. A second dot adds half of what the first dot added, and the same rule applies to rests.":
     'Ein Punkt hinter dem Notenkopf verlängert die Note um die Hälfte ihres Wertes. Eine punktierte Note dauert deshalb so lange wie drei des nächstkleineren Wertes: eine punktierte Halbe entspricht drei Vierteln. Ein zweiter Punkt fügt die Hälfte des ersten Punktes hinzu. Für Pausen gilt dieselbe Regel.',
-  'A tie joins two notes of the same pitch into one sound, and their values add. Because the tie carries a value across a barline, a note can last longer than the bar allows. The slur is a different sign: it joins notes of different pitch and asks for legato.':
-    'Ein Haltebogen verbindet zwei Noten derselben Tonhöhe zu einem Klang; ihre Werte werden addiert. So trägt er einen Wert über den Taktstrich, und ein Ton kann länger dauern, als ein Takt es zulässt. Der Bindebogen ist ein anderes Zeichen: er verbindet Noten verschiedener Tonhöhe und verlangt ein Legato.',
   'Dotted note': 'Punktierte Note',
   'A note followed by a dot, lasting three of the next smaller unit.':
     'Eine Note mit Punkt, die drei nächstkleinere Werte lang dauert.',
@@ -754,8 +748,6 @@ export const german = {
     'Dreiteilungen kennzeichnen und Balkengruppen lesen.',
   'triplet = 3 in the time of 2  ·  ratio 7:4':
     'Triole = 3 statt 2  ·  Verhältnis 7:4',
-  'Note values divide by two, so a beat split into three, five or seven parts needs a mark. A triplet writes three notes where two of that value belong. Irregular groups take the value of the next larger regular division, and a ratio such as 7:4 is printed when that value could be misread.':
-    'Die Notenwerte teilen sich durch zwei; eine Teilung der Zählzeit in drei, fünf oder sieben Teile muss deshalb gekennzeichnet werden. Eine Triole schreibt drei Noten dort, wo zwei desselben Wertes stehen. Unregelmäßige Gruppen erhalten den Wert der nächstgrößeren regelmäßigen Teilung; ein Verhältnis wie 7:4 wird gedruckt, wenn der geschriebene Wert missverstanden werden könnte.',
   'A beam replaces the flags on notes shorter than a quarter: one beam for each flag the note would carry. Beams group notes so that the beat can be seen at a glance, which is why grouping follows the metre rather than the melody. Modern vocal music is beamed by beat, like instrumental music.':
     'Ein Balken ersetzt die Fähnchen bei Noten unter dem Viertelwert: ein Balken für jedes Fähnchen. Die Balkengruppen machen die Zählzeiten auf einen Blick sichtbar, deshalb richtet sich die Gruppierung nach dem Metrum und nicht nach der Melodie. Moderne Vokalmusik wird wie Instrumentalmusik nach Zählzeiten gebalkt; die Balkung nach Silben ist ältere Praxis.',
   Beat: 'Zählzeit',
@@ -783,8 +775,6 @@ export const german = {
   Performance: 'Vortrag',
   'Read how fast a piece goes, and when that changes.':
     'Lesen, wie schnell ein Stück geht und wann sich das ändert.',
-  '♩ = 120  ·  Adagio → Andante → Moderato → Allegro → Presto':
-    '♩ = 120  ·  Adagio → Andante → Moderato → Allegro → Presto',
   'A tempo word at the head of a piece sets its speed, and it holds until another word replaces it. Largo and Adagio are slow, Andante is walking, Moderato is moderate, Allegro is fast, Presto faster still. The words also carry character, so their ranges overlap rather than forming a scale.':
     'Ein Tempowort am Anfang eines Stückes bestimmt die Geschwindigkeit und gilt so lange, bis ein anderes Wort es ablöst. Largo und Adagio sind langsam, Andante gehend, Moderato mäßig, Allegro schnell, Presto noch schneller. Die Wörter benennen zugleich den Charakter; ihre Bereiche überschneiden sich und bilden keine Skala.',
   'A metronome mark fixes the speed in beats per minute against a named note value, as in ♩ = 120. Gradual change has its own vocabulary — accelerando faster, ritardando slower — and the return to the main speed is marked a tempo. A fermata holds a note or rest as long as the performer takes.':
@@ -818,8 +808,6 @@ export const german = {
   'pp < p < mp < mf < f < ff': 'pp < p < mp < mf < f < ff',
   'The letters name relative loudness: p for piano, f for forte, m for mezzo. A mark says only that this passage is louder or softer than what surrounds it. None names a measured level, so the same f differs between a hall and a small room, and between a trumpet and a flute.':
     'Die Buchstaben bezeichnen relative Lautstärke: p für piano, f für forte, m für mezzo. Ein Zeichen sagt nur, dass diese Stelle lauter oder leiser klingt als ihre Umgebung. Keines nennt einen gemessenen Wert; deshalb klingt dasselbe f im Saal anders als im kleinen Zimmer und auf der Trompete anders als auf der Flöte.',
-  'Gradual change is written either as a word, crescendo or decrescendo, or as a hairpin opening or closing over the passage it governs. Both hold until something replaces them. Accent signs and sforzato act on a single note instead of a stretch, and they too are read against the level already in force.':
-    'Allmähliche Änderung steht entweder als Wort — crescendo, decrescendo, diminuendo — oder als Gabel, die sich über der betreffenden Stelle öffnet oder schließt. Die Angabe gilt, bis eine neue sie ablöst. Akzent und Sforzato betreffen einen einzelnen Ton statt einer Strecke und werden ebenfalls am bereits geltenden Grad gemessen.',
   'Play one tone at a comfortable volume, then louder and softer, naming each level only by comparison with the one before.':
     'Spielen Sie einen Ton in bequemer Lautstärke, dann lauter und leiser, und benennen Sie jede Stufe nur im Vergleich zur vorherigen.',
   'piano (p)': 'piano (p)',
@@ -853,8 +841,6 @@ export const german = {
     'legato ⌢ → tenuto → portato → staccato · → staccatissimo ▾',
   'Articulation describes how one note joins or separates from the next. A slur over a group asks for legato: the notes follow without a break between them. A dot asks for staccato, each note shortened and detached, with the silence taken from its own written value rather than from the next note.':
     'Artikulation beschreibt, wie ein Ton mit dem nächsten verbunden oder von ihm getrennt wird. Ein Bindebogen über einer Gruppe verlangt legato: Die Töne folgen ohne Unterbrechung aufeinander. Ein Punkt verlangt Staccato; der Ton wird verkürzt und abgesetzt, und die Stille geht von seiner eigenen notierten Dauer ab, nicht von der des folgenden Tons.',
-  'Between the poles lie tenuto, portato and non legato. In modern engraving a dot means staccato and a wedge the shorter staccatissimo, but scores written before about 1850 do not separate the two reliably. Older parts carry few marks of any kind, so an unmarked line is not an unarticulated one.':
-    'Zwischen den Polen liegen Tenuto, Portato und non legato. Im modernen Notensatz steht der Punkt für Staccato und der Keil für das kürzere Staccatissimo; in Noten, die vor etwa 1850 entstanden sind, ist diese Unterscheidung nicht verlässlich. Ältere Stimmen tragen ohnehin wenige Zeichen, eine unbezeichnete Stimme ist deshalb keine Musik ohne Artikulation.',
   articulation: 'Artikulation',
   'Articulation is how one note joins or separates from the note after it.':
     'Artikulation ist die Art, wie ein Ton mit dem folgenden verbunden oder von ihm getrennt wird.',
@@ -880,8 +866,6 @@ export const german = {
     '‖: … :‖ · [1.] [2.] · D.C. al fine · D.S. al fine',
   'A double bar divides one section from the next; a thin line followed by a thick one ends the piece. A repeat sign is a double bar with two dots, and the dots face the music to be played again. When two repeated sections meet, the two signs share a single bar line.':
     'Ein Doppelstrich trennt einen Abschnitt vom nächsten; ein dünner Strich mit folgendem dicken beendet das Stück. Das Wiederholungszeichen ist ein Doppelstrich mit zwei Punkten, wobei die Punkte zu der Musik zeigen, die noch einmal erklingt. Treffen zwei zu wiederholende Abschnitte aufeinander, teilen sich beide Zeichen einen Strich.',
-  'First and second endings choose a different continuation: play the bracketed first ending, take the repeat, then skip to the second. Da capo sends the reader back to the beginning and dal segno to the marked place, each playing on to the word fine. The printed order and the played order differ.':
-    'Erste und zweite Wiederholungsklammer wählen einen anderen Fortgang: Man spielt die erste Klammer, nimmt die Wiederholung und überspringt sie danach zugunsten der zweiten. Da capo führt zum Anfang zurück, dal segno zum Segno, und beide Male wird bis zum Wort fine gespielt. Notierte und gespielte Reihenfolge fallen dadurch auseinander.',
   'double bar': 'Doppelstrich',
   'A double bar is two thin lines marking the end of a section rather than the end of the piece.':
     'Der Doppelstrich besteht aus zwei dünnen Strichen und markiert das Ende eines Abschnitts, nicht das des Stücks.',
@@ -951,10 +935,6 @@ export const german = {
   'Change of clef': 'Schlüsselwechsel',
   'That is what the same place would mean in another clef. The clef at the start decides which pitch each line and space carries.':
     'So läse sich dieselbe Stelle in einem anderen Schlüssel. Der Schlüssel am Anfang bestimmt, welcher Ton auf jeder Linie und in jedem Zwischenraum steht.',
-  'That is the note without its sign. The sign belongs to the note it stands in front of.':
-    'Das ist der Ton ohne sein Zeichen. Das Zeichen gehört zu der Note, vor der es steht.',
-  'The sign stopped at the barline. Beyond it the note is plain again unless it is written anew.':
-    'Das Zeichen endete am Taktstrich. Dahinter steht der Ton wieder ohne Zeichen, sofern es nicht erneut gesetzt wird.',
   'The note to name': 'Der zu benennende Ton',
   'Search a term…': 'Begriff suchen …',
   'Compare the clef, position and accidental with the correct note.':

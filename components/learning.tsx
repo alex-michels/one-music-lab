@@ -1,4 +1,10 @@
 'use client';
+import { nt } from '@/lib/notation-tasks';
+import {
+  notationForwardLinks,
+  notationProgramme,
+} from '@/lib/notation-programme';
+import { termAnchor, termSearchText } from '@/lib/topics';
 import { translator, type Translate } from '@/lib/i18n';
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
@@ -50,8 +56,12 @@ import {
 } from '@/lib/client-store';
 import { Staff } from '@/components/staff';
 import { StaffAnswer } from '@/components/staff-answer';
+import { NotationFigure } from './notation-figure';
+import { NotationResponse } from './notation-response';
+import { NotationReading } from './notation-reading';
 import type { Wave } from '@/lib/music';
 type Lang = import('@/lib/client-store').Lang;
+const notationOrder = Object.keys(notationProgramme);
 
 type SortBy = 'term' | 'kind';
 
@@ -95,15 +105,25 @@ function InlineExercise({
       here.current?.scrollIntoView({ block: 'center' });
   }, [anchor, rule]);
   if (!rule) return null;
-  const item = generateFrom(ruleKind[rule], 1, 1, lang);
-  if (!item) return null;
-  const verdict = chosen ? grade(item, chosen) : null;
+  const item = itemForRule(rule, 1, lang);
+  const verdict = chosen && chosen !== 'review' ? grade(item, chosen) : null;
+  if (item.review || item.parts)
+    return (
+      <section className="inline-exercise" id={rule} ref={here}>
+        <NotationResponse
+          key={`${rule}-${lang}`}
+          item={item}
+          onComplete={() => setChosen('review')}
+        />
+      </section>
+    );
   return (
     // The paragraph that states the rule carries its id, so a ledger row can
     // link to the sentence rather than to the top of a lesson.
     <section className="inline-exercise" id={rule} ref={here}>
       <span className="eyebrow">{t('Try it here', 'Попробуйте здесь')}</span>
       <p className="exercise-prompt">{item.prompt}</p>
+      {item.figure && <NotationFigure id={item.figure} label={item.prompt} />}
       {item.staff && (
         <div className="exercise-staff">
           <Staff
@@ -142,6 +162,7 @@ function InlineExercise({
           }
         >
           {exerciseExplanations[verdict.tag][lang]}
+          {item.explanation && <span> {item.explanation}</span>}
         </p>
       )}
       {/* Into the drill scoped to this topic, not to the whole trainer: the
@@ -172,6 +193,9 @@ export function Theory({
 }) {
   const t = translator(lang);
   const lesson = lessons.find((l) => l.id === lessonId);
+  const position = notationOrder.indexOf(lessonId ?? '');
+  const previous = topicById[notationOrder[position - 1] as TopicId];
+  const next = topicById[notationOrder[position + 1] as TopicId];
   if (lesson)
     return (
       <article className="lens-read lesson-article">
@@ -186,11 +210,16 @@ export function Theory({
         ))}
         {/* The rule this topic teaches, asked right where it is stated, rather
             than saved up for a page the reader has to go and find. */}
-        <InlineExercise lang={lang} topic={lesson.id} anchor={anchor} />
+        <InlineExercise
+          key={`${lesson.id}-${anchor ?? ''}-${lang}`}
+          lang={lang}
+          topic={lesson.id}
+          anchor={anchor}
+        />
         <div className="formula">{lesson.formula[lang]}</div>
-        {/* The instrument is the other half of the page, not an illustration
-            inside it: it breaks out to twice the prose measure. */}
-        <aside className="breakout bed lesson-experiment">
+        <NotationReading topic={lesson.id} lang={lang} />
+        {/* The experiment card links the explanation to its laboratory. */}
+        <aside className="breakout lesson-experiment">
           <div className="eyebrow">{t('MAKE IT AUDIBLE', 'УСЛЫШЬТЕ ЭТО')}</div>
           <Headphones size={32} />
           <h3>{t('Try it in the lab', 'Попробуйте в лаборатории')}</h3>
@@ -217,6 +246,59 @@ export function Theory({
           {t('Further reading', 'Для дальнейшего чтения')}
           <ArrowUpRight size={15} />
         </a>
+        {position >= 0 && (
+          <nav
+            className="lesson-navigation"
+            aria-label={
+              nt(
+                'Notation programme',
+                'Программа нотной записи',
+                'Notenschrift lernen',
+              )[lang]
+            }
+          >
+            <p className="eyebrow">
+              {nt('Lesson', 'Урок', 'Lektion')[lang]} {position + 1} /{' '}
+              {notationOrder.length}
+            </p>
+            {previous && (
+              <a
+                rel="prev"
+                href={hashOf({
+                  lang,
+                  lens: 'read',
+                  topic: previous.id,
+                  anchor: null,
+                })}
+              >
+                <span>
+                  {
+                    nt('Previous lesson', 'Предыдущий урок', 'Vorige Lektion')[
+                      lang
+                    ]
+                  }
+                </span>
+                {previous.title[lang]}
+              </a>
+            )}
+            {next && (
+              <a
+                rel="next"
+                href={hashOf({
+                  lang,
+                  lens: 'read',
+                  topic: next.id,
+                  anchor: null,
+                })}
+              >
+                <span>
+                  {nt('Next lesson', 'Следующий урок', 'Nächste Lektion')[lang]}
+                </span>
+                {next.title[lang]}
+              </a>
+            )}
+          </nav>
+        )}
       </article>
     );
   const groupName: Record<TopicKind, string> = {
@@ -227,8 +309,7 @@ export function Theory({
   };
   return (
     <div className="lens-read">
-      {/* In reading order, grouped by what they are about. The only sequence
-          marker on the site is the one pointer at the first topic. */}
+      {/* Grouped by subject; the notation lessons also have a reading route. */}
       {TOPIC_KINDS.map((group) => {
         const inGroup = topics.filter((topic) => topic.kind === group);
         if (!inGroup.length) return null;
@@ -287,6 +368,7 @@ export function Encyclopedia({
   lang,
   openLesson,
   subject,
+  anchor = null,
 }: {
   lang: Lang;
   openLesson: (id: string) => void;
@@ -296,6 +378,7 @@ export function Encyclopedia({
    * on the whole index and leave the reader to find them.
    */
   subject: string | null;
+  anchor?: string | null;
 }) {
   const t = translator(lang);
   const [query, setQuery] = useState('');
@@ -305,7 +388,9 @@ export function Encyclopedia({
       ? (subject as TopicId)
       : null,
   );
-  const [opened, setOpened] = useState<string | null>(null);
+  const [opened, setOpened] = useState<string | null>(
+    () => terms.find((term) => termAnchor(term) === anchor)?.title.en ?? null,
+  );
   // The index opens alphabetically, which is what a reference is for.
   const [sortBy, setSortBy] = useState<SortBy>('term');
   const [ascending, setAscending] = useState(true);
@@ -340,9 +425,7 @@ export function Encyclopedia({
     (term) =>
       (kind === null || kindOf(term) === kind) &&
       (topic === null || term.lesson === topic) &&
-      (term.title[lang] + ' ' + term.body[lang])
-        .toLowerCase()
-        .includes(query.toLowerCase()),
+      termSearchText(term, lang).includes(query.toLowerCase()),
   );
   /*
    * Alphabetical in the reader's own alphabet: a collator for the language
@@ -527,6 +610,74 @@ export function Encyclopedia({
             </p>
             <h2>{entry.title[lang]}</h2>
             <p>{entry.body[lang]}</p>
+            <a
+              className="text-button"
+              href={hashOf({
+                lang,
+                lens: 'define',
+                topic: entry.lesson,
+                anchor: termAnchor(entry),
+              })}
+            >
+              {
+                nt(
+                  'Link to this term',
+                  'Ссылка на этот термин',
+                  'Link zu diesem Begriff',
+                )[lang]
+              }
+            </a>
+            {'source' in entry && (
+              <a
+                className="source-link"
+                href={entry.source.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {entry.source.title}
+              </a>
+            )}
+            {'furtherSources' in entry &&
+              entry.furtherSources.map((source) => (
+                <a
+                  key={source.url}
+                  className="source-link"
+                  href={source.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {source.title}
+                </a>
+              ))}
+            {'relatedTopics' in entry &&
+              entry.relatedTopics.map((id) => (
+                <a
+                  key={id}
+                  className="text-button"
+                  href={hashOf({ lang, lens: 'read', topic: id, anchor: null })}
+                >
+                  {topicById[id as TopicId].title[lang]}
+                </a>
+              ))}
+            {'forwardModules' in entry &&
+              entry.forwardModules.map((id) => (
+                <a
+                  key={id}
+                  className="text-button"
+                  href={notationForwardLinks[id]}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {
+                    nt(
+                      'Further study',
+                      'Дальнейшее изучение',
+                      'Weiterführendes Lernen',
+                    )[lang]
+                  }{' '}
+                  · {id}
+                </a>
+              ))}
             <button
               className="text-button"
               type="button"
@@ -535,6 +686,42 @@ export function Encyclopedia({
               {t('Explore the idea', 'Исследовать понятие')}
               <ArrowUpRight size={15} />
             </button>
+            <a
+              className="text-button"
+              href={hashOf({
+                lang,
+                lens: 'play',
+                topic: entry.lesson,
+                anchor: null,
+              })}
+            >
+              {
+                nt(
+                  'Open the laboratory',
+                  'Открыть лабораторию',
+                  'Labor öffnen',
+                )[lang]
+              }
+            </a>
+            {paragraphAnchors[entry.lesson as TopicId].length > 0 && (
+              <a
+                className="text-button"
+                href={hashOf({
+                  lang,
+                  lens: 'drill',
+                  topic: entry.lesson,
+                  anchor: null,
+                })}
+              >
+                {
+                  nt(
+                    'Practise this topic',
+                    'Потренировать эту тему',
+                    'Dieses Thema üben',
+                  )[lang]
+                }
+              </a>
+            )}
           </article>
         )}
       </div>
@@ -578,18 +765,20 @@ function saveLedger(next: Ledger) {
  * Two of the kinds ask about more than one rule — `octave-region` carries the
  * register in its rule and `dotted-value` asks about the first dot or the
  * second — so the level and the seed are both searched until the generator
- * emits the rule that was asked for. When no combination does, the item that
- * comes back is still a real item; the ledger is written from `item.rule`
- * rather than from the draw, so what it records is what was actually asked.
+ * emits the rule that was asked for. Failure is explicit: an unrelated
+ * question must never stand in for the rule named by a lesson or ledger link.
  */
 function itemForRule(rule: Rule, seed: number, lang: Lang): Item {
   const kind = ruleKind[rule];
-  for (let i = 0; i < 12; i += 1) {
-    const level = ((i % 3) + 1) as Level;
+  // Successive questions start at different complexities. Searching from level
+  // 1 every time would leave advanced variants unreachable for single-rule kinds.
+  const firstLevel = Math.floor((seed - 1) / 101) % 3;
+  for (let i = 0; i < 256; i += 1) {
+    const level = (((firstLevel + i) % 3) + 1) as Level;
     const item = generateFrom(kind, level, seed + i * 31, lang);
     if (item.rule === rule) return item;
   }
-  return generateFrom(kind, 1, seed, lang);
+  throw new Error(`No question found for rule ${rule}`);
 }
 
 /**
@@ -632,6 +821,18 @@ export function Practice({
   lang: Lang;
   topic: string | null;
 }) {
+  return (
+    <PracticeSession key={`${lang}-${topic ?? ''}`} lang={lang} topic={topic} />
+  );
+}
+
+function PracticeSession({
+  lang,
+  topic,
+}: {
+  lang: Lang;
+  topic: string | null;
+}) {
   const t = translator(lang);
   const ledger = useSyncExternalStore(
     drillStore.subscribe,
@@ -658,7 +859,8 @@ export function Practice({
     id === 'written-wrong'
       ? { correct: false, tag: 'wrong-written-note' as const }
       : grade(item, id);
-  const verdict = chosen === null ? null : resultFor(chosen);
+  const verdict =
+    chosen === null || chosen === 'review' ? null : resultFor(chosen);
   const answer = (id: string) => {
     if (chosen !== null) return;
     setChosen(id);
@@ -687,7 +889,31 @@ export function Practice({
             ? topicById[topic as TopicId].title[lang]
             : t('READING NOTATION', 'ЧТЕНИЕ НОТНОЙ ЗАПИСИ')}
         </div>
-        {item.kind === 'read-pitch' ? (
+        {item.review || item.parts ? (
+          <NotationResponse
+            key={`${rule}-${drawn.seed}-${lang}`}
+            item={item}
+            onComplete={(results) => {
+              if (chosen !== null) return;
+              if (results.length)
+                saveLedger(
+                  results.reduce(
+                    (current, correct, index) =>
+                      recordAnswer(current, item.rule, {
+                        correct,
+                        tag: correct
+                          ? 'correct'
+                          : item.parts?.[index].kind === 'rhythm'
+                            ? 'duration-symbol'
+                            : 'wrong-written-note',
+                      }),
+                    ledger,
+                  ),
+                );
+              setChosen('review');
+            }}
+          />
+        ) : item.kind === 'read-pitch' ? (
           <StaffAnswer
             key={`${drawn.seed}-${item.level}-${lang}`}
             item={item}
@@ -696,6 +922,9 @@ export function Practice({
           />
         ) : (
           <>
+            {item.figure && (
+              <NotationFigure id={item.figure} label={item.prompt} />
+            )}
             {item.staff && (
               <div className="exercise-staff">
                 <Staff
@@ -747,12 +976,23 @@ export function Practice({
                 : t('Not quite.', 'Не совсем.')}
             </strong>{' '}
             {exerciseExplanations[verdict.tag][lang]}
+            {item.explanation && <span> {item.explanation}</span>}
           </output>
+        )}
+        {verdict && item.source && (
+          <a
+            className="source-link"
+            href={item.source.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {item.source.title}
+          </a>
         )}
         {/* Never on a timer. The explanation is the point of getting it wrong,
             and a question that advances itself takes it away from a slow
             reader before they have finished it. */}
-        {verdict && (
+        {chosen !== null && (
           <button className="primary-button" onClick={nextQuestion}>
             {t('Next question', 'Следующий вопрос')}
             <ArrowRight size={17} />
@@ -824,9 +1064,16 @@ function RuleLedger({
               </dt>
               <dd>
                 <p className="ledger-tally">
-                  {row
-                    ? `${count(row.asked, lang, 'questions')} · ${count(row.missed, lang, 'mistakes')}`
-                    : t('not yet asked', 'ещё не спрашивали')}
+                  {rule === 'compare-beaming' ||
+                  rule === 'recognize-an-ornament'
+                    ? nt(
+                        'Unscored review',
+                        'Разбор без оценки',
+                        'Unbewerteter Vergleich',
+                      )[lang]
+                    : row
+                      ? `${count(row.asked, lang, 'questions')} · ${count(row.missed, lang, 'mistakes')}`
+                      : t('not yet asked', 'ещё не спрашивали')}
                 </p>
                 {row?.tag && <p>{exerciseExplanations[row.tag][lang]}</p>}
                 {/* Two exits, because a rule is taught in a passage and named

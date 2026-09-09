@@ -40,8 +40,12 @@ test('All 105 localized spellings round-trip without enharmonic substitution', (
 
 test('Accidental-scope drawings encode the effective sounding pitch and suppress repeated signs', () => {
   const cases = new Set();
+  let staffCases = 0;
   for (let seed = 1; seed <= 100; seed++) {
     const item = generate('accidental-scope', 3, seed, 'en');
+    // Engraved contextual cases have an independent MEI oracle in notation-contexts.
+    if (item.figure) continue;
+    staffCases++;
     const [first, middle, last] = item.staff.pitches;
     cases.add(item.rule);
     expect(middle.letter).not.toBe(first.letter);
@@ -53,6 +57,7 @@ test('Accidental-scope drawings encode the effective sounding pitch and suppress
       item.options.find((o) => o.id === item.answer).label,
     );
   }
+  expect(staffCases).toBeGreaterThan(0);
   expect(cases.size).toBe(2);
 });
 

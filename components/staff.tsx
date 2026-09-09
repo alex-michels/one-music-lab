@@ -68,6 +68,7 @@ export function Staff({
   label,
   barlines = [],
   accidentalVisibility = [],
+  ties = [],
   range,
 }: {
   pitches: SpelledPitch[];
@@ -82,6 +83,8 @@ export function Staff({
   barlines?: number[];
   /** Explicit/courtesy signs are independent of the sounding pitch. */
   accidentalVisibility?: boolean[];
+  /** Adjacent equal written pitches connected without a new attack. */
+  ties?: number[];
   range?: readonly [number, number];
 }) {
   const titleId = useId();
@@ -95,6 +98,19 @@ export function Staff({
     range,
   );
   const names = plan.notes.map((n) => pitchLabel(n.pitch, lang)).join(', ');
+  for (const index of ties) {
+    const from = pitches[index];
+    const to = pitches[index + 1];
+    if (
+      !Number.isInteger(index) ||
+      !from ||
+      !to ||
+      from.letter !== to.letter ||
+      from.octave !== to.octave ||
+      from.accidental !== to.accidental
+    )
+      throw new RangeError('A tie must join adjacent equal written pitches');
+  }
   const lineY = (line: number) => stepY(line * 2, plan.top);
   return (
     <svg
@@ -137,6 +153,23 @@ export function Staff({
             y2={stepY(0, plan.top) * space}
             stroke="currentColor"
             strokeWidth={Math.max(1, space * 0.1)}
+          />
+        );
+      })}
+      {[...new Set(ties)].map((index) => {
+        const from = plan.notes[index];
+        const to = plan.notes[index + 1];
+        const x1 = (from.x + 0.5) * space;
+        const x2 = (to.x - 0.5) * space;
+        const y = (stepY(from.step, plan.top) + 0.8) * space;
+        return (
+          <path
+            key={`tie-${index}`}
+            data-tie={index}
+            d={`M ${x1} ${y} Q ${(x1 + x2) / 2} ${y + 1.1 * space} ${x2} ${y}`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={Math.max(1, space * 0.12)}
           />
         );
       })}

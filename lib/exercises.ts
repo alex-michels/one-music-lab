@@ -8,6 +8,18 @@ import {
 } from './notation';
 import { count } from './plural';
 import { pitchAtStep, type Clef } from './staff';
+import {
+  valueIdentification,
+  beamingReview,
+  ornamentReview,
+  performanceMarks,
+  shortExcerpt,
+  accidentalContext,
+  tupletContext,
+  nt,
+  notationSources,
+  shuffle,
+} from './notation-tasks';
 
 /**
  * Generated notation exercises (roadmap №558).
@@ -17,10 +29,8 @@ import { pitchAtStep, type Clef } from './staff';
  * the DOM or the audio engine, which keeps the whole generator testable in the
  * unit project rather than only in a browser.
  *
- * The kinds implemented here are the ones that can be asked without engraving a
- * staff: registers, alteration names, respelling, and the arithmetic of
- * durations. Anything that needs a note head on a line waits for the engine in
- * №553.
+ * Fourteen reproducible generators cover pitch, rhythm and performance marks.
+ * Open reviews use explicit rubrics; short excerpts retain per-note feedback.
  */
 
 export type ExerciseKind =
@@ -32,7 +42,12 @@ export type ExerciseKind =
   | 'tie-sum'
   | 'read-pitch'
   | 'clef-transform'
-  | 'accidental-scope';
+  | 'accidental-scope'
+  | 'value-identification'
+  | 'beaming-review'
+  | 'ornament-review'
+  | 'performance-marks'
+  | 'short-excerpt';
 
 export type Level = 1 | 2 | 3;
 
@@ -52,7 +67,12 @@ export type ErrorTag =
   | 'read-the-other-clef'
   | 'ignored-the-sign'
   | 'carried-the-sign-too-far'
-  | 'wrong-written-note';
+  | 'wrong-written-note'
+  | 'duration-symbol'
+  | 'tempo-unit'
+  | 'dynamic-level'
+  | 'articulation-meaning'
+  | 'repeat-route';
 
 /**
  * The rules the generator can test, one per item. Listing them makes `Item.rule`
@@ -75,6 +95,14 @@ export const RULES = [
   'same-place-other-clef',
   'sign-stops-at-the-barline',
   'sign-holds-to-the-barline',
+  'identify-written-duration',
+  'compare-beaming',
+  'recognize-an-ornament',
+  'metronome-unit',
+  'relative-dynamic-level',
+  'articulation-sign',
+  'follow-repeat-route',
+  'read-a-short-excerpt',
 ] as const;
 export type Rule = (typeof RULES)[number];
 
@@ -101,6 +129,19 @@ export type Item = {
   rule: Rule;
   /** Present when the question is a picture rather than a sentence. */
   staff?: StaffSpec;
+  figure?: string;
+  explanation?: string;
+  source?: { title: string; url: string };
+  /** Reflection has no answer key and never enters the scored ledger. */
+  review?: boolean;
+  /** Each excerpt note is answered and explained independently. */
+  parts?: {
+    prompt: string;
+    answer: string;
+    options: Option[];
+    kind?: 'pitch' | 'rhythm';
+    explanation?: string;
+  }[];
 };
 
 /** Deterministic 32-bit generator, the same one the property tests use. */
@@ -122,15 +163,6 @@ const pick = <T>(next: () => number, items: readonly T[]): T =>
  * Fisher-Yates from the same stream, so the correct answer does not sit in a
  * predictable slot and the order still reproduces from the seed.
  */
-function shuffle<T>(next: () => number, items: T[]): T[] {
-  const out = [...items];
-  for (let i = out.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(next() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
-
 // ---------------------------------------------------------------- durations
 
 /** Durations are exact ratios of a whole note; nothing here is a float. */
@@ -471,6 +503,7 @@ function dottedValue(
 ): Omit<Item, 'kind' | 'level' | 'seed' | 'lang'> {
   const den = pick(next, values.slice(0, 4));
   const dots = level === 1 ? 1 : pick(next, [1, 1, 2]);
+  const rest = next() < 0.5;
   const base: Duration = { num: 1, den };
   const total = dotted(base, dots);
   // Ask in a unit that divides the answer exactly: a dotted quarter is three
@@ -496,14 +529,58 @@ function dottedValue(
   const unique = options.filter(
     (o, i) => options.findIndex((x) => x.label === o.label) === i,
   );
+  if (level > 1 && next() < 0.35) {
+    const remaining = pick(next, [
+      { num: 1, den: 8 },
+      { num: 3, den: 8 },
+      { num: 1, den: 2 },
+    ]);
+    const fits = total.num * remaining.den <= remaining.num * total.den;
+    const labels = nt(
+      'Fits|Overflows',
+      'Помещается|Не помещается',
+      'Passt|Überschreitet',
+    )[lang].split('|');
+    return {
+      rule: dots === 1 ? 'dot-adds-half' : 'second-dot-adds-half-the-first',
+      prompt: nt(
+        `The bar has ${remaining.num}/${remaining.den} of a whole note remaining. Does a ${dots === 2 ? 'double-' : ''}dotted ${rest ? 'rest' : 'note'} of base value 1/${den} fit without crossing the barline?`,
+        `В такте осталось ${remaining.num}/${remaining.den} целой ноты. Поместится ли ${rest ? 'пауза' : 'нота'} с ${dots === 2 ? 'двумя точками' : 'точкой'} и основной длительностью 1/${den}, не пересекая тактовую черту?`,
+        `Im Takt bleiben ${remaining.num}/${remaining.den} einer ganzen Note. Passt eine ${dots === 2 ? 'doppelt ' : ''}punktierte ${rest ? 'Pause' : 'Note'} mit Grundwert 1/${den}, ohne den Taktstrich zu überschreiten?`,
+      )[lang],
+      answer: 'a',
+      options: shuffle(next, [
+        { id: 'a', label: labels[fits ? 0 : 1], tag: 'correct' },
+        { id: 'b', label: labels[fits ? 1 : 0], tag: 'added-wrong' },
+      ]),
+      explanation: nt(
+        `${total.num}/${total.den} ${fits ? '≤' : '>'} ${remaining.num}/${remaining.den}. This is only a bar-remainder calculation, not a verdict on the best beat grouping or engraving.`,
+        `${total.num}/${total.den} ${fits ? '≤' : '>'} ${remaining.num}/${remaining.den}. Это только расчёт остатка такта, а не оценка лучшей группировки долей или гравировки.`,
+        `${total.num}/${total.den} ${fits ? '≤' : '>'} ${remaining.num}/${remaining.den}. Dies prüft nur den Taktrest, nicht die beste Zählzeitgliederung oder den Notensatz.`,
+      )[lang],
+      source: notationSources.ties,
+    };
+  }
   return {
     prompt: fill(prompts[lang]['dotted-value'], {
       unit: valueNames[lang][unit.den],
-      value: dotWord[lang] + valueNames[lang][den],
+      value: rest
+        ? nt(
+            `a ${dots === 2 ? 'double-' : ''}dotted rest of base value 1/${den}`,
+            `пауза с ${dots === 2 ? 'двумя точками' : 'точкой'}: 1/${den}`,
+            `eine ${dots === 2 ? 'doppelt ' : ''}punktierte Pause des Grundwerts 1/${den}`,
+          )[lang]
+        : dotWord[lang] + valueNames[lang][den],
     }),
     options: shuffle(next, unique),
     answer: 'a',
     rule: dots === 1 ? 'dot-adds-half' : 'second-dot-adds-half-the-first',
+    explanation: nt(
+      `Dots work identically on notes and rests: ${total.num}/${total.den} of a whole note = ${count} × 1/${unit.den}.`,
+      `Точки одинаково изменяют ноты и паузы: ${total.num}/${total.den} целой ноты = ${count} × 1/${unit.den}.`,
+      `Punkte wirken bei Noten und Pausen gleich: ${total.num}/${total.den} einer ganzen Note = ${count} × 1/${unit.den}.`,
+    )[lang],
+    source: notationSources.rhythm,
   };
 }
 
@@ -512,10 +589,22 @@ function tuplet(
   level: Level,
   lang: MusicLanguage,
 ): Omit<Item, 'kind' | 'level' | 'seed' | 'lang'> {
-  const count = level === 1 ? 3 : pick(next, [3, 5, 6, 7]);
-  // The written value is the next larger regular division: a group of five in
-  // the time of a quarter is written in sixteenths, not in a fifth of anything.
-  const regular = 2 ** Math.floor(Math.log2(count));
+  if (level > 1 && next() < 0.5) return tupletContext(next, level, lang);
+  const [count, regular] =
+    level === 1
+      ? [3, 2]
+      : pick(next, [
+          [3, 2],
+          [5, 4],
+          [6, 4],
+          [7, 4],
+          [7, 8],
+          [9, 8],
+          [10, 8],
+          [11, 8],
+          [12, 8],
+        ]);
+  // The explicitly supplied ratio determines the value, not the group name.
   // Both neighbours of the answer have to be nameable, or the distractors
   // collapse onto it and the item stops being a question. That bounds the base.
   const den = pick(
@@ -550,6 +639,12 @@ function tuplet(
     options: shuffle(next, unique),
     answer: 'a',
     rule: 'irregular-group-written-value',
+    explanation: nt(
+      `Under the stated ${count}:${regular} ratio, the group occupies ${regular} written values. Other ratios are possible; the group number alone does not select a universal denominator.`,
+      `При указанном отношении ${count}:${regular} группа занимает ${regular} записанных длительностей. Возможны другие отношения; одно число группы не определяет универсальный знаменатель.`,
+      `Beim angegebenen Verhältnis ${count}:${regular} umfasst die Gruppe ${regular} notierte Werte. Andere Verhältnisse sind möglich; die Gruppenzahl allein bestimmt keinen universellen Nenner.`,
+    )[lang],
+    source: notationSources.tuplets,
   };
 }
 
@@ -558,6 +653,34 @@ function tieSum(
   level: Level,
   lang: MusicLanguage,
 ): Omit<Item, 'kind' | 'level' | 'seed' | 'lang'> {
+  if (level > 1 && next() < 0.5) {
+    const target = pick(next, ['total', 'first', 'second']);
+    const answer = target === 'total' ? '1/2' : '1/4';
+    return {
+      rule: 'tied-values-add',
+      figure: 'cross-bar-tie',
+      answer,
+      options: shuffle(
+        next,
+        ['1/4', '1/2', '3/4'].map((label) => ({
+          id: label,
+          label,
+          tag: label === answer ? 'correct' : 'added-wrong',
+        })),
+      ),
+      prompt: nt(
+        `In this 3/4 example, give ${target === 'total' ? 'the total duration of the tied sound' : target === 'first' ? 'the portion of the tied sound in bar 1' : 'the portion of the tied sound in bar 2'} as a fraction of a whole note.`,
+        `В примере 3/4 укажите ${target === 'total' ? 'полную длительность связанного звука' : target === 'first' ? 'часть связанного звука в такте 1' : 'часть связанного звука в такте 2'} как долю целой ноты.`,
+        `Gib in diesem 3/4-Beispiel ${target === 'total' ? 'die Gesamtdauer des gebundenen Tons' : target === 'first' ? 'den Anteil des gebundenen Tons in Takt 1' : 'den Anteil des gebundenen Tons in Takt 2'} als Anteil einer ganzen Note an.`,
+      )[lang],
+      explanation: nt(
+        'Bar 1: half rest + quarter = 3/4. Bar 2: tied quarter + half rest = 3/4. The sound lasts 1/4 + 1/4 = 1/2, with one attack; the tie allocates it across the barline without adding a beat.',
+        'Такт 1: половинная пауза + четверть = 3/4. Такт 2: связанная четверть + половинная пауза = 3/4. Звук длится 1/4 + 1/4 = 1/2 с одной атакой; лига распределяет его между тактами, не добавляя долю.',
+        'Takt 1: halbe Pause + Viertel = 3/4. Takt 2: gebundene Viertel + halbe Pause = 3/4. Der Ton dauert 1/4 + 1/4 = 1/2 mit einem Anschlag; der Haltebogen verteilt ihn über den Taktstrich, ohne eine Zählzeit hinzuzufügen.',
+      )[lang],
+      source: notationSources.ties,
+    };
+  }
   const first = pick(next, values.slice(1, level === 1 ? 3 : 4));
   const second = pick(next, values.slice(1, level === 1 ? 3 : 4));
   const total = add({ num: 1, den: first }, { num: 1, den: second });
@@ -749,6 +872,7 @@ function accidentalScope(
   level: Level,
   lang: MusicLanguage,
 ): Omit<Item, 'kind' | 'level' | 'seed' | 'lang'> {
+  if (level > 1 && next() < 0.75) return accidentalContext(next, level, lang);
   const clef = level === 1 ? 'treble' : pick(next, readingClefs);
   const sign = pick(next, level === 1 ? [1, -1] : [1, -1, 2, -2]);
   const base = readablePitch(next, clef, [0]);
@@ -792,6 +916,11 @@ const builders = {
   'read-pitch': readPitch,
   'clef-transform': clefTransform,
   'accidental-scope': accidentalScope,
+  'value-identification': valueIdentification,
+  'beaming-review': beamingReview,
+  'ornament-review': ornamentReview,
+  'performance-marks': performanceMarks,
+  'short-excerpt': shortExcerpt,
 } as const;
 
 export const exerciseKinds = Object.keys(builders) as ExerciseKind[];
@@ -832,6 +961,7 @@ export function generateFrom(
 export type Verdict = { correct: boolean; tag: ErrorTag };
 
 export function grade(item: Item, chosen: string): Verdict {
+  if (item.review) throw new RangeError('Reflection has no scored answer');
   const option = item.options.find((o) => o.id === chosen);
   if (!option) throw new RangeError(`Unknown option ${chosen}`);
   return { correct: option.id === item.answer, tag: option.tag };

@@ -104,7 +104,7 @@ test('Every token a rule reads is a token the palette declares', () => {
   assert.deepEqual(missing, [], 'a rule reads a token nothing declares');
 });
 
-test('Notation keeps its own ink and paper in the dark theme', () => {
+test('Notation theme overrides stay scoped to score selectors', () => {
   const dark = source.slice(source.indexOf(":root[data-theme='dark']"));
   const block = dark.slice(0, dark.indexOf('}'));
   assert.ok(block.includes('--c-ground'), 'the dark block was not found');
@@ -114,8 +114,10 @@ test('Notation keeps its own ink and paper in the dark theme', () => {
   assert.deepEqual(
     flipped,
     [],
-    'the dark theme redefines a score token, so notation would not be black ink on white paper',
+    'global score tokens would recolour the keyboard in dark mode',
   );
+  assert.match(source, /:root\[data-theme='dark'\] \.staff,/);
+  assert.match(source, /--notation-ink:\s*#e7fff1/);
 });
 
 test('One unqualified focus ring, and it is the token one', () => {

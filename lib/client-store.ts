@@ -134,7 +134,7 @@ export type Route = {
   /** Null on the four lensless indexes: a lens with no subject. */
   topic: string | null;
   /**
-   * The paragraph to scroll to, written after a `~` rather than a second `#`.
+   * A reading-rule anchor or encoded reference headword, after `~` rather than a second `#`.
    * A URL has one fragment, so `…/read#dot-adds-half` would leave the whole
    * string in `location.hash`, match no element and scroll nowhere.
    */

@@ -1,7 +1,14 @@
 'use client';
 import { useId, useRef, useState } from 'react';
 import { Staff } from './staff';
-import { layout, pitchAtStep, staffStep, stepY, type Clef } from '@/lib/staff';
+import {
+  layout,
+  pitchAtStep,
+  placementRange,
+  staffStep,
+  stepY,
+  type Clef,
+} from '@/lib/staff';
 import { parseNoteName } from '@/lib/staff-answers';
 import { pitchLabel, pitchName, type MusicLanguage } from '@/lib/notation';
 import type { Item } from '@/lib/exercises';
@@ -96,16 +103,15 @@ export function positionLabel(step: number, lang: MusicLanguage) {
   return `${step % 2 === 0 ? t.line : t.space} ${Math.floor(step / 2) + 1}`;
 }
 
-const RANGE = [-3, 11] as const;
-const POSITIONS = Array.from({ length: 15 }, (_, i) => i - 3);
-
-function StaffPosition({
+export function StaffPosition({
   clef,
   accidental,
   lang,
   disabled,
   value,
   onChange,
+  help,
+  ledgerLines = 1,
 }: {
   clef: Clef;
   accidental: number;
@@ -113,15 +119,22 @@ function StaffPosition({
   disabled: boolean;
   value: number | null;
   onChange: (value: number) => void;
+  help?: string;
+  ledgerLines?: number;
 }) {
   const t = staffWords[lang];
   const buttons = useRef(new Map<number, HTMLButtonElement>());
   const helpId = useId();
+  const range = placementRange(ledgerLines);
+  const positions = Array.from(
+    { length: range[1] - range[0] + 1 },
+    (_, i) => range[0] + i,
+  );
   const pitches = value === null ? [] : [pitchAtStep(value, clef, accidental)];
-  const plan = layout(pitches, clef, [], [], RANGE);
+  const plan = layout(pitches, clef, [], [], range);
   return (
     <>
-      <p id={helpId}>{t.help}</p>
+      <p id={helpId}>{help ?? t.help}</p>
       <fieldset
         className="staff-position"
         aria-label={t.position}
@@ -132,11 +145,11 @@ function StaffPosition({
           pitches={pitches}
           clef={clef}
           lang={lang}
-          range={RANGE}
+          range={range}
           space={26}
           label={`${t.clef}: ${t.clefs[clef]}`}
         />
-        {POSITIONS.map((step) => (
+        {positions.map((step) => (
           <button
             key={step}
             type="button"
@@ -156,11 +169,11 @@ function StaffPosition({
             onKeyDown={(event) => {
               let next: number;
               if (event.key === 'ArrowUp' || event.key === 'ArrowRight')
-                next = Math.min(RANGE[1], step + 1);
+                next = Math.min(range[1], step + 1);
               else if (event.key === 'ArrowDown' || event.key === 'ArrowLeft')
-                next = Math.max(RANGE[0], step - 1);
-              else if (event.key === 'Home') next = RANGE[0];
-              else if (event.key === 'End') next = RANGE[1];
+                next = Math.max(range[0], step - 1);
+              else if (event.key === 'Home') next = range[0];
+              else if (event.key === 'End') next = range[1];
               else return;
               event.preventDefault();
               onChange(next);

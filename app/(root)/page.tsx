@@ -423,6 +423,18 @@ export default function Home() {
   const [frequency, setFrequency] = useState(440);
   const [labTab, setLabTab] = useState<'tone' | 'notes'>('tone');
   const [notesState, setNotesState] = useState(initialNotesLabState);
+  const destination = route.lens + '/' + (route.topic ?? '');
+  const [labDestination, setLabDestination] = useState<string | null>(null);
+  if (labDestination !== destination) {
+    setLabDestination(destination);
+    if (route.lens === 'play' && route.topic) {
+      const preset = Object.hasOwn(notationLessonPresets, route.topic)
+        ? notationLessonPresets[route.topic]
+        : null;
+      setLabTab(preset ? 'notes' : 'tone');
+      if (preset) setNotesState({ ...initialNotesLabState, ...preset });
+    }
+  }
   const [reference, setReference] = useState(440);
   const [tuning, setTuning] = useState<Tuning>('equal');
   const [wave, setWave] = useState<Wave>('sine');
@@ -550,7 +562,7 @@ export default function Home() {
       await engine().preview(
         plan.midis.map((midi) => frequencyForMidi(midi, reference, tuning)),
         'triangle',
-        volume / 100,
+        (volume / 100) * plan.gain,
         plan.duration,
         plan.spacing,
       );
@@ -639,7 +651,11 @@ export default function Home() {
     // is not one. Someone who followed a link is already where they meant to be.
     if (!moved.current) return;
     moved.current = false;
+    // A lesson link can be at the bottom of a long article. WebKit can leave
+    // this heading focused during a pointer click, so focus alone may not
+    // scroll. Move the viewport explicitly as well as announcing the topic.
     headingRef.current?.focus({ preventScroll: true });
+    headingRef.current?.scrollIntoView({ block: 'start' });
   }, [route.lens, route.topic]);
   // The first hashchange listener this app has had. Back and Forward move
   // through the site now instead of leaving it, and a pasted address is read
@@ -981,10 +997,11 @@ export default function Home() {
               // reselects the facet: the initial state of a mounted component
               // is not re-read when only a prop changes.
               <Encyclopedia
-                key={route.topic ?? ''}
+                key={`${route.topic ?? ''}-${route.anchor ?? ''}`}
                 lang={lang}
                 openLesson={setLessonId}
                 subject={route.topic}
+                anchor={route.anchor}
               />
             )}
           </main>

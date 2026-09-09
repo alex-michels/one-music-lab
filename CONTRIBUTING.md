@@ -104,11 +104,14 @@ excluded to improve a number, and `tests/coverage-boundary.test.mjs` fails if a
 new authored file is left out of the denominator. Instrumentation is not
 coverage: every authored file is now measured, but most are still at 0%.
 
-On Windows the very first `npm test` after `npm ci` can fail with
-"Timeout waiting for worker to respond" while the DOM suite starts: the
-runner allows sixty seconds for a worker, which a cold cache on a freshly
-installed tree can exceed. The limit is fixed in the runner, so run the
-command again; a warm run takes about twenty seconds.
+On a memory-constrained Windows host, a cold test run can fail with
+"Timeout waiting for worker to respond" or a linter-child-process timeout
+while many workers start together. Run the suites sequentially with
+`npm test -- --maxWorkers=2`, `npm run test:browser -- --maxWorkers=2` and
+`npm run test:coverage -- --maxWorkers=2`. This limits process concurrency;
+it does not omit tests, browser engines or production files from coverage.
+Record the failed attempt and the bounded rerun rather than treating a
+timeout as a passing test.
 
 `npm run test:browser` runs the suites under `tests/browser/` in real
 Chromium, Firefox and WebKit through Playwright; install the engines once with
@@ -149,6 +152,15 @@ the complete coverage/browser checks mandatory once P00 is resolved. New changes
 must not add lint errors, untested behavior, or unexplained failures.
 
 ## Educational contributions
+
+The owner clarified on 2026-09-09 that the current portal is for personal
+learning. Completion requires verified sources, clear EN/RU/DE explanations,
+connected lesson/practice/lab/reference navigation and tested musical behavior.
+A separate external subject or language reviewer is not required. Record who
+checked what (including AI-assisted checks) without claiming external approval.
+Apply gate G in this personal-use scope; public-launch criteria and publication
+remain a later, explicit owner decision. This does not waive source accuracy,
+rights, tests for changed behavior or honest coverage reporting.
 
 Use the permanent task number from [ROADMAP.md](ROADMAP.md) in assignments and
 PRs. Keep its checkbox as the only completion status; store requirements and

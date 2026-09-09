@@ -19,6 +19,10 @@ beforeEach(async () => {
   await page.viewport(1280, 900);
 });
 afterEach(async () => {
+  await act(async () => {
+    window.history.replaceState(null, '', '#/en/play');
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+  });
   if (root) await act(() => root.unmount());
   root = null;
   container?.remove();
@@ -35,6 +39,34 @@ const readout = (label) => {
   );
   return row?.querySelector('dd').textContent;
 };
+
+test('Direct Play links and history select notation presets without resetting in-place edits', async () => {
+  window.history.replaceState(null, '', '#/en/t/durations/play');
+  await mount();
+  expect(container.querySelector('.notes-lab')).not.toBeNull();
+  expect(
+    page
+      .getByRole('button', { name: 'Note values', exact: true })
+      .element()
+      .getAttribute('aria-pressed'),
+  ).toBe('true');
+  await click('F');
+  expect(readout('Written')).toBe('F');
+  await click('Tone generator');
+  expect(container.querySelector('.notes-lab')).toBeNull();
+  await act(async () => {
+    window.location.hash = '#/en/t/dynamics/play';
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+  });
+  expect(container.querySelector('.notes-lab')).not.toBeNull();
+  expect(
+    page
+      .getByRole('button', { name: 'Dynamics', exact: true })
+      .element()
+      .getAttribute('aria-pressed'),
+  ).toBe('true');
+  window.history.replaceState(null, '', '#/en/play');
+});
 
 test('The Notes tab replaces the generator and reads a written note as a pitch', async () => {
   await mount();
@@ -214,8 +246,9 @@ test('Each rhythmic lesson selects its actual controls and dynamics retains the 
     await click('All foundations');
   await click(/Loudness without a number/);
   await click('Open this experiment');
-  expect(container.querySelector('.notes-lab')).toBeNull();
-  expect(container.querySelector('.instrument-grid')).not.toBeNull();
+  expect(container.querySelector('.notes-lab')).not.toBeNull();
+  expect(container.querySelector('.instrument-grid')).toBeNull();
+  expect(container.textContent).toContain('Soft');
 });
 
 test('German shows its own register names and the software caveat', async () => {
@@ -250,4 +283,23 @@ test('Every panel in the notes lab keeps its content off the border', async () =
   // Nothing may spill sideways out of the drawing area either.
   const lab = container.querySelector('.notes-lab');
   expect(lab.scrollWidth).toBeLessThanOrEqual(lab.clientWidth + 1);
+});
+
+test('Keyboard and staff placement update the same pitch and sound it only on interaction', async () => {
+  const { preview } = observeAudio();
+  await mount();
+  await click('Notes');
+  const initial = preview.mock.calls.length;
+  expect(initial).toBe(0);
+  const keyboard = container.querySelector('.keyboard-panel');
+  await act(async () =>
+    keyboard.querySelector('button[aria-label="D4, 293.66 Hz"]').click(),
+  );
+  expect(readout('Written')).toBe('D');
+  expect(readout('MIDI number')).toBe('62');
+  await click('Line 1');
+  expect(readout('Written')).toBe('E');
+  expect(readout('MIDI number')).toBe('64');
+  expect(preview).toHaveBeenCalledTimes(2);
+  expect(preview.mock.calls[1][0][0]).toBeCloseTo(329.627557, 4);
 });

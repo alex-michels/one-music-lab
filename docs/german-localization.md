@@ -55,9 +55,13 @@ Lokalisierungsfehler; siehe
 
 Zugriff und Textabgleich: **6. September 2026**. Es wurden die genannten
 Abschnitte selbst gelesen, nicht nur Suchtreffer oder Inhaltsverzeichnisse.
-Redaktioneller Abgleich: Codex; unabhängiges musiktheoretisches und deutsches
-Sprachreview durch den vom Eigentümer benannten Reviewer steht im Gate G noch
-aus. Automatische Tests ersetzen dieses Review nicht.
+Redaktioneller Abgleich: Codex; eine unabhängige externe Fach- oder
+Sprachprüfung ist damit nicht behauptet. Nach der Klarstellung des Eigentümers
+vom 9. September 2026 ist eine solche externe Abnahme für sein persönliches
+Lernen nicht erforderlich. Maßgeblich sind Quellenabgleich, musikalische und
+sprachliche Prüfung sowie überprüfte Bedienbarkeit nach dem aktuellen
+[Gate G](release-criteria.md). Automatische Tests allein belegen keine
+fachliche Richtigkeit.
 
 Quelle 1 steht zusätzlich als **S34** im [Quellenregister](sources.md), weil sie
 das Verhalten von `lib/notation.ts` bestimmt und in Tests geprüft wird; die

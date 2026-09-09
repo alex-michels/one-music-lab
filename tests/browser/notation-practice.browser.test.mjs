@@ -174,6 +174,14 @@ test('Every rule produces an answerable question in all three languages', async 
       await render(lang, ruleTopic[rule]);
       expect(prompt().trim().length).toBeGreaterThan(0);
       const buttons = answers();
+      if (!buttons.length) {
+        const review = container.querySelector('.notation-response button');
+        expect(review).not.toBeNull();
+        await act(async () => review.click());
+        expect(container.querySelector('.answer-feedback')).not.toBeNull();
+        await unmount();
+        continue;
+      }
       expect(buttons.length).toBeGreaterThan(1);
       // Answer whatever is offered first: the point is that every rule can be
       // played through in every language, not which option is right.
@@ -213,15 +221,16 @@ test('An engraved question never reads its own answer out', async () => {
 
 test('A sign that stops at the barline is drawn with the barline', async () => {
   await fresh('en', 'accidental-scope');
-  const staff = container.querySelector('svg.staff');
-  // Three notes and a barline: the rule cannot be read without seeing where
-  // the bar ends.
-  expect(staff.querySelectorAll('path').length).toBeGreaterThanOrEqual(4);
+  const score = container.querySelector('.notation-figure svg');
+  // The contextual score includes the signature and both sides of the boundary.
+  expect(score.querySelectorAll('.measure').length).toBe(2);
+  expect(score.querySelectorAll('.barLine path').length).toBeGreaterThan(0);
   expect(prompt().length).toBeGreaterThan(10);
-  expect(answers().length).toBe(2);
+  expect(answers().length).toBeGreaterThanOrEqual(2);
 });
 
 test('Typed and placed answers reach the ledger and reset for the next question', async () => {
+  vi.spyOn(Math, 'random').mockReturnValue(0); // Keep this input-mode regression on the pitch rule.
   await fresh('en', 'staff');
   const first = generateFrom('read-pitch', 1, 1, 'en');
   const wrong = first.options.find((option) => option.id !== first.answer);
@@ -284,4 +293,41 @@ test('The ledger becomes a disclosure on a phone without the page scrolling side
     ledger.open = false;
   });
   expect(container.querySelector('.ledger-row').checkVisibility()).toBe(false);
+});
+
+test('A short excerpt records each note and preserves partial success in the ledger', async () => {
+  await fresh('en', 'staff');
+  await act(async () => answers()[0].click());
+  vi.spyOn(Math, 'random').mockReturnValue(0.999);
+  await click('Next question');
+  // Successive questions start at different levels — `itemForRule` derives the
+  // first level from the seed — so the second question is level 2, the mixed
+  // pitch-and-rhythm excerpt, not the plain four-note bar of level 1. Deriving
+  // the count from the item rather than writing it here keeps this test about
+  // per-note recording instead of about how many notes the generator happens
+  // to emit today.
+  const item = generateFrom('short-excerpt', 2, 102, 'en');
+  const total = item.parts.length;
+  expect(total).toBeGreaterThan(4);
+  const fields = [...container.querySelectorAll('.notation-response fieldset')];
+  expect(fields).toHaveLength(total);
+  for (let i = 0; i < total; i++) {
+    const part = item.parts[i],
+      option = part.options.find((o) =>
+        i === 1 ? o.id !== part.answer : o.id === part.answer,
+      );
+    await act(async () =>
+      [...fields[i].querySelectorAll('button')]
+        .find((b) => b.textContent === option.label)
+        .click(),
+    );
+  }
+  // One deliberate miss, so the ledger must show every note asked and exactly
+  // one wrong — partial success, not a pass/fail for the whole excerpt.
+  expect(
+    rowFor('read-a-short-excerpt').querySelector('.ledger-tally').textContent,
+  ).toBe(`${total} questions · 1 mistake`);
+  expect(container.querySelector('[aria-live]').textContent).toContain(
+    `${total - 1} / ${total}`,
+  );
 });

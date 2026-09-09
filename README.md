@@ -30,13 +30,15 @@ and still requires the owner's authorization.
 
 - **Notation prototype (№553):** the Notes lab draws four clefs, ledger lines and accidentals locally. Practice → Reading notation → Read a note supports choices, typed EN/RU/DE note names and pointer/keyboard placement. See the [user guide, engine evidence and limits](docs/notation-engine.md).
 
+- **Notation programme (№558):** thirteen connected EN/RU/DE lessons, bounded Notes-lab experiments, per-note practice feedback and sourced reference entries. Start with **Read → Note names and octaves** and follow the previous/next lesson links; use the four views of each topic to read, experiment, practise and look up terms. The [PDF coverage and evidence record](docs/notation-programme.md) explains the programme's scope and checks for personal learning. Public release remains separate.
+
 - **Chords lab** (`/#chords`): editable and transposable progressions with full undo and redo, 16 chord types through ninths, inversions, EN/RU/DE pitch spelling, a visual keyboard, applied-dominant marking, and a sourced library of 22 starting points — cadences, classical schemas, pop and rock loops, jazz turnarounds, blues forms and mode mixture — with a per-chord register control, one-click fitting of a progression to its scale, eight accompaniment figures (block chords, arpeggios, Alberti bass, afterbeats, offbeats) and root-identification feedback. See the [user guide, research and limitations](docs/chords-lab.md).
 - Continuous 20–20,000 Hz oscillator, four waveforms, logarithmic frequency control, cents readout and live analyser waveform.
 - Editable A4 reference from 20–2,000 Hz, presets, and 12-TET plus specific A-anchored just and Pythagorean chromatic ratio maps.
 - Two-octave keyboard with register controls; computer keys A W S E D F T G Y H U J K play a chromatic octave. Space toggles continuous sound, Escape stops all audio, and arrows adjust frequency.
 - Intervals, ten scale collections and seven chord types with sequential/simultaneous playback. All notes are calculated from the selected tuning.
 - Band-limited Web Audio rendering of five-second mono PCM WAV files with attack/release ramps.
-- Six introductory lessons in EN/RU/DE with sources and linked experiments, a glossary searchable in all three languages, and interval ear training with feedback and session scoring.
+- Nineteen introductory lessons, including thirteen notation lessons, in EN/RU/DE with sources and linked experiments, a glossary searchable in all three languages, and interval ear training with feedback and session scoring.
 - The scale lab spells pitches by scale degree in the active locale (for example, C minor is C–D–E♭–F–G–A♭–B♭), and includes natural, harmonic, and ascending/descending melodic minor forms. See [localized notation](docs/music-notation.md).
 - Russian Sound lab intentionally combines Russian names in “A little experiment” with international labels in its other existing panels. These displays are accepted. New Russian theory, teaching material, trainers and ordinary encyclopedia articles use traditional Russian notation; articles about international systems show those systems' notation. In new Russian laboratory material, traditional Russian notation has priority and international notation remains valid. See the [notation scope](docs/music-notation.md#scope-of-future-localization-work).
 - An explicitly marked curriculum roadmap covering early music, European traditions 1600–1900, blues/jazz/pop, world traditions and contemporary musical languages.
@@ -62,6 +64,9 @@ npm ci
 npm run dev
 ```
 
+If Windows PowerShell blocks `npm.ps1` under its execution policy, use
+`npm.cmd` in place of `npm` in these commands; no policy change is needed.
+
 Open the URL printed by the development server (normally `http://localhost:3000`).
 Keep that terminal running; stop it with Ctrl+C. Changes to React/CSS reload in
 development. Start audio with an explicit click/key gesture. The application
@@ -78,6 +83,8 @@ npm run test:coverage
 npm run typecheck
 npm run lint
 npm run format:check
+npm run notation:check
+npm run glyphs:check
 npm run build
 ```
 
@@ -89,8 +96,14 @@ the narrow lint allowance for explicit native-list roles. See the
 [UI provenance boundary](docs/ui-provenance.md) before editing catalog copies.
 `test:coverage` reports **every authored file**, including files no test loads
 yet, so an untested module appears at 0% instead of disappearing. The current
-figure is about 25% of statements: the measurement is complete, the coverage
-itself is not.
+measurement is complete, the coverage itself is not. Task-specific results and
+remaining gaps are recorded in the [notation programme evidence](docs/notation-programme.md).
+
+The notation regression suites also check that feedback describes the selected
+mistake, that all thirteen lessons are connected in reading order, that duration
+options require reading similar symbols, and that metronome questions respect
+the printed beat unit. Source links distinguish
+current terminology from historically bounded performance conventions.
 
 `npm run test:browser` runs the audio and component suites in real Chromium,
 Firefox and WebKit, so run `npx playwright install` once first. The audio tests
