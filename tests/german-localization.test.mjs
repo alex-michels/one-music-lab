@@ -1,4 +1,5 @@
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { expect, test } from 'vitest';
@@ -269,22 +270,32 @@ test('German counters decline the drill lens nouns too', () => {
  * live. A key nobody uses is a translation nobody can check.
  */
 const root = fileURLToPath(new URL('../', import.meta.url));
-function sourceFiles(dir, found = []) {
-  for (const name of readdirSync(dir)) {
-    // Tests are excluded on purpose: a key kept alive only by a test that
-    // mentions it is exactly the dead key this is looking for.
-    if (
-      ['node_modules', '.git', '.next', 'outputs', '.vitest', 'tests'].includes(
-        name,
-      )
-    )
-      continue;
-    const path = join(dir, name);
-    if (statSync(path).isDirectory()) sourceFiles(path, found);
-    else if (/\.(ts|tsx|mjs|mts)$/.test(path) && !path.endsWith('german.ts'))
-      found.push(path);
-  }
-  return found;
+/**
+ * What git tracks, and nothing else.
+ *
+ * Walking the directory instead was wrong in a way that only CI could see: a
+ * scratch `/work/` full of old migration scripts is gitignored here and absent
+ * there, so two dead keys stayed alive on this machine and the gate passed
+ * locally while failing in the run that matters. Build output under `dist/`
+ * would have done the same, inlining every key it is looking for. Asking git
+ * makes the corpus exactly what ships, and identical in both places.
+ */
+function sourceFiles() {
+  const listed = execFileSync(
+    'git',
+    ['ls-files', '-z', '*.ts', '*.tsx', '*.mjs', '*.mts'],
+    { cwd: root, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 },
+  );
+  return (
+    listed
+      .split('\0')
+      .filter(Boolean)
+      // Tests are excluded on purpose: a key kept alive only by a test that
+      // mentions it is exactly the dead key this is looking for.
+      .filter((path) => !path.startsWith('tests/'))
+      .filter((path) => path !== 'lib/german.ts')
+      .map((path) => join(root, path))
+  );
 }
 
 test('Every German entry translates a string the site still says', () => {

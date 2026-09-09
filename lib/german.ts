@@ -549,8 +549,6 @@ export const german = {
   'Octave register': 'Oktavlage',
   'The stretch of pitches from one C up to the B above it, for example C4 to B4.':
     'Der Abschnitt von einem C bis zum H darüber, etwa die eingestrichene Oktave.',
-  'The convention that appends an octave number to each letter name, counting a new number from every C.':
-    'Die Schreibweise, die die Lage durch große und kleine Buchstaben mit Strichen angibt, etwa c′.',
   'Middle C': 'Eingestrichenes c',
   'The C nearest the middle of a piano keyboard, written C4 and sounding at about 261.6 Hz.':
     'Das c in der Mitte der Klaviatur, geschrieben c′, mit etwa 261,6 Hz.',
@@ -561,8 +559,6 @@ export const german = {
     '5 Linien + 4 Zwischenräume = 9 Plätze · je ein Platz darüber und darunter = 11 · von unten gezählt',
   'A staff is five parallel lines with four spaces between them, nine places in all. Lines and spaces are both counted from the bottom: the lowest line is the first line, the lowest space the first space. A note head sits on a line, crossed by it, or inside a space.':
     'Das Notensystem besteht aus fünf waagerechten Linien und vier Zwischenräumen, zusammen neun Plätzen. Beide werden von unten nach oben gezählt: die unterste Linie ist die erste Linie, der unterste Zwischenraum der erste Zwischenraum. Ein Notenkopf steht auf einer Linie, die ihn durchschneidet, oder in einem Zwischenraum.',
-  'The place just above the top line and the place just below the bottom line also belong to the staff, which makes eleven in all. Past them, short ledger lines extend it one step at a time. Notes are read left to right, and heads aligned vertically sound together.':
-    'Der Platz unmittelbar über der fünften Linie und der Platz unmittelbar unter der ersten gehören ebenfalls zum System; damit sind es elf. Darüber hinaus verlängern kurze Hilfslinien das System Schritt für Schritt. Noten werden von links nach rechts gelesen; senkrecht übereinanderstehende Notenköpfe erklingen gleichzeitig.',
   Staff: 'Notensystem',
   'The staff is the set of five lines and four spaces on which pitches are written.':
     'Das Notensystem ist die Folge von fünf Linien und vier Zwischenräumen, auf denen Tonhöhen notiert werden.',
