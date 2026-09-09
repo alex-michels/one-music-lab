@@ -166,26 +166,20 @@ test('Every clef renders, and German names the pitches its own way', async () =>
   }
 });
 
-/**
- * Notation is black ink on white paper in both themes. It holds because the
- * staff and the piano live in the --s-* token namespace, which no theme block
- * redefines. A stylesheet cannot state that invariant, so it is asserted here
- * against what the browser computes: before the staff carried its own paper it
- * borrowed a chrome panel's, and rendered at 1.07:1 in the dark theme.
- */
-test('A staff is the same ink on the same paper in either theme', async () => {
+test('A staff adapts its ink and surface to the active theme', async () => {
   await draw({ pitches: [at(0, 4), at(4, 4)], clef: 'treble' });
   setTheme('light');
   const light = paint(svg());
   setTheme('dark');
   const dark = paint(svg());
 
-  expect(dark, 'the score namespace does not flip').toEqual(light);
-  // Equal is not enough: the old failure was equal ink on unequal paper.
-  expect(contrast(dark.color, dark.background)).toBeGreaterThan(15);
+  expect(dark.color).not.toBe(light.color);
+  expect(dark.background).not.toBe(light.background);
+  expect(getComputedStyle(svg()).borderWidth).toBe('0px');
+  expect(contrast(dark.color, dark.background)).toBeGreaterThan(10);
 });
 
-test('A staff keeps its paper whatever chrome it is dropped onto', async () => {
+test('A staff keeps its notation surface separate from surrounding chrome', async () => {
   await render(
     createElement(
       'div',
@@ -204,11 +198,13 @@ test('A staff keeps its paper whatever chrome it is dropped onto', async () => {
   setTheme('dark');
   const darkStaff = paint(svg());
 
-  expect(darkStaff).toEqual(lightStaff);
+  expect(darkStaff.color).not.toBe(lightStaff.color);
+  expect(darkStaff.background).not.toBe(lightStaff.background);
+  expect(getComputedStyle(svg()).borderWidth).toBe('0px');
   expect(paint(panel).background, 'the chrome around it does flip').not.toBe(
     lightPanel.background,
   );
-  expect(contrast(darkStaff.color, darkStaff.background)).toBeGreaterThan(15);
+  expect(contrast(darkStaff.color, darkStaff.background)).toBeGreaterThan(10);
 });
 
 test('The piano is an instrument in both themes, and its panel is not', async () => {

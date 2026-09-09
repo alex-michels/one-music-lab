@@ -36,11 +36,8 @@ test('The topic list is exactly the lessons, in their reading order', () => {
   );
   for (const topic of topics) {
     assert.equal(topicById[topic.id], topic);
-    assert.equal(
-      topic.module,
-      null,
-      'no module is assigned yet, and none is invented',
-    );
+    if (topic.order >= 6) assert.match(topic.module, /^(F01|F03|F04|F05|N02)$/);
+    else assert.equal(topic.module, null);
   }
 });
 
@@ -81,7 +78,7 @@ test('The kind census accounts for every term exactly once', () => {
   const census = { sign: 0, concept: 0, measure: 0, tone: 0 };
   for (const topic of topics)
     census[topic.kind] += termsByTopic[topic.id].length;
-  assert.deepEqual(census, { sign: 38, concept: 27, measure: 25, tone: 7 });
+  assert.deepEqual(census, { sign: 45, concept: 51, measure: 36, tone: 7 });
   assert.equal(
     Object.values(census).reduce((a, b) => a + b, 0),
     terms.length,
@@ -132,7 +129,7 @@ test('The paragraph anchors are the rules of that topic, and nothing else', () =
   for (const rule of RULES)
     assert.ok(paragraphAnchors[ruleTopic[rule]].includes(rule), rule);
   // Eight of nineteen, and the site says so in words rather than as a ratio.
-  assert.equal(drilledTopics.length, 8);
+  assert.equal(drilledTopics.length, 13);
   for (const id of TOPIC_IDS)
     assert.equal(
       drilledTopics.includes(id),
@@ -155,7 +152,6 @@ test('Each topic plays on exactly one bench, and the two sets cover all of them'
   // "hear this pitch" instead of "open in the notes lab".
   assert.deepEqual([...toneBedTopics].sort(alphabetical), [
     'chords',
-    'dynamics',
     'intervals',
     'scales',
     'sound',

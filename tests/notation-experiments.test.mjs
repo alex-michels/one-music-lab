@@ -82,7 +82,7 @@ test('Unknown examples and invalid tempos are rejected before scheduling audio',
 test('Every notation lesson preset points to an existing lesson and a working example group', () => {
   const ids = lessons.map((l) => l.id);
   const groups = new Set(Object.values(notationExamples).map((e) => e.group));
-  expect(Object.keys(notationLessonPresets)).toHaveLength(12);
+  expect(Object.keys(notationLessonPresets)).toHaveLength(13);
   for (const [id, preset] of Object.entries(notationLessonPresets)) {
     expect(ids).toContain(id);
     expect(groups.has(preset.group)).toBe(true);
@@ -98,5 +98,5 @@ test('Every notation lesson preset points to an existing lesson and a working ex
     octave: 4,
   });
   expect(notationLessonPresets.tempo.group).toBe('tempo');
-  expect(notationLessonPresets.dynamics).toBeUndefined(); // Uses the existing volume control.
+  expect(notationLessonPresets.dynamics.group).toBe('dynamics');
 });

@@ -167,12 +167,34 @@ await test('The portable Notes lab renders while every external request is block
     const page = await context.newPage();
     await page.goto(origin);
     await page.getByRole('button', { name: 'Notes', exact: true }).click();
-    const staff = page.locator('svg.staff');
+    const staff = page.locator('.note-readout svg.staff');
     await staff.waitFor({ state: 'visible' });
     assert.ok((await staff.locator('path').count()) >= 2);
     assert.equal(
       await staff.getAttribute('aria-labelledby'),
       await staff.locator('title').getAttribute('id'),
+    );
+    assert.equal(await page.locator('.notes-lab svg.staff').count(), 4);
+    assert.ok(await page.locator('.notation-figure svg use').count());
+    assert.equal(
+      await page
+        .locator('.notation-figure')
+        .evaluate((figure) =>
+          [...figure.querySelectorAll('use')].every((use) =>
+            document.getElementById(use.getAttribute('xlink:href').slice(1)),
+          ),
+        ),
+      true,
+      'Generated figures must resolve their local glyph outlines offline',
+    );
+    await page.getByRole('button', { name: 'Line 1', exact: true }).click();
+    assert.equal(await page.locator('.note-name').textContent(), 'E4');
+    await page
+      .getByRole('combobox', { name: 'Accidental before this note' })
+      .selectOption('-1');
+    assert.match(
+      await page.locator('.notation-workbench output').textContent(),
+      /E♭4/,
     );
     assert.deepEqual(
       external,

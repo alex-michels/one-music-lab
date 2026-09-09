@@ -2,6 +2,20 @@ import { localText as b } from './i18n';
 
 /** Finite examples of Western notation. Times are measured in quarter-note beats. */
 export const notationExamples = {
+  soft: {
+    label: { en: 'Softer', ru: 'Тише', de: 'Leiser' },
+    group: 'dynamics',
+    midis: [60],
+    length: 2,
+    spacing: 2,
+  },
+  strong: {
+    label: { en: 'Louder', ru: 'Громче', de: 'Lauter' },
+    group: 'dynamics',
+    midis: [60],
+    length: 2,
+    spacing: 2,
+  },
   successive: {
     label: b('One after another', 'По очереди'),
     group: 'pitch',
@@ -142,6 +156,7 @@ export const notationGroups: {
   { id: 'division', label: b('Beat division', 'Деление доли') },
   { id: 'articulation', label: b('Articulation', 'Артикуляция') },
   { id: 'repeats', label: b('Repeats', 'Повторы') },
+  { id: 'dynamics', label: { en: 'Dynamics', ru: 'Динамика', de: 'Dynamik' } },
 ];
 
 /** Safe inputs for AudioEngine.preview; no timers or audio are created here. */
@@ -154,6 +169,7 @@ export function planNotationExample(id: NotationExampleId, tempo: number) {
     midis: [...example.midis],
     duration: example.length * beat,
     spacing: example.spacing * beat,
+    gain: id === 'soft' ? 0.25 : 1,
   };
 }
 
@@ -195,4 +211,8 @@ export const notationLessonPresets: Record<
     group: 'articulation',
   },
   repeats: { note: { letter: 0, accidental: 0, octave: 4 }, group: 'repeats' },
+  dynamics: {
+    note: { letter: 0, accidental: 0, octave: 4 },
+    group: 'dynamics',
+  },
 };

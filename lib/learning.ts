@@ -5,6 +5,12 @@ import type { ErrorTag, ExerciseKind } from './exercises';
 import { localText as b } from './i18n';
 export type { LocalText } from './i18n';
 import type { LocalText } from './i18n';
+import { nt } from './notation-tasks';
+import {
+  notationReferences,
+  notationTermSources,
+  notationTopicSources,
+} from './notation-programme';
 export const lessons = [
   {
     id: 'sound',
@@ -319,9 +325,10 @@ export const lessons = [
         'A key signature stands at the start of every system, after the clef. Each of its signs applies to its letter for the whole piece and in every octave, until a new signature replaces it. Signs do not add up: a flat in the signature and a flat in the bar are still one flat.',
         'Ключевые знаки выставляются при ключе в начале каждой нотной строки. Каждый из них действует на свою ступень во всём произведении и во всех октавах, пока его не заменят новые ключевые знаки. Знаки не складываются: бемоль при ключе и бемоль внутри такта дают один бемоль, а не двойное понижение.',
       ),
-      b(
-        'A sign written inside a bar holds only to the next barline and only in the octave where it stands; a tie carries it past the barline for the tied note alone. Modern engraving rarely relies on that rule: it rewrites the sign in the other octave and prints courtesy accidentals.',
-        'Случайный знак действует только до следующей тактовой черты и только в той октаве, где он записан; за черту он переходит лишь через лигу и только для связанной ноты. Современная нотная графика почти не полагается на это правило: знак повторяют в другой октаве и выписывают предупредительные знаки.',
+      nt(
+        'In common-practice notation, a sign within a bar applies to the same written pitch until the barline. A tied continuation retains it across the barline. Courtesy signs can clarify the reading; an edition may explicitly declare other conventions.',
+        'В традиционной нотации случайный знак действует на ту же ноту в той же октаве до тактовой черты. Залигованное продолжение сохраняет знак за чертой. Предупредительные знаки облегчают чтение; редакция может явно оговаривать другие правила.',
+        'In üblicher Notation gilt ein Versetzungszeichen für dieselbe Tonhöhe bis zum Taktstrich. Eine übergebundene Fortsetzung behält es darüber hinaus. Erinnerungszeichen erleichtern das Lesen; eine Ausgabe kann ausdrücklich andere Regeln festlegen.',
       ),
     ],
     experiment: b(
@@ -349,9 +356,10 @@ export const lessons = [
         'In twelve-tone equal temperament one pitch can be written in more than one way. C sharp and D flat sound the same; so do F sharp and G flat, and E and F flat. Each spelling names a different letter, and the letter decides which scale degree the note occupies.',
         'В двенадцатиступенном равномерном строе один и тот же звук можно записать по-разному. До-диез и ре-бемоль звучат одинаково; так же соотносятся фа-диез и соль-бемоль, ми и фа-бемоль. Каждая запись называет свою ступень, и именно ступень определяет место ноты в звукоряде.',
       ),
-      b(
-        'The spelling carries an expectation. A raised degree written with a sharp tends to continue upward; a lowered degree written with a flat tends to continue downward. Interval names follow the letters too, so C–D sharp is a second and C–E flat is a third, whatever the keyboard shows.',
-        'Запись несёт ожидание. Повышенная ступень с диезом обычно продолжает движение вверх, пониженная ступень с бемолем — вниз. Названия интервалов тоже считаются по ступеням: до — ре-диез это секунда, а до — ми-бемоль это терция, хотя на клавиатуре расстояние одно и то же.',
+      nt(
+        'Spelling identifies the written interval and its harmonic context. C–D sharp is an augmented second; C–E flat is a minor third. A sharp or flat alone does not determine the direction of the next note.',
+        'Запись определяет название интервала и проясняет гармонический контекст. До — ре-диез — увеличенная секунда, до — ми-бемоль — малая терция. Диез или бемоль сами по себе не определяют направление следующей ноты.',
+        'Die Schreibweise bezeichnet das notierte Intervall und verdeutlicht den harmonischen Zusammenhang. C–Dis ist eine übermäßige Sekunde, C–Es eine kleine Terz. Ein Kreuz oder Be allein bestimmt nicht die Richtung des nächsten Tons.',
       ),
     ],
     experiment: b(
@@ -411,9 +419,10 @@ export const lessons = [
         "A dot after a note head adds half of that note's value. A dotted note therefore lasts as long as three of the next smaller unit: a dotted half equals three quarters. A second dot adds half of what the first dot added, and the same rule applies to rests.",
         'Точка справа от головки прибавляет половину длительности этой ноты. Поэтому нота с точкой равна трём следующим меньшим: половинная с точкой — трём четвертям. Вторая точка прибавляет половину того, что прибавила первая. То же правило действует и для пауз.',
       ),
-      b(
-        'A tie joins two notes of the same pitch into one sound, and their values add. Because the tie carries a value across a barline, a note can last longer than the bar allows. The slur is a different sign: it joins notes of different pitch and asks for legato.',
-        'Лига продления соединяет две ноты одной высоты в один звук, и их длительности складываются. Именно она переносит звук через тактовую черту, поэтому нота может длиться дольше такта. Фразировочная лига — другой знак: она соединяет ноты разной высоты и требует легато.',
+      nt(
+        'A tie joins equal pitches into one sustained sound and adds their durations, including across barlines. An articulation slur connects a group of notes without adding their values. A phrasing slur describes a larger musical grouping.',
+        'Связующая лига объединяет ноты одной высоты в протяжённый звук и складывает их длительности, в том числе через тактовую черту. Артикуляционная лига связывает группу нот, не складывая их длительности. Фразировочная лига обозначает более крупное смысловое объединение.',
+        'Ein Haltebogen verbindet gleiche Tonhöhen zu einem gehaltenen Klang und addiert ihre Dauern, auch über Taktstriche hinweg. Ein Bindebogen verbindet eine Notengruppe, ohne deren Werte zu addieren. Ein Phrasierungsbogen bezeichnet eine größere musikalische Einheit.',
       ),
     ],
     experiment: b(
@@ -438,9 +447,10 @@ export const lessons = [
       'триоль = 3 вместо 2  ·  отношение 7:4',
     ),
     paragraphs: [
-      b(
-        'Note values divide by two, so a beat split into three, five or seven parts needs a mark. A triplet writes three notes where two of that value belong. Irregular groups take the value of the next larger regular division, and a ratio such as 7:4 is printed when that value could be misread.',
-        'Длительности делятся пополам, поэтому деление доли на три, пять или семь частей нужно обозначить. Триоль записывает три ноты там, где помещаются две того же вида. Нерегулярные группы записываются длительностью следующего большего регулярного деления, а отношение вроде 7:4 печатают, когда запись можно прочесть неверно.',
+      nt(
+        'Ordinary values halve successively. A tuplet changes that division: 3:2 means three written values in the time of two of the same value. The ratio, not the number of notes alone, determines the duration. Both 7:4 and 7:8 can occur; read the stated ratio and the surrounding meter.',
+        'Обычные длительности последовательно делятся пополам. Особое деление меняет этот порядок: 3:2 означает три записанные длительности за время двух таких же. Длительность определяет отношение, а не одно число нот. Встречаются и 7:4, и 7:8; учитывайте указанное отношение и размер.',
+        'Reguläre Werte werden fortlaufend halbiert. Eine unregelmäßige Teilung verändert dieses Verhältnis: 3:2 bedeutet drei notierte Werte in der Zeit von zwei gleichen Werten. Das Verhältnis, nicht die Notenzahl allein, bestimmt die Dauer. Sowohl 7:4 als auch 7:8 kommen vor; lies das angegebene Verhältnis im Taktzusammenhang.',
       ),
       b(
         'A beam replaces the flags on notes shorter than a quarter: one beam for each flag the note would carry. Beams group notes so that the beat can be seen at a glance, which is why grouping follows the metre rather than the melody. Modern vocal music is beamed by beat, like instrumental music.',
@@ -463,9 +473,10 @@ export const lessons = [
       'Read how fast a piece goes, and when that changes.',
       'Читайте, как быстро идёт музыка и когда это меняется.',
     ),
-    formula: b(
-      '♩ = 120  ·  Adagio → Andante → Moderato → Allegro → Presto',
-      '♩ = 120  ·  Adagio → Andante → Moderato → Allegro → Presto',
+    formula: nt(
+      '♩ = 120 → one quarter = 0.5 s',
+      '♩ = 120 → одна четверть = 0,5 с',
+      '♩ = 120 → eine Viertel = 0,5 s',
     ),
     paragraphs: [
       b(
@@ -500,9 +511,10 @@ export const lessons = [
         'The letters name relative loudness: p for piano, f for forte, m for mezzo. A mark says only that this passage is louder or softer than what surrounds it. None names a measured level, so the same f differs between a hall and a small room, and between a trumpet and a flute.',
         'Буквы обозначают относительную громкость: p — piano, f — forte, m — mezzo. Знак говорит лишь о том, что этот участок громче или тише соседних. Ни один из них не называет измеренного уровня: одно и то же f звучит по-разному в зале и в небольшой комнате, у трубы и у флейты.',
       ),
-      b(
-        'Gradual change is written either as a word, crescendo or decrescendo, or as a hairpin opening or closing over the passage it governs. Both hold until something replaces them. Accent signs and sforzato act on a single note instead of a stretch, and they too are read against the level already in force.',
-        'Постепенное изменение записывают словом — крещендо или диминуэндо — либо вилкой, которая раскрывается или сходится над нужным отрезком. Указание действует до тех пор, пока его не сменит новое. Акцент и сфорцато относятся к одному звуку, а не к отрезку, и тоже читаются относительно уже установленного уровня.',
+      nt(
+        'Crescendo increases the level and decrescendo decreases it over the indicated span. An accent or sforzato emphasizes an event relative to the surrounding dynamic level; it does not prescribe a fixed sound pressure.',
+        'Крещендо усиливает звучание, диминуэндо ослабляет его на указанном участке. Акцент или сфорцато выделяет событие относительно окружающей динамики, не задавая фиксированного звукового давления.',
+        'Crescendo steigert, Decrescendo verringert die Lautstärke auf der angegebenen Strecke. Akzent oder Sforzato betont ein Ereignis im Verhältnis zur umgebenden Dynamik und legt keinen festen Schalldruck fest.',
       ),
     ],
     experiment: b(
@@ -531,9 +543,10 @@ export const lessons = [
         'Articulation describes how one note joins or separates from the next. A slur over a group asks for legato: the notes follow without a break between them. A dot asks for staccato, each note shortened and detached, with the silence taken from its own written value rather than from the next note.',
         'Артикуляция описывает, как один звук соединяется со следующим или отделяется от него. Лига над группой требует легато: звуки идут без разрыва. Точка требует стаккато: звук укорачивается и отделяется, а тишина берётся из его собственной записанной длительности, а не из следующей ноты.',
       ),
-      b(
-        'Between the poles lie tenuto, portato and non legato. In modern engraving a dot means staccato and a wedge the shorter staccatissimo, but scores written before about 1850 do not separate the two reliably. Older parts carry few marks of any kind, so an unmarked line is not an unarticulated one.',
-        'Между полюсами лежат тенуто, портато и нон легато. В современной нотной графике точка означает стаккато, а клин — более короткое стаккатиссимо, но в нотах, написанных примерно до 1850 года, это различие непоследовательно. В старых партиях знаков вообще немного, и их отсутствие не означает отсутствия артикуляции.',
+      nt(
+        'Tenuto asks for a held note; portato combines a slur with separation, and non legato asks that successive notes not be joined. Modern engraving distinguishes a staccato dot from a staccatissimo wedge. Neither is a universal numerical duration: consult the edition and instrument. An unmarked line still requires an articulation choice.',
+        'Тенуто требует выдержать ноту; портато сочетает лигу с разделением, а нон легато — несвязное исполнение соседних звуков. Современная графика различает точку стаккато и клин стаккатиссимо. Ни один знак не задаёт универсальной числовой длительности: учитывайте редакцию и инструмент. В неразмеченной строке также нужно выбрать артикуляцию.',
+        'Tenuto verlangt Aushalten; Portato verbindet einen Bogen mit Trennung, Non legato verlangt unverbundene Töne. Moderne Notation unterscheidet Staccatopunkt und Staccatissimokeil. Keines der Zeichen bestimmt eine allgemeingültige zahlenmäßige Dauer: beachte Ausgabe und Instrument. Auch eine unbezeichnete Linie verlangt eine Artikulationsentscheidung.',
       ),
     ],
     experiment: b(
@@ -562,9 +575,10 @@ export const lessons = [
         'A double bar divides one section from the next; a thin line followed by a thick one ends the piece. A repeat sign is a double bar with two dots, and the dots face the music to be played again. When two repeated sections meet, the two signs share a single bar line.',
         'Двойная тактовая черта отделяет один раздел от другого; тонкая черта с последующей жирной завершает пьесу. Знак репризы — двойная черта с двумя точками, обращёнными к тому, что играется повторно. Когда два повторяемых раздела соседствуют, оба знака делят одну черту.',
       ),
-      b(
-        'First and second endings choose a different continuation: play the bracketed first ending, take the repeat, then skip to the second. Da capo sends the reader back to the beginning and dal segno to the marked place, each playing on to the word fine. The printed order and the played order differ.',
-        'Первая и вторая вольты выбирают разное продолжение: играют первую вольту, возвращаются по репризе, затем пропускают её и идут во вторую. Da capo отсылает к началу, dal segno — к знаку сеньо, и в обоих случаях играют до слова fine. Порядок записи и порядок игры расходятся.',
+      nt(
+        'Play ending 1 before the repeat, then skip it and take ending 2. Da capo returns to the beginning; dal segno returns to the segno. Al Fine means stop at Fine on the return; al Coda instead directs a transfer to the coda at its indicated point. Read the complete instruction before tracing the route.',
+        'Перед повтором сыграйте первую вольту, затем пропустите её и перейдите ко второй. Da capo возвращает к началу, dal segno — к сеньо. Al Fine означает остановиться у Fine после возврата; al Coda — перейти в коду в указанном месте. Прослеживайте путь, прочитав указание целиком.',
+        'Spiele vor der Wiederholung die erste Klammer, überspringe sie danach und nimm die zweite. Da capo führt zum Anfang, dal segno zum Segno. Al Fine verlangt beim Rücklauf den Schluss bei Fine; al Coda stattdessen den Sprung zur Coda an der bezeichneten Stelle. Lies die vollständige Anweisung, bevor du den Weg verfolgst.',
       ),
     ],
     experiment: b(
@@ -578,6 +592,7 @@ export const lessons = [
   },
 ];
 export const terms = [
+  ...notationReferences,
   {
     title: b('Frequency', 'Частота'),
     body: b(
@@ -1043,7 +1058,7 @@ export const terms = [
     lesson: 'dots-ties',
   },
   {
-    title: b('Slur', 'Фразировочная лига'),
+    title: b('Slur', 'Артикуляционная лига'),
     body: b(
       'A curved line over notes of different pitch that asks for legato.',
       'Дуга над нотами разной высоты, требующая легато.',
@@ -1354,7 +1369,11 @@ export const terms = [
     ),
     lesson: 'repeats',
   },
-];
+].map((term) => {
+  const source =
+    notationTermSources[term.title.en] ?? notationTopicSources[term.lesson];
+  return 'source' in term || !source ? term : { ...term, source };
+});
 export const patterns: Record<
   'intervals' | 'scales' | 'chords',
   SpelledPattern[]
@@ -1478,6 +1497,42 @@ export const patterns: Record<
  * marking it.
  */
 export const exerciseModes: { kind: ExerciseKind; label: LocalText }[] = [
+  {
+    kind: 'value-identification',
+    label: nt(
+      'Note and rest values',
+      'Длительности нот и пауз',
+      'Noten- und Pausenwerte',
+    ),
+  },
+  {
+    kind: 'beaming-review',
+    label: nt(
+      'Compare beaming',
+      'Сравнение группировки',
+      'Balkengruppierung vergleichen',
+    ),
+  },
+  {
+    kind: 'ornament-review',
+    label: nt(
+      'Recognize ornaments',
+      'Узнавание украшений',
+      'Verzierungen erkennen',
+    ),
+  },
+  {
+    kind: 'performance-marks',
+    label: nt(
+      'Performance indications',
+      'Исполнительские обозначения',
+      'Vortragsbezeichnungen',
+    ),
+  },
+  {
+    kind: 'short-excerpt',
+    label: nt('Read an excerpt', 'Чтение фрагмента', 'Einen Ausschnitt lesen'),
+  },
   { kind: 'octave-region', label: b('Registers', 'Октавы') },
   { kind: 'accidental-name', label: b('Altered notes', 'Знаки альтерации') },
   { kind: 'enharmonic', label: b('Enharmonic spelling', 'Энгармонизм') },
@@ -1494,6 +1549,31 @@ export const exerciseModes: { kind: ExerciseKind; label: LocalText }[] = [
 
 /** One sentence per way of being wrong, keyed by the generator's own tag. */
 export const exerciseExplanations: Record<ErrorTag, LocalText> = {
+  'duration-symbol': nt(
+    'Inspect the head, stem, flags or rest shape; a whole-bar rest also requires the time signature.',
+    'Проверьте головку, штиль, флажки или форму паузы; для тактовой паузы учитывайте размер.',
+    'Prüfe Kopf, Hals, Fähnchen oder Pausenform; bei der Ganztaktpause auch die Taktart.',
+  ),
+  'tempo-unit': nt(
+    'One marked beat lasts 60 divided by the metronome number, in seconds.',
+    'Одна указанная доля длится 60, делённое на число метронома, секунд.',
+    'Eine angegebene Zählzeit dauert 60 geteilt durch die Metronomzahl Sekunden.',
+  ),
+  'dynamic-level': nt(
+    'Move along the relative ladder from piano toward forte.',
+    'Двигайтесь по относительной шкале от пиано к форте.',
+    'Gehe auf der relativen Skala von piano in Richtung forte.',
+  ),
+  'articulation-meaning': nt(
+    'Distinguish the staccato dot from the tenuto line.',
+    'Отличайте точку стаккато от черты тенуто.',
+    'Unterscheide Staccatopunkt und Tenutostrich.',
+  ),
+  'repeat-route': nt(
+    'On the second pass, skip ending 1 and take ending 2.',
+    'При втором проведении пропустите первую вольту и перейдите ко второй.',
+    'Überspringe beim zweiten Durchgang die erste Klammer und spiele die zweite.',
+  ),
   correct: b('That is the one.', 'Именно так.'),
   'wrong-written-note': b(
     'Compare the clef, position and accidental with the correct note.',

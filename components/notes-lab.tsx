@@ -18,6 +18,11 @@ import { frequencyForMidi, type Tuning } from '@/lib/music';
 import { Staff } from '@/components/staff';
 import { GLYPH_UNITS_PER_SPACE, glyphs, type GlyphName } from '@/lib/glyphs';
 import type { Clef } from '@/lib/staff';
+import { pitchAtStep, placementRange, staffStep } from '@/lib/staff';
+import { StaffPosition } from './staff-answer';
+import { NotationWorkbench } from './notation-workbench';
+import { NotationFigure } from './notation-figure';
+import { nt } from '@/lib/notation-tasks';
 type Lang = import('@/lib/client-store').Lang;
 
 /**
@@ -33,7 +38,7 @@ type Lang = import('@/lib/client-store').Lang;
 
 const NATURAL_STEPS = [0, 2, 4, 5, 7, 9, 11];
 /** Written octaves the panel offers; `octaveName` is defined for 0–8. */
-const OCTAVES = [1, 2, 3, 4, 5, 6, 7];
+const OCTAVES = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
 function spell(
   letter: number,
@@ -119,6 +124,17 @@ export function NotesLab({
 }) {
   const t = translator(lang);
   const [clef, setClef] = useState<Clef>('treble');
+  const [ledgerLines, setLedgerLines] = useState(1);
+  const placement = placementRange(ledgerLines);
+  const [selectedExample, setSelectedExample] =
+    useState<NotationExampleId | null>(null);
+  const exampleIds = (
+    Object.keys(notationExamples) as NotationExampleId[]
+  ).filter((id) => notationExamples[id].group === state.group);
+  const activeExample =
+    selectedExample !== null && exampleIds.includes(selectedExample)
+      ? selectedExample
+      : exampleIds[0];
   const { letter, accidental, octave } = state.note;
   const setNote = (note: Partial<NotesLabState['note']>) => {
     stop();
@@ -303,13 +319,23 @@ export function NotesLab({
           ))}
         </fieldset>
         <div className="notation-example-actions">
+          <div className="notation-example-score">
+            <NotationFigure
+              id={`example-${activeExample}`}
+              label={notationExamples[activeExample].label[lang]}
+            />
+          </div>
           {(Object.keys(notationExamples) as NotationExampleId[])
             .filter((id) => notationExamples[id].group === state.group)
             .map((id) => (
               <button
                 key={id}
                 className="primary-button"
-                onClick={() => void playExample(id, state.tempo)}
+                aria-pressed={activeExample === id}
+                onClick={() => {
+                  setSelectedExample(id);
+                  void playExample(id, state.tempo);
+                }}
               >
                 <Volume2 size={17} />
                 {notationExamples[id].label[lang]}
@@ -327,6 +353,64 @@ export function NotesLab({
           )}
         </p>
       </section>
+      <section className="panel">
+        <h3>
+          {
+            nt(
+              'Place a note on the staff',
+              'Поставьте ноту на стан',
+              'Eine Note ins System setzen',
+            )[lang]
+          }
+        </h3>
+        <StaffPosition
+          clef={clef}
+          accidental={accidental}
+          lang={lang}
+          disabled={false}
+          ledgerLines={ledgerLines}
+          value={
+            staffStep(pitch, clef) >= placement[0] &&
+            staffStep(pitch, clef) <= placement[1]
+              ? staffStep(pitch, clef)
+              : null
+          }
+          help={
+            nt(
+              'Click a position or use the arrow keys to place and hear a note.',
+              'Нажмите на позицию или используйте стрелки, чтобы поставить и услышать ноту.',
+              'Klicke auf eine Position oder verwende die Pfeiltasten, um eine Note zu setzen und zu hören.',
+            )[lang]
+          }
+          onChange={(step) => {
+            const placed = pitchAtStep(step, clef, accidental);
+            setNote(placed);
+            void play(placed.midi);
+          }}
+        />
+        <label>
+          {
+            nt(
+              'Ledger lines per side',
+              'Добавочных линеек с каждой стороны',
+              'Hilfslinien je Seite',
+            )[lang]
+          }
+          <input
+            type="range"
+            min="0"
+            max="6"
+            step="1"
+            value={ledgerLines}
+            onChange={(event) => {
+              stop();
+              setLedgerLines(Number(event.target.value));
+            }}
+          />
+          <output>{ledgerLines}</output>
+        </label>
+      </section>
+      <NotationWorkbench pitch={pitch} lang={lang} play={play} stop={stop} />
       <section className="panel note-caveat">
         <span className="eyebrow">
           <Piano size={15} />

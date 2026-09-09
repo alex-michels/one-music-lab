@@ -352,6 +352,13 @@ export function PlayLens({
   download: () => void;
   exporting: boolean;
 }) {
+  const playKeyboardNote = (midi: number) => {
+    if (labTab === 'notes') {
+      const { letter, accidental, octave } = keyboardPitch(midi);
+      setNotesState({ ...notesState, note: { letter, accidental, octave } });
+    }
+    playNote(midi);
+  };
   return (
     <div className="lens-play bed" data-lens="play">
       <div className="section-tabs">
@@ -689,7 +696,7 @@ export function PlayLens({
                   className={
                     'white-key ' + (note.midi === midi ? 'active-key' : '')
                   }
-                  onClick={() => playNote(midi)}
+                  onClick={() => playKeyboardNote(midi)}
                   aria-label={`${displayNote(midi)}, ${fixedNumber(frequencyForMidi(midi, reference, tuning), 2, lang)} Hz`}
                 >
                   <span>
@@ -714,7 +721,7 @@ export function PlayLens({
                       'black-key ' +
                       (note.midi === midi + 1 ? 'active-key' : '')
                     }
-                    onClick={() => playNote(midi + 1)}
+                    onClick={() => playKeyboardNote(midi + 1)}
                   >
                     <span>
                       {lang === 'de'

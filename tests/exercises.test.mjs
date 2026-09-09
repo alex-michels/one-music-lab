@@ -130,6 +130,11 @@ test('The same seed always builds the same item', () => {
 test('Every item has exactly one correct option and no duplicate labels', () => {
   let counted = 0;
   for (const item of everyItem()) {
+    if (item.review) {
+      assert.equal(item.options.length, 0);
+      assert.equal(item.answer, '');
+      continue;
+    }
     counted += 1;
     const correct = item.options.filter((o) => o.tag === 'correct');
     assert.equal(
@@ -163,7 +168,7 @@ test('No rendered string leaks a placeholder, an undefined or another language',
     assert.ok(text.trim().length > 0);
     if (item.lang === 'ru')
       assert.doesNotMatch(
-        text,
+        text.replace(/\b(?:pppp|ffff)\b/g, ''),
         /[A-Za-z]{4,}/,
         `Russian item shows a latin word: ${text}`,
       );
@@ -172,6 +177,10 @@ test('No rendered string leaks a placeholder, an undefined or another language',
 
 test('Grading returns a tag for every option, and only the answer is correct', () => {
   for (const item of everyItem(40)) {
+    if (item.review) {
+      assert.throws(() => grade(item, 'anything'), /Reflection/);
+      continue;
+    }
     let corrects = 0;
     for (const option of item.options) {
       const verdict = grade(item, option.id);

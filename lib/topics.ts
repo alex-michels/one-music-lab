@@ -18,6 +18,7 @@ import type { LocalText } from './i18n';
 import { lessons, terms } from './learning';
 import { RULES, type ExerciseKind, type Rule } from './exercises';
 import { notationLessonPresets } from './notation-experiments';
+import { notationProgramme, type NotationTopic } from './notation-programme';
 
 /**
  * In reading order, which is the order lib/learning.ts writes them in. The list
@@ -102,6 +103,14 @@ export const ruleTopic: Record<Rule, TopicId> = {
   'same-place-other-clef': 'clefs',
   'sign-stops-at-the-barline': 'accidental-scope',
   'sign-holds-to-the-barline': 'accidental-scope',
+  'identify-written-duration': 'durations',
+  'compare-beaming': 'beat-division',
+  'recognize-an-ornament': 'articulation',
+  'metronome-unit': 'tempo',
+  'relative-dynamic-level': 'dynamics',
+  'articulation-sign': 'articulation',
+  'follow-repeat-route': 'repeats',
+  'read-a-short-excerpt': 'staff',
 };
 
 /**
@@ -125,6 +134,14 @@ export const ruleKind: Record<Rule, ExerciseKind> = {
   'same-place-other-clef': 'clef-transform',
   'sign-stops-at-the-barline': 'accidental-scope',
   'sign-holds-to-the-barline': 'accidental-scope',
+  'identify-written-duration': 'value-identification',
+  'compare-beaming': 'beaming-review',
+  'recognize-an-ornament': 'ornament-review',
+  'metronome-unit': 'performance-marks',
+  'relative-dynamic-level': 'performance-marks',
+  'articulation-sign': 'performance-marks',
+  'follow-repeat-route': 'performance-marks',
+  'read-a-short-excerpt': 'short-excerpt',
 };
 
 export type Topic = {
@@ -136,11 +153,8 @@ export type Topic = {
   /**
    * The roadmap module this topic belongs to, once someone assigns it.
    *
-   * Null on every row today, and honestly so: the roadmap numbers its 511
-   * topics and links each to a module anchor, but the nineteen lessons written
-   * so far carry no roadmap number, so there is nothing to derive an assignment
-   * from. Deciding it is content work, not a migration — and because the id is
-   * the slug, filling this in later breaks no link anyone has saved.
+   * Notation lessons use their programme's permanent module assignment.
+   * Other topics remain null until assigned; adding one never changes its slug.
    */
   module: string | null;
 };
@@ -152,7 +166,15 @@ export type Topic = {
  */
 export const topics: readonly Topic[] = lessons.map((lesson, order) => {
   const id = lesson.id as TopicId;
-  return { id, order, kind: topicKind[id], title: lesson.title, module: null };
+  return {
+    id,
+    order,
+    kind: topicKind[id],
+    title: lesson.title,
+    module: Object.hasOwn(notationProgramme, id)
+      ? notationProgramme[id as NotationTopic].module
+      : null,
+  };
 });
 
 /** One entry per topic, by construction: the key type cannot drift from the list. */
@@ -168,6 +190,18 @@ export const topicById: Record<TopicId, Topic> = byTopic(
 
 type Term = (typeof terms)[number];
 
+/** The original English headword is an identity, not a localized display label. */
+export function termAnchor(term: { title: LocalText }): string {
+  return encodeURIComponent(term.title.en).replaceAll('~', '%7E');
+}
+
+export function termSearchText(
+  term: { title: LocalText; body: LocalText; aliases?: LocalText },
+  lang: keyof LocalText,
+): string {
+  return `${term.title[lang]} ${term.body[lang]} ${term.aliases?.[lang] ?? ''}`.toLowerCase();
+}
+
 /** The encyclopedia entries that belong to each topic. Every topic has some. */
 export const termsByTopic: Record<TopicId, readonly Term[]> = byTopic((id) =>
   terms.filter((term) => term.lesson === id),
@@ -177,8 +211,7 @@ export const termsByTopic: Record<TopicId, readonly Term[]> = byTopic((id) =>
  * The rules a topic's prose has to anchor, so the trainer can link to the
  * sentence that teaches a rule rather than to the top of a lesson. The read
  * lens renders each of these as an id on the paragraph that states it.
- * Eight of the nineteen topics have rules; the rest are empty, and a topic with
- * no rules simply has no drill.
+ * A topic with no rules simply has no drill.
  */
 export const paragraphAnchors: Record<TopicId, readonly Rule[]> = byTopic(
   (id) => RULES.filter((rule) => ruleTopic[rule] === id),

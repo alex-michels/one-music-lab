@@ -95,7 +95,7 @@ test('A machine set to dark is honoured without anyone choosing a theme', () => 
   expect(root_().classList.contains('dark')).toBe(wanted === 'dark');
 });
 
-test('Chrome flips with the theme and notation does not', () => {
+test('Chrome flips while keyboard and instrument tokens remain stable', () => {
   stubPrefersDark(false);
   mount();
 
@@ -118,8 +118,8 @@ test('Chrome flips with the theme and notation does not', () => {
 
   for (const name of chrome)
     expect(token(name), `${name} flips`).not.toBe(before[name]);
-  // The whole point of the second namespace: a staff is black ink on white
-  // paper in either theme because no dark rule redefines these.
+  // Notation opts into local dark selectors; global instrument tokens remain
+  // stable so the keyboard does not change character.
   for (const name of score)
     expect(token(name), `${name} holds`).toBe(before[name]);
 });

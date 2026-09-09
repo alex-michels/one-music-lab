@@ -21,7 +21,9 @@
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "glyphs:generate": "node scripts/extract-glyphs.mjs --write",
-    "glyphs:check": "node scripts/extract-glyphs.mjs --check"
+    "glyphs:check": "node scripts/extract-glyphs.mjs --check",
+    "notation:generate": "node scripts/generate-notation-figures.mjs --write",
+    "notation:check": "node scripts/generate-notation-figures.mjs --check"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
