@@ -105,7 +105,7 @@ function useOscilloscope(
         live: style.getPropertyValue('--s-live').trim(),
       };
     };
-    const draw = () => {
+    const paint = () => {
       const c = canvas.current;
       if (c) {
         const ctx = c.getContext('2d');
@@ -173,18 +173,35 @@ function useOscilloscope(
           ctx.shadowBlur = 0;
         }
       }
-      if (!still.matches) frame = requestAnimationFrame(draw);
     };
-    // A resize changes the canvas's backing store, and a still scope has no
-    // next frame to notice that in.
-    const redraw = () => draw();
-    still.addEventListener('change', redraw);
-    window.addEventListener('resize', redraw);
-    draw();
+    const tick = () => {
+      paint();
+      frame = requestAnimationFrame(tick);
+    };
+    /**
+     * Painting and scheduling are separate because the two callers want
+     * different things, and folding them together forked the loop: a resize
+     * used to call the drawing function directly, which scheduled a second
+     * frame while the first was still pending, and the cleanup could only
+     * cancel whichever one it had last written down. Every resize left another
+     * 60 fps chain running, and unmounting stopped one of them.
+     *
+     * A resize also changes the canvas's backing store, and a still scope has
+     * no next frame in which to notice that — so it repaints either way.
+     */
+    const restart = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      if (still.matches) paint();
+      else tick();
+    };
+    still.addEventListener('change', restart);
+    window.addEventListener('resize', restart);
+    restart();
     return () => {
       cancelAnimationFrame(frame);
-      still.removeEventListener('change', redraw);
-      window.removeEventListener('resize', redraw);
+      still.removeEventListener('change', restart);
+      window.removeEventListener('resize', restart);
     };
   }, [canvas, wave, playing, readSamples]);
 }
