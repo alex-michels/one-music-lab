@@ -2756,8 +2756,10 @@ h1 {
   flex: 1 0 44px;
   font-size: 17px;
 }
-.note-signs button {
-  flex: 1 0 44px;
+.note-signs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+  gap: 6px;
 }
 .note-chooser button:hover,
 .notation-example-button:hover,
@@ -2899,6 +2901,7 @@ h1 {
   justify-content: center;
   gap: 8px;
   min-height: 44px;
+  margin: 0;
   padding: 10px 14px;
   font-size: 14px;
   line-height: 1.5;

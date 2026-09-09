@@ -97,6 +97,20 @@ for (const lang of ['en', 'ru', 'de']) {
               getComputedStyle(lab.querySelector('.panel')).backgroundColor,
             );
         }
+        for (const transport of lab.querySelectorAll('.notation-transport')) {
+          const [play, stop] = [...transport.children].map((button) =>
+            button.getBoundingClientRect(),
+          );
+          // When two controls share a row, inherited button margins must not
+          // displace one of them. Wrapping to separate rows is allowed.
+          if (
+            Math.min(play.bottom, stop.bottom) > Math.max(play.top, stop.top)
+          ) {
+            expect(
+              Math.abs((play.top + play.bottom - stop.top - stop.bottom) / 2),
+            ).toBeLessThanOrEqual(1);
+          }
+        }
         // Every popup is a portal. Its readable colours must survive outside
         // the lab container and when an option is highlighted by the keyboard.
         for (const label of [

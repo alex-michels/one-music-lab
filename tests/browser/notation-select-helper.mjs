@@ -16,12 +16,16 @@ export async function openNotationChoice(label) {
 
 export async function chooseNotation(label, option) {
   const control = await openNotationChoice(label);
+  const popup = document.getElementById(
+    control.element().getAttribute('aria-controls'),
+  );
   await act(async () =>
     page.getByRole('option', { name: option, exact: true }).click(),
   );
   await expect
     .poll(() => control.element().getAttribute('aria-expanded'))
     .toBe('false');
+  await expect.element(page.elementLocator(popup)).not.toBeVisible();
   // Base UI restores focus after its close transition. Moving focus to the
   // next trigger earlier lets that restoration steal the next keyboard action.
   await expect.poll(() => document.activeElement).toBe(control.element());
@@ -35,9 +39,13 @@ export async function chooseNotation(label, option) {
 }
 
 export async function closeNotationChoice(control) {
+  const popup = document.getElementById(
+    control.element().getAttribute('aria-controls'),
+  );
   await act(() => userEvent.keyboard('{Escape}'));
   await expect
     .poll(() => control.element().getAttribute('aria-expanded'))
     .toBe('false');
+  await expect.element(page.elementLocator(popup)).not.toBeVisible();
   await expect.poll(() => document.activeElement).toBe(control.element());
 }

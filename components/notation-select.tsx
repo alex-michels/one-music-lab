@@ -1,5 +1,5 @@
 'use client';
-import { useId } from 'react';
+import { useId, useRef } from 'react';
 import {
   Select,
   SelectContent,
@@ -21,6 +21,7 @@ export function NotationSelect({
   onChange: (value: string) => void;
 }) {
   const id = useId();
+  const trigger = useRef<HTMLButtonElement>(null);
   return (
     <div className="notation-field">
       <label htmlFor={id}>{label}</label>
@@ -32,13 +33,18 @@ export function NotationSelect({
           if (next !== null) onChange(next);
         }}
       >
-        <SelectTrigger id={id} className="notation-select-trigger">
+        <SelectTrigger
+          ref={trigger}
+          id={id}
+          className="notation-select-trigger"
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent
           className="notation-select-content"
           align="start"
           alignItemWithTrigger={false}
+          finalFocus={trigger}
         >
           {options.map((option) => (
             <SelectItem key={option.value} value={option.value}>
