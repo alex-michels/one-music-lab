@@ -223,6 +223,22 @@ export function routeFromHash(
   };
 }
 
+/**
+ * The language a path names, or null when it names none.
+ *
+ * The address is the source of truth for language and the address now has two
+ * halves: `/ru/#/en/t/staff/read` is a contradiction only in theory, because
+ * the hash is the more specific of the two and wins. What this reads is the
+ * other case — `/de/` with no hash, which is the link a reader is actually
+ * sent, and which used to open in whatever language their browser had stored.
+ */
+export function langFromPath(pathname: string): Lang | null {
+  const first = pathname.split('/').filter(Boolean)[0] ?? '';
+  return (LANGUAGES as readonly string[]).includes(first)
+    ? (first as Lang)
+    : null;
+}
+
 /** Reads the saved language; anything missing, unknown or unreadable is English. */
 export function langFromStorage(
   storage: Pick<Storage, 'getItem'> | null | undefined,

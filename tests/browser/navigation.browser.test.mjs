@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { page } from 'vitest/browser';
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
-import Home from '../../app/page.tsx';
+import Home from '../../app/(root)/page.tsx';
 import '../../app/globals.css';
 import {
   LANGUAGE_STORAGE_KEY,

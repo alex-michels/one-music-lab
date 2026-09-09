@@ -15,12 +15,65 @@ await test('Static export includes the page, RSC navigation payload and not-foun
   }
 });
 
+await test('Each language is a prerendered document that says which language it is', async () => {
+  // Until this existed, the only record of a reader's language was
+  // localStorage: every crawler, every screen reader reading the markup and
+  // every translation service saw one English page.
+  for (const [lang, mustContain] of [
+    ['en', 'Explore sound'],
+    ['ru', 'Исследуйте звук'],
+    ['de', 'Entdecke Klang'],
+  ]) {
+    const page = await readFile(join(root, `${lang}.html`), 'utf8');
+    assert.match(page, new RegExp(`<html lang="${lang}"`), lang);
+    const description = page.match(
+      /<meta name="description" content="([^"]+)"/,
+    )?.[1];
+    assert.ok(description?.startsWith(mustContain), `${lang}: ${description}`);
+    // One canonical, absolute, naming this language and no other.
+    const links = page.match(/<link\b[^>]*>/g) ?? [];
+    const canonical = links.filter((link) => /\brel="canonical"/.test(link));
+    assert.equal(canonical.length, 1, lang);
+    assert.match(
+      canonical[0],
+      new RegExp(`href="https://[^"]+/${lang}"`),
+      lang,
+    );
+    // And the full hreflang set, every href absolute, including x-default.
+    const alternates = Object.fromEntries(
+      links
+        .filter((link) => /\brel="alternate"/.test(link))
+        .map((link) => [
+          link.match(/\bhrefLang="([^"]+)"/i)?.[1],
+          link.match(/\bhref="([^"]+)"/)?.[1],
+        ]),
+    );
+    assert.deepEqual(Object.keys(alternates).sort(), [
+      'de',
+      'en',
+      'ru',
+      'x-default',
+    ]);
+    for (const [code, href] of Object.entries(alternates))
+      assert.match(href ?? '', /^https:\/\//, `${lang} → ${code}`);
+  }
+  // `/` keeps the reader's saved language, so it claims none of the three and
+  // points at itself as the default.
+  assert.match(html, /<html lang="en"/);
+  assert.match(
+    html,
+    /rel="alternate"[^>]*hrefLang="x-default"[^>]*href="https/i,
+  );
+});
+
 await test('All initial executable and styling resources exist in the portable directory', async () => {
   const tags = html.match(/<(?:script|link)\b[^>]*>/g) ?? [];
   let scripts = 0;
   let styles = 0;
   for (const tag of tags) {
-    if (/\brel="canonical"/.test(tag)) continue;
+    // The canonical and the three hreflang alternates name the public origin
+    // on purpose; everything else here has to be a file in this directory.
+    if (/\brel="(?:canonical|alternate)"/.test(tag)) continue;
     const value = tag.match(/\b(?:src|href)="([^"]+)"/)?.[1];
     if (!value) continue;
     assert.ok(value.startsWith('/') && !value.startsWith('//'), tag);

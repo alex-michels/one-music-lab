@@ -16,6 +16,7 @@ import {
   THEME_STORAGE_KEY,
   clampSidebarWidth,
   createClientStore,
+  langFromPath,
   langFromStorage,
   localStorageOrNull,
   pageFromHash,
@@ -41,6 +42,23 @@ test('The saved language is honoured only when it is a supported value', () => {
       return value;
     },
   });
+  // The path is the half of the address a shared link actually carries.
+  for (const [path, expected] of [
+    ['/ru', 'ru'],
+    ['/ru/', 'ru'],
+    ['/de', 'de'],
+    ['/en', 'en'],
+    ['/', null],
+    ['', null],
+    ['/fr', null],
+    ['/RU', null],
+    ['/russian', null],
+    ['/t/staff/read', null],
+    // The language is the first segment or it is not the language: a topic
+    // called `ru` deeper in a path must not change what the reader is reading.
+    ['/topics/ru', null],
+  ])
+    assert.equal(langFromPath(path), expected, path);
   assert.equal(langFromStorage(storage('ru')), 'ru');
   assert.equal(langFromStorage(storage('en')), 'en');
   assert.equal(langFromStorage(storage(null)), 'en');

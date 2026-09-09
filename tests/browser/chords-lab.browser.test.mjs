@@ -4,7 +4,7 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ChordsLab } from '../../components/chords-lab.tsx';
 import { ChordPlayer } from '../../lib/chord-audio.ts';
-import Home from '../../app/page.tsx';
+import Home from '../../app/(root)/page.tsx';
 import '../../app/globals.css';
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;

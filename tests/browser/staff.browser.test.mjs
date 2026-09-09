@@ -2,7 +2,7 @@ import { afterEach, expect, test, vi } from 'vitest';
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Staff } from '../../components/staff.tsx';
-import Home from '../../app/page.tsx';
+import Home from '../../app/(root)/page.tsx';
 import { layout, stepY } from '../../lib/staff.ts';
 import '../../app/globals.css';
 
