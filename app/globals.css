@@ -2153,100 +2153,6 @@ h1 {
   color: var(--c-ink-2);
   margin-top: 10px;
 }
-.count-badge {
-  font-size: 12px;
-  white-space: nowrap;
-  padding: 7px 12px;
-  border: 1px solid var(--c-rule-strong);
-  border-radius: 6px;
-  background: var(--c-surface-sunk);
-  color: var(--c-ink-2);
-}
-.lesson-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
-}
-.lesson-tile {
-  display: flex;
-  flex-direction: column;
-  padding: 23px;
-  text-align: left;
-  transition:
-    transform 0.15s,
-    border-color 0.15s,
-    box-shadow 0.15s;
-  overflow-wrap: anywhere;
-}
-.lesson-tile:hover {
-  transform: translateY(-3px);
-  border-color: var(--c-link);
-  box-shadow: var(--shadow-lift);
-}
-.tile-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--c-ink-3);
-  font-size: 12px;
-}
-.tile-top > svg {
-  margin-left: auto;
-}
-.lesson-tile h3 {
-  font-size: 20px;
-  line-height: 1.4;
-  font-weight: 500;
-  letter-spacing: -0.45px;
-  margin: 28px 0 12px;
-}
-.lesson-tile p {
-  font-size: 16px;
-  line-height: 1.7;
-  color: var(--c-ink-2);
-  flex: 1;
-}
-.tile-bottom {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--c-link);
-  border-top: 1px solid var(--c-rule);
-  padding-top: 17px;
-  margin-top: 27px;
-}
-.curriculum-heading {
-  margin-top: 48px;
-}
-.curriculum-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 28px;
-}
-.curriculum-item {
-  display: flex;
-  gap: 18px;
-  padding: 24px 0;
-  border-top: 1px solid var(--c-rule);
-  overflow-wrap: anywhere;
-}
-.curriculum-number {
-  font-family: var(--type-mono), monospace;
-  font-size: 13px;
-  color: var(--c-ink-3);
-  padding-top: 3px;
-}
-.curriculum-item h3 {
-  font-size: 17px;
-  font-weight: 500;
-}
-.curriculum-item p {
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--c-ink-2);
-  margin: 9px 0 13px;
-}
 .available,
 .planned {
   font-size: 12px;
@@ -2262,28 +2168,6 @@ h1 {
   border-left: 2px solid var(--c-link);
   padding: 7px 18px;
   margin: 20px 0;
-}
-.lesson-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 24px;
-  margin-top: 20px;
-}
-.lesson-body {
-  padding: 33px;
-}
-.lesson-body h2 {
-  font-size: 31px;
-  line-height: 1.3;
-  font-weight: 500;
-  letter-spacing: -0.8px;
-  margin: 15px 0 26px;
-}
-.lesson-body p {
-  font-size: 17px;
-  line-height: 1.9;
-  margin-bottom: 23px;
-  color: var(--c-ink);
 }
 .formula {
   font-family: var(--type-mono), monospace;
@@ -2357,49 +2241,6 @@ h1 {
 }
 .search-field > span {
   font-size: 12px;
-}
-.terms-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 17px;
-}
-.term-card {
-  padding: 25px;
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  overflow-wrap: anywhere;
-}
-.term-card h3 {
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: -0.4px;
-}
-.term-card p {
-  font-size: 16px;
-  line-height: 1.8;
-  color: var(--c-ink-2);
-  margin: 19px 0;
-  flex: 1;
-}
-.term-card .text-button {
-  font-size: 13px;
-}
-.empty-state {
-  padding: 45px;
-  text-align: center;
-}
-.empty-state > svg {
-  margin: 0 auto 20px;
-  color: var(--c-ink-3);
-}
-.empty-state h3 {
-  font-size: 22px;
-  margin-bottom: 15px;
-}
-.empty-state p {
-  font-size: 16px;
-  color: var(--c-ink-2);
 }
 .practice-layout {
   display: grid;
@@ -2557,15 +2398,8 @@ h1 {
   margin-bottom: 15px;
 }
 @media (max-width: 1150px) {
-  .lesson-grid,
-  .terms-grid {
-    grid-template-columns: 1fr 1fr;
-  }
   .practice-layout {
     grid-template-columns: minmax(0, 1fr) 245px;
-  }
-  .lesson-layout {
-    grid-template-columns: 1fr;
   }
   .lesson-experiment {
     max-width: none;
@@ -2600,24 +2434,11 @@ h1 {
     grid-template-columns: 1fr 1fr;
     gap: 20px;
   }
-  .curriculum-grid {
-    grid-template-columns: 1fr;
-  }
   .content-section-heading {
     align-items: flex-start;
   }
-  .count-badge {
-    display: none;
-  }
-  .lesson-body {
-    padding: 26px;
-  }
 }
 @media (max-width: 767px) {
-  .lesson-grid,
-  .terms-grid {
-    grid-template-columns: 1fr 1fr;
-  }
   .content-section-heading h2 {
     font-size: 25px;
   }
@@ -2660,19 +2481,6 @@ h1 {
   .practice-card {
     padding: 25px 20px;
   }
-  .lesson-tile,
-  .term-card {
-    padding: 20px;
-  }
-  .lesson-tile h3 {
-    font-size: 19px;
-  }
-  .tile-top > span:nth-child(2) {
-    font-size: 11px;
-  }
-  .tile-bottom {
-    font-size: 11px;
-  }
   .scope-header {
     font-size: 10px;
     letter-spacing: 0.1px;
@@ -2685,10 +2493,6 @@ h1 {
   }
 }
 @media (max-width: 520px) {
-  .lesson-grid,
-  .terms-grid {
-    grid-template-columns: 1fr;
-  }
   .practice-layout > aside {
     grid-template-columns: 1fr;
   }
@@ -2700,15 +2504,6 @@ h1 {
   }
   .practice-icon {
     margin-top: 25px;
-  }
-  .lesson-body {
-    padding: 22px;
-  }
-  .lesson-body h2 {
-    font-size: 26px;
-  }
-  .lesson-body p {
-    font-size: 16px;
   }
   .formula {
     font-size: 14px;
@@ -3055,4 +2850,360 @@ h1 {
 .note-chooser .accidental-sign {
   display: block;
   margin: 0 auto;
+}
+
+/* ── define · the encyclopedia ───────────────────────────────────────────────
+   Achieved by deleting the card wrapper rather than by adding anything: the
+   borders were already hairlines. Ninety-seven terms in one dense index, at the
+   tightest density on the site, beside the one entry that is open. */
+.define-lens {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  max-width: var(--m-index);
+}
+.facet-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-5);
+}
+.facet-bar fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-inline-size: 0;
+}
+.facet-label {
+  font-size: var(--t-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  color: var(--c-ink-3);
+  margin-right: var(--sp-1);
+}
+.facet {
+  border: var(--bw) solid var(--c-rule);
+  border-radius: 999px;
+  padding: var(--sp-1) var(--sp-3);
+  font-size: var(--t-meta);
+  color: var(--c-ink-2);
+  background: transparent;
+}
+.facet:hover {
+  border-color: var(--c-rule-strong);
+  color: var(--c-ink);
+}
+/* Hue on a pressed chip is the kind's own, and the chip still says which. */
+.facet.selected {
+  color: var(--c-ink);
+  border-color: var(--c-ink);
+}
+.facet.selected[data-kind='sign'] {
+  border-color: var(--k-sign);
+  background: var(--k-sign-wash);
+}
+.facet.selected[data-kind='concept'] {
+  border-color: var(--k-concept);
+  background: var(--k-concept-wash);
+}
+.facet.selected[data-kind='measure'] {
+  border-color: var(--k-measure);
+  background: var(--k-measure-wash);
+}
+.facet.selected[data-kind='tone'] {
+  border-color: var(--k-tone);
+  background: var(--k-tone-wash);
+}
+.define-body {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  align-items: start;
+}
+.term-index {
+  border-right: var(--bw) solid var(--c-rule);
+  padding-right: var(--sp-3);
+}
+.term-index ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+/* The two things a row shows are the two things it can be ordered by, so the
+   column names are the controls. They line up with the row beneath them. */
+.index-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  border: 0;
+  margin: 0;
+  padding: var(--sp-2) var(--sp-3);
+  min-inline-size: 0;
+  border-bottom: var(--bw) solid var(--c-rule-strong);
+}
+.sort-by {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font-size: var(--t-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  color: var(--c-ink-3);
+}
+.sort-by:hover {
+  color: var(--c-ink);
+}
+.sort-by.selected {
+  color: var(--c-ink);
+  font-weight: var(--w-medium);
+}
+.term-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  text-align: left;
+  padding: var(--sp-2) var(--sp-3);
+  border: 0;
+  border-bottom: var(--bw) solid var(--c-rule);
+  border-radius: var(--r-0);
+  background: transparent;
+  font-size: var(--t-ui);
+  line-height: var(--lh-ui);
+  color: var(--c-ink);
+}
+.term-row:hover {
+  background: var(--c-surface);
+}
+.term-row.selected {
+  background: var(--c-surface-sunk);
+}
+.term-row.empty {
+  color: var(--c-ink-3);
+  cursor: default;
+}
+.term-name {
+  flex-grow: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.term-kind {
+  font-size: var(--t-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  color: var(--c-ink-3);
+  white-space: nowrap;
+}
+/* Two pixels of hue, never the only channel: the kind is written beside it. */
+.kind-bar {
+  flex-shrink: 0;
+  width: var(--bw-2);
+  height: 14px;
+  background: var(--c-rule-strong);
+}
+.kind-bar[data-kind='sign'] {
+  background: var(--k-sign);
+}
+.kind-bar[data-kind='concept'] {
+  background: var(--k-concept);
+}
+.kind-bar[data-kind='measure'] {
+  background: var(--k-measure);
+}
+.kind-bar[data-kind='tone'] {
+  background: var(--k-tone);
+}
+.index-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  font-size: var(--t-meta);
+  color: var(--c-ink-3);
+}
+.index-actions p {
+  margin: 0;
+}
+.term-entry {
+  padding: var(--sp-1) var(--sp-6) var(--sp-5);
+  max-width: var(--m-prose);
+}
+.term-entry h2 {
+  font-size: var(--t-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  font-weight: var(--w-bold);
+  margin: 0 0 var(--sp-3);
+}
+.term-entry p {
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  margin: 0 0 var(--sp-4);
+}
+.term-entry-kind {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--t-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  color: var(--c-ink-3);
+  margin: 0 0 var(--sp-2);
+}
+@media (max-width: 1000px) {
+  /* Stacked rather than swapped: replacing the index with the entry leaves no
+     visible way back, and the browser's own Back is not an affordance. */
+  .define-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .term-index {
+    border-right: 0;
+    border-bottom: var(--bw) solid var(--c-rule);
+    padding-right: 0;
+    padding-bottom: var(--sp-3);
+  }
+  .term-entry {
+    padding: var(--sp-4) 0 var(--sp-5);
+  }
+}
+
+/* ── read · the theory lens ──────────────────────────────────────────────────
+   Named grid lines, so an instrument breaks out to twice the prose measure as
+   a column of the grid rather than as a negative margin bolted on later. The
+   measured relationship is 480 to 1025; here it is 520 to 1040. */
+.lens-read {
+  display: grid;
+  /* The outer gutters collapse to nothing rather than reserving a minimum:
+     the prose column is already `100%` at a narrow width, so a gutter with a
+     floor would push the row wider than the page and scroll it sideways. The
+     side margin is the workspace's own padding. */
+  grid-template-columns:
+    [full-start] minmax(0, 1fr)
+    [break-start] minmax(0, calc((var(--m-break) - var(--m-prose)) / 2))
+    [prose-start] min(var(--m-prose), 100%) [prose-end]
+    minmax(0, calc((var(--m-break) - var(--m-prose)) / 2)) [break-end]
+    minmax(0, 1fr) [full-end];
+  row-gap: var(--sp-5);
+  align-content: start;
+}
+.lens-read > * {
+  grid-column: prose;
+}
+.lens-read > .breakout {
+  grid-column: break;
+}
+.lens-read > .bleed {
+  grid-column: full;
+}
+/* The only serif on the site. That one switch is what stops the reading lens
+   and the reference lens turning into the same document. */
+.prose {
+  font-family: var(--type-read);
+  font-size: var(--t-prose);
+  line-height: var(--lh-prose);
+  color: var(--c-ink);
+  margin: 0;
+}
+.lens-read > .text-button {
+  justify-self: start;
+}
+.lens-read .lesson-experiment {
+  margin: var(--sp-3) 0;
+  display: grid;
+  gap: var(--sp-3);
+  align-content: start;
+}
+.lesson-experiment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: center;
+}
+
+/* The index: nineteen topics in reading order, grouped by what they are about,
+   with the one sequence marker the site allows. */
+.topic-group h2 {
+  font-size: var(--t-h3);
+  line-height: var(--lh-h3);
+  font-weight: var(--w-medium);
+  color: var(--c-ink-2);
+  margin: 0 0 var(--sp-2);
+}
+.topic-group ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.topic-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  text-align: left;
+  padding: var(--sp-3) var(--sp-2);
+  border: 0;
+  border-bottom: var(--bw) solid var(--c-rule);
+  border-radius: var(--r-0);
+  background: transparent;
+  font-size: var(--t-body);
+  color: var(--c-ink);
+}
+.topic-row:hover {
+  background: var(--c-surface);
+}
+.topic-row > svg {
+  color: var(--c-ink-3);
+}
+.topic-name {
+  flex-grow: 1;
+  min-width: 0;
+}
+.start-here {
+  font-size: var(--t-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  color: var(--c-link);
+}
+
+/* A question inside the prose, bounded by hairlines rather than boxed in a
+   card: it belongs to the paragraph above it, not to a separate page. */
+.inline-exercise {
+  display: grid;
+  gap: var(--sp-3);
+  justify-items: start;
+  border-block: var(--bw) solid var(--c-rule);
+  padding-block: var(--sp-5);
+  border-radius: var(--r-0);
+}
+
+/* The one place the site says how big it is: a count of what exists, never a
+   fraction of what does not. */
+.scope-line {
+  font-size: var(--t-meta);
+  line-height: var(--lh-meta);
+  color: var(--c-ink-3);
+  border-top: var(--bw) solid var(--c-rule);
+  padding-top: var(--sp-3);
+  margin: var(--sp-4) 0 0;
+}
+.scope-line a {
+  color: var(--c-link);
+  border-bottom: var(--bw) solid var(--c-rule-strong);
+}
+@media (max-width: 600px) {
+  /* Nothing is hidden at any width: a breakout resolves to the prose column
+     and whatever is inside it scrolls in its own container. */
+  .lens-read > .breakout,
+  .lens-read > .bleed {
+    grid-column: prose;
+  }
 }

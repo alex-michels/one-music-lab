@@ -11,7 +11,9 @@ import {
   ArrowUpRight,
   BookOpen,
   Check,
+  ChevronDown,
   ChevronRight,
+  ChevronUp,
   Headphones,
   Play,
   Search,
@@ -20,12 +22,21 @@ import {
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import {
-  curriculum,
   exerciseExplanations,
   exerciseModes,
   lessons,
   terms,
 } from '@/lib/learning';
+import {
+  TOPIC_IDS,
+  TOPIC_KINDS,
+  paragraphAnchors,
+  ruleKind,
+  topicById,
+  topics,
+  type TopicId,
+  type TopicKind,
+} from '@/lib/topics';
 import {
   generateFrom,
   grade,
@@ -42,7 +53,90 @@ type PlaySequence = (
   wave?: Wave,
 ) => Promise<void>;
 
+type SortBy = 'term' | 'kind';
+
 export { Experiments } from './experiments';
+
+/**
+ * One generated question, set in the prose immediately after the rule it tests.
+ *
+ * The generator already writes the rule onto every item and the topics table
+ * says which topic teaches which rule, so a topic that has a rule can ask about
+ * it here rather than sending the reader to a separate page. A topic with no
+ * rule simply renders nothing: the site does not manufacture a question it
+ * cannot mark honestly.
+ */
+function InlineExercise({
+  lang,
+  topic,
+  openPractice,
+}: {
+  lang: Lang;
+  topic: string;
+  openPractice: () => void;
+}) {
+  const t = translator(lang);
+  const [chosen, setChosen] = useState<string | null>(null);
+  const rules = Object.hasOwn(paragraphAnchors, topic)
+    ? paragraphAnchors[topic as TopicId]
+    : [];
+  const rule = rules[0];
+  if (!rule) return null;
+  const item = generateFrom(ruleKind[rule], 1, 1, lang);
+  if (!item) return null;
+  const verdict = chosen ? grade(item, chosen) : null;
+  return (
+    // The paragraph that states the rule carries its id, so a ledger row can
+    // link to the sentence rather than to the top of a lesson.
+    <section className="inline-exercise" id={rule}>
+      <span className="eyebrow">{t('Try it here', 'Попробуйте здесь')}</span>
+      <p className="exercise-prompt">{item.prompt}</p>
+      {item.staff && (
+        <div className="exercise-staff">
+          <Staff
+            pitches={item.staff.pitches}
+            clef={item.staff.clef}
+            barlines={item.staff.barlines}
+            accidentalVisibility={item.staff.accidentalVisibility}
+            lang={lang}
+            space={13}
+          />
+        </div>
+      )}
+      <div className="answer-grid">
+        {item.options.map((option) => (
+          <button
+            key={option.id}
+            disabled={chosen !== null}
+            className={
+              chosen === option.id
+                ? verdict?.correct
+                  ? 'answer-correct'
+                  : 'answer-wrong'
+                : ''
+            }
+            onClick={() => setChosen(option.id)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+      {verdict && (
+        <p
+          className={
+            verdict.correct ? 'answer-feedback' : 'answer-feedback incorrect'
+          }
+        >
+          {exerciseExplanations[verdict.tag][lang]}
+        </p>
+      )}
+      <button className="text-button" onClick={openPractice}>
+        {t('Practise this rule', 'Потренировать это правило')}
+        <ChevronRight size={16} />
+      </button>
+    </section>
+  );
+}
 
 export function Theory({
   lang,
@@ -61,36 +155,32 @@ export function Theory({
   const lesson = lessons.find((l) => l.id === lessonId);
   if (lesson)
     return (
-      <article className="lesson-article">
+      <article className="lens-read lesson-article">
         <button className="text-button" onClick={() => setLessonId(null)}>
           <ArrowLeft size={16} />
           {t('All foundations', 'Все основы')}
         </button>
-        <div className="lesson-layout">
-          <div className="panel lesson-body">
-            <span className="eyebrow">{lesson.category[lang]}</span>
-            <h2>{lesson.title[lang]}</h2>
-            {lesson.paragraphs.map((p, i) => (
-              <p key={i}>{p[lang]}</p>
-            ))}
-            <div className="formula">{lesson.formula[lang]}</div>
-            <a
-              className="source-link"
-              href={lesson.source}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {t('Further reading', 'Для дальнейшего чтения')}
-              <ArrowUpRight size={15} />
-            </a>
-          </div>
-          <aside className="lesson-experiment">
-            <div className="eyebrow">
-              {t('MAKE IT AUDIBLE', 'УСЛЫШЬТЕ ЭТО')}
-            </div>
-            <Headphones size={32} />
-            <h3>{t('Try it in the lab', 'Попробуйте в лаборатории')}</h3>
-            <p>{lesson.experiment[lang]}</p>
+        {lesson.paragraphs.map((p, i) => (
+          <p className="prose" key={i}>
+            {p[lang]}
+          </p>
+        ))}
+        {/* The rule this topic teaches, asked right where it is stated, rather
+            than saved up for a page the reader has to go and find. */}
+        <InlineExercise
+          lang={lang}
+          topic={lesson.id}
+          openPractice={openPractice}
+        />
+        <div className="formula">{lesson.formula[lang]}</div>
+        {/* The instrument is the other half of the page, not an illustration
+            inside it: it breaks out to twice the prose measure. */}
+        <aside className="breakout bed lesson-experiment">
+          <div className="eyebrow">{t('MAKE IT AUDIBLE', 'УСЛЫШЬТЕ ЭТО')}</div>
+          <Headphones size={32} />
+          <h3>{t('Try it in the lab', 'Попробуйте в лаборатории')}</h3>
+          <p>{lesson.experiment[lang]}</p>
+          <div className="lesson-experiment-actions">
             <button
               className="primary-button"
               onClick={() => openLab(lesson.hz, lesson.wave as Wave, lesson.id)}
@@ -102,90 +192,80 @@ export function Theory({
               {t('Train your ear', 'Тренировать слух')}
               <ChevronRight size={16} />
             </button>
-          </aside>
-        </div>
+          </div>
+        </aside>
+        <a
+          className="source-link"
+          href={lesson.source}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {t('Further reading', 'Для дальнейшего чтения')}
+          <ArrowUpRight size={15} />
+        </a>
       </article>
     );
+  const groupName: Record<TopicKind, string> = {
+    sign: t('Signs on the page', 'Знаки на бумаге'),
+    concept: t('Ideas and definitions', 'Понятия и определения'),
+    measure: t('Rhythm and duration', 'Ритм и длительность'),
+    tone: t('Sound itself', 'Сам звук'),
+  };
   return (
-    <>
-      <div className="content-section-heading">
-        <div>
-          <span className="eyebrow">
-            {t('START WITH THE FOUNDATIONS', 'НАЧНИТЕ С ОСНОВ')}
-          </span>
-          <h2>
-            {t('Understand what you hear.', 'Понимайте то, что слышите.')}
-          </h2>
-        </div>
-        <span className="count-badge">
-          {count(lessons.length, lang, 'lessons')}
-        </span>
-      </div>
-      <div className="lesson-grid">
-        {lessons.map((l, i) => (
-          <button
-            key={l.id}
-            className="panel lesson-tile"
-            onClick={() => setLessonId(l.id)}
-          >
-            <div className="tile-top">
-              <span className="panel-number">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span>{l.category[lang]}</span>
-              <ArrowUpRight size={18} />
-            </div>
-            <h3>{l.title[lang]}</h3>
-            <p>{l.summary[lang]}</p>
-            <div className="tile-bottom">
-              <BookOpen size={14} />
-              {t('Read → listen → try', 'Прочитать → услышать → попробовать')}
-            </div>
-          </button>
-        ))}
-      </div>
-      <div className="content-section-heading curriculum-heading">
-        <div>
-          <span className="eyebrow">
-            {t('THE BIGGER PICTURE', 'ОБЩАЯ КАРТИНА')}
-          </span>
-          <h2>
-            {t(
-              'A world of musical knowledge.',
-              'Целый мир музыкальных знаний.',
-            )}
-          </h2>
-          <p>
-            {t(
-              'The first chapter is here. This is the direction for the growing library.',
-              'Первая глава уже здесь. Так будет развиваться библиотека.',
-            )}
-          </p>
-        </div>
-      </div>
-      <div className="curriculum-grid">
-        {curriculum.map((c, i) => (
-          <div key={i} className="curriculum-item">
-            <span className="curriculum-number">
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <div>
-              <h3>{c.title[lang]}</h3>
-              <p>{c.topics[lang]}</p>
-              <span className={i === 0 ? 'available' : 'planned'}>
-                {c.state[lang]}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
+    <div className="lens-read">
+      {/* In reading order, grouped by what they are about. The only sequence
+          marker on the site is the one pointer at the first topic. */}
+      {TOPIC_KINDS.map((group) => {
+        const inGroup = topics.filter((topic) => topic.kind === group);
+        if (!inGroup.length) return null;
+        return (
+          <section className="topic-group" key={group}>
+            <h2>{groupName[group]}</h2>
+            <ul role="list">
+              {inGroup.map((topic) => (
+                <li key={topic.id}>
+                  <button
+                    className="topic-row"
+                    onClick={() => setLessonId(topic.id)}
+                  >
+                    <span className="topic-name">{topic.title[lang]}</span>
+                    {topic.order === 0 && (
+                      <span className="start-here">
+                        {t('Start here', 'Начните здесь')}
+                      </span>
+                    )}
+                    <ArrowUpRight size={16} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
       <p className="culture-note">
         {t(
           'Musical traditions deserve their own context, terminology and sources. A raga or maqam is not simply a scale preset.',
           'Музыкальные традиции требуют собственного контекста, терминологии и источников. Рага или макам — не просто настройка звукоряда.',
         )}
       </p>
-    </>
+      {/* The one place on the site that says how big it is, and it counts what
+          exists rather than showing a fraction of what does not. */}
+      <p className="scope-line">
+        {count(terms.length, lang, 'terms')} ·{' '}
+        {count(lessons.length, lang, 'lessons')} ·{' '}
+        {t('written so far', 'написано на сегодня')}.{' '}
+        <a
+          href="https://github.com/alex-michels/one-music-lab/blob/main/ROADMAP.md"
+          target="_blank"
+          rel="noreferrer"
+        >
+          {t(
+            'The plan for the rest is in the roadmap.',
+            'План на всё остальное — в дорожной карте.',
+          )}
+        </a>
+      </p>
+    </div>
   );
 }
 
@@ -196,69 +276,244 @@ export function Encyclopedia({
   lang: Lang;
   openLesson: (id: string) => void;
 }) {
-  const [query, setQuery] = useState('');
   const t = translator(lang);
-  const filtered = terms.filter((term) =>
-    (term.title[lang] + ' ' + term.body[lang])
-      .toLowerCase()
-      .includes(query.toLowerCase()),
+  const [query, setQuery] = useState('');
+  const [kind, setKind] = useState<TopicKind | null>(null);
+  const [topic, setTopic] = useState<TopicId | null>(null);
+  const [opened, setOpened] = useState<string | null>(null);
+  // The index opens alphabetically, which is what a reference is for.
+  const [sortBy, setSortBy] = useState<SortBy>('term');
+  const [ascending, setAscending] = useState(true);
+
+  const kindOf = (term: (typeof terms)[number]) =>
+    topicById[term.lesson as TopicId].kind;
+  const kindName: Record<TopicKind, string> = {
+    sign: t('sign', 'знак'),
+    concept: t('concept', 'понятие'),
+    measure: t('measure', 'мера'),
+    tone: t('tone', 'звук'),
+  };
+  /*
+   * Every example is in the reader's own language. The hint used to read
+   * “pitch”, “interval”, “строй” — an English sentence with a Russian word in
+   * it, which is the one thing the site is not allowed to do outside an entry
+   * whose subject IS the difference between traditions.
+   */
+  const hint: Record<Lang, string> = {
+    en: 'Try “pitch”, “interval”, or a shorter search.',
+    ru: 'Попробуйте «высота», «строй» или более короткий запрос.',
+    de: 'Versuchen Sie „Tonhöhe“, „Stimmung“ oder eine kürzere Suche.',
+  };
+
+  // The two facets are not independent — a kind is a set of topics — so
+  // choosing a kind narrows which topics are offered rather than leaving
+  // combinations that can only ever be empty.
+  const offeredTopics = TOPIC_IDS.filter(
+    (id) => kind === null || topicById[id].kind === kind,
   );
+  const matching = terms.filter(
+    (term) =>
+      (kind === null || kindOf(term) === kind) &&
+      (topic === null || term.lesson === topic) &&
+      (term.title[lang] + ' ' + term.body[lang])
+        .toLowerCase()
+        .includes(query.toLowerCase()),
+  );
+  /*
+   * Alphabetical in the reader's own alphabet: a collator for the language
+   * being read, not for English. Ä sorts with A in German and the Cyrillic
+   * order is not the Latin one, so comparing the raw strings would file half
+   * the Russian index in the wrong place.
+   *
+   * Sorting by kind sorts by the translated kind name, so the groups come out
+   * in the order the reader sees written beside each row, with the term as the
+   * tiebreaker inside a group.
+   */
+  const collator = new Intl.Collator(lang);
+  const filtered = [...matching].sort((a, b) => {
+    const byTerm = collator.compare(a.title[lang], b.title[lang]);
+    const value =
+      sortBy === 'kind'
+        ? collator.compare(kindName[kindOf(a)], kindName[kindOf(b)]) || byTerm
+        : byTerm;
+    return ascending ? value : -value;
+  });
+  const entry =
+    filtered.find((term) => term.title.en === opened) ?? filtered[0];
+  const filtering = kind !== null || topic !== null;
+
+  const sortColumn = (key: SortBy, label: string) => {
+    const active = sortBy === key;
+    const direction = ascending
+      ? t('ascending', 'по возрастанию')
+      : t('descending', 'по убыванию');
+    return (
+      <button
+        type="button"
+        className={active ? 'sort-by selected' : 'sort-by'}
+        aria-pressed={active}
+        // The direction is only true of the column actually doing the sorting;
+        // saying it on the other one would describe a state that is not on.
+        aria-label={active ? `${label}, ${direction}` : label}
+        onClick={() => {
+          if (active) setAscending(!ascending);
+          else {
+            setSortBy(key);
+            setAscending(true);
+          }
+        }}
+      >
+        {label}
+        {active &&
+          (ascending ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
+      </button>
+    );
+  };
+
+  const chip = (
+    label: string,
+    on: boolean,
+    press: () => void,
+    hue?: string,
+  ) => (
+    <button
+      key={label}
+      type="button"
+      className={on ? 'facet selected' : 'facet'}
+      aria-pressed={on}
+      data-kind={hue}
+      onClick={press}
+    >
+      {label}
+    </button>
+  );
+
   return (
-    <>
-      <div className="content-section-heading">
-        <div>
-          <span className="eyebrow">
-            {t('A SMALL, GROWING REFERENCE', 'КРАТКИЙ РАСТУЩИЙ СПРАВОЧНИК')}
-          </span>
-          <h2>
-            {t(
-              'Find the words for what you hear.',
-              'Найдите слова для того, что слышите.',
-            )}
-          </h2>
-        </div>
+    <div className="define-lens">
+      <div className="facet-bar">
+        <fieldset aria-label={t('Kind', 'Вид')}>
+          <span className="facet-label">{t('Kind', 'Вид')}</span>
+          {chip(t('All', 'Все'), kind === null, () => {
+            setKind(null);
+            setTopic(null);
+          })}
+          {TOPIC_KINDS.map((value) =>
+            chip(
+              kindName[value],
+              kind === value,
+              () => {
+                setKind(value);
+                // A topic outside the new kind would filter to nothing.
+                if (topic && topicById[topic].kind !== value) setTopic(null);
+              },
+              value,
+            ),
+          )}
+        </fieldset>
+        <fieldset aria-label={t('Topic', 'Тема')}>
+          <span className="facet-label">{t('Topic', 'Тема')}</span>
+          {chip(t('All', 'Все'), topic === null, () => setTopic(null))}
+          {offeredTopics.map((id) =>
+            chip(topicById[id].title[lang], topic === id, () => setTopic(id)),
+          )}
+        </fieldset>
       </div>
-      <label className="search-field">
-        <Search size={19} />
-        <input
-          aria-label={t('Search musical terms', 'Найти музыкальный термин')}
-          placeholder={t('Search a term…', 'Найти термин…')}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <span>{filtered.length}</span>
-      </label>
-      <div className="terms-grid">
-        {filtered.map((term) => (
-          <article className="panel term-card" key={term.title.en}>
-            <h3>{term.title[lang]}</h3>
-            <p>{term.body[lang]}</p>
+
+      <div className="define-body">
+        <div className="term-index">
+          <label className="search-field">
+            <Search size={17} />
+            <input
+              aria-label={t('Search musical terms', 'Найти музыкальный термин')}
+              placeholder={t('Search a term…', 'Найти термин…')}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+            {/* A count of what this view matches, not a count of what the site
+                has: the one place that names the site's scope is elsewhere. */}
+            <span className="num">{filtered.length}</span>
+          </label>
+          {/* The two things a row shows are the two things it can be ordered
+              by, so the column names are the controls. */}
+          <fieldset
+            className="index-head"
+            aria-label={t('Sort the index', 'Сортировка списка')}
+          >
+            {sortColumn('term', t('Term', 'Термин'))}
+            {sortColumn('kind', t('Kind', 'Вид'))}
+          </fieldset>
+          <ul role="list">
+            {filtered.map((term) => (
+              <li key={term.title.en}>
+                <button
+                  type="button"
+                  className={term === entry ? 'term-row selected' : 'term-row'}
+                  aria-pressed={term === entry}
+                  onClick={() => setOpened(term.title.en)}
+                >
+                  {/* Hue never carries the meaning alone: the kind is also
+                      written out, so the index survives deuteranopia and print. */}
+                  <span className="kind-bar" data-kind={kindOf(term)} />
+                  <span className="term-name">{term.title[lang]}</span>
+                  <span className="term-kind">{kindName[kindOf(term)]}</span>
+                </button>
+              </li>
+            ))}
+            {!filtered.length && (
+              <li className="term-row empty">
+                <span>{t('No term matches', 'Ничего не найдено')}</span>
+              </li>
+            )}
+          </ul>
+          {!filtered.length && (
+            <div className="index-actions">
+              <p>{hint[lang]}</p>
+              {query && (
+                <button
+                  className="text-button"
+                  onClick={() => setQuery('')}
+                  type="button"
+                >
+                  {t('Clear the search', 'Очистить поиск')}
+                </button>
+              )}
+              {filtering && (
+                <button
+                  className="text-button"
+                  type="button"
+                  onClick={() => {
+                    setKind(null);
+                    setTopic(null);
+                  }}
+                >
+                  {t('Clear the filters', 'Сбросить фильтры')}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {entry && (
+          <article className="term-entry">
+            <p className="term-entry-kind">
+              <span className="kind-bar" data-kind={kindOf(entry)} />
+              {kindName[kindOf(entry)]} ·{' '}
+              {topicById[entry.lesson as TopicId].title[lang]}
+            </p>
+            <h2>{entry.title[lang]}</h2>
+            <p>{entry.body[lang]}</p>
             <button
               className="text-button"
-              onClick={() => openLesson(term.lesson)}
+              type="button"
+              onClick={() => openLesson(entry.lesson)}
             >
               {t('Explore the idea', 'Исследовать понятие')}
               <ArrowUpRight size={15} />
             </button>
           </article>
-        ))}
+        )}
       </div>
-      {!filtered.length && (
-        <div className="panel empty-state">
-          <Search size={30} />
-          <h3>{t('No matching term yet', 'Термин пока не найден')}</h3>
-          <p>
-            {t(
-              'Try “pitch”, “interval”, “строй” or a shorter search.',
-              'Попробуйте «высота», «строй», «pitch» или более короткий запрос.',
-            )}
-          </p>
-          <button className="text-button" onClick={() => setQuery('')}>
-            {t('Show all terms', 'Показать все термины')}
-          </button>
-        </div>
-      )}
-    </>
+    </div>
   );
 }
 

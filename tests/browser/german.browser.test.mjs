@@ -11,6 +11,7 @@ import {
 } from '../../components/learning.tsx';
 import { ChordsLab } from '../../components/chords-lab.tsx';
 import { lessons, terms } from '../../lib/learning.ts';
+import { topicById } from '../../lib/topics.ts';
 import { AudioEngine } from '../../lib/audio.ts';
 import { ChordPlayer } from '../../lib/chord-audio.ts';
 import { LANGUAGE_STORAGE_KEY } from '../../lib/client-store.ts';
@@ -150,10 +151,11 @@ test('All six German lessons include translated prose, experiments and formulas,
       openLab,
       openPractice: vi.fn(),
     });
-    expect(container.querySelector('h2').textContent).toBe(title);
-    expect(container.querySelector('.lesson-body').textContent).toContain(
-      prose,
-    );
+    // The title is the shell's subject line now, not something the lens
+    // repeats; the first test above is what checks it reaches the page.
+    expect(topicById[lessonId].title.de).toBe(title);
+    // The prose is the lens itself, not a panel inside a two-column grid.
+    expect(container.querySelector('.lens-read').textContent).toContain(prose);
     expect(container.querySelector('.formula').textContent).not.toMatch(
       /Major|Minor|A4|cents/,
     );
@@ -167,25 +169,25 @@ test('All six German lessons include translated prose, experiments and formulas,
     openLab: vi.fn(),
     openPractice: vi.fn(),
   });
-  expect(container.querySelectorAll('.lesson-tile')).toHaveLength(
-    lessons.length,
-  );
-  expect(container.textContent).toContain('Alte Musik & Mehrstimmigkeit');
+  expect(container.querySelectorAll('.topic-row')).toHaveLength(lessons.length);
   await render(Encyclopedia, { lang: 'de', openLesson: vi.fn() });
   await search('Stimmführung');
   // The search reads every language's title plus the body of the active one,
   // so a second entry may legitimately mention the word. What has to hold is
   // that searching German narrows the list and finds the entry itself — not
-  // that exactly one card survives, which any new term could falsify.
-  const found = [...container.querySelectorAll('.term-card h3')].map(
+  // that exactly one row survives, which any new term could falsify.
+  const found = [...container.querySelectorAll('.term-name')].map(
     (el) => el.textContent,
   );
   expect(found).toContain('Stimmführung');
   expect(found.length).toBeLessThan(terms.length);
   await search('xyzkeinbegriff');
-  expect(container.textContent).toContain('Noch kein passender Begriff');
-  await click('Alle Begriffe anzeigen');
-  expect(container.querySelectorAll('.term-card')).toHaveLength(terms.length);
+  expect(container.textContent).toContain('Kein Begriff passt');
+  // The hint is German through and through: it used to offer a Russian word
+  // inside an English sentence.
+  expect(container.textContent).toContain('Tonhöhe');
+  await click('Suche löschen');
+  expect(container.querySelectorAll('.term-row')).toHaveLength(terms.length);
 });
 
 test('German minor scales spell Es/As/B and raise H only in the appropriate forms; playback keeps its pitches', async () => {

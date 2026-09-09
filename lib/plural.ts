@@ -73,6 +73,11 @@ export const nouns = {
     en: { one: 'semitone', other: 'semitones' },
     ru: { one: 'полутон', few: 'полутона', many: 'полутонов' },
   },
+  terms: {
+    de: { one: 'Begriff', other: 'Begriffe' },
+    en: { one: 'term', other: 'terms' },
+    ru: { one: 'термин', few: 'термина', many: 'терминов' },
+  },
 } as const;
 
 /** `counted` for one of the known nouns above. */

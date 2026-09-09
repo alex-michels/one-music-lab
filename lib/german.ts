@@ -1053,5 +1053,32 @@ export const german = {
   Indexes: 'Übersichten',
   'Skip to content': 'Zum Inhalt springen',
   'not written': 'nicht geschrieben',
+  // The define lens: its facets and its empty state (roadmap step 8).
+  Kind: 'Art',
+  Topic: 'Thema',
+  All: 'Alle',
+  sign: 'Zeichen',
+  concept: 'Begriff',
+  measure: 'Maß',
+  tone: 'Klang',
+  'No term matches': 'Kein Begriff passt',
+  'Clear the search': 'Suche löschen',
+  'Clear the filters': 'Filter löschen',
+  'Terms and where they are taught': 'Begriffe und wo sie erklärt werden',
+  // Sorting the define lens's index.
+  Term: 'Begriff',
+  ascending: 'aufsteigend',
+  descending: 'absteigend',
+  'Sort the index': 'Index sortieren',
+  // The read lens: its index, its scope line and its inline exercise.
+  'written so far': 'bisher geschrieben',
+  'The plan for the rest is in the roadmap.':
+    'Der Plan für alles Weitere steht in der Roadmap.',
+  'Signs on the page': 'Zeichen auf dem Papier',
+  'Ideas and definitions': 'Begriffe und Definitionen',
+  'Rhythm and duration': 'Rhythmus und Dauer',
+  'Sound itself': 'Der Klang selbst',
+  'Try it here': 'Hier ausprobieren',
+  'Practise this rule': 'Diese Regel üben',
 } as const;
 export type GermanKey = keyof typeof german;

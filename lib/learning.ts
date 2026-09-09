@@ -577,59 +577,6 @@ export const lessons = [
       'https://viva.pressbooks.pub/openmusictheory/chapter/other-aspects-of-notation/#structural-features',
   },
 ];
-export const curriculum = [
-  {
-    title: b('Sound & musical foundations', 'Звук и музыкальные основы'),
-    topics: b(
-      'Acoustics · pitch · intervals · rhythm · notation',
-      'Акустика · высота · интервалы · ритм · нотация',
-    ),
-    state: b('Introductory lessons available', 'Вводные уроки доступны'),
-  },
-  {
-    title: b('Early music & polyphony', 'Ранняя музыка и полифония'),
-    topics: b(
-      'Modal practices · chant · counterpoint · mensural notation',
-      'Модальные практики · монодия · контрапункт · мензуральная нотация',
-    ),
-    state: b('Curriculum planned', 'План развития'),
-  },
-  {
-    title: b(
-      'European traditions, 1600–1900',
-      'Европейские традиции, 1600–1900',
-    ),
-    topics: b(
-      'Tonal harmony · voice leading · form · orchestration',
-      'Тональная гармония · голосоведение · форма · оркестровка',
-    ),
-    state: b('Curriculum planned', 'План развития'),
-  },
-  {
-    title: b('Blues, jazz & popular music', 'Блюз, джаз и популярная музыка'),
-    topics: b(
-      'Groove · extended harmony · song form · improvisation',
-      'Грув · расширенная гармония · форма песни · импровизация',
-    ),
-    state: b('Curriculum planned', 'План развития'),
-  },
-  {
-    title: b('Musical worlds', 'Музыкальные культуры мира'),
-    topics: b(
-      'Maqam · raga · gamelan · oral traditions · rhythmic systems',
-      'Макам · рага · гамелан · устные традиции · ритмические системы',
-    ),
-    state: b('Curriculum planned', 'План развития'),
-  },
-  {
-    title: b('New musical languages', 'Новые музыкальные языки'),
-    topics: b(
-      'Post-tonality · microtonality · synthesis · experimental notation',
-      'Посттональность · микротональность · синтез · экспериментальная нотация',
-    ),
-    state: b('Curriculum planned', 'План развития'),
-  },
-];
 export const terms = [
   {
     title: b('Frequency', 'Частота'),

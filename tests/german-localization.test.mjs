@@ -6,7 +6,7 @@ import {
   siteDescription,
   fixedNumber,
 } from '../lib/i18n.ts';
-import { lessons, curriculum, terms, patterns } from '../lib/learning.ts';
+import { lessons, terms, patterns } from '../lib/learning.ts';
 import { scales } from '../lib/scales.ts';
 import {
   chordQualities,
@@ -45,7 +45,6 @@ test('Every shipped lesson, term, formula, pattern and progression guide has thr
   }
   inspect([
     lessons,
-    curriculum,
     terms,
     patterns,
     scales,
