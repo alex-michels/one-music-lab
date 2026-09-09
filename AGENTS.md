@@ -38,6 +38,10 @@ displays or adding Russian duplicates for every pitch label (see CONTRIBUTING.md
   language approval is not a prerequisite for personal-use completion. Keep
   source verification, musical correctness, usable learning paths and tests;
   apply the personal-use scope of gate G below. Public release is separate.
+- Organize lessons into connected sections and chapters, like a book: prerequisites,
+  progressive explanations, contents/current position, previous/next lessons and
+  links between theory, experiments, practice and definitions. Apply this across
+  all subjects and EN/RU/DE; see tasks 537/542 and CONTRIBUTING.md.
 - A topic is complete only after gate G (docs/release-criteria.md): sourced
   EN/RU/DE theory, working laboratory, meaningful practice with feedback, encyclopedia, tests, rights,
   accessibility, review, documentation, and a publishable artifact.

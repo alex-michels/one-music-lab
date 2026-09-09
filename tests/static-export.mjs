@@ -191,7 +191,8 @@ await test('The portable Notes lab renders while every external request is block
     assert.equal(await page.locator('.note-name').textContent(), 'E4');
     await page
       .getByRole('combobox', { name: 'Accidental before this note' })
-      .selectOption('-1');
+      .click();
+    await page.getByRole('option', { name: 'Flat', exact: true }).click();
     assert.match(
       await page.locator('.notation-workbench output').textContent(),
       /E♭4/,

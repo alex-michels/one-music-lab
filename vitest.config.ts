@@ -42,6 +42,7 @@ export const authoredProductionCode = [
   'components/notation-figure.tsx',
   'components/notation-response.tsx',
   'components/notation-workbench.tsx',
+  'components/notation-select.tsx',
   'components/notation-reading.tsx',
   'components/staff.tsx',
   'components/staff-answer.tsx',

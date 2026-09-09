@@ -22,6 +22,7 @@ import { pitchAtStep, placementRange, staffStep } from '@/lib/staff';
 import { StaffPosition } from './staff-answer';
 import { NotationWorkbench } from './notation-workbench';
 import { NotationFigure } from './notation-figure';
+import { NotationSelect } from './notation-select';
 import { nt } from '@/lib/notation-tasks';
 type Lang = import('@/lib/client-store').Lang;
 
@@ -160,17 +161,18 @@ export function NotesLab({
   };
   return (
     <div className="notes-lab">
-      <section className="panel">
+      <section className="panel note-builder">
         <div className="panel-heading">
-          <span>
+          <h3>
             <span className="panel-number">01</span>
             {t('Write a note', 'Запишите ноту')}
-          </span>
+          </h3>
         </div>
         <fieldset
-          className="note-chooser"
+          className="note-chooser note-letters"
           aria-label={t('Note name', 'Название ноты')}
         >
+          <legend>{t('Note name', 'Название ноты')}</legend>
           {[0, 1, 2, 3, 4, 5, 6].map((value) => (
             <button
               key={value}
@@ -183,9 +185,10 @@ export function NotesLab({
           ))}
         </fieldset>
         <fieldset
-          className="note-chooser"
+          className="note-chooser note-signs"
           aria-label={t('Accidental', 'Знак альтерации')}
         >
+          <legend>{t('Accidental', 'Знак альтерации')}</legend>
           {[-2, -1, 0, 1, 2].map((value) => (
             <button
               key={value}
@@ -198,76 +201,78 @@ export function NotesLab({
             </button>
           ))}
         </fieldset>
-        <fieldset className="note-chooser" aria-label={t('Octave', 'Октава')}>
-          {OCTAVES.map((value) => (
-            <button
-              key={value}
-              className={value === octave ? 'selected' : ''}
-              aria-pressed={value === octave}
-              onClick={() => setNote({ octave: value })}
-            >
-              {octaveName(spell(letter, 0, value), lang)}
-            </button>
-          ))}
-        </fieldset>
+        <div className="note-register-controls">
+          <NotationSelect
+            label={t('Octave', 'Октава')}
+            value={String(octave)}
+            options={OCTAVES.map((value) => ({
+              value: String(value),
+              label: octaveName(spell(letter, 0, value), lang),
+            }))}
+            onChange={(value) => setNote({ octave: Number(value) })}
+          />
+          <NotationSelect
+            label={t('Clef', 'Ключ')}
+            value={clef}
+            options={clefs.map((value) => ({
+              value,
+              label: clefNames[value][lang],
+            }))}
+            onChange={(value) => setClef(value as Clef)}
+          />
+        </div>
       </section>
       <section className="panel note-readout">
         <div className="panel-heading">
-          <span>
+          <h3>
             <span className="panel-number">02</span>
             {t('What it is', 'Что это')}
-          </span>
+          </h3>
         </div>
-        <div className="staff-frame">
-          <Staff pitches={[pitch]} clef={clef} lang={lang} space={11} />
-          <fieldset className="note-chooser" aria-label={t('Clef', 'Ключ')}>
-            {clefs.map((value) => (
-              <button
-                key={value}
-                className={value === clef ? 'selected' : ''}
-                aria-pressed={value === clef}
-                onClick={() => setClef(value)}
-              >
-                {clefNames[value][lang]}
-              </button>
-            ))}
-          </fieldset>
+        <div className="note-identity">
+          <div className="staff-frame">
+            <Staff pitches={[pitch]} clef={clef} lang={lang} space={11} />
+          </div>
+          <div>
+            <div className="note-name">{pitchLabel(pitch, lang)}</div>
+            <dl>
+              <div>
+                <dt>{t('Written', 'Запись')}</dt>
+                <dd>{pitchName(pitch, lang)}</dd>
+              </div>
+              <div>
+                <dt>{t('Register', 'Октава')}</dt>
+                <dd>{octaveName(pitch, lang)}</dd>
+              </div>
+              <div>
+                <dt>{t('Sounding pitch', 'Звучащая высота')}</dt>
+                <dd>
+                  {audible
+                    ? `${fixedNumber(hz, 2, lang)} Hz`
+                    : t('outside the audible range', 'вне слышимого диапазона')}
+                </dd>
+              </div>
+              <div>
+                <dt>{t('MIDI number', 'Номер MIDI')}</dt>
+                <dd>{pitch.midi}</dd>
+              </div>
+            </dl>
+          </div>
         </div>
-        <div className="note-name">{pitchLabel(pitch, lang)}</div>
-        <dl>
-          <div>
-            <dt>{t('Written', 'Запись')}</dt>
-            <dd>{pitchName(pitch, lang)}</dd>
-          </div>
-          <div>
-            <dt>{t('Register', 'Октава')}</dt>
-            <dd>{octaveName(pitch, lang)}</dd>
-          </div>
-          <div>
-            <dt>{t('Sounding pitch', 'Звучащая высота')}</dt>
-            <dd>
-              {audible
-                ? `${fixedNumber(hz, 2, lang)} Hz`
-                : t('outside the audible range', 'вне слышимого диапазона')}
-            </dd>
-          </div>
-          <div>
-            <dt>{t('MIDI number', 'Номер MIDI')}</dt>
-            <dd>{pitch.midi}</dd>
-          </div>
-        </dl>
-        <button
-          className="primary-button"
-          disabled={!audible}
-          onClick={() => void play(pitch.midi)}
-        >
-          <Volume2 size={17} />
-          {t('Hear this note', 'Послушать ноту')}
-        </button>
-        <button className="text-button" onClick={stop}>
-          <Square size={16} />
-          {t('Stop sound', 'Остановить звук')}
-        </button>
+        <div className="notation-transport">
+          <button
+            className="primary-button"
+            disabled={!audible}
+            onClick={() => void play(pitch.midi)}
+          >
+            <Volume2 size={17} />
+            {t('Hear this note', 'Послушать ноту')}
+          </button>
+          <button className="text-button" onClick={stop}>
+            <Square size={16} />
+            {t('Stop sound', 'Остановить звук')}
+          </button>
+        </div>
         <p className="note-caption">
           {t(
             'The frequency follows the reference pitch and the tuning map chosen in the tone generator. The written note does not change when they do.',
@@ -277,14 +282,13 @@ export function NotesLab({
       </section>
       <section className="panel notation-examples">
         <div className="panel-heading">
-          <span>
-            {t('Compare short examples', 'Сравните короткие примеры')}
-          </span>
+          <h3>{t('Compare short examples', 'Сравните короткие примеры')}</h3>
         </div>
         <fieldset
           className="note-chooser"
           aria-label={t('Experiment topic', 'Тема эксперимента')}
         >
+          <legend>{t('Experiment topic', 'Тема эксперимента')}</legend>
           {notationGroups.map((group) => (
             <button
               key={group.id}
@@ -320,6 +324,9 @@ export function NotesLab({
         </fieldset>
         <div className="notation-example-actions">
           <div className="notation-example-score">
+            <p className="notation-score-label">
+              {notationExamples[activeExample].label[lang]}
+            </p>
             <NotationFigure
               id={`example-${activeExample}`}
               label={notationExamples[activeExample].label[lang]}
@@ -330,7 +337,11 @@ export function NotesLab({
             .map((id) => (
               <button
                 key={id}
-                className="primary-button"
+                className={
+                  activeExample === id
+                    ? 'primary-button'
+                    : 'notation-example-button'
+                }
                 aria-pressed={activeExample === id}
                 onClick={() => {
                   setSelectedExample(id);
@@ -353,7 +364,7 @@ export function NotesLab({
           )}
         </p>
       </section>
-      <section className="panel">
+      <section className="panel note-placement">
         <h3>
           {
             nt(
@@ -363,52 +374,58 @@ export function NotesLab({
             )[lang]
           }
         </h3>
-        <StaffPosition
-          clef={clef}
-          accidental={accidental}
-          lang={lang}
-          disabled={false}
-          ledgerLines={ledgerLines}
-          value={
-            staffStep(pitch, clef) >= placement[0] &&
-            staffStep(pitch, clef) <= placement[1]
-              ? staffStep(pitch, clef)
-              : null
-          }
-          help={
-            nt(
-              'Click a position or use the arrow keys to place and hear a note.',
-              'Нажмите на позицию или используйте стрелки, чтобы поставить и услышать ноту.',
-              'Klicke auf eine Position oder verwende die Pfeiltasten, um eine Note zu setzen und zu hören.',
-            )[lang]
-          }
-          onChange={(step) => {
-            const placed = pitchAtStep(step, clef, accidental);
-            setNote(placed);
-            void play(placed.midi);
-          }}
-        />
-        <label>
-          {
-            nt(
-              'Ledger lines per side',
-              'Добавочных линеек с каждой стороны',
-              'Hilfslinien je Seite',
-            )[lang]
-          }
-          <input
-            type="range"
-            min="0"
-            max="6"
-            step="1"
-            value={ledgerLines}
-            onChange={(event) => {
-              stop();
-              setLedgerLines(Number(event.target.value));
-            }}
-          />
-          <output>{ledgerLines}</output>
-        </label>
+        <div className="note-placement-grid">
+          <div className="note-placement-canvas">
+            <StaffPosition
+              clef={clef}
+              accidental={accidental}
+              lang={lang}
+              disabled={false}
+              ledgerLines={ledgerLines}
+              value={
+                staffStep(pitch, clef) >= placement[0] &&
+                staffStep(pitch, clef) <= placement[1]
+                  ? staffStep(pitch, clef)
+                  : null
+              }
+              help={
+                nt(
+                  'Click a position or use the arrow keys to place and hear a note.',
+                  'Нажмите на позицию или используйте стрелки, чтобы поставить и услышать ноту.',
+                  'Klicke auf eine Position oder verwende die Pfeiltasten, um eine Note zu setzen und zu hören.',
+                )[lang]
+              }
+              onChange={(step) => {
+                const placed = pitchAtStep(step, clef, accidental);
+                setNote(placed);
+                void play(placed.midi);
+              }}
+            />
+          </div>
+          <label className="notation-range">
+            <span>
+              {
+                nt(
+                  'Ledger lines per side',
+                  'Добавочных линеек с каждой стороны',
+                  'Hilfslinien je Seite',
+                )[lang]
+              }
+              <output>{ledgerLines}</output>
+            </span>
+            <input
+              type="range"
+              min="0"
+              max="6"
+              step="1"
+              value={ledgerLines}
+              onChange={(event) => {
+                stop();
+                setLedgerLines(Number(event.target.value));
+              }}
+            />
+          </label>
+        </div>
       </section>
       <NotationWorkbench pitch={pitch} lang={lang} play={play} stop={stop} />
       <section className="panel note-caveat">

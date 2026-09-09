@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { page } from 'vitest/browser';
+import { chooseNotation } from './notation-select-helper.mjs';
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import Home from '../../app/(root)/page.tsx';
@@ -108,7 +109,7 @@ test('The reference pitch moves the frequency and leaves the written note alone'
   await click('F');
   // The button draws the sign and says the word, so the word is its name.
   await click('sharp');
-  await click('octave 5');
+  await chooseNotation('Octave', 'octave 5');
   const written = readout('Written');
   const midi = readout('MIDI number');
   const first = Number.parseFloat(readout('Sounding pitch'));

@@ -1,5 +1,10 @@
 import { afterEach, expect, test, vi } from 'vitest';
 import { page } from 'vitest/browser';
+import {
+  chooseNotation as select,
+  openNotationChoice,
+  closeNotationChoice,
+} from './notation-select-helper.mjs';
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { NotationFigure } from '../../components/notation-figure.tsx';
@@ -34,10 +39,6 @@ afterEach(async () => {
 });
 const click = (name) =>
   act(async () => page.getByRole('button', { name, exact: true }).click());
-const select = (name, value) =>
-  act(async () =>
-    page.getByRole('combobox', { name, exact: true }).selectOptions(value),
-  );
 const c4 = { letter: 0, accidental: 0, octave: 4, midi: 60 };
 
 test('Score figures have unique working glyph references and inherit both color themes', async () => {
@@ -135,30 +136,39 @@ for (const lang of ['en', 'ru', 'de']) {
     const play = vi.fn(),
       stop = vi.fn();
     await mount(NotationWorkbench, { pitch: c4, lang, play, stop });
-    const controls = [...container.querySelectorAll('select')];
-    const change = async (control, value) =>
-      act(() => {
-        control.value = value;
-        control.dispatchEvent(new Event('change', { bubbles: true }));
-      });
+    const controls = [...container.querySelectorAll('[role="combobox"]')];
+    const labels = [
+      ...container.querySelectorAll('.notation-field > label'),
+    ].map((label) => label.textContent);
+    const change = (index, option) => select(labels[index], option);
     expect(play).not.toHaveBeenCalled();
-    await change(controls[0], '2'); // F and C sharp.
+    await change(0, '2 ♯'); // F and C sharp.
     expect(container.querySelector('output').textContent).toContain(
       lang === 'de' ? 'cis′' : lang === 'ru' ? 'до-диез' : 'C♯4',
     );
-    await change(controls[1], '0'); // Natural replaces C sharp.
-    await change(controls[2], '1');
+    await change(
+      1,
+      { en: 'Natural', ru: 'Бекар', de: 'Auflösungszeichen' }[lang],
+    ); // Natural replaces C sharp.
+    await change(2, '8va');
     await act(() => container.querySelector('.primary-button').click());
     expect(play).toHaveBeenLastCalledWith(72);
-    await change(controls[2], '-1');
+    await change(2, '8vb');
     await act(() => container.querySelector('.primary-button').click());
     expect(play).toHaveBeenLastCalledWith(48);
     await act(() => container.querySelector('.text-button').click());
-    expect(controls.map((control) => control.value)).toEqual([
-      '0',
-      'signature',
-      '0',
-    ]);
+    expect(
+      controls.map(
+        (control) =>
+          control.querySelector('[data-slot="select-value"]').textContent,
+      ),
+    ).toEqual(
+      {
+        en: ['No key signature', 'Use the signature', 'No displacement'],
+        ru: ['Без ключевых знаков', 'По ключевым знакам', 'Без переноса'],
+        de: ['Keine Vorzeichen', 'Vorzeichen gelten', 'Keine Oktavierung'],
+      }[lang],
+    );
     expect(stop).toHaveBeenCalled();
     await mount(NotationWorkbench, {
       pitch: { ...c4, octave: 8, midi: 108 },
@@ -166,11 +176,14 @@ for (const lang of ['en', 'ru', 'de']) {
       play,
       stop,
     });
+    const bounded = await openNotationChoice(labels[2]);
     expect(
-      [...container.querySelectorAll('select')[2].options].map(
-        (option) => option.value,
-      ),
-    ).not.toContain('1');
+      page.getByRole('option', { name: '8va', exact: true }).query(),
+    ).toBeNull();
+    expect(
+      page.getByRole('option', { name: '15ma', exact: true }).query(),
+    ).toBeNull();
+    await closeNotationChoice(bounded);
   });
 }
 
@@ -218,9 +231,9 @@ test('Workbench remains keyboard operable on a narrow screen', async () => {
     play: vi.fn(),
     stop: vi.fn(),
   });
-  await select('Key signature in treble clef', '-1');
-  await select('Accidental before this note', '-2');
-  await select('Octave displacement', '2');
+  await select('Key signature in treble clef', '1 ♭');
+  await select('Accidental before this note', 'Double flat');
+  await select('Octave displacement', '15ma');
   expect(container.querySelector('output').textContent).toContain('C𝄫6');
   expect(container.scrollWidth).toBeLessThanOrEqual(
     document.documentElement.clientWidth,
