@@ -1,25 +1,17 @@
 'use client';
 import {
   translator,
-  fixedNumber,
-  localNumber,
   localText,
   siteDescription,
   type LocalText,
   type Translate,
 } from '@/lib/i18n';
-import { localizedNoteName, keyboardPitch, octaveName } from '@/lib/notation';
+import { localizedNoteName } from '@/lib/notation';
 
 import { flushSync } from 'react-dom';
-import {
-  Experiments,
-  Theory,
-  Practice,
-  Encyclopedia,
-} from '@/components/learning';
-import { NumberField } from '@/components/number-field';
+import { Theory, Practice, Encyclopedia } from '@/components/learning';
 import { ChordsLab } from '@/components/chords-lab';
-import { NotesLab } from '@/components/notes-lab';
+import { PlayLens } from '@/components/play-lens';
 import {
   initialNotesLabState,
   notationLessonPresets,
@@ -28,7 +20,6 @@ import {
 } from '@/lib/notation-experiments';
 import { exportTone } from '@/lib/wav';
 import { registerLabTools, type LabState } from '@/lib/webmcp';
-import { Download } from 'lucide-react';
 import {
   useEffect,
   useEffectEvent,
@@ -39,24 +30,14 @@ import {
   type RefObject,
 } from 'react';
 import {
-  Activity,
-  ArrowDown,
-  ArrowUp,
   ArrowUpRight,
   AudioLines,
   BookOpen,
-  CircleHelp,
   FlaskConical,
   Globe2,
   Headphones,
   Library,
   Music2,
-  Pause,
-  Piano,
-  Play,
-  RotateCcw,
-  SlidersHorizontal,
-  Volume2,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -70,14 +51,6 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { Slider } from '@/components/ui/slider';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { AudioEngine } from '@/lib/audio';
 import {
   DEFAULT_LENS,
@@ -116,7 +89,6 @@ import {
   type Tuning,
   type Wave,
 } from '@/lib/music';
-const waveTypes: Wave[] = ['sine', 'triangle', 'square', 'sawtooth'];
 // The selected route and language live in browser state the server cannot see.
 // Each is read once on the client and changes only through navigate/setLang.
 const routeStore = createClientStore<Route>(
@@ -146,33 +118,6 @@ const themeStore = createClientStore<Theme>(
   () => themeFromStorage(localStorageOrNull()),
   DEFAULT_THEME,
 );
-function WaveIcon({ wave }: { wave: Wave }) {
-  const d =
-    wave === 'sine'
-      ? 'M1 12C7-3 11-3 17 12S27 27 33 12'
-      : wave === 'triangle'
-        ? 'M1 18L9 3L25 24L33 8'
-        : wave === 'square'
-          ? 'M1 20V4H16V20H32V4'
-          : 'M1 22L16 3V22L32 3V22';
-  return (
-    <svg
-      width="30"
-      height="24"
-      viewBox="0 0 34 27"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d={d}
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 /**
  * Drag handle for the navigation panel's width. Translated labels are not all
  * the same length — `Chords lab` is `Лаборатория аккордов` — so the labels wrap
@@ -476,7 +421,6 @@ export default function Home() {
   const [octave, setOctave] = useState(4);
   const [error, setError] = useState<LocalText | null>(null);
   const audio = useRef<AudioEngine | null>(null);
-  const canvas = useRef<HTMLCanvasElement>(null);
   const t = translator(lang);
   const displayNote = (midi: number) =>
     lang === 'de' ? localizedNoteName(midi, lang) : noteName(midi);
@@ -571,6 +515,14 @@ export default function Home() {
     } finally {
       setExporting(false);
     }
+  }
+  /**
+   * The live signal, handed to the scope as a function rather than as data: the
+   * analyser's buffer is written in place sixty times a second, so passing the
+   * array itself would hand the lens a value React sees as unchanged.
+   */
+  function readSamples() {
+    return audio.current?.samples() ?? null;
   }
   function stopSound() {
     audio.current?.stopAll();
@@ -749,94 +701,6 @@ export default function Home() {
       document.removeEventListener('visibilitychange', hidden);
     };
   }, []);
-  useEffect(() => {
-    if (page !== 'lab') return;
-    let frame = 0;
-    // A canvas cannot inherit a custom property, so the scope reads the three
-    // score tokens off its own element. Once per resize, never per frame:
-    // getComputedStyle in a draw loop is a layout read sixty times a second.
-    let ink: { grid: string; axis: string; live: string } | null = null;
-    const readInk = (element: HTMLCanvasElement) => {
-      const style = getComputedStyle(element);
-      return {
-        grid: style.getPropertyValue('--s-grid').trim(),
-        axis: style.getPropertyValue('--s-axis').trim(),
-        live: style.getPropertyValue('--s-live').trim(),
-      };
-    };
-    const draw = () => {
-      const c = canvas.current;
-      if (c) {
-        const ctx = c.getContext('2d');
-        if (ctx) {
-          const width = c.clientWidth,
-            height = c.clientHeight,
-            dpr = Math.min(window.devicePixelRatio || 1, 2);
-          const resized = c.width !== width * dpr || c.height !== height * dpr;
-          if (resized) {
-            c.width = width * dpr;
-            c.height = height * dpr;
-          }
-          if (resized || !ink) ink = readInk(c);
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          ctx.clearRect(0, 0, width, height);
-          ctx.strokeStyle = ink.grid;
-          ctx.lineWidth = 1;
-          for (let x = 0; x < width; x += 42) {
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, height);
-            ctx.stroke();
-          }
-          for (let y = 0; y <= height; y += 36) {
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(width, y);
-            ctx.stroke();
-          }
-          ctx.strokeStyle = ink.axis;
-          ctx.beginPath();
-          ctx.moveTo(0, height / 2);
-          ctx.lineTo(width, height / 2);
-          ctx.stroke();
-          const samples = playing ? audio.current?.samples() : null;
-          let peak = 1;
-          if (samples)
-            for (const sample of samples)
-              peak = Math.max(peak, Math.abs(sample - 128));
-          ctx.strokeStyle = ink.live;
-          ctx.lineWidth = 2.5;
-          ctx.shadowColor = ink.live;
-          ctx.shadowBlur = 8;
-          ctx.beginPath();
-          for (let x = 0; x < width; x++) {
-            const phase = (x / width) * Math.PI * 8;
-            let v =
-              wave === 'sine'
-                ? Math.sin(phase)
-                : wave === 'triangle'
-                  ? (2 / Math.PI) * Math.asin(Math.sin(phase))
-                  : wave === 'square'
-                    ? Math.sign(Math.sin(phase))
-                    : 2 * ((phase / (Math.PI * 2)) % 1) - 1;
-            if (samples) {
-              v =
-                (samples[Math.floor((x / width) * samples.length)] - 128) /
-                peak;
-            }
-            const y = height / 2 - v * height * 0.29;
-            if (!x) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-          }
-          ctx.stroke();
-          ctx.shadowBlur = 0;
-        }
-      }
-      frame = requestAnimationFrame(draw);
-    };
-    frame = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(frame);
-  }, [wave, playing, page]);
   // Effect events read the latest state and handlers without re-subscribing,
   // replacing the ref that used to be written during render.
   const onKeydown = useEffectEvent((e: KeyboardEvent) => {
@@ -1054,502 +918,42 @@ export default function Home() {
               headingRef={headingRef}
             />
             {page === 'lab' ? (
-              <>
-                <div className="section-tabs">
-                  <button
-                    type="button"
-                    className={labTab === 'tone' ? 'active' : ''}
-                    aria-pressed={labTab === 'tone'}
-                    onClick={() => changeLabTab('tone')}
-                  >
-                    <Activity size={17} />
-                    {t('Tone generator', 'Генератор тонов')}
-                  </button>
-                  <button
-                    type="button"
-                    className={labTab === 'notes' ? 'active' : ''}
-                    aria-pressed={labTab === 'notes'}
-                    onClick={() => changeLabTab('notes')}
-                  >
-                    <Music2 size={17} />
-                    {t('Notes', 'Ноты')}
-                  </button>
-                  <span className="section-caption">
-                    {labTab === 'notes'
-                      ? t('FROM WRITING TO SOUND', 'ОТ ЗАПИСИ К ЗВУЧАНИЮ')
-                      : t('FROM FREQUENCY TO FEELING', 'ОТ ЧАСТОТЫ К ОЩУЩЕНИЮ')}
-                  </span>
-                </div>
-                {labTab === 'notes' && (
-                  <NotesLab
-                    lang={lang}
-                    reference={reference}
-                    tuning={tuning}
-                    play={playNote}
-                    state={notesState}
-                    onChange={setNotesState}
-                    playExample={playNotationExample}
-                    stop={stopSound}
-                  />
-                )}
-                <div
-                  className={
-                    labTab === 'tone'
-                      ? 'instrument-grid'
-                      : 'instrument-grid is-hidden'
-                  }
-                >
-                  <section className="panel generator">
-                    <div className="panel-heading">
-                      <span>
-                        <span className="panel-number">01</span>
-                        {t('Tone generator', 'Генератор тонов')}
-                      </span>
-                      <span className="soft-badge">
-                        <span
-                          className={
-                            playing ? 'status-dot pulsing' : 'status-dot'
-                          }
-                        />
-                        {playing
-                          ? t('Playing', 'Звучит')
-                          : t('Ready to play', 'Готов к звучанию')}
-                      </span>
-                    </div>
-                    <div className="frequency-zone">
-                      <label className="eyebrow" htmlFor="frequency">
-                        {t('FREQUENCY', 'ЧАСТОТА')}
-                      </label>
-                      <div className="frequency-input">
-                        <NumberField
-                          id="frequency"
-                          aria-label={t(
-                            'Frequency in hertz',
-                            'Частота в герцах',
-                          )}
-                          min={20}
-                          max={20000}
-                          step="0.01"
-                          value={frequency}
-                          onValue={setHz}
-                        />
-                        <span>Hz</span>
-                      </div>
-                      <div className="note-pill">
-                        {displayNote(note.midi)}
-                        <span>·</span>
-                        {note.cents > 0 ? '+' : ''}
-                        {fixedNumber(note.cents, 1, lang)} {t('cents', 'цента')}
-                      </div>
-                    </div>
-                    <div className="frequency-slider">
-                      <Slider
-                        aria-label={t('Frequency', 'Частота')}
-                        value={[Math.log2(frequency / 20)]}
-                        min={0}
-                        max={Math.log2(1000)}
-                        step={0.001}
-                        onValueChange={(v) =>
-                          setHz(20 * 2 ** (Array.isArray(v) ? v[0] : v))
-                        }
-                      />
-                      <div className="range-labels">
-                        <span>20 Hz</span>
-                        <span>100</span>
-                        <span>1k</span>
-                        <span>20k Hz</span>
-                      </div>
-                    </div>
-                    <div className="transport">
-                      <div className="octave-buttons">
-                        <button
-                          onClick={() => setHz(frequency / 2)}
-                          aria-label={t('One octave down', 'На октаву ниже')}
-                        >
-                          <ArrowDown size={15} />½
-                        </button>
-                        <button
-                          onClick={() => setHz(frequency * 2)}
-                          aria-label={t('One octave up', 'На октаву выше')}
-                        >
-                          <ArrowUp size={15} />
-                          2×
-                        </button>
-                      </div>
-                      <button
-                        className={
-                          'play-button ' + (playing ? 'is-playing' : '')
-                        }
-                        onClick={toggle}
-                      >
-                        {playing ? (
-                          <Pause size={18} fill="currentColor" />
-                        ) : (
-                          <Play size={18} fill="currentColor" />
-                        )}
-                        {playing
-                          ? t('Stop tone', 'Остановить')
-                          : t('Play tone', 'Слушать тон')}
-                        <kbd>{t('Space', 'Пробел')}</kbd>
-                      </button>
-                      <button
-                        className="icon-button"
-                        aria-label={t(
-                          'Reset frequency to A4',
-                          'Вернуться к A4',
-                        )}
-                        onClick={() => setHz(reference)}
-                      >
-                        <RotateCcw size={17} />
-                      </button>
-                    </div>
-                    <fieldset
-                      className="wave-picker"
-                      aria-label={t('Waveform', 'Форма волны')}
-                    >
-                      {waveTypes.map((w, i) => (
-                        <button
-                          key={w}
-                          onClick={() => setWave(w)}
-                          className={wave === w ? 'selected' : ''}
-                          aria-pressed={wave === w}
-                        >
-                          <WaveIcon wave={w} />
-                          {waveNames[i]}
-                        </button>
-                      ))}
-                    </fieldset>
-                    <div className="scope">
-                      <div className="scope-header">
-                        <span>
-                          <Activity size={13} />
-                          {t('OSCILLOSCOPE', 'ОСЦИЛЛОГРАММА')}
-                        </span>
-                        <span>
-                          {playing
-                            ? t('LIVE SIGNAL', 'ЖИВОЙ СИГНАЛ')
-                            : t('WAVEFORM PREVIEW', 'ФОРМА ВОЛНЫ')}
-                        </span>
-                      </div>
-                      <canvas
-                        ref={canvas}
-                        aria-label={t(
-                          'Audio waveform visualization',
-                          'Визуализация звуковой волны',
-                        )}
-                      />
-                      <div className="scope-footer">
-                        <span>{waveNames[waveTypes.indexOf(wave)]}</span>
-                        <span>{fixedNumber(frequency, 2, lang)} Hz</span>
-                      </div>
-                    </div>
-                    <div className="volume-row">
-                      <Volume2 size={17} />
-                      <span>{t('Volume', 'Громкость')}</span>
-                      <Slider
-                        aria-label={t('Volume', 'Громкость')}
-                        value={[volume]}
-                        min={0}
-                        max={100}
-                        onValueChange={(v) =>
-                          setVolume(Array.isArray(v) ? v[0] : v)
-                        }
-                      />
-                      <span className="mono">{volume}%</span>
-                    </div>
-                  </section>
-                  <aside className="tuning-column">
-                    <section className="panel tuning-panel">
-                      <div className="panel-heading">
-                        <span>
-                          <SlidersHorizontal size={17} />
-                          {t('Your tuning', 'Ваш строй')}
-                        </span>
-                      </div>
-                      <label className="field-label" htmlFor="reference">
-                        {t('Reference pitch', 'Опорная частота')}
-                        <span>{referenceLabel}</span>
-                      </label>
-                      <div className="reference-input">
-                        <span>{referenceLabel} =</span>
-                        <NumberField
-                          id="reference"
-                          aria-label={t(
-                            'A4 reference frequency',
-                            'Опорная частота A4',
-                          )}
-                          min={20}
-                          max={2000}
-                          step={0.01}
-                          value={reference}
-                          onValue={changeReference}
-                        />
-                        <span>Hz</span>
-                      </div>
-                      <div className="preset-row">
-                        {[415, 432, 440, 442].map((hz) => (
-                          <button
-                            key={hz}
-                            aria-pressed={reference === hz}
-                            className={reference === hz ? 'selected' : ''}
-                            onClick={() => changeReference(hz)}
-                          >
-                            {hz}
-                          </button>
-                        ))}
-                      </div>
-                      <p className="field-hint">
-                        {t(
-                          'Change A4. Every note follows.',
-                          'Измените A4 — все ноты последуют за ней.',
-                        )}
-                      </p>
-                      <label className="field-label" id="tuning-label">
-                        {t('Tuning system', 'Система настройки')}
-                      </label>
-                      <Select
-                        value={tuning}
-                        onValueChange={(v) => {
-                          if (v) changeTuning(v as Tuning);
-                        }}
-                      >
-                        <SelectTrigger
-                          aria-labelledby="tuning-label"
-                          className="tuning-select"
-                        >
-                          <SelectValue>{tuningNames[tuning]}</SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Object.entries(tuningNames).map(([value, label]) => (
-                            <SelectItem key={value} value={value}>
-                              {label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <div className="tuning-explanation">
-                        <CircleHelp size={15} />
-                        <p>
-                          {t(
-                            'A4 sets the reference. The tuning system sets the relationships between notes.',
-                            'A4 задаёт опорную высоту. Строй определяет отношения между нотами.',
-                          )}
-                        </p>
-                      </div>
-                    </section>
-                    <section className="note-card">
-                      <div className="eyebrow">
-                        {t(
-                          'THE NOTE YOU’RE EXPLORING',
-                          'НОТА, КОТОРУЮ ВЫ ИССЛЕДУЕТЕ',
-                        )}
-                      </div>
-                      <div className="current-note">
-                        {lang === 'de'
-                          ? displayNote(note.midi)
-                          : note.name.replace(/-?\d+$/, '')}
-                        {lang !== 'de' && (
-                          <span>{Math.floor(note.midi / 12) - 1}</span>
-                        )}
-                        <Music2 size={29} strokeWidth={1.2} />
-                      </div>
-                      <div className="note-data">
-                        <div>
-                          <span>{t('Frequency', 'Частота')}</span>
-                          <strong>{fixedNumber(frequency, 2, lang)} Hz</strong>
-                        </div>
-                        <div>
-                          <span>{t('Period', 'Период')}</span>
-                          <strong>
-                            {fixedNumber(1000 / frequency, 3, lang)} ms
-                          </strong>
-                        </div>
-                        <div>
-                          <span>{t('MIDI note', 'Нота MIDI')}</span>
-                          <strong>{note.midi}</strong>
-                        </div>
-                      </div>
-                      <button onClick={() => navigate('theory')}>
-                        {t(
-                          'How does pitch work?',
-                          'Как устроена высота звука?',
-                        )}
-                        <ArrowUpRight size={16} />
-                      </button>
-                    </section>
-                  </aside>
-                </div>
-                <section className="panel keyboard-panel">
-                  <div className="panel-heading">
-                    <span>
-                      <Piano size={18} />
-                      {t('Explore the notes', 'Исследуйте ноты')}
-                    </span>
-                    <div className="keyboard-controls">
-                      <span>
-                        {referenceLabel} = {localNumber(reference, lang)} Hz
-                      </span>
-                      <button
-                        aria-label={t(
-                          'Lower keyboard octave',
-                          'Понизить октаву клавиатуры',
-                        )}
-                        onClick={() => setOctave(Math.max(0, octave - 1))}
-                      >
-                        −
-                      </button>
-                      <span>
-                        {lang === 'de'
-                          ? octaveName(keyboardPitch((octave + 1) * 12), lang)
-                          : `${t('Octave', 'Октава')} ${octave}`}
-                      </span>
-                      <button
-                        aria-label={t(
-                          'Raise keyboard octave',
-                          'Повысить октаву клавиатуры',
-                        )}
-                        onClick={() => setOctave(Math.min(6, octave + 1))}
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                  <div className="piano-scroll">
-                    <div className="piano-keys">
-                      {whiteKeys.map((midi, i) => (
-                        <div key={midi} className="key-slot">
-                          <button
-                            disabled={
-                              frequencyForMidi(midi, reference, tuning) < 20 ||
-                              frequencyForMidi(midi, reference, tuning) > 20000
-                            }
-                            className={
-                              'white-key ' +
-                              (note.midi === midi ? 'active-key' : '')
-                            }
-                            onClick={() => playNote(midi)}
-                            aria-label={`${displayNote(midi)}, ${fixedNumber(frequencyForMidi(midi, reference, tuning), 2, lang)} Hz`}
-                          >
-                            <span>
-                              {lang === 'de' ? (
-                                displayNote(midi)
-                              ) : (
-                                <>
-                                  {['C', 'D', 'E', 'F', 'G', 'A', 'B'][i % 7]}
-                                  <small>{Math.floor(midi / 12) - 1}</small>
-                                </>
-                              )}
-                            </span>
-                          </button>
-                          {[0, 2, 5, 7, 9].includes(midi % 12) && i < 14 && (
-                            <button
-                              disabled={
-                                frequencyForMidi(midi + 1, reference, tuning) <
-                                  20 ||
-                                frequencyForMidi(midi + 1, reference, tuning) >
-                                  20000
-                              }
-                              aria-label={displayNote(midi + 1)}
-                              className={
-                                'black-key ' +
-                                (note.midi === midi + 1 ? 'active-key' : '')
-                              }
-                              onClick={() => playNote(midi + 1)}
-                            >
-                              <span>
-                                {lang === 'de'
-                                  ? displayNote(midi + 1)
-                                  : [
-                                      'C♯',
-                                      '',
-                                      'D♯',
-                                      '',
-                                      '',
-                                      'F♯',
-                                      '',
-                                      'G♯',
-                                      '',
-                                      'A♯',
-                                    ][midi % 12]}
-                              </span>
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="keyboard-caption">
-                    <span>
-                      <span className="status-dot" />
-                      {t(
-                        'All notes follow your tuning',
-                        'Все ноты следуют вашему строю',
-                      )}
-                    </span>
-                    <span>
-                      {t(
-                        'Click a key to hear it',
-                        'Нажмите клавишу, чтобы услышать',
-                      )}
-                    </span>
-                  </div>
-                </section>
-                <Experiments
-                  lang={lang}
-                  reference={reference}
-                  tuning={tuning}
-                  play={playSequence}
-                />
-                <button
-                  className="secondary-button chord-lab-link"
-                  onClick={() => navigate('chords')}
-                >
-                  <Music2 size={18} />
-                  {t(
-                    'Open Chords lab · build a progression',
-                    'Лаборатория аккордов · создайте последовательность',
-                  )}
-                  <ArrowUpRight size={16} />
-                </button>
-                <div className="export-row">
-                  <button
-                    className="secondary-button"
-                    disabled={exporting}
-                    onClick={download}
-                  >
-                    <Download size={16} />
-                    {exporting
-                      ? t('Preparing…', 'Подготовка…')
-                      : t(
-                          'Download tone · WAV, 5 sec',
-                          'Скачать тон · WAV, 5 сек',
-                        )}
-                  </button>
-                  <span>
-                    {t(
-                      'Space to play · Esc to silence · A–K to explore notes',
-                      'Пробел — звук · Esc — тишина · A–K — ноты',
-                    )}
-                  </span>
-                </div>
-                <div
-                  className={
-                    labTab === 'tone' ? 'lab-footer' : 'lab-footer is-hidden'
-                  }
-                >
-                  <span>
-                    <Headphones size={15} />
-                    {t(
-                      'Start quietly. Keep listening comfortable.',
-                      'Начните тихо. Слушайте на комфортной громкости.',
-                    )}
-                  </span>
-                  <span>
-                    20 Hz — 20 kHz <span className="footer-dot">·</span> Web
-                    Audio
-                  </span>
-                </div>
-              </>
+              <PlayLens
+                lang={lang}
+                t={t}
+                labTab={labTab}
+                changeLabTab={changeLabTab}
+                frequency={frequency}
+                setHz={setHz}
+                note={note}
+                displayNote={displayNote}
+                wave={wave}
+                setWave={setWave}
+                waveNames={waveNames}
+                volume={volume}
+                setVolume={setVolume}
+                playing={playing}
+                toggle={toggle}
+                samples={readSamples}
+                reference={reference}
+                referenceLabel={referenceLabel}
+                changeReference={changeReference}
+                tuning={tuning}
+                tuningNames={tuningNames}
+                changeTuning={changeTuning}
+                octave={octave}
+                setOctave={setOctave}
+                whiteKeys={whiteKeys}
+                playNote={playNote}
+                playSequence={playSequence}
+                playNotationExample={playNotationExample}
+                stopSound={stopSound}
+                notesState={notesState}
+                setNotesState={setNotesState}
+                navigate={navigate}
+                download={download}
+                exporting={exporting}
+              />
             ) : page === 'chords' ? (
               <ChordsLab lang={lang} />
             ) : page === 'theory' ? (

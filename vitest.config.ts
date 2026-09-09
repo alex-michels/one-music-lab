@@ -36,6 +36,7 @@ export const authoredProductionCode = [
   'components/learning.tsx',
   'components/experiments.tsx',
   'components/ear-training.tsx',
+  'components/play-lens.tsx',
   'components/chords-lab.tsx',
   'components/notes-lab.tsx',
   'components/staff.tsx',
