@@ -2510,6 +2510,9 @@ h1 {
 .lesson-goal {
   margin-top: var(--sp-5);
 }
+.russian-note-name {
+  font-style: italic;
+}
 .ledger-row > dd {
   margin: 0;
   font-size: var(--t-ui);

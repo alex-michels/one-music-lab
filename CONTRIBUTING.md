@@ -60,6 +60,20 @@ and distinguish different meanings of the same English word: staff **Space** is
 German **Zwischenraum**, while the keyboard key is **Leertaste**. Use consistent
 direct address: English imperatives, Russian «вы» forms and German **du**.
 
+Italicize Russian note names in teaching prose, glossary entries, exercises,
+answer options, hints and feedback: «от *до* до *соль*». Keep ordinary words and
+prepositions upright; italicize the whole accidental name, such as *ми-бемоль*,
+but not the accompanying octave description. English and German typography is
+unchanged. This is a display convention, not a change to pitch naming or grading.
+
+Mark authored Russian notes explicitly as `[[до]]` in `localText` / `nt` /
+`localizedText` values and render them through `NoteText`. The localization helper
+retains plain `ru` text alongside `ruMarkup`; search, links and accessible labels
+use the plain value. Generated tasks carry equivalent display metadata separately
+from plain answer IDs. Use `NoteText`'s `pitch` option only for a known pitch label,
+never to infer note names from arbitrary prose. Test both «до» meanings, complete
+accidental names, locale switching and answer entry when changing this path.
+
 Record source checks and editorial decisions in the relevant subject document.
 The [September 2026 learning-copy review](docs/learning-editorial-review.md)
 records the current corpus and regression checks; it is not a completion register.

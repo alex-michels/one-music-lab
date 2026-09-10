@@ -75,6 +75,26 @@ triad lesson links with more directly relevant sections.
 
 ## Regression evidence
 
+### Russian note-name typography follow-up
+
+The owner requested italics for Russian note names in teaching material and
+exercises to distinguish them from words such as the preposition «до». Authored
+note occurrences are explicitly annotated; generated pitch labels carry separate
+display metadata. Lessons, glossary articles, figure captions, exercise prompts,
+options, input hints and feedback render musical terms in italics. The full
+accidental name is italicized; octave descriptions and ordinary prepositions
+remain upright. Chords-lab teaching guides and pitch exercises use the same rule.
+Existing Sound-lab and piano displays remain as accepted.
+
+Searchable text, article anchors, accessible labels and answer IDs retain their
+plain strings. This follow-up changes typography only, not musical statements or
+notation conventions; the source checks above continue to apply. Unit and browser
+regressions cover adjacent note/preposition uses, accidentals, literal unsafe or
+invalid markup, all fourteen generators in all three languages, typed answers,
+staff placement, per-note feedback and glossary links.
+
+### Editorial and musical regressions
+
 The test changes check all glossary headings for initial uppercase, whitespace
 and duplicate localized names; preserve old article anchors and sources; verify
 complete localized rule labels; and exercise rendered lesson ordering, glossary

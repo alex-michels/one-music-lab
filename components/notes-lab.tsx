@@ -23,6 +23,7 @@ import { StaffPosition } from './staff-answer';
 import { NotationWorkbench } from './notation-workbench';
 import { NotationFigure } from './notation-figure';
 import { NotationSelect } from './notation-select';
+import { NoteText } from './note-text';
 import { nt } from '@/lib/notation-tasks';
 type Lang = import('@/lib/client-store').Lang;
 
@@ -180,7 +181,11 @@ export function NotesLab({
               aria-pressed={value === letter}
               onClick={() => setNote({ letter: value })}
             >
-              {pitchName(spell(value, 0, octave), lang)}
+              <NoteText
+                text={pitchName(spell(value, 0, octave), lang)}
+                lang={lang}
+                pitch
+              />
             </button>
           ))}
         </fieldset>
@@ -234,11 +239,15 @@ export function NotesLab({
             <Staff pitches={[pitch]} clef={clef} lang={lang} space={11} />
           </div>
           <div>
-            <div className="note-name">{pitchLabel(pitch, lang)}</div>
+            <div className="note-name">
+              <NoteText text={pitchLabel(pitch, lang)} lang={lang} pitch />
+            </div>
             <dl>
               <div>
                 <dt>{t('Written', 'Запись')}</dt>
-                <dd>{pitchName(pitch, lang)}</dd>
+                <dd>
+                  <NoteText text={pitchName(pitch, lang)} lang={lang} pitch />
+                </dd>
               </div>
               <div>
                 <dt>{t('Register', 'Октава')}</dt>

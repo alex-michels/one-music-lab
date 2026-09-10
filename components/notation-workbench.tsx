@@ -17,6 +17,7 @@ import { glyphs, GLYPH_UNITS_PER_SPACE } from '@/lib/glyphs';
 import { Staff } from './staff';
 import { Volume2, RotateCcw, Square } from 'lucide-react';
 import { NotationSelect } from './notation-select';
+import { NoteText } from './note-text';
 
 export function NotationWorkbench({
   pitch,
@@ -218,7 +219,7 @@ export function NotationWorkbench({
                 </span>
               )}
               {nt('Sounding', 'Звучит', 'Klingend')[lang]}:{' '}
-              {pitchLabel(sounding, lang)}
+              <NoteText text={pitchLabel(sounding, lang)} lang={lang} pitch />
             </output>
           </div>
           <div className="notation-transport">
@@ -306,7 +307,9 @@ export function NotationWorkbench({
         />
         <ol className="accidental-sequence">
           {sequence.map((note, index) => (
-            <li key={index}>{pitchLabel(note, lang)}</li>
+            <li key={index}>
+              <NoteText text={pitchLabel(note, lang)} lang={lang} pitch />
+            </li>
           ))}
         </ol>
       </div>

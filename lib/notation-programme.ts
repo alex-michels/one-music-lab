@@ -158,7 +158,7 @@ export const notationProgramme = {
     source: notationSources.names,
     text: nt(
       'Read octave names at the written C boundary. In English, B♯3 and C4 may sound alike in 12-TET but keep different written octave numbers. The standard 88-key piano extends from A0 to C8; an instrument’s compass is not a universal limit of music.',
-      'Границу записанной октавы проводят по до. Си-диез малой октавы и до первой могут совпадать по высоте в равномерном строе, сохраняя разные обозначения октав. Диапазон обычного 88-клавишного фортепиано: от ля субконтроктавы до до пятой октавы; это не универсальные границы музыки.',
+      'Границу записанной октавы проводят по [[до]]. [[Си-диез]] малой октавы и [[до]] первой могут совпадать по высоте в равномерном строе, сохраняя разные обозначения октав. Диапазон обычного 88-клавишного фортепиано: от [[ля]] субконтроктавы до [[до]] пятой октавы; это не универсальные границы музыки.',
       'Die geschriebene Oktave beginnt jeweils bei c. his und c′ können in gleichstufiger Stimmung gleich klingen, behalten aber verschiedene Oktavbezeichnungen. H bezeichnet den Stammton, B dessen Erniedrigung. Der übliche Flügel mit 88 Tasten reicht von A₂ bis c⁵; sein Tonumfang ist keine allgemeine Grenze der Musik.',
     ),
     figures: [],
@@ -182,7 +182,7 @@ export const notationProgramme = {
     source: notationSources.accidentals,
     text: nt(
       'Treble: G4 on line 2; bass: F3 on line 4; alto: C4 on line 3; tenor: C4 on line 4. Viola commonly uses alto clef; cello, bassoon and trombone can use tenor clef for higher passages. An 8 below a clef lowers its sounding octave. An 8va bracket shifts one octave, a 15ma bracket two; follow its printed span.',
-      'Скрипичный ключ указывает соль первой октавы на второй линейке; басовый — фа малой на четвёртой; альтовый — до первой на третьей; теноровый — до первой на четвёртой. Альт обычно читает альтовый ключ; виолончель, фагот и тромбон используют также теноровый. Восьмёрка под ключом понижает звучание на октаву. Пунктир 8va переносит на октаву, 15ma — на две, в пределах указанного участка.',
+      'Скрипичный ключ указывает [[соль]] первой октавы на второй линейке; басовый — [[фа]] малой на четвёртой; альтовый — [[до]] первой на третьей; теноровый — [[до]] первой на четвёртой. Альт обычно читает альтовый ключ; виолончель, фагот и тромбон используют также теноровый. Восьмёрка под ключом понижает звучание на октаву. Пунктир 8va переносит на октаву, 15ma — на две, в пределах указанного участка.',
       'Violinschlüssel: g′ auf Linie 2; Bassschlüssel: f auf Linie 4; Altschlüssel: c′ auf Linie 3; Tenorschlüssel: c′ auf Linie 4. Die Bratsche verwendet meist den Altschlüssel; Violoncello, Fagott und Posaune verwenden in höherer Lage auch den Tenorschlüssel. Eine 8 unter dem Schlüssel senkt die klingende Oktave. Eine 8va-Linie oktaviert um eine Oktave, 15ma um zwei; beachte ihren Geltungsbereich.',
     ),
     figures: ['grand-staff', 'organ-staves'],
@@ -194,7 +194,7 @@ export const notationProgramme = {
     source: notationSources.accidentals,
     text: nt(
       'Read each accidental relative to the natural letter, not relative to the last accidental. After a double sharp, a single sharp means one semitone above the natural. Align the sign with the notehead; do not draw a ledger line through the sign. Examples: F–F♯–F𝄪; B–B♭–B𝄫.',
-      'Каждый знак отсчитывают от основной ступени, а не от предыдущего знака. После дубль-диеза диез означает повышение основной ступени на полутон. Знак ставят на высоте головки; добавочная линейка через знак не проходит. Например: фа — фа-диез — фа-дубль-диез; си — си-бемоль — си-дубль-бемоль.',
+      'Каждый знак отсчитывают от основной ступени, а не от предыдущего знака. После дубль-диеза диез означает повышение основной ступени на полутон. Знак ставят на высоте головки; добавочная линейка через знак не проходит. Например: [[фа]] — [[фа-диез]] — [[фа-дубль-диез]]; [[си]] — [[си-бемоль]] — [[си-дубль-бемоль]].',
       'Jedes Zeichen bezieht sich auf den Stammton, nicht auf das vorherige Zeichen. Nach einem Doppelkreuz bedeutet ein Kreuz einen Halbton über dem Stammton. Das Zeichen steht auf Höhe des Notenkopfs; Hilfslinien werden nicht durch das Zeichen gezogen. Beispiele: F–Fis–Fisis; H–B–Heses; E–Es und A–As.',
     ),
     figures: [],
@@ -206,7 +206,7 @@ export const notationProgramme = {
     source: notationSources.accidentals,
     text: nt(
       'Common-practice signature order is F C G D A E B for sharps and B E A D G C F for flats. Standard signatures use single signs. A local sign replaces the signature for that written pitch within the bar; a tied continuation preserves it across the barline. A later untied note again follows the signature. Editions may print reminders or declare different conventions.',
-      'Обычный порядок ключевых диезов: фа, до, соль, ре, ля, ми, си; бемолей: си, ми, ля, ре, соль, до, фа. В стандартных ключевых знаках нет двойных альтераций. Случайный знак заменяет ключевой для данной ноты в данной октаве до конца такта; связанная продолжением нота сохраняет его за чертой. Следующая незалигованная нота снова подчиняется ключевым знакам. Редакции могут давать напоминания или оговаривать другие правила.',
+      'Обычный порядок ключевых диезов: [[фа]], [[до]], [[соль]], [[ре]], [[ля]], [[ми]], [[си]]; бемолей: [[си]], [[ми]], [[ля]], [[ре]], [[соль]], [[до]], [[фа]]. В стандартных ключевых знаках нет двойных альтераций. Случайный знак заменяет ключевой для данной ноты в данной октаве до конца такта; связанная продолжением нота сохраняет его за чертой. Следующая незалигованная нота снова подчиняется ключевым знакам. Редакции могут давать напоминания или оговаривать другие правила.',
       'Übliche Reihenfolge der Kreuze: F C G D A E H; der Be: H E A D G C F. Reguläre Vorzeichnungen enthalten keine Doppelzeichen. Ein Versetzungszeichen ersetzt das Vorzeichen für diese Tonhöhe bis zum Taktende; eine übergebundene Fortsetzung behält es über den Taktstrich hinaus. Eine spätere, neu angeschlagene Note folgt wieder der Vorzeichnung. Ausgaben können Erinnerungszeichen oder ausdrücklich andere Regeln verwenden.',
     ),
     figures: [
@@ -222,7 +222,7 @@ export const notationProgramme = {
     source: notationSources.names,
     text: nt(
       'A sounding key alone cannot select a spelling. In 12-TET, C–D♯ is an augmented second, while C–E♭ is a minor third. The letters and harmonic context decide the written interval. Neither a sharp nor a flat universally dictates the direction of the next note.',
-      'По одной звучащей клавише нельзя выбрать запись. В равномерном строе до — ре-диез образуют увеличенную секунду, а до — ми-бемоль — малую терцию. Записанный интервал определяется ступенями и гармоническим контекстом. Диез или бемоль сами по себе не предписывают направление следующей ноты.',
+      'По одной звучащей клавише нельзя выбрать запись. В равномерном строе [[до]] — [[ре-диез]] образуют увеличенную секунду, а [[до]] — [[ми-бемоль]] — малую терцию. Записанный интервал определяется ступенями и гармоническим контекстом. Диез или бемоль сами по себе не предписывают направление следующей ноты.',
       'Die klingende Taste allein bestimmt die Schreibweise nicht. In gleichstufiger Stimmung ist C–Dis eine übermäßige Sekunde, C–Es eine kleine Terz. Buchstaben und harmonischer Zusammenhang bestimmen das notierte Intervall. Ein Kreuz oder Be schreibt nicht allgemein die Richtung des folgenden Tons vor.',
     ),
     figures: [],
@@ -381,7 +381,7 @@ export type NotationTopic = keyof typeof notationProgramme;
 export const notationFigureDescriptions: Record<string, LocalText> = {
   'grand-staff': nt(
     'Two staves share one timeline. Middle C can be written below treble or above bass without changing pitch.',
-    'Два стана имеют общую временную ось. До первой октавы можно записать под скрипичным или над басовым станом без изменения высоты.',
+    'Два стана имеют общую временную ось. [[До]] первой октавы можно записать под скрипичным или над басовым станом без изменения высоты.',
     'Zwei Systeme teilen dieselbe Zeitachse. c′ kann unter dem Violin- oder über dem Basssystem stehen, ohne die Tonhöhe zu ändern.',
   ),
   'organ-staves': nt(
@@ -1202,7 +1202,7 @@ export const notationReferences = [
     ),
     body: nt(
       'Optional reference for reading another naming tradition: German H is English B natural, while German B is English B-flat. Scientific C4 and Helmholtz c′ identify middle C; Russian names that register the first octave. These correspondences compare written systems, not different sounds. Ordinary lessons teach the system of the selected language.',
-      'Необязательная справка для чтения другой традиции: немецкая H — си, немецкая B — си-бемоль; в английской системе B — си, B-flat — си-бемоль. До первой октавы соответствует научному C4 и обозначению Гельмгольца c′. Сопоставляются системы записи, а не разные звуки. Обычные уроки используют систему выбранного языка.',
+      'Необязательная справка для чтения другой традиции: немецкая H — [[си]], немецкая B — [[си-бемоль]]; в английской системе B — [[си]], B-flat — [[си-бемоль]]. [[До]] первой октавы соответствует научному C4 и обозначению Гельмгольца c′. Сопоставляются системы записи, а не разные звуки. Обычные уроки используют систему выбранного языка.',
       'Optionale Hilfe zum Lesen einer anderen Tradition: Deutsches H entspricht englischem B natural, deutsches B dem englischen B-flat. Das wissenschaftliche C4 und Helmholtz’ c′ bezeichnen dasselbe mittlere C; die russische Tradition nennt diesen Bereich erste Oktave. Verglichen werden Schreibsysteme, nicht verschiedene Klänge. Die regulären Lektionen unterrichten das System der gewählten Sprache.',
     ),
     lesson: 'note-names',

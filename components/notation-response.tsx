@@ -4,6 +4,7 @@ import type { Item } from '@/lib/exercises';
 import { nt } from '@/lib/notation-tasks';
 import { NotationFigure } from './notation-figure';
 import { Staff } from './staff';
+import { NoteText } from './note-text';
 
 /** Open rubric and per-note reading do not collapse into an all-or-nothing score. */
 export function NotationResponse({
@@ -22,7 +23,9 @@ export function NotationResponse({
     parts.length > 0 && Object.keys(answers).length === parts.length;
   return (
     <div className="notation-response">
-      <h2 className="exercise-prompt">{item.prompt}</h2>
+      <h2 className="exercise-prompt">
+        <NoteText text={item.prompt} markup={item.promptMarkup} lang={lang} />
+      </h2>
       {item.figure && (
         <NotationFigure
           id={item.figure}
@@ -72,7 +75,13 @@ export function NotationResponse({
             </button>
           )}
           {revealed && (
-            <output className="answer-feedback">{item.explanation}</output>
+            <output className="answer-feedback">
+              <NoteText
+                text={item.explanation}
+                markup={item.explanationMarkup}
+                lang={lang}
+              />
+            </output>
           )}
           {item.figure === 'beamed' || item.figure === 'flagged' ? (
             <NotationFigure
@@ -90,7 +99,13 @@ export function NotationResponse({
       )}
       {parts.map((part, index) => (
         <fieldset key={index} disabled={answers[index] !== undefined}>
-          <legend>{part.prompt}</legend>
+          <legend>
+            <NoteText
+              text={part.prompt}
+              markup={part.promptMarkup}
+              lang={lang}
+            />
+          </legend>
           <div className="answer-grid">
             {part.options.map((option) => (
               <button
@@ -111,7 +126,11 @@ export function NotationResponse({
                     : ''
                 }
               >
-                {option.label}
+                <NoteText
+                  text={option.label}
+                  markup={option.labelMarkup}
+                  lang={lang}
+                />
               </button>
             ))}
           </div>
@@ -130,8 +149,22 @@ export function NotationResponse({
                       'Сравните ключ и положение',
                       'Vergleiche Schlüssel und Position',
                     )[lang]}
-              : {part.answer}
-              {part.explanation && <span> {part.explanation}</span>}
+              :{' '}
+              <NoteText
+                text={part.answer}
+                markup={part.answerMarkup}
+                lang={lang}
+              />
+              {part.explanation && (
+                <span>
+                  {' '}
+                  <NoteText
+                    text={part.explanation}
+                    markup={part.explanationMarkup}
+                    lang={lang}
+                  />
+                </span>
+              )}
             </output>
           )}
         </fieldset>

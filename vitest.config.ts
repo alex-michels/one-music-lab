@@ -34,6 +34,7 @@ export const unchangedCopies = importedCopies
 export const authoredProductionCode = [
   'app/**/*.{ts,tsx}',
   'components/learning.tsx',
+  'components/note-text.tsx',
   'components/experiments.tsx',
   'components/ear-training.tsx',
   'components/play-lens.tsx',

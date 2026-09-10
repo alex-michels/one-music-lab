@@ -37,6 +37,8 @@ All teaching material follows the [connected chapter requirement](docs/engineeri
 Lessons present a learning goal, explanation and worked example before practice.
 The practice ledger groups skills by topic with headings in the selected language;
 glossary headings use consistent capitalization and retain existing article links.
+Russian note names in learning text and exercises are italicized — «от *до* до
+*соль*» — so they can be distinguished from ordinary words and prepositions.
 The [EN/RU/DE editorial review](docs/learning-editorial-review.md) records the
 terminology, explanation and example corrections across the shipped material.
 
