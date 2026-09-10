@@ -34,6 +34,12 @@ and still requires the owner's authorization.
 
 All teaching material follows the [connected chapter requirement](docs/engineering.md#task-537): progressive explanations and examples, chapter contents, previous/next lessons and links to related experiments, exercises and definitions. Extending this structure across all subjects remains tracked by №537/542.
 
+Lessons present a learning goal, explanation and worked example before practice.
+The practice ledger groups skills by topic with headings in the selected language;
+glossary headings use consistent capitalization and retain existing article links.
+The [EN/RU/DE editorial review](docs/learning-editorial-review.md) records the
+terminology, explanation and example corrections across the shipped material.
+
 - **Chords lab** (`/#chords`): editable and transposable progressions with full undo and redo, 16 chord types through ninths, inversions, EN/RU/DE pitch spelling, a visual keyboard, applied-dominant marking, and a sourced library of 22 starting points — cadences, classical schemas, pop and rock loops, jazz turnarounds, blues forms and mode mixture — with a per-chord register control, one-click fitting of a progression to its scale, eight accompaniment figures (block chords, arpeggios, Alberti bass, afterbeats, offbeats) and root-identification feedback. See the [user guide, research and limitations](docs/chords-lab.md).
 - Continuous 20–20,000 Hz oscillator, four waveforms, logarithmic frequency control, cents readout and live analyser waveform.
 - Editable A4 reference from 20–2,000 Hz, presets, and 12-TET plus specific A-anchored just and Pythagorean chromatic ratio maps.

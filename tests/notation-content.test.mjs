@@ -10,7 +10,7 @@ import { readFile } from 'node:fs/promises';
 
 const languages = ['en', 'ru', 'de'];
 const reference = (name) => {
-  const matches = terms.filter((term) => term.title.en === name);
+  const matches = terms.filter((term) => (term.id ?? term.title.en) === name);
   expect(
     matches,
     `unambiguous existing reference identity: ${name}`,

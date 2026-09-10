@@ -481,7 +481,7 @@ export const notationFigureDescriptions: Record<string, LocalText> = {
   ),
   'tremolo-two': nt(
     'Strokes between two notes indicate alternation. Read the values and any measured or unmeasured instruction before choosing a speed.',
-    'Черты между двумя нотами обозначают чередование. Перед выбором скорости прочитайте длительности и указание на измеренное или неизмеренное тремоло.',
+    'Черты между двумя нотами обозначают чередование. Перед выбором скорости прочитайте длительности и указание на тремоло с точным ритмом или без точного числа повторений.',
     'Striche zwischen zwei Noten bezeichnen einen Wechsel. Lies Notenwerte und die Angabe zur gemessenen oder ungemessenen Ausführung, bevor du das Tempo wählst.',
   ),
   'upper-mordent': nt(
@@ -639,9 +639,9 @@ export const notationReferences = [
   {
     title: nt('Trill', 'Трель', 'Triller'),
     body: nt(
-      'Alternation involving a principal and neighboring pitch; starting note and rhythm depend on context.',
-      'Чередование основного и соседнего звуков; начальный звук и ритм зависят от контекста.',
-      'Wechsel zwischen Haupt- und Nebenton; Anfangston und Rhythmus hängen vom Kontext ab.',
+      'Rapid alternation between a principal note and its upper neighbour. The starting note, any preparation and the ending depend on the period, instrument and edition.',
+      'Быстрое чередование основного звука с верхним вспомогательным. Начальный звук, подготовка и окончание зависят от эпохи, инструмента и редакции.',
+      'Schneller Wechsel zwischen Hauptton und oberem Nebenton. Anfangston, Vorbereitung und Nachschlag richten sich nach Epoche, Instrument und Ausgabe.',
     ),
     lesson: 'articulation',
     source: notationSources.ornaments,
@@ -715,7 +715,7 @@ export const notationReferences = [
     title: nt('Tremolo notation', 'Запись тремоло', 'Tremolonotation'),
     body: nt(
       'Stem slashes abbreviate repeated notes; strokes between notes can indicate alternation. Distinguish measured and unmeasured instructions.',
-      'Черты на штиле сокращают повторение звука; черты между нотами могут обозначать чередование. Различайте измеренные и неизмеренные повторения.',
+      'Черты на штиле сокращённо обозначают повторение звука; черты между нотами — чередование звуков. Различайте тремоло с точно заданным ритмом и тремоло без точного числа повторений.',
       'Halsstriche kürzen Tonwiederholungen ab; Striche zwischen Noten können einen Wechsel anzeigen. Unterscheide gemessene und ungemessene Angaben.',
     ),
     lesson: 'repeats',
@@ -746,7 +746,7 @@ export const notationReferences = [
     title: nt('Figured bass', 'Цифрованный бас', 'Generalbass'),
     body: nt(
       'Figures attached to a bass indicate intervals for a harmonic realization. They are not interchangeable with modern chord symbols.',
-      'Цифры при басовом голосе обозначают интервалы для гармонической реализации. Они не взаимозаменяемы с современными обозначениями аккордов.',
+      'Цифры при басовом голосе указывают интервалы над басом, по которым исполнитель строит остальные голоса. Например, цифра 6 указывает сексту над басом. Эти обозначения нельзя напрямую заменять современными буквенными обозначениями аккордов.',
       'Ziffern zu einer Bassstimme geben Intervalle für die harmonische Aussetzung an. Sie sind nicht mit heutigen Akkordsymbolen austauschbar.',
     ),
     lesson: 'repeats',

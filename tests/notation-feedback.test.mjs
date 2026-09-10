@@ -86,9 +86,43 @@ test('Metronome answers respect the printed unit and offer distinct positive dur
       expect(values.every((value) => Number.isFinite(value) && value > 0)).toBe(
         true,
       );
+      for (const option of item.options) {
+        expect(option.label).toMatch(
+          lang === 'en' ? /^\d+(\.\d+)?$/ : /^\d+(,\d+)?$/,
+        );
+        expect(grade(item, option.id).correct).toBe(option.id === item.answer);
+      }
       seen.add(`${lang}:${symbol}:${tempo}`);
     }
   expect(seen.size).toBe(3 * 4 * 4);
+});
+
+test('Dotted-note and rest questions use grammatical counting units while preserving the duration', () => {
+  const cases = new Set();
+  for (const lang of ['en', 'ru', 'de']) {
+    for (let seed = 0; seed < 160; seed++) {
+      const item = generateFrom('dotted-value', 3, seed, lang);
+      if (item.options.length === 2) continue; // The separate bar-overflow variant does not count note units.
+      const isDouble = /double-dotted|двумя точками|doppelt/.test(item.prompt);
+      const rest = /rest|пауза|Pause/.test(item.prompt);
+      const answer = item.options.find((o) => o.id === item.answer);
+      expect(answer.label).toBe(isDouble ? '7' : '3');
+      if (lang === 'en')
+        expect(item.prompt).toMatch(
+          /^How many (half|quarter|eighth|sixteenth|thirty-second) notes have the same duration as a (double-)?dotted /,
+        );
+      if (lang === 'ru')
+        expect(item.prompt).toMatch(
+          /Сколько это (половинных|четвертей|восьмых|шестнадцатых|тридцать вторых)\?/,
+        );
+      if (lang === 'de')
+        expect(item.prompt).toMatch(
+          /^Wie viele (halbe Noten|Viertelnoten|Achtelnoten|Sechzehntelnoten|Zweiunddreißigstelnoten) sind zusammen so lang wie eine (doppelt )?punktierte /,
+        );
+      cases.add(`${lang}:${isDouble}:${rest}`);
+    }
+  }
+  expect(cases.size).toBe(12);
 });
 
 test('Answer order does not preserve a fixed cyclic offset from a double-flat landmark', () => {

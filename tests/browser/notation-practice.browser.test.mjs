@@ -4,7 +4,13 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Practice } from '../../components/learning.tsx';
 import { generateFrom, grade, RULES } from '../../lib/exercises.ts';
-import { paragraphAnchors, ruleKind, ruleTopic } from '../../lib/topics.ts';
+import {
+  paragraphAnchors,
+  ruleKind,
+  ruleTopic,
+  topics,
+  ruleLabels,
+} from '../../lib/topics.ts';
 import { pitchName } from '../../lib/notation.ts';
 import { DRILL_STORAGE_KEY } from '../../lib/client-store.ts';
 import '../../app/globals.css';
@@ -49,8 +55,52 @@ const answers = () => [
 ];
 const prompt = () => container.querySelector('.exercise-prompt').textContent;
 const rows = () => [...container.querySelectorAll('.ledger-row')];
-const rowFor = (rule) =>
-  rows().find((row) => row.querySelector('dt').textContent === rule);
+const rowFor = (rule) => rows().find((row) => row.dataset.rule === rule);
+
+for (const lang of ['en', 'ru', 'de']) {
+  test(`Practice groups skills under localized topic headings and keeps scoped routes in ${lang}`, async () => {
+    await render(lang);
+    const expected = topics.filter((topic) =>
+      RULES.some((rule) => ruleTopic[rule] === topic.id),
+    );
+    const groups = [...container.querySelectorAll('.ledger-group')];
+    expect(groups).toHaveLength(expected.length);
+    for (const [index, group] of groups.entries()) {
+      const topic = expected[index];
+      const heading = group.querySelector('h3');
+      expect(heading.id).toBe(group.getAttribute('aria-labelledby'));
+      expect(heading.textContent).toBe(topic.title[lang]);
+      expect(heading.querySelector('a').getAttribute('href')).toBe(
+        `#/${lang}/t/${topic.id}/drill`,
+      );
+      const groupRules = [...group.querySelectorAll('.ledger-row')].map(
+        (row) => row.dataset.rule,
+      );
+      expect(groupRules).toEqual(
+        RULES.filter((rule) => ruleTopic[rule] === topic.id),
+      );
+      for (const rule of groupRules) {
+        expect(rowFor(rule).querySelector('.rule-name').textContent).toBe(
+          ruleLabels[rule][lang],
+        );
+        expect(container.textContent).not.toContain(rule);
+      }
+    }
+    await unmount();
+    await render(lang, 'dots-ties');
+    expect(container.querySelectorAll('.ledger-group')).toHaveLength(1);
+    const label = topics.find((topic) => topic.id === 'dots-ties').title[lang];
+    expect(
+      container.querySelector('.drill-question .eyebrow').textContent,
+    ).toBe(label);
+    expect(container.querySelector('.drill-skill').textContent).toBe(
+      ruleLabels['dot-adds-half'][lang],
+    );
+    expect(rows().map((row) => row.dataset.rule)).toEqual([
+      ...paragraphAnchors['dots-ties'],
+    ]);
+  });
+}
 
 test('The drill asks, grades, explains and waits, and files the answer under the rule', async () => {
   // Start it on the first rule of the interleaved drill, whose seed and kind
@@ -146,9 +196,7 @@ test('A topic scopes the drill to the rules that topic teaches', async () => {
   const scoped = paragraphAnchors['dots-ties'];
   expect(scoped.length).toBeGreaterThan(1);
   expect(rows()).toHaveLength(scoped.length);
-  expect(rows().map((row) => row.querySelector('dt').textContent)).toEqual([
-    ...scoped,
-  ]);
+  expect(rows().map((row) => row.dataset.rule)).toEqual([...scoped]);
   // Fifteen questions is more than enough to leave the scope if it could.
   for (let i = 0; i < 15; i += 1) {
     const chosen = answers()[0];

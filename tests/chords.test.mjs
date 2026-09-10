@@ -37,6 +37,32 @@ const chord = (quality = 'major', extra = {}) => ({
 });
 const names = (key, c) => chordNotes(key, c).map((p) => pitchName(p, 'en'));
 
+test('Editorial examples match the played lament descent and minor-dominant substitution', () => {
+  const minor = { ...C, mode: 'minor' };
+  const lament = progressionTemplates.find((t) => t.id === 'lament');
+  expect(lament.steps.map((c) => names(minor, c)[0])).toEqual([
+    'C',
+    'B♭',
+    'A♭',
+    'G',
+  ]);
+  const dominant = progressionTemplates.find((t) => t.id === 'minorDominant')
+    .steps[2];
+  for (const [lang, before, after] of [
+    ['en', ['G', 'B', 'D', 'F'], ['G', 'B♭', 'D', 'F']],
+    ['ru', ['соль', 'си', 'ре', 'фа'], ['соль', 'си-бемоль', 'ре', 'фа']],
+    ['de', ['G', 'H', 'D', 'F'], ['G', 'B', 'D', 'F']],
+  ]) {
+    const label = (c) => chordNotes(minor, c).map((p) => pitchName(p, lang));
+    expect(label(dominant)).toEqual(before);
+    expect(label({ ...dominant, quality: 'min7' })).toEqual(after);
+  }
+  const half = progressionTemplates.find((t) => t.id === 'half');
+  const authentic = progressionTemplates.find((t) => t.id === 'authentic');
+  expect(names(C, half.steps.at(-1))).toEqual(['G', 'B', 'D']);
+  expect(names(C, authentic.steps.at(-1))).toEqual(['C', 'E', 'G']);
+});
+
 test('C-root chords retain their interval spelling, including ninths and diminished sevenths', () => {
   const expected = {
     major: ['C', 'E', 'G'],

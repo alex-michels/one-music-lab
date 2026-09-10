@@ -2452,9 +2452,7 @@ h1 {
   background: var(--st-wrong-wash);
   color: var(--st-wrong);
 }
-/* The ledger. Hairlines and one mono column, because it is a record rather
-   than a card: the rule's own id is the heading, so a reader can match a row
-   to the anchor it links to. */
+/* The ledger groups skills by their teaching topic; identifiers stay in links. */
 .drill-ledger {
   position: sticky;
   top: var(--sp-4);
@@ -2488,12 +2486,29 @@ h1 {
   border-top: var(--bw) solid var(--c-rule);
   padding: var(--sp-3) 0;
 }
-.ledger-row > dt > .num {
+.ledger-row > dt > .rule-name {
   font-size: var(--t-ui);
   overflow-wrap: anywhere;
 }
-.ledger-row[data-missed] > dt > .num {
+.ledger-row[data-missed] > dt > .rule-name {
   color: var(--st-wrong);
+}
+.ledger-group h3 {
+  margin: var(--sp-5) 0 var(--sp-2);
+  font-size: var(--t-ui);
+  line-height: 1.5;
+  font-weight: var(--w-medium);
+}
+.ledger-group h3 a {
+  color: var(--c-ink);
+  text-underline-offset: 0.2em;
+}
+.drill-skill {
+  margin: var(--sp-2) 0 var(--sp-4);
+  color: var(--c-ink-2);
+}
+.lesson-goal {
+  margin-top: var(--sp-5);
 }
 .ledger-row > dd {
   margin: 0;

@@ -15,6 +15,7 @@
  * against that data by tests/topics.test.mjs.
  */
 import type { LocalText } from './i18n';
+import { nt } from './notation-tasks';
 import { lessons, terms } from './learning';
 import { RULES, type ExerciseKind, type Rule } from './exercises';
 import { notationLessonPresets } from './notation-experiments';
@@ -113,6 +114,120 @@ export const ruleTopic: Record<Rule, TopicId> = {
   'read-a-short-excerpt': 'staff',
 };
 
+/** Reader-facing skill names; rule IDs remain stable in routes and session storage. */
+export const ruleLabels: Record<Rule, LocalText> = {
+  'register-1': nt(
+    'Move by one octave',
+    'Перенос на одну октаву',
+    'Um eine Oktave versetzen',
+  ),
+  'register-2': nt(
+    'Move by two octaves',
+    'Перенос на две октавы',
+    'Um zwei Oktaven versetzen',
+  ),
+  'register-3': nt(
+    'Move by three octaves',
+    'Перенос на три октавы',
+    'Um drei Oktaven versetzen',
+  ),
+  'natural-name': nt(
+    'Name a natural note',
+    'Название основной ступени',
+    'Einen Stammton benennen',
+  ),
+  'alteration-name': nt(
+    'Name an altered note',
+    'Название альтерированной ступени',
+    'Einen veränderten Ton benennen',
+  ),
+  'enharmonic-respelling': nt(
+    'Respell the same pitch',
+    'Энгармоническая замена',
+    'Enharmonisch umschreiben',
+  ),
+  'dot-adds-half': nt(
+    'Read a dotted value',
+    'Длительность с точкой',
+    'Einen punktierten Wert lesen',
+  ),
+  'second-dot-adds-half-the-first': nt(
+    'Read a double-dotted value',
+    'Длительность с двумя точками',
+    'Einen doppelt punktierten Wert lesen',
+  ),
+  'tied-values-add': nt(
+    'Add tied durations',
+    'Сумма длительностей под связующей лигой',
+    'Übergebundene Dauern addieren',
+  ),
+  'irregular-group-written-value': nt(
+    'Read tuplet ratios',
+    'Отношения при особом делении',
+    'Verhältnisse unregelmäßiger Teilungen lesen',
+  ),
+  'read-a-notated-pitch': nt(
+    'Read a note on the staff',
+    'Чтение ноты на стане',
+    'Einen notierten Ton lesen',
+  ),
+  'same-place-other-clef': nt(
+    'Read the same position in another clef',
+    'Та же позиция в другом ключе',
+    'Dieselbe Position in einem anderen Schlüssel lesen',
+  ),
+  'sign-stops-at-the-barline': nt(
+    'Read an accidental across a barline',
+    'Действие знака за тактовой чертой',
+    'Versetzungszeichen über den Taktstrich hinaus lesen',
+  ),
+  'sign-holds-to-the-barline': nt(
+    'Read an accidental within a bar',
+    'Действие знака внутри такта',
+    'Versetzungszeichen innerhalb eines Taktes lesen',
+  ),
+  'identify-written-duration': nt(
+    'Recognize note and rest values',
+    'Распознавание длительностей нот и пауз',
+    'Noten- und Pausenwerte erkennen',
+  ),
+  'compare-beaming': nt(
+    'Compare rhythmic grouping',
+    'Сравнение ритмической группировки',
+    'Rhythmische Gruppierungen vergleichen',
+  ),
+  'recognize-an-ornament': nt(
+    'Recognize ornament signs',
+    'Распознавание мелизмов',
+    'Verzierungszeichen erkennen',
+  ),
+  'metronome-unit': nt(
+    'Read tempo and metronome marks',
+    'Темп и метрономические обозначения',
+    'Tempo- und Metronomangaben lesen',
+  ),
+  'relative-dynamic-level': nt(
+    'Compare dynamic levels',
+    'Сравнение уровней динамики',
+    'Dynamische Grade vergleichen',
+  ),
+  'articulation-sign': nt(
+    'Read articulation marks',
+    'Чтение знаков артикуляции',
+    'Artikulationszeichen lesen',
+  ),
+  'follow-repeat-route': nt(
+    'Read repeats and abbreviations',
+    'Повторы и сокращения нотной записи',
+    'Wiederholungen und Abbreviaturen lesen',
+  ),
+  'read-a-short-excerpt': nt(
+    'Read a short musical passage',
+    'Чтение короткого нотного фрагмента',
+    'Einen kurzen Notenausschnitt lesen',
+  ),
+};
+
 /**
  * Which generator asks about each rule. The generator is the source of truth —
  * it writes both onto every item — so this table exists only so the trainer can
@@ -191,8 +306,8 @@ export const topicById: Record<TopicId, Topic> = byTopic(
 type Term = (typeof terms)[number];
 
 /** The original English headword is an identity, not a localized display label. */
-export function termAnchor(term: { title: LocalText }): string {
-  return encodeURIComponent(term.title.en).replaceAll('~', '%7E');
+export function termAnchor(term: { title: LocalText; id?: string }): string {
+  return encodeURIComponent(term.id ?? term.title.en).replaceAll('~', '%7E');
 }
 
 export function termSearchText(
