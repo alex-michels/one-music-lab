@@ -38,6 +38,32 @@ links, route boundaries and mobile/keyboard navigation. Requirements and remaini
 general implementation are [№537/542](docs/engineering.md#task-537), assessed in
 [gate G](docs/release-criteria.md).
 
+### Learning copy and headings
+
+Write clear, natural EN/RU/DE prose with comparable explanatory depth. Introduce
+the term, explain it, and show a worked example before asking the learner to
+apply it. State formula variables, units and musical assumptions. Laboratory
+instructions must describe controls and examples that actually exist. Avoid
+presenting a simplified playback or analysis model as a universal musical rule.
+
+Use one consistent lesson structure: learning goal, explanation, worked example,
+practice where available, laboratory experiment and sources. Group practice
+skills by their teaching topic; both group and skill headings use the active
+language, while stable internal rule IDs remain in links and stored progress.
+The shared chapter and navigation requirement above continues to apply.
+
+Glossary entry headings start with an uppercase letter in every language and
+use normal sentence case thereafter (including German noun capitalization).
+This heading convention does not capitalize Italian dynamic marks or Russian
+note names in ordinary prose. Keep established article IDs when editing titles,
+and distinguish different meanings of the same English word: staff **Space** is
+German **Zwischenraum**, while the keyboard key is **Leertaste**. Use consistent
+direct address: English imperatives, Russian «вы» forms and German **du**.
+
+Record source checks and editorial decisions in the relevant subject document.
+The [September 2026 learning-copy review](docs/learning-editorial-review.md)
+records the current corpus and regression checks; it is not a completion register.
+
 ### Localized music notation
 
 New educational material, laboratories and sections use professional terminology

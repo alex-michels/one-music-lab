@@ -52,6 +52,21 @@ const alphabetical = (lang) => {
   return (a, b) => collator.compare(a, b);
 };
 
+test('Capitalized glossary headings keep existing shared article addresses in every language', async () => {
+  for (const [lang, name] of [
+    ['en', 'Piano (p)'],
+    ['ru', 'Пиано (p)'],
+    ['de', 'Piano (p)'],
+  ]) {
+    await render({ lang, anchor: 'piano%20(p)' });
+    // The old lowercase anchor identifies the article even though its display name changed.
+    const article = container.querySelector('article');
+    expect(article).not.toBeNull();
+    expect(article.textContent).toContain(name);
+    expect(names().every((name) => /^\p{Lu}/u.test(name))).toBe(true);
+  }
+});
+
 test('The index opens alphabetically, in the alphabet being read', async () => {
   for (const [lang, label] of [
     ['en', 'Term'],

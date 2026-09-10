@@ -222,6 +222,34 @@ const valueNames: Record<MusicLanguage, Record<number, string>> = {
   },
 };
 
+/** Forms used after “how many” in a question, rather than standalone value names. */
+const countedValueNames: Record<MusicLanguage, Record<number, string>> = {
+  en: {
+    1: 'whole notes',
+    2: 'half notes',
+    4: 'quarter notes',
+    8: 'eighth notes',
+    16: 'sixteenth notes',
+    32: 'thirty-second notes',
+  },
+  ru: {
+    1: 'целых',
+    2: 'половинных',
+    4: 'четвертей',
+    8: 'восьмых',
+    16: 'шестнадцатых',
+    32: 'тридцать вторых',
+  },
+  de: {
+    1: 'ganze Noten',
+    2: 'halbe Noten',
+    4: 'Viertelnoten',
+    8: 'Achtelnoten',
+    16: 'Sechzehntelnoten',
+    32: 'Zweiunddreißigstelnoten',
+  },
+};
+
 /** How many of `unit` fit in `total`, or null when the unit does not divide it. */
 export function countIn(total: Duration, unit: Duration): number | null {
   const num = total.num * unit.den;
@@ -271,10 +299,11 @@ const prompts: Record<MusicLanguage, Record<string, string>> = {
     'accidental-name': 'What is this note called?',
     enharmonic:
       'Respell {pitch} using the letter {letter}, keeping the sounding pitch (12-tone equal temperament).',
-    'dotted-value': 'How many {unit} does {value} last?',
+    'dotted-value': 'How many {unit} have the same duration as {value}?',
     tuplet:
       'Starting value: {base}. Equal parts: {count}, written as a {ratio} tuplet. Which basic note value is used inside the group?',
-    'tie-sum': 'Two tied notes, {a} and {b}. How long do they sound together?',
+    'tie-sum':
+      'Two notes of the same pitch are tied: {a} and {b}. What is their combined duration?',
     'read-pitch': 'Name the note on the staff.',
     'clef-transform':
       'The same place on the staff, read in the {clef}. Which note is it?',
@@ -287,10 +316,11 @@ const prompts: Record<MusicLanguage, Record<string, string>> = {
     'accidental-name': 'Как называется эта нота?',
     enharmonic:
       'Перепишите ноту {pitch} от ступени {letter}, сохранив высоту звучания (12-ступенный равномерный строй).',
-    'dotted-value': 'Сколько длительностей «{unit}» звучит {value}?',
+    'dotted-value': 'Дано: {value}. Сколько это {unit}?',
     tuplet:
       'Исходная длительность: {base}. Число равных частей: {count}, отношение особого деления — {ratio}. Какой базовой длительностью записываются ноты группы?',
-    'tie-sum': 'Две ноты связаны лигой: {a} и {b}. Сколько они звучат вместе?',
+    'tie-sum':
+      'Две ноты одной высоты соединены связующей лигой: {a} и {b}. Какова их общая длительность?',
     'read-pitch': 'Назовите ноту, записанную на стане.',
     'clef-transform':
       'То же место на стане, прочитанное в ключе: {clef}. Какая это нота?',
@@ -299,20 +329,20 @@ const prompts: Record<MusicLanguage, Record<string, string>> = {
   },
   de: {
     'octave-region':
-      'Ausgangston: {pitch}. Versetzen Sie ihn um {distance} {direction}. In welcher Oktavlage liegt der Zielton?',
+      'Ausgangston: {pitch}. Versetze ihn um {distance} {direction}. In welcher Oktavlage liegt der Zielton?',
     'accidental-name': 'Wie heißt dieser Ton?',
     enharmonic:
-      'Schreiben Sie {pitch} mit dem Stammton {letter} enharmonisch um, bei gleicher klingender Tonhöhe (12-stufige gleichstufige Stimmung).',
-    'dotted-value': 'Wie viele {unit} dauert {value}?',
+      'Schreibe {pitch} mit dem Stammton {letter} enharmonisch um, bei gleicher klingender Tonhöhe (12-stufige gleichstufige Stimmung).',
+    'dotted-value': 'Wie viele {unit} sind zusammen so lang wie {value}?',
     tuplet:
       'Ausgangswert: {base}. Gleiche Teile: {count}, als N-tole im Verhältnis {ratio}. Mit welchem Notenwert werden die Noten der Gruppe notiert?',
     'tie-sum':
-      'Zwei Töne sind übergebunden: {a} und {b}. Wie lang klingen sie zusammen?',
-    'read-pitch': 'Benennen Sie den notierten Ton.',
+      'Zwei Noten gleicher Tonhöhe sind übergebunden: {a} und {b}. Wie lang ist ihre Gesamtdauer?',
+    'read-pitch': 'Benenne den notierten Ton.',
     'clef-transform':
       'Dieselbe Stelle im System, im {clef} gelesen. Welcher Ton ist das?',
     'accidental-scope':
-      'Wie heißt der letzte Ton? Achten Sie darauf, wie weit das Zeichen vor dem ersten Ton reicht.',
+      'Wie heißt der letzte Ton? Achte darauf, wie weit das Zeichen vor dem ersten Ton reicht.',
   },
 };
 
@@ -512,8 +542,8 @@ function dottedValue(
   const count = countIn(total, unit);
   if (count === null) throw new Error('unit must divide the dotted value');
   const dotWord: Record<MusicLanguage, string> = {
-    en: dots === 1 ? 'a dotted ' : 'a double dotted ',
-    ru: dots === 1 ? 'нота с точкой: ' : 'нота с двумя точками: ',
+    en: dots === 1 ? 'a dotted ' : 'a double-dotted ',
+    ru: dots === 1 ? 'с точкой' : 'с двумя точками',
     de: dots === 1 ? 'eine punktierte ' : 'eine doppelt punktierte ',
   };
   const options: Option[] = [
@@ -563,14 +593,16 @@ function dottedValue(
   }
   return {
     prompt: fill(prompts[lang]['dotted-value'], {
-      unit: valueNames[lang][unit.den],
+      unit: countedValueNames[lang][unit.den],
       value: rest
         ? nt(
             `a ${dots === 2 ? 'double-' : ''}dotted rest of base value 1/${den}`,
-            `пауза с ${dots === 2 ? 'двумя точками' : 'точкой'}: 1/${den}`,
+            `пауза с ${dots === 2 ? 'двумя точками' : 'точкой'} (основная длительность — 1/${den})`,
             `eine ${dots === 2 ? 'doppelt ' : ''}punktierte Pause des Grundwerts 1/${den}`,
           )[lang]
-        : dotWord[lang] + valueNames[lang][den],
+        : lang === 'ru'
+          ? `${valueNames.ru[den]} ${dotWord.ru}`
+          : dotWord[lang] + valueNames[lang][den],
     }),
     options: shuffle(next, unique),
     answer: 'a',

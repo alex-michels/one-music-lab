@@ -745,11 +745,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(4, 'major', 8),
     ],
     note: {
-      de: german[
-        'A half cadence ends on V rather than resolving to it. Listen to the last chord and notice how unfinished it sounds — then paste the authentic cadence after it and hear the answer arrive.'
-      ],
-      en: 'A half cadence ends on V rather than resolving to it. Listen to the last chord and notice how unfinished it sounds — then paste the authentic cadence after it and hear the answer arrive.',
-      ru: 'Половинная каденция заканчивается на V, а не разрешается в неё. Послушайте последний аккорд: он звучит незавершённо. Затем добавьте после него автентическую каденцию — и ответ придёт.',
+      en: 'A half cadence ends a phrase on V, leaving the return to I open. Listen to the last chord, then load the Authentic cadence template and compare its ending on the tonic.',
+      ru: 'Половинная каденция завершает фразу на V ступени, оставляя возвращение к тонике открытым. Послушайте последний аккорд, затем выберите шаблон «Автентическая каденция» и сравните его окончание на тонике.',
+      de: 'Ein Halbschluss beendet eine Phrase auf der Dominante; die Rückkehr zur Tonika bleibt offen. Höre den letzten Akkord an, lade dann die Vorlage „Authentische Kadenz“ und vergleiche ihren Schluss auf der Tonika.',
     },
     source: 'cadences',
   },
@@ -821,11 +819,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(0, 'minor'),
     ],
     note: {
-      de: german[
-        'The major third of V7 raises the seventh degree of the minor scale. Change the third chord’s type to a minor seventh and hear ♭VII in its place: which ending points more firmly at the tonic?'
-      ],
-      en: 'The major third of V7 raises the seventh degree of the minor scale. Change the third chord’s type to a minor seventh and hear ♭VII in its place: which ending points more firmly at the tonic?',
-      ru: 'Большая терция V7 — повышенная VII ступень минора. Смените вид третьего аккорда на малый минорный септаккорд и услышьте на его месте ♭VII: какое окончание тверже указывает на тонику?',
+      en: 'V7 contains the raised seventh degree of the minor scale: in C minor, its notes are G–B–D–F. Change this third chord to a minor seventh chord: G–B♭–D–F. Only B becomes B♭; the root stays G. Compare how the leading tone B and the natural minor seventh B♭ approach the tonic C.',
+      ru: 'V7 содержит повышенную VII ступень минора: в до миноре это соль–си–ре–фа. Замените этот третий аккорд малым минорным септаккордом: соль–си-бемоль–ре–фа. Меняется только си на си-бемоль, а основной тон соль остаётся. Сравните, как вводный тон си и VII ступень натурального минора си-бемоль переходят в тонику до.',
+      de: 'V7 enthält die erhöhte siebte Stufe der Molltonleiter: in c-Moll die Töne G–H–D–F. Ändere diesen dritten Akkord zu einem Mollseptakkord: G–B–D–F. Nur H wird zu B; der Grundton G bleibt. Vergleiche, wie der Leitton H und die natürliche siebte Mollstufe B zur Tonika C führen.',
     },
     source: 'function',
   },
@@ -846,11 +842,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(4, 'major'),
     ],
     note: {
-      de: german[
-        'The bass walks down the first four degrees of the minor scale. Open Music Theory names this the lament schema after its use as a ground bass in early laments, and shows it running just as happily through rock. The last chord is major, so the leading tone returns just before the loop repeats.'
-      ],
-      en: 'The bass walks down the first four degrees of the minor scale. Open Music Theory names this the lament schema after its use as a ground bass in early laments, and shows it running just as happily through rock. The last chord is major, so the leading tone returns just before the loop repeats.',
-      ru: 'Бас спускается по первым четырём ступеням минора. В Open Music Theory эта схема названа ламенто — по использованию в качестве basso ostinato в старинных плачах — и там же показано, что она столь же естественна в роке. Последний аккорд мажорный, поэтому вводный тон возвращается перед повторением петли.',
+      en: 'The bass descends from the tonic to the fifth degree through the natural minor scale: C–B♭–A♭–G in C minor. Open Music Theory traces this lament schema from repeated bass patterns in early laments to rock. The final major chord contains the raised seventh degree, the leading tone, before the loop returns to the tonic.',
+      ru: 'Бас спускается от тоники к V ступени по звукам натурального минора: до–си-бемоль–ля-бемоль–соль в до миноре. Open Music Theory прослеживает схему ламенто от повторяющегося баса старинных плачей до рока. Последний мажорный аккорд содержит повышенную VII ступень — вводный тон, после которого цикл возвращается к тонике.',
+      de: 'Der Bass steigt von der Tonika zur fünften Stufe durch die natürliche Molltonleiter ab: C–B–As–G in c-Moll. Open Music Theory verfolgt dieses Lamentoschema vom wiederkehrenden Bass früher Klagegesänge bis zum Rock. Der letzte Durakkord enthält die erhöhte siebte Stufe, den Leitton, bevor der Zyklus zur Tonika zurückkehrt.',
     },
     source: 'classicalSchemas',
   },
@@ -859,7 +853,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
     group: 'schema',
     de: german['Circle of fifths · roots falling by fifths'],
     en: 'Circle of fifths · roots falling by fifths',
-    ru: 'Круг квинт · корни по нисходящим квинтам',
+    ru: 'Круг квинт · основные тоны по нисходящим квинтам',
     pattern: 'iii–vi–ii–V–I',
     mode: 'major',
     tempo: 88,
@@ -876,7 +870,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
         'Every root falls a perfect fifth to the next. Hutchinson gives iii–vi–ii–V as a circle segment and ii–V–I as its shortest form; the chain can be lengthened, rotated or started anywhere. Try switching every chord to its seventh to hear the jazz version of the same motion.'
       ],
       en: 'Every root falls a perfect fifth to the next. Hutchinson gives iii–vi–ii–V as a circle segment and ii–V–I as its shortest form; the chain can be lengthened, rotated or started anywhere. Try switching every chord to its seventh to hear the jazz version of the same motion.',
-      ru: 'Каждый корень опускается на чистую квинту. Хатчинсон приводит iii–vi–ii–V как отрезок круга, а ii–V–I — как его кратчайшую форму; цепочку можно удлинять, поворачивать и начинать с любого места. Смените все аккорды на септаккорды, чтобы услышать джазовый вариант того же движения.',
+      ru: 'Каждый основной тон опускается на чистую квинту. Хатчинсон приводит iii–vi–ii–V как отрезок круга, а ii–V–I — как его кратчайшую форму; цепочку можно удлинять, поворачивать и начинать с любого места. Смените все аккорды на септаккорды, чтобы услышать джазовый вариант того же движения.',
     },
     source: 'circle',
   },
@@ -1001,7 +995,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
         'Open Music Theory names this recent cycle after its root motion: two steps up, then a skip. The major tonic arrives from vi, an approach belonging to no traditional cadence, which is why the loop can turn without ever sounding closed.'
       ],
       en: 'Open Music Theory names this recent cycle after its root motion: two steps up, then a skip. The major tonic arrives from vi, an approach belonging to no traditional cadence, which is why the loop can turn without ever sounding closed.',
-      ru: 'В Open Music Theory этот недавний цикл назван по движению корней: два шага вверх, затем скачок. Мажорная тоника приходит от vi — такой подход не принадлежит ни одной традиционной каденции, поэтому петля вращается, ни разу не звуча завершённой.',
+      ru: 'В Open Music Theory этот недавний цикл назван по движению основных тонов: два шага вверх, затем скачок. Мажорная тоника приходит от vi — такой подход не принадлежит ни одной традиционной каденции, поэтому петля вращается, ни разу не звуча завершённой.',
     },
     source: 'fourChord',
   },
@@ -1017,11 +1011,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
     texture: 'held',
     steps: [step(1, 'min7'), step(4, 'seventh'), step(0, 'maj7', 8)],
     note: {
-      de: german[
-        'Hutchinson calls this one of the most common progressions in jazz. The roots fall by fifths; listen for the thirds and sevenths, which move by step between the chords. Try ninths or a bass change — this is a harmonic sketch, not an arrangement.'
-      ],
-      en: 'Hutchinson calls this one of the most common progressions in jazz. The roots fall by fifths; listen for the thirds and sevenths, which move by step between the chords. Try ninths or a bass change — this is a harmonic sketch, not an arrangement.',
-      ru: 'Хатчинсон называет этот оборот одним из самых распространённых в джазе. Корни движутся по нисходящим квинтам; вслушайтесь в терции и септимы — между аккордами они переходят по полутонам и тонам. Попробуйте ноны или смену баса: это гармонический эскиз, а не аранжировка.',
+      en: 'Hutchinson describes ii–V–I as a common jazz progression. The roots descend by fifths. With suitable voicing, thirds and sevenths can connect by step or remain on the same pitch; this depends on how the notes are arranged. Try different inversions and compare the bass and upper notes.',
+      ru: 'Хатчинсон описывает ii–V–I как распространённый джазовый оборот. Основные тоны движутся по нисходящим квинтам. При подходящем расположении голосов терции и септимы могут переходить поступенно или оставаться на одной высоте. Попробуйте разные обращения и сравните движение баса и верхних звуков.',
+      de: 'Hutchinson beschreibt ii–V–I als verbreitete Jazzprogression. Die Grundtöne gehen in fallenden Quinten weiter. Bei passender Stimmführung können sich Terzen und Septimen schrittweise verbinden oder als gemeinsamer Ton liegen bleiben; entscheidend ist die Anordnung der Töne. Probiere verschiedene Umkehrungen und vergleiche Bass und Oberstimmen.',
     },
     source: 'jazzProgressions',
   },
@@ -1062,13 +1054,11 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(4, 'seventh'),
     ],
     note: {
-      de: german[
-        'Four links of the circle of fifths, ending on the dominant so the form can start again. Set the repeat count to two or four and hear why it is called a turnaround: it never lands.'
-      ],
-      en: 'Four links of the circle of fifths, ending on the dominant so the form can start again. Set the repeat count to two or four and hear why it is called a turnaround: it never lands.',
-      ru: 'Четыре звена квинтового круга, оканчивающиеся на доминанте, чтобы форма началась заново. Поставьте два или четыре повтора и услышите, почему оборот так называется: он не приземляется.',
+      en: 'This turnaround ends on V7 and prepares a return to the beginning of a form. Repeating the template joins V7 to iii7. Add a tonic chord after V7 to compare that loop with a direct return to I.',
+      ru: 'Этот тёрнэраунд заканчивается на V7 и подготавливает возвращение к началу формы. При повторении шаблона после V7 снова звучит iii7. Добавьте тонический аккорд после V7 и сравните этот цикл с прямым возвращением к I ступени.',
+      de: 'Dieser Turnaround endet auf V7 und bereitet die Rückkehr zum Formanfang vor. Beim Wiederholen der Vorlage folgt auf V7 wieder iii7. Füge nach V7 einen Tonikaakkord hinzu und vergleiche den Zyklus mit einer direkten Rückkehr zur I. Stufe.',
     },
-    source: 'circle',
+    source: 'jazzProgressions',
   },
   {
     id: 'blues',
@@ -1084,11 +1074,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(degree, 'seventh'),
     ),
     note: {
-      de: german[
-        'Three four-bar phrases on I7, IV7 and V7. In the blues a dominant-seventh chord can carry any function, so I7 is home rather than a chord needing resolution. These even pulses show the changes; they are not blues phrasing, swing or blue-note intonation.'
-      ],
-      en: 'Three four-bar phrases on I7, IV7 and V7. In the blues a dominant-seventh chord can carry any function, so I7 is home rather than a chord needing resolution. These even pulses show the changes; they are not blues phrasing, swing or blue-note intonation.',
-      ru: 'Три четырёхтактовые фразы на I7, IV7 и V7. В блюзе малый мажорный септаккорд может выполнять любую функцию, поэтому I7 — это дом, а не аккорд, требующий разрешения. Ровная пульсация показывает смену гармоний, но не блюзовую фразировку, свинг и интонацию blue notes.',
+      en: 'Three four-bar phrases use I7, IV7 and V7. In blues, the dominant-seventh chord type can serve as tonic, subdominant or dominant: I7 can be a point of rest. The even pulses here let you hear the chord changes; blues phrasing, swing and blue-note intonation require further exploration.',
+      ru: 'Три четырёхтактовые фразы используют I7, IV7 и V7. В блюзе малый мажорный септаккорд может выполнять тоническую, субдоминантовую или доминантовую функцию: I7 может быть устойчивой опорой. Ровная пульсация здесь помогает услышать смену аккордов; блюзовая фразировка, свинг и интонация блюзовых нот требуют отдельного изучения.',
+      de: 'Drei viertaktige Phrasen verwenden I7, IV7 und V7. Im Blues kann der Akkordtyp des Dominantseptakkords als Tonika, Subdominante oder Dominante auftreten: I7 kann ein Ruhepunkt sein. Die gleichmäßigen Impulse machen hier die Akkordwechsel hörbar; Bluesphrasierung, Swing und die Intonation der Blue Notes verdienen eine eigene Untersuchung.',
     },
     source: 'bluesFunction',
   },
@@ -1216,11 +1204,9 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(0, 'major', 8),
     ],
     note: {
-      de: german[
-        'The second chord is the scale’s ii turned major and given a seventh, so it points at V the way V points at I. The lab writes V7/V above it only while the next chord is a fifth below; change the third chord and the label disappears, because an applied dominant is defined by where it goes.'
-      ],
-      en: 'The second chord is the scale’s ii turned major and given a seventh, so it points at V the way V points at I. The lab writes V7/V above it only while the next chord is a fifth below; change the third chord and the label disappears, because an applied dominant is defined by where it goes.',
-      ru: 'Второй аккорд — ii ступень, ставшая мажорной и получившая септиму, поэтому он указывает на V так же, как V указывает на I. Лаборатория подписывает V7/V только пока следующий аккорд лежит квинтой ниже; смените третий аккорд — и подпись исчезнет, потому что побочная доминанта определяется тем, куда она ведёт.',
+      en: 'The second chord turns the scale’s ii into a major triad with a minor seventh, pointing towards V. In this lab, the V7/V label requires the next root to be a fifth below. Change the third chord to another root and the label disappears: the lab no longer has the immediate resolution it uses as evidence. This is a deliberately limited analysis, not a rule that all applied dominants must resolve immediately.',
+      ru: 'Второй аккорд превращает минорное трезвучие II ступени в малый мажорный септаккорд, направленный к V ступени. Здесь подпись V7/V появляется, только если основной тон следующего аккорда находится квинтой ниже. Выберите для третьего аккорда другой основной тон — и подпись исчезнет: лаборатория больше не видит непосредственного разрешения, на которое опирается анализ. Это ограничение модели, а не требование немедленного разрешения любой побочной доминанты.',
+      de: 'Der zweite Akkord macht aus dem leitereigenen Mollakkord der II. Stufe einen Durakkord mit kleiner Septime, der zur Dominante führt. Das Labor zeigt V7/V nur, wenn der nächste Grundton eine Quinte tiefer liegt. Wähle für den dritten Akkord einen anderen Grundton: Die Bezeichnung verschwindet, weil die unmittelbare Auflösung als Beleg fehlt. Diese Analyse ist bewusst begrenzt; Zwischendominanten müssen sich nicht immer sofort auflösen.',
     },
     source: 'secondary',
   },

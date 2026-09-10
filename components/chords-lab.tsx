@@ -1169,7 +1169,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                 <p>
                   {t(
                     'Roman numerals here use the major scale as reference: minor-key III, VI and VII roots are written ♭III, ♭VI and ♭VII. Letter symbols follow international lead-sheet practice. The formula describes intervals from the chord root, not from the key tonic.',
-                    'Римские цифры здесь отсчитываются от мажорной гаммы: корни III, VI и VII ступеней минора обозначены ♭III, ♭VI и ♭VII. Буквенные символы следуют международной джазовой практике. Формула показывает интервалы от основного тона аккорда, а не от тоники.',
+                    'Римские цифры здесь отсчитываются от мажорной гаммы: основные тоны III, VI и VII ступеней минора обозначены ♭III, ♭VI и ♭VII. Буквенные символы следуют международной джазовой практике. Формула показывает интервалы от основного тона аккорда, а не от тоники.',
                   )}
                 </p>
               </div>
@@ -1180,7 +1180,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                 <p>
                   {t(
                     'A card shows V/x only when its chord is major where the scale is not, and the next chord’s root lies a fifth below. Both conditions are needed, because an applied dominant is defined by its resolution. Chords the lab cannot prove are left with their degree numeral alone.',
-                    'Отметка V/x появляется, только если аккорд мажорный там, где гамма даёт другой вид, и корень следующего аккорда лежит квинтой ниже. Нужны оба условия: побочная доминанта определяется своим разрешением. Там, где лаборатория не может это доказать, остаётся только обозначение ступени.',
+                    'Отметка V/x появляется, только если аккорд мажорный там, где гамма даёт другой вид, и основной тон следующего аккорда лежит квинтой ниже. Нужны оба условия: побочная доминанта определяется своим разрешением. Там, где лаборатория не может это доказать, остаётся только обозначение ступени.',
                   )}
                 </p>
               </div>

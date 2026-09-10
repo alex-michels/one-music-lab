@@ -317,7 +317,7 @@ export function ornamentReview(
       'Назовите украшение и объясните, что нужно выяснить перед исполнением.',
       'Benenne die Verzierung. Was musst du vor ihrer Ausführung klären?',
     )[lang],
-    explanation: `${row.title[lang]}. ${nt('This is the modern sign convention shown here. Consult the edition, period, instrument and surrounding harmony for starting note, auxiliary pitch, timing and speed. Recognition does not prescribe a single realization. A slashed grace is often called acciaccatura today; the historical keyboard acciaccatura was a dissonant note struck with a principal chord and immediately released, not a universal synonym for every short grace.', 'Здесь показана современная форма знака. Начальный и вспомогательный звуки, момент вступления и скорость уточняют по редакции, эпохе, инструменту и гармонии. Единственный вариант исполнения не задан. Современный перечёркнутый форшлаг часто называют аччакатурой; историческая клавирная аччакатура — диссонирующий звук, взятый вместе с основным аккордом и сразу отпущенный, а не общее название любого короткого форшлага.', 'Hier ist die moderne Zeichenform gemeint. Ausgabe, Epoche, Instrument und Harmonie bestimmen Anfangs- und Nebenton, Einsatz und Geschwindigkeit. Keine einzige Ausführung wird vorgeschrieben. Der durchstrichene Vorschlag heißt heute oft Acciaccatura; die historische Tasten-Acciaccatura war ein mit dem Hauptakkord angeschlagener, sofort losgelassener dissonanter Ton, kein universelles Synonym für jeden kurzen Vorschlag.')[lang]}`,
+    explanation: `${row.title[lang]}. ${nt('This is the modern sign convention shown here. Consult the edition, period, instrument and surrounding harmony for starting note, auxiliary pitch, timing and speed. Recognition does not prescribe a single realization. A slashed grace is often called acciaccatura today; the historical keyboard acciaccatura was a dissonant note struck with a principal chord and immediately released, not a universal synonym for every short grace.', 'Здесь показана современная форма знака. Начальный и вспомогательный звуки, момент вступления и скорость уточняют по редакции, эпохе, инструменту и гармонии. Единственный вариант исполнения не задан. Современный перечёркнутый форшлаг часто называют аччаккатурой; историческая клавирная аччаккатура — диссонирующий звук, взятый вместе с основным аккордом и сразу отпущенный, а не общее название любого короткого форшлага.', 'Hier ist die moderne Zeichenform gemeint. Ausgabe, Epoche, Instrument und Harmonie bestimmen Anfangs- und Nebenton, Einsatz und Geschwindigkeit. Keine einzige Ausführung wird vorgeschrieben. Der durchstrichene Vorschlag heißt heute oft Acciaccatura; die historische Tasten-Acciaccatura war ein mit dem Hauptakkord angeschlagener, sofort losgelassener dissonanter Ton, kein universelles Synonym für jeden kurzen Vorschlag.')[lang]}`,
     source: notationSources.ornaments,
   };
 }
@@ -351,7 +351,7 @@ export function performanceMarks(
       )[lang],
       explanation: nt(
         'The strokes connect two different pitches, G4 and B4: alternate them, unlike a one-note repeated tremolo. Preserve the indicated span and the edition’s measured or unmeasured convention when expanding it; the picture alone is not a licence to invent an exact universal speed. This is an unscored abbreviation comparison, not a navigation route.',
-        'Штрихи соединяют разные высоты, соль и си первой октавы: их чередуют, в отличие от повторения одного звука. При расшифровке сохраните длительность и указанный в редакции размеренный или неразмеренный характер тремоло; рисунок не задаёт универсальной скорости. Это сравнение сокращения без оценки, а не маршрут по тактам.',
+        'Штрихи соединяют разные высоты, соль и си первой октавы: их чередуют, в отличие от повторения одного звука. При расшифровке сохраните длительность и указанный в редакции точный ритм тремоло или отсутствие точного числа повторений; рисунок не задаёт универсальной скорости. Это сравнение сокращения без оценки, а не маршрут по тактам.',
         'Die Striche verbinden zwei verschiedene Tonhöhen, g′ und h′: Sie wechseln sich ab, anders als beim Tremolo auf einem Ton. Die angegebene Zeitspanne und die gemessene oder ungemessene Konvention der Ausgabe müssen erhalten bleiben; das Bild legt kein universelles Tempo fest. Unbewerteter Vergleich einer Abbreviatur, keine Sprungfolge.',
       )[lang],
       source: notationSources.repeats,
@@ -382,7 +382,7 @@ export function performanceMarks(
         : dynamic
           ? nt(
               'Compare a sustained dynamic level, fp, sfz/rfz and a hairpin. Which describes an onset and which a change over time?',
-              'Сравните устойчивую динамику, fp, sfz/rfz и вилочку. Что относится к началу звука, а что — к изменению во времени?',
+              'Сравните устойчивую динамику, fp, sfz/rfz и вилку. Что относится к началу звука, а что — к изменению во времени?',
               'Vergleiche eine anhaltende Dynamikstufe, fp, sfz/rfz und eine Gabel. Was betrifft den Einsatz, was eine Veränderung im Verlauf?',
             )[lang]
           : nt(
@@ -392,14 +392,14 @@ export function performanceMarks(
             )[lang],
       explanation: tempo
         ? nt(
-            'Convention for this original example: Tempo I is quarter = 96; Tempo II is quarter = 72. After rit. in Tempo II, a tempo restores 72; the later Tempo I restores 96. Do not rank tempo words or assume that every return means the opening tempo. This semantic discussion is unscored, not a metronome-arithmetic result.',
-            'Условие этого оригинального примера: первый темп — четверть = 96, второй — четверть = 72. После замедления во втором темпе указание о возврате восстанавливает 72; позднейший возврат к первому темпу — 96. Не выстраивайте темповые слова в абсолютный ряд и не считайте любой возврат возвратом к началу. Обсуждение смысла без оценки; это не метрономическая арифметика.',
-            'Konvention dieses eigenen Beispiels: Tempo I bedeutet Viertel = 96, Tempo II Viertel = 72. Nach rit. in Tempo II stellt a tempo 72 wieder her; das spätere Tempo I dagegen 96. Tempowörter bilden keine absolute Rangfolge, und nicht jede Rückkehr meint das Anfangstempo. Unbewertete Bedeutungsfrage, keine Metronomrechnung.',
+            'In this example: Tempo I is quarter = 96; Tempo II is quarter = 72. After rit. in Tempo II, a tempo restores 72; the later Tempo I restores 96. Do not rank tempo words or assume that every return means the opening tempo. This semantic discussion is unscored, not a metronome-arithmetic result.',
+            'В этом примере: первый темп — четверть = 96, второй — четверть = 72. После замедления во втором темпе указание о возврате восстанавливает 72; позднейший возврат к первому темпу — 96. Не выстраивайте темповые слова в абсолютный ряд и не считайте любой возврат возвратом к началу. Обсуждение смысла без оценки; это не метрономическая арифметика.',
+            'In diesem Beispiel: Tempo I bedeutet Viertel = 96, Tempo II Viertel = 72. Nach rit. in Tempo II stellt a tempo 72 wieder her; das spätere Tempo I dagegen 96. Tempowörter bilden keine absolute Rangfolge, und nicht jede Rückkehr meint das Anfangstempo. Unbewertete Bedeutungsfrage, keine Metronomrechnung.',
           )[lang]
         : dynamic
           ? nt(
               'The p–f hairpin asks for a gradual increase across its span. fp asks for a strong onset followed by soft continuation; sfz and rfz ask for emphasis, whose extent depends on context. They are not extra rungs of a calibrated loudness ladder. Compare the surrounding phrase and instrument; no unique gain envelope is prescribed. Unscored.',
-              'Вилочка от p к f требует постепенного усиления на своём протяжении. fp — сильное начало с последующим тихим продолжением; sfz и rfz — выделение, область действия которого зависит от контекста. Это не дополнительные ступени калиброванной громкости. Учтите фразу и инструмент; единственная огибающая громкости не задана. Без оценки.',
+              'Вилка от p к f требует постепенного усиления на своём протяжении. fp — сильное начало с последующим тихим продолжением; sfz и rfz — выделение, область действия которого зависит от контекста. Это не дополнительные ступени калиброванной громкости. Учтите фразу и инструмент; единственная огибающая громкости не задана. Без оценки.',
               'Die Gabel von p nach f verlangt eine allmähliche Zunahme über ihre Spanne. fp fordert einen starken Einsatz mit leiser Fortsetzung; sfz und rfz eine kontextabhängige Hervorhebung. Das sind keine zusätzlichen Stufen einer kalibrierten Lautstärkeskala. Phrase und Instrument sind zu berücksichtigen; keine eindeutige Hüllkurve ist vorgegeben. Ohne Bewertung.',
             )[lang]
           : nt(
@@ -425,7 +425,7 @@ export function performanceMarks(
     const beats = level === 1 ? 1 : pick(next, [1, 2, 4]);
     const total = `${beats * unit.num}/${unit.den}`;
     const show = (value: number) =>
-      String(Number(value.toFixed(3))).replace('.', lang === 'de' ? ',' : '.');
+      String(Number(value.toFixed(3))).replace('.', lang === 'en' ? '.' : ',');
     const seconds = (clicks: number) => (60 * clicks) / bpm;
     const answer = show(seconds(beats));
     return {
@@ -587,7 +587,7 @@ export function performanceMarks(
   return {
     rule: 'follow-repeat-route',
     figure: route.figure,
-    prompt: `${nt('Read the marked original example. Give the measure sequence under this convention:', 'Прочитайте оригинальный пример со знаками. Укажите порядок тактов при следующем условии:', 'Lies das eigene notierte Beispiel. Gib die Taktfolge nach dieser Konvention an:')[lang]} ${route.convention[lang]}`,
+    prompt: `${nt('Read the notated example. Give the measure sequence under this convention:', 'Прочитайте нотный пример. Укажите порядок тактов при следующем условии:', 'Lies das Notenbeispiel. Gib die Taktfolge nach dieser Konvention an:')[lang]} ${route.convention[lang]}`,
     answer,
     options: options(answer, route.wrong, next, 'repeat-route'),
     explanation: `${route.convention[lang]} ${answer}.`,
@@ -634,9 +634,9 @@ export function shortExcerpt(
   return {
     rule: 'read-a-short-excerpt',
     prompt: nt(
-      'Read this original 4/4 bar, one quarter note at a time. Each note earns its own result.',
-      'Прочитайте этот оригинальный такт 4/4 по одной четверти. Результат учитывается отдельно для каждой ноты.',
-      'Lies diesen eigens erstellten 4/4-Takt Viertelnote für Viertelnote. Jede Note erhält eine eigene Rückmeldung.',
+      'Read this 4/4 bar, one quarter note at a time. Each note earns its own result.',
+      'Прочитайте этот такт 4/4 по одной четверти. Результат учитывается отдельно для каждой ноты.',
+      'Lies diesen 4/4-Takt Viertelnote für Viertelnote. Jede Note erhält eine eigene Rückmeldung.',
     )[lang],
     staff: { clef, pitches, barlines: [3] },
     parts,
@@ -787,7 +787,7 @@ export function accidentalContext(
     ),
     explanation: nt(
       `Event ${index + 1}: ${answer}. A natural or a single accidental replaces, never adds to, a signature or double accidental. Local scope does not jump octaves. At a barline the signature resumes for fresh attacks; only the actual tied continuation retains the old sound. These rule labels describe the stated convention, not every historical accidental practice.`,
-      `Событие ${index + 1}: ${answer}. Бекар или одиночный знак заменяет, а не суммирует ключевой или двойной знак. Случайный знак не переносится в другую октаву. После тактовой черты новые атаки подчиняются ключу; лишь связанное продолжение сохраняет прежнюю высоту. Правило относится к данному условию, не ко всем историческим практикам.`,
+      `Событие ${index + 1}: ${answer}. Бекар или одиночный знак заменяет, а не суммирует ключевой или двойной знак. Случайный знак не переносится в другую октаву. После тактовой черты новые атаки подчиняются ключевым знакам; лишь связанное продолжение сохраняет прежнюю высоту. Правило относится к данному условию, не ко всем историческим практикам.`,
       `Ereignis ${index + 1}: ${answer}. Auflösungszeichen oder einfaches Versetzungszeichen ersetzen Tonart- oder Doppelvorzeichen, statt sich zu addieren. Lokale Geltung springt nicht in andere Oktaven. Nach dem Taktstrich gilt für neue Anschläge die Tonart; nur die gebundene Fortsetzung behält den alten Ton. Dies bezeichnet die genannte Konvention, nicht jede historische Praxis.`,
     )[lang],
     source: notationSources.accidentals,
@@ -963,7 +963,7 @@ function contextualExcerpt(
         ),
         explanation: nt(
           `${answer}: keep the written letter and register. ${event.tieFromPrevious ? 'This is a tied continuation of the previous pitch, not a new attack.' : 'Apply explicit accidentals at this register; after a barline a fresh attack returns to the signature (none here).'} A correct rhythm cannot cancel a pitch-reading error.`,
-          `${answer}: сохраните записанную ступень и октаву. ${event.tieFromPrevious ? 'Это связанное продолжение прежней высоты, а не новая атака.' : 'Учтите явные знаки в этой октаве; после тактовой черты новая атака подчиняется ключу (знаков здесь нет).'} Правильный ритм не отменяет ошибки высоты.`,
+          `${answer}: сохраните записанную ступень и октаву. ${event.tieFromPrevious ? 'Это связанное продолжение прежней высоты, а не новая атака.' : 'Учтите явные знаки в этой октаве; после тактовой черты новая атака подчиняется ключевым знакам (знаков здесь нет).'} Правильный ритм не отменяет ошибки высоты.`,
           `${answer}: Stammton und Register beibehalten. ${event.tieFromPrevious ? 'Gebundene Fortsetzung des vorigen Tons, kein neuer Anschlag.' : 'Explizite Zeichen in diesem Register beachten; nach dem Taktstrich gilt beim Neuanschlag wieder die Tonart (hier ohne Vorzeichen).'} Ein richtiger Rhythmus gleicht keinen Tonhöhenfehler aus.`,
         )[lang],
       });

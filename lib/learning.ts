@@ -16,15 +16,17 @@ export const lessons = [
     id: 'sound',
     title: b('Sound & frequency', 'Звук и частота'),
     category: b('Acoustics', 'Акустика'),
-    summary: b(
-      'Why some sounds feel higher than others.',
-      'Почему одни звуки выше других.',
+    summary: nt(
+      'Relate frequency, period and the pitch you hear.',
+      'Свяжите частоту и период колебаний с воспринимаемой высотой звука.',
+      'Setze Frequenz und Periodendauer mit der gehörten Tonhöhe in Beziehung.',
     ),
     formula: b('T = 1 / f', 'T = 1 / f'),
     paragraphs: [
-      b(
-        'Sound is a changing pressure that travels through a medium. For a periodic tone, frequency counts how many cycles repeat each second. The unit is the hertz (Hz). A 440 Hz tone repeats 440 times in one second.',
-        'Звук — изменения давления, распространяющиеся в среде. Для периодического тона частота показывает, сколько колебаний повторяется за секунду. Единица измерения — герц (Гц). Тон 440 Гц совершает 440 колебаний за секунду.',
+      nt(
+        'Sound is a mechanical vibration that travels through a medium; in air, it produces changing pressure. For a periodic tone, frequency f counts the cycles per second, in hertz (Hz). The period T is the time for one cycle, in seconds: T = 1 / f. At 440 Hz, one cycle lasts about 0.00227 s.',
+        'Звук — механические колебания, распространяющиеся в среде; в воздухе они создают изменения давления. Частота f периодического тона показывает число колебаний за секунду и измеряется в герцах (Гц). Период T — время одного колебания в секундах: T = 1 / f. При частоте 440 Гц одно колебание длится примерно 0,00227 с.',
+        'Schall ist eine mechanische Schwingung, die sich in einem Medium ausbreitet; in Luft entstehen dabei Druckänderungen. Bei einem periodischen Ton zählt die Frequenz f die Schwingungen pro Sekunde, gemessen in Hertz (Hz). Die Periodendauer T gibt die Zeit einer Schwingung in Sekunden an: T = 1 / f. Bei 440 Hz dauert eine Schwingung etwa 0,00227 s.',
       ),
       b(
         'Pitch is our perception of how high or low a sound is. Frequency strongly influences pitch, but a complex sound can contain many frequencies. Timbre depends on their relative strength and on how the sound develops over time.',
@@ -37,33 +39,39 @@ export const lessons = [
     ),
     hz: 220,
     wave: 'sine',
-    source: 'https://newt.phys.unsw.edu.au/jw/notes.html',
+    source:
+      'https://newt.phys.unsw.edu.au/jw/musical-sounds-musical-instruments.html',
   },
   {
     id: 'tuning',
     title: b('A reference, a whole system', 'Опора для целой системы'),
     category: b('Tuning', 'Строй'),
-    summary: b(
-      'Change A4 without changing the names of the notes.',
-      'Меняйте A4, сохраняя названия нот.',
+    summary: nt(
+      'Set a reference pitch and distinguish it from a tuning system.',
+      'Задайте опорную частоту и отличайте её от музыкального строя.',
+      'Lege einen Bezugston fest und unterscheide ihn vom Stimmungssystem.',
     ),
-    formula: b(
+    formula: nt(
       'f(n) = A4 × 2^((n − 69) / 12)',
-      'f(n) = A4 × 2^((n − 69) / 12)',
+      'f(n) = f(ля первой октавы) × 2^((n − 69) / 12)',
+      'f(n) = f(a′) × 2^((n − 69) / 12)',
     ),
     paragraphs: [
-      b(
+      nt(
         'A reference pitch assigns a frequency to a named note. In this lab, that note is A4. If you change A4 from 440 to 432 Hz, the other frequencies shift by the same factor. The interval relationships stay the same.',
-        'Опорная частота связывает высоту с названием ноты. Здесь это A4 — ля первой октавы в русской системе. При изменении A4 с 440 до 432 Гц остальные частоты меняются в той же пропорции. Интервальные отношения сохраняются.',
+        'Опорная частота связывает название ноты с частотой её звучания. Здесь это ля первой октавы. При изменении её частоты с 440 до 432 Гц остальные частоты меняются в той же пропорции. Интервальные отношения сохраняются.',
+        'Ein Bezugston verbindet einen Tonnamen mit einer Frequenz. Hier ist es das eingestrichene a (a′). Änderst du es von 440 auf 432 Hz, ändern sich alle anderen Frequenzen im selben Verhältnis. Die Intervallverhältnisse bleiben erhalten.',
       ),
-      b(
-        'Temperament is a separate choice. Twelve-tone equal temperament divides an octave into twelve equal logarithmic steps. The formula uses the MIDI number n; A4 is 69. The lab also offers fixed, A-based ratio maps for just and Pythagorean tuning. These maps do not reproduce every historical practice or every musical key.',
-        'Строй — отдельный выбор. Двенадцатиступенный равномерный строй делит октаву на 12 равных логарифмических шагов. В формуле n — номер MIDI; для A4 он равен 69. Лаборатория также предлагает фиксированные отношения чистого и пифагорейского строя от A. Они не воспроизводят все исторические практики и тональности.',
+      nt(
+        'A tuning system is a separate choice. Twelve-tone equal temperament divides an octave into twelve equal steps, each with the same frequency ratio. In the formula, n is the MIDI note number; A4 is 69. The formula applies to this temperament. The lab also offers fixed, A-based ratio maps for just and Pythagorean tuning. Those maps do not reproduce every historical practice or every musical key.',
+        'Музыкальный строй выбирают отдельно. Двенадцатиступенная равномерная темперация делит октаву на 12 шагов с одинаковым отношением частот. В формуле n — номер ноты MIDI; для ля первой октавы он равен 69. Формула относится именно к этому строю. В лаборатории есть также фиксированные таблицы отношений чистого и пифагорейского строя с опорой на ля. Они не воспроизводят все исторические практики и тональности.',
+        'Das Stimmungssystem wählst du unabhängig vom Bezugston. Die zwölfstufige gleichstufige Stimmung teilt die Oktave in zwölf Schritte mit jeweils gleichem Frequenzverhältnis. In der Formel ist n die MIDI-Notennummer; a′ hat die Nummer 69. Die Formel gilt für diese Stimmung. Das Labor bietet außerdem feste, auf A bezogene Verhältnistabellen für reine und pythagoreische Stimmung. Diese Modelle bilden nicht jede historische Praxis oder Tonart ab.',
       ),
     ],
-    experiment: b(
+    experiment: nt(
       'Select A4 = 432 Hz and play the keyboard. Switch tuning systems and listen to C♯5 against A4.',
-      'Выберите A4 = 432 Гц и сыграйте на клавиатуре. Сравните C♯5 и A4 в разных строях.',
+      'Задайте для ля первой октавы 432 Гц и сыграйте на клавиатуре. Сравните до-диез второй октавы с ля первой в разных строях.',
+      'Wähle a′ = 432 Hz und spiele auf der Klaviatur. Wechsle die Stimmungssysteme und vergleiche cis″ mit a′.',
     ),
     hz: 440,
     wave: 'sine',
@@ -83,9 +91,10 @@ export const lessons = [
         'An interval describes the relationship between two pitches. Play them one after another to hear a melodic interval, or together to hear a harmonic interval. In equal temperament, an octave spans twelve semitones, or 1,200 cents.',
         'Интервал описывает отношение двух высот. Последовательное звучание образует мелодический интервал, одновременное — гармонический. В равномерном строе октава содержит 12 полутонов, или 1200 центов.',
       ),
-      b(
-        'Interval names count letter names as well as distance in semitones. C–E is a third; C–F is a fourth. Enharmonic pitches can share a keyboard key while having different interval spellings. The lab uses simple names for its listening examples.',
-        'Названия интервалов учитывают буквенные имена, а не только полутоны. C–E — терция, C–F — кварта. Энгармонические звуки могут соответствовать одной клавише, но образовывать по-разному записанные интервалы. В слуховых примерах лаборатория использует простые названия.',
+      nt(
+        'To name an interval, count its letter names, including both ends, then identify its quality. C–E spans C, D, E: a third. C–F spans four names: a fourth. C–D♯ and C–E♭ share the same keyboard distance in twelve-tone equal temperament, but are an augmented second and a minor third. In the formula, f₁ and f₂ are the two positive frequencies; use f₂ ≥ f₁ for an upward interval.',
+        'Чтобы назвать интервал, сосчитайте ступени, включая оба конца, затем определите его качество. До — ми охватывает до, ре, ми: это терция. До — фа охватывает четыре ступени: это кварта. В двенадцатиступенном равномерном строе до — ре-диез и до — ми-бемоль звучат одинаково, но записаны как увеличенная секунда и малая терция. В формуле f₁ и f₂ — две положительные частоты; для восходящего интервала f₂ ≥ f₁.',
+        'Zähle für den Intervallnamen die Stammtonstufen einschließlich beider Endpunkte und bestimme dann die Intervallqualität. C–E umfasst C, D, E: eine Terz. C–F umfasst vier Stufen: eine Quarte. C–Dis und C–Es haben in zwölfstufiger gleichstufiger Stimmung denselben Tastenabstand, sind aber eine übermäßige Sekunde und eine kleine Terz. In der Formel sind f₁ und f₂ positive Frequenzen; für ein aufsteigendes Intervall gilt f₂ ≥ f₁.',
       ),
     ],
     experiment: b(
@@ -107,18 +116,20 @@ export const lessons = [
     ),
     formula: b('fₖ = k × f₁', 'fₖ = k × f₁'),
     paragraphs: [
-      b(
-        'A sine wave contains a single frequency. More complex periodic waves contain harmonics: frequencies at whole-number multiples of the fundamental. Their balance changes the waveform and the sound’s colour.',
-        'Синусоида содержит одну частоту. Более сложные периодические волны содержат гармоники — частоты, кратные основной. Их соотношение меняет форму волны и окраску звука.',
+      nt(
+        'A sine wave contains a single frequency. More complex periodic waves contain harmonics at whole-number multiples of the fundamental. In fₖ = k × f₁, f₁ is the fundamental frequency and k = 1, 2, 3, … is the harmonic number. A 220 Hz fundamental gives harmonics at 220, 440, 660 Hz and so on. Their relative strengths help shape the timbre.',
+        'Синусоида содержит одну частоту. Более сложные периодические колебания содержат гармоники с частотами, кратными основной. В формуле fₖ = k × f₁ символ f₁ обозначает основную частоту, а k = 1, 2, 3, … — номер гармоники. При основной частоте 220 Гц гармоники имеют частоты 220, 440, 660 Гц и так далее. Соотношение их силы влияет на тембр.',
+        'Eine Sinusschwingung enthält eine einzige Frequenz. Komplexere periodische Schwingungen enthalten harmonische Teiltöne bei ganzzahligen Vielfachen der Grundfrequenz. In fₖ = k × f₁ bezeichnet f₁ die Grundfrequenz und k = 1, 2, 3, … die Nummer des Teiltons. Bei 220 Hz liegen diese Teiltöne bei 220, 440, 660 Hz und so weiter. Ihre Stärkeverhältnisse prägen die Klangfarbe.',
       ),
       b(
         'Ideal square and triangle waves contain odd harmonics; an ideal sawtooth contains both even and odd harmonics. Real instrument timbres also depend on attack, decay, noise and sometimes non-harmonic partials. A waveform alone is not an instrument model.',
         'Идеальные прямоугольная и треугольная волны содержат нечётные гармоники, пилообразная — и чётные, и нечётные. Тембр реальных инструментов также зависит от атаки, затухания, шумов и иногда негармонических обертонов. Одна форма волны не моделирует инструмент полностью.',
       ),
     ],
-    experiment: b(
+    experiment: nt(
       'Hold A4 and switch between sine, triangle, square and sawtooth. Keep the volume low while comparing.',
-      'Включите A4 и переключайте синус, треугольник, меандр и пилу. Сравнивайте на небольшой громкости.',
+      'Включите ля первой октавы и сравните синусоидальную, треугольную, прямоугольную и пилообразную формы волны. Сохраняйте небольшую громкость.',
+      'Halte a′ und wechsle zwischen Sinus, Dreieck, Rechteck und Sägezahn. Vergleiche bei niedriger Lautstärke.',
     ),
     hz: 440,
     wave: 'triangle',
@@ -129,13 +140,15 @@ export const lessons = [
     id: 'scales',
     title: b('Scales & modes', 'Звукоряды и лады'),
     category: b('Melody', 'Мелодия'),
-    summary: b(
-      'A collection of notes becomes a musical landscape.',
-      'Как набор нот становится музыкальной средой.',
+    summary: nt(
+      'Recognize the step pattern and listen for a tonal centre.',
+      'Распознавайте последовательность ступеней и слушайте ладовую опору.',
+      'Erkenne das Schrittmuster und höre auf das tonale Zentrum.',
     ),
-    formula: b(
-      'Major: 2 – 2 – 1 – 2 – 2 – 2 – 1',
-      'Мажор: 2 – 2 – 1 – 2 – 2 – 2 – 1',
+    formula: nt(
+      'Major scale steps, in semitones: 2 – 2 – 1 – 2 – 2 – 2 – 1',
+      'Шаги мажорной гаммы в полутонах: 2 – 2 – 1 – 2 – 2 – 2 – 1',
+      'Schritte der Durtonleiter in Halbtönen: 2 – 2 – 1 – 2 – 2 – 2 – 1',
     ),
     paragraphs: [
       b(
@@ -159,18 +172,21 @@ export const lessons = [
     id: 'chords',
     title: b('Building a chord', 'Как построить аккорд'),
     category: b('Harmony', 'Гармония'),
-    summary: b(
-      'Stack intervals and hear a new identity.',
-      'Соединяйте интервалы и слушайте результат.',
+    summary: nt(
+      'Build major and minor triads and compare their thirds.',
+      'Постройте мажорное и минорное трезвучия и сравните их терции.',
+      'Baue Dur- und Molldreiklänge und vergleiche ihre Terzen.',
     ),
-    formula: b(
-      'Major: 0 · 4 · 7   /   Minor: 0 · 3 · 7',
-      'Мажор: 0 · 4 · 7   /   Минор: 0 · 3 · 7',
+    formula: nt(
+      'Semitones above the root: major triad 0 · 4 · 7 / minor triad 0 · 3 · 7',
+      'Полутоны от основного тона: мажорное трезвучие 0 · 4 · 7 / минорное 0 · 3 · 7',
+      'Halbtöne über dem Grundton: Durdreiklang 0 · 4 · 7 / Molldreiklang 0 · 3 · 7',
     ),
     paragraphs: [
-      b(
-        'A triad contains three pitch classes arranged in thirds. A major triad has a major third and a perfect fifth above its root. Lower its third by a semitone to make a minor triad. Doubling a note in another octave does not create a new chord member.',
-        'Трезвучие состоит из трёх классов высот, расположенных по терциям. Мажорное трезвучие содержит большую терцию и чистую квинту от основного тона. Понизьте терцию на полутон — получится минорное трезвучие. Удвоение ноты в октаву не добавляет новой ступени аккорда.',
+      nt(
+        'A triad has three different chord tones that can be arranged in thirds. A major triad has a major third and a perfect fifth above its root: C–E–G, for example. Lower the third by a semitone and C–E♭–G becomes a minor triad. Doubling a tone in another octave adds a voice, but no new chord member.',
+        'В трезвучии три разных звука, которые можно расположить по терциям. В мажорном трезвучии от основного тона строятся большая терция и чистая квинта: например, до — ми — соль. Понизьте терцовый тон на полутон — получится минорное трезвучие до — ми-бемоль — соль. Удвоение звука в другой октаве добавляет голос, но не новый звук в состав аккорда.',
+        'Ein Dreiklang enthält drei verschiedene Akkordtöne, die sich in Terzen anordnen lassen. Beim Durdreiklang liegen eine große Terz und eine reine Quinte über dem Grundton, etwa C–E–G. Erniedrige den Terzton um einen Halbton: C–Es–G ist ein Molldreiklang. Eine Oktavverdopplung fügt eine Stimme hinzu, aber keinen neuen Akkordton.',
       ),
       b(
         'Add a seventh for a four-note chord. A dominant seventh uses offsets 0, 4, 7 and 10 semitones in equal temperament. Chord meaning also depends on context, voicing, rhythm and voice leading. An isolated chord cannot explain a whole harmonic style.',
@@ -183,7 +199,7 @@ export const lessons = [
     ),
     hz: 261.625565,
     wave: 'triangle',
-    source: 'https://viva.pressbooks.pub/openmusictheory/chapter/triads/',
+    source: 'https://musictheory.pugetsound.edu/mt21c/TriadsIntroduction.html',
   },
   // Notation programme (roadmap №558): 13 lessons for 003, 012–014, 017,
   // 019, 022–024, 124, 125 and 127. Each language teaches its own naming
@@ -222,9 +238,10 @@ export const lessons = [
     id: 'staff',
     title: b('Five lines, four spaces', 'Пять линеек, четыре промежутка'),
     category: b('Notation', 'Нотация'),
-    summary: b(
-      'Read where a note sits on the staff.',
-      'Определять место ноты на нотном стане.',
+    summary: nt(
+      'Locate notes on lines, in spaces and on ledger lines.',
+      'Находите ноты на линейках, в промежутках и на добавочных линейках.',
+      'Finde Noten auf Linien, in Zwischenräumen und auf Hilfslinien.',
     ),
     formula: b(
       '5 lines + 4 spaces = 9 places · one place above and one below = 11 · counted from the bottom',
@@ -252,22 +269,25 @@ export const lessons = [
     id: 'clefs',
     title: b('One clef, one fixed pitch', 'Ключ задаёт одну высоту'),
     category: b('Notation', 'Нотация'),
-    summary: b(
-      'Read the treble and bass clefs with confidence.',
-      'Уверенно читать скрипичный и басовый ключи.',
+    summary: nt(
+      'Read the reference notes of treble, bass, alto and tenor clefs.',
+      'Определяйте опорные ноты скрипичного, басового, альтового и тенорового ключей.',
+      'Lies die Bezugstöne von Violin-, Bass-, Alt- und Tenorschlüssel.',
     ),
     formula: b(
       'G-clef line 2 = G4 · F-clef line 4 = F3 · C-clef = C4',
       'Соль-ключ, 2-я линейка = соль первой октавы · Фа-ключ, 4-я линейка = фа малой октавы · До-ключ = до первой октавы',
     ),
     paragraphs: [
-      b(
-        'A staff on its own carries eleven places, far fewer than the instruments in use need. A clef solves this by naming one of them. The G-clef fixes G4 on the second line, the F-clef fixes F3 on the fourth, and every other pitch is counted from that single named one.',
-        'Сам по себе нотный стан даёт лишь одиннадцать мест, а инструментам нужно гораздо больше звуков. Ключ решает это: он называет одно из этих мест. Скрипичный ключ закрепляет соль первой октавы на второй линейке, басовый — фа малой октавы на четвёртой, и все остальные ноты отсчитываются от этой одной.',
+      nt(
+        'A note’s position needs a clef to tell us its pitch. The treble clef is a G clef that places G4 on the second line; the bass clef is an F clef that places F3 on the fourth. Count neighbouring note names up or down from that reference. Different clefs place different registers conveniently on the same five lines and reduce the need for ledger lines.',
+        'Чтобы определить высоту по положению ноты, нужен ключ. Скрипичный ключ — ключ соль: он указывает соль первой октавы на второй линейке. Басовый — ключ фа: он указывает фа малой октавы на четвёртой. От этой опорной ноты отсчитывают соседние ступени вверх или вниз. Разные ключи позволяют удобно записывать разные регистры на тех же пяти линейках и реже использовать добавочные.',
+        'Erst der Schlüssel ordnet einer Notenposition eine Tonhöhe zu. Der Violinschlüssel ist ein G-Schlüssel mit g′ auf der zweiten Linie; der Bassschlüssel ein F-Schlüssel mit f auf der vierten. Zähle von diesem Bezugston aus die benachbarten Stammtöne aufwärts oder abwärts. Verschiedene Schlüssel bringen unterschiedliche Tonlagen günstig auf denselben fünf Linien unter und sparen Hilfslinien.',
       ),
-      b(
-        'Treble and bass are the two to read without hesitation; middle C sits on one ledger line below the first and above the second. The C clefs mark C4 with their centre: the alto clef on the third line, the tenor clef on the fourth. A brace joins two staves into one keyboard system.',
-        'Скрипичный и басовый — те два ключа, которые читают без запинки; до первой октавы лежит на добавочной линейке под первым станом и над вторым. До-ключи указывают до первой октавы на той линейке, которую охватывают: альтовый — на третьей, теноровый — на четвёртой. Два нотоносца, соединённые акколадой, образуют одну систему для фортепиано.',
+      nt(
+        'Middle C (C4) sits on the first ledger line below a treble staff or above a bass staff. C clefs mark C4 with their centre: the alto clef on the third line, the tenor clef on the fourth. Piano music usually joins two staves with a brace; read the clef printed on each staff.',
+        'До первой октавы находится на первой добавочной линейке под скрипичным станом или над басовым. Ключи до указывают эту ноту своей серединой: альтовый — на третьей линейке, теноровый — на четвёртой. В фортепианной записи два стана обычно соединены акколадой; на каждом читайте его собственный ключ.',
+        'Das eingestrichene c (c′) steht auf der ersten Hilfslinie unter dem Violinsystem oder über dem Basssystem. C-Schlüssel markieren c′ mit ihrer Mitte: der Altschlüssel auf der dritten, der Tenorschlüssel auf der vierten Linie. Klaviermusik verbindet gewöhnlich zwei Notensysteme mit einer geschweiften Klammer; lies den Schlüssel jedes Systems.',
       ),
     ],
     experiment: b(
@@ -404,15 +424,20 @@ export const lessons = [
   },
   {
     id: 'dots-ties',
-    title: b('Dots and ties', 'Точки и лиги'),
+    title: nt(
+      'Dots and ties',
+      'Точки и связующие лиги',
+      'Punkte und Haltebögen',
+    ),
     category: b('Notation', 'Нотация'),
     summary: b(
       'Write lengths the plain halving series cannot reach.',
       'Записывайте длительности, которых нет в делении пополам.',
     ),
-    formula: b(
-      'dotted note = 3 × next smaller  ·  tie: value + value',
-      'нота с точкой = 3 × следующая меньшая  ·  лига: длительность + длительность',
+    formula: nt(
+      'Dotted value = original × 3/2 · double-dotted = original × 7/4 · tie: add values',
+      'С точкой = исходная длительность × 3/2 · с двумя = × 7/4 · связующая лига: сумма длительностей',
+      'Punktiert = Ausgangswert × 3/2 · doppelt punktiert = × 7/4 · Haltebogen: Werte addieren',
     ),
     paragraphs: [
       b(
@@ -469,9 +494,10 @@ export const lessons = [
     id: 'tempo',
     title: b('Tempo and its marks', 'Темп и его обозначения'),
     category: b('Performance', 'Исполнение'),
-    summary: b(
-      'Read how fast a piece goes, and when that changes.',
-      'Читайте, как быстро идёт музыка и когда это меняется.',
+    summary: nt(
+      'Read tempo words and calculate a note’s duration from a metronome mark.',
+      'Понимайте темповые обозначения и вычисляйте длительность по метроному.',
+      'Verstehe Tempowörter und berechne eine Dauer aus der Metronomangabe.',
     ),
     formula: nt(
       '♩ = 120 → one quarter = 0.5 s',
@@ -479,13 +505,15 @@ export const lessons = [
       '♩ = 120 → eine Viertel = 0,5 s',
     ),
     paragraphs: [
-      b(
-        'A tempo word at the head of a piece sets its speed, and it holds until another word replaces it. Largo and Adagio are slow, Andante is walking, Moderato is moderate, Allegro is fast, Presto faster still. The words also carry character, so their ranges overlap rather than forming a scale.',
-        'Темповое слово в начале пьесы задаёт скорость и действует до тех пор, пока его не сменит другое. Largo и Adagio — медленно, Andante — шагом, Moderato — умеренно, Allegro — быстро, Presto — ещё быстрее. Эти слова говорят и о характере, поэтому их границы перекрываются и не образуют шкалы.',
+      nt(
+        'Tempo describes how quickly the musical pulse moves. Italian words often suggest both speed and character: Adagio is slow, Andante suggests a walking pace, Moderato a moderate pace, and Allegro a lively, usually fast movement. These descriptions overlap; they are not exact BPM ranges. Follow later tempo changes and the context of the piece.',
+        'Темп — скорость движения музыкального пульса. Итальянские слова часто передают и скорость, и характер: Adagio — медленно, Andante — в темпе шага, Moderato — умеренно, Allegro — оживлённо, обычно быстро. Эти значения пересекаются и не задают точных диапазонов метронома. Учитывайте последующие изменения темпа и характер произведения.',
+        'Tempo bezeichnet die Geschwindigkeit des musikalischen Pulses. Italienische Wörter geben oft Tempo und Charakter an: Adagio bedeutet langsam, Andante etwa im Gehtempo, Moderato mäßig und Allegro lebhaft, meist schnell. Diese Beschreibungen überschneiden sich und sind keine exakten BPM-Bereiche. Beachte spätere Tempoänderungen und den Zusammenhang des Stücks.',
       ),
-      b(
-        'A metronome mark fixes the speed in beats per minute against a named note value, as in ♩ = 120. Gradual change has its own vocabulary — accelerando faster, ritardando slower — and the return to the main speed is marked a tempo. A fermata holds a note or rest as long as the performer takes.',
-        'Метрономическое обозначение закрепляет скорость в ударах в минуту при названной длительности: ♩ = 120. У постепенного изменения свой словарь — accelerando ускоряя, ritardando замедляя, — а возвращение к основному темпу отмечают словами a tempo. Фермата продлевает ноту или паузу настолько, насколько решит исполнитель.',
+      nt(
+        'A metronome mark pairs a note value with a number: ♩ = 120 means 120 quarter notes per minute, so one quarter lasts 60 / 120 = 0.5 seconds. Accelerando asks for a gradual acceleration; ritardando for a gradual slowing. A tempo returns to the preceding tempo, while Tempo I returns to the initial tempo. A fermata prolongs a note or rest without a fixed multiplier; its length depends on the musical context.',
+        'Метрономическое обозначение соединяет длительность и число: ♩ = 120 означает 120 четвертей в минуту, поэтому одна четверть длится 60 / 120 = 0,5 секунды. Accelerando предписывает постепенное ускорение, ritardando — замедление. A tempo возвращает предшествующий темп, а Tempo I — первоначальный. Фермата продлевает ноту или паузу без фиксированного множителя; степень продления зависит от музыкального контекста.',
+        'Eine Metronomangabe verbindet einen Notenwert mit einer Zahl: ♩ = 120 bedeutet 120 Viertelnoten pro Minute; eine Viertel dauert also 60 / 120 = 0,5 Sekunden. Accelerando verlangt allmähliches Beschleunigen, ritardando allmähliches Verlangsamen. A tempo führt zum vorigen Tempo zurück, Tempo I zum Anfangstempo. Eine Fermate verlängert eine Note oder Pause ohne festen Faktor; ihre Dauer richtet sich nach dem musikalischen Zusammenhang.',
       ),
     ],
     experiment: b(
@@ -501,15 +529,17 @@ export const lessons = [
     id: 'dynamics',
     title: b('Loudness without a number', 'Громкость без числа'),
     category: b('Performance', 'Исполнение'),
-    summary: b(
-      'Read dynamic marks as relative levels, not measured ones.',
-      'Читайте динамические знаки как относительные, а не измеренные.',
+    summary: nt(
+      'Distinguish dynamic levels, gradual changes and accents.',
+      'Различайте уровни динамики, постепенные изменения и акценты.',
+      'Unterscheide dynamische Grade, allmähliche Änderungen und Akzente.',
     ),
     formula: b('pp < p < mp < mf < f < ff', 'pp < p < mp < mf < f < ff'),
     paragraphs: [
-      b(
-        'The letters name relative loudness: p for piano, f for forte, m for mezzo. A mark says only that this passage is louder or softer than what surrounds it. None names a measured level, so the same f differs between a hall and a small room, and between a trumpet and a flute.',
-        'Буквы обозначают относительную громкость: p — piano, f — forte, m — mezzo. Знак говорит лишь о том, что этот участок громче или тише соседних. Ни один из них не называет измеренного уровня: одно и то же f звучит по-разному в зале и в небольшой комнате, у трубы и у флейты.',
+      nt(
+        'Dynamic marks guide the strength of the sound: p (piano) means soft, f (forte) loud, mp (mezzo piano) moderately soft and mf (mezzo forte) moderately loud. They establish a level within the musical context; p at the start of a piece does not require an earlier loud passage. They specify no fixed decibel value. Instrument, room and ensemble balance affect how a mark is realized.',
+        'Динамические обозначения указывают силу звучания: p (пиано) — тихо, f (форте) — громко, mp (меццо-пиано) — умеренно тихо, mf (меццо-форте) — умеренно громко. Они задают уровень в музыкальном контексте: пиано в начале пьесы не требует предшествующего громкого участка. Фиксированного значения в децибелах у этих знаков нет. Исполнение зависит от инструмента, помещения и баланса ансамбля.',
+        'Dynamikzeichen geben die Klangstärke an: p (piano) heißt leise, f (forte) laut, mp (mezzopiano) mäßig leise und mf (mezzoforte) mäßig laut. Sie bestimmen einen Grad im musikalischen Zusammenhang; ein p am Stückanfang setzt keine vorherige laute Stelle voraus. Einen festen Dezibelwert geben sie nicht an. Instrument, Raum und Ensemblebalance beeinflussen die Ausführung.',
       ),
       nt(
         'Crescendo increases the level and decrescendo decreases it over the indicated span. An accent or sforzato emphasizes an event relative to the surrounding dynamic level; it does not prescribe a fixed sound pressure.',
@@ -517,9 +547,10 @@ export const lessons = [
         'Crescendo steigert, Decrescendo verringert die Lautstärke auf der angegebenen Strecke. Akzent oder Sforzato betont ein Ereignis im Verhältnis zur umgebenden Dynamik und legt keinen festen Schalldruck fest.',
       ),
     ],
-    experiment: b(
-      'Play one tone at a comfortable volume, then louder and softer, naming each level only by comparison with the one before.',
-      'Сыграйте один тон на удобной громкости, затем громче и тише, называя каждый уровень только по сравнению с предыдущим.',
+    experiment: nt(
+      'At a comfortable listening volume, compare the Softer and Louder examples. They play the same pitch at different levels: the lab illustrates a contrast, while the musical meaning of p and f depends on context.',
+      'На комфортной громкости сравните примеры «Тише» и «Громче». Они воспроизводят один звук с разной громкостью: лаборатория показывает контраст, а музыкальный смысл пиано и форте зависит от контекста.',
+      'Vergleiche bei angenehmer Hörlautstärke die Beispiele „Leiser“ und „Lauter“. Sie spielen denselben Ton mit unterschiedlicher Lautstärke. Das Labor veranschaulicht den Kontrast; die musikalische Bedeutung von p und f hängt vom Zusammenhang ab.',
     ),
     hz: 440,
     wave: 'sine',
@@ -530,18 +561,21 @@ export const lessons = [
     id: 'articulation',
     title: b('Joined or separated', 'Слитно или раздельно'),
     category: b('Performance', 'Исполнение'),
-    summary: b(
-      'Tell legato from staccato and read the middle cases.',
-      'Различайте легато и стаккато и читайте промежуточные случаи.',
+    summary: nt(
+      'Distinguish legato, staccato, tenuto and portato in notation and sound.',
+      'Различайте легато, стаккато, тенуто и портато в записи и на слух.',
+      'Unterscheide Legato, Staccato, Tenuto und Portato in Schrift und Klang.',
     ),
-    formula: b(
-      'legato ⌢ → tenuto → portato → staccato · → staccatissimo ▾',
-      'легато ⌢ → тенуто → портато → стаккато · → стаккатиссимо ▾',
+    formula: nt(
+      'Legato: connected · Staccato: detached · Tenuto: held · Portato: gently separated',
+      'Легато: связно · Стаккато: отрывисто · Тенуто: выдержанно · Портато: мягко разделяя',
+      'Legato: gebunden · Staccato: abgesetzt · Tenuto: ausgehalten · Portato: sanft getrennt',
     ),
     paragraphs: [
-      b(
-        'Articulation describes how one note joins or separates from the next. A slur over a group asks for legato: the notes follow without a break between them. A dot asks for staccato, each note shortened and detached, with the silence taken from its own written value rather than from the next note.',
-        'Артикуляция описывает, как один звук соединяется со следующим или отделяется от него. Лига над группой требует легато: звуки идут без разрыва. Точка требует стаккато: звук укорачивается и отделяется, а тишина берётся из его собственной записанной длительности, а не из следующей ноты.',
+      nt(
+        'Articulation shapes a note’s attack, duration and connection with its neighbours. A slur usually groups notes for connected playing; on some instruments it also indicates a specific technique. A staccato dot above or below a note asks for detached playing. Shortening the sound creates a gap within its written value; the next note still starts at its written time. A dot to the right has a different meaning: it lengthens the note.',
+        'Артикуляция определяет начало звука, его выдерживание и связь с соседними звуками. Лига обычно объединяет ноты для связного исполнения; на некоторых инструментах она также указывает приём игры. Точка стаккато над или под нотой требует отрывистого исполнения. Укороченный звук оставляет паузу внутри своей записанной длительности; следующая нота вступает в положенный момент. Точка справа означает другое: она увеличивает длительность.',
+        'Artikulation gestaltet Tonansatz, Tondauer und die Verbindung zu benachbarten Tönen. Ein Bindebogen fasst gewöhnlich Noten zum gebundenen Spiel zusammen; auf manchen Instrumenten bezeichnet er auch eine bestimmte Spieltechnik. Ein Staccatopunkt über oder unter der Note verlangt abgesetztes Spiel. Der verkürzte Ton lässt innerhalb seines Notenwerts eine Lücke; der nächste Einsatz bleibt an seiner notierten Stelle. Ein Punkt rechts neben der Note bedeutet dagegen eine Verlängerung.',
       ),
       nt(
         'Tenuto asks for a held note; portato combines a slur with separation, and non legato asks that successive notes not be joined. Modern engraving distinguishes a staccato dot from a staccatissimo wedge. Neither is a universal numerical duration: consult the edition and instrument. An unmarked line still requires an articulation choice.',
@@ -560,11 +594,16 @@ export const lessons = [
   },
   {
     id: 'repeats',
-    title: b('Printed order, played order', 'Порядок записи и порядок игры'),
+    title: nt(
+      'Printed order, played order',
+      'Повторы и порядок исполнения',
+      'Wiederholungen und Spielreihenfolge',
+    ),
     category: b('Performance', 'Исполнение'),
-    summary: b(
-      'Follow a score whose printed order is not the played one.',
-      'Следуйте по нотам, где порядок записи не равен порядку игры.',
+    summary: nt(
+      'Trace repeats, alternate endings and return instructions before playing.',
+      'Проследите повторы, вольты и возвраты перед исполнением.',
+      'Verfolge Wiederholungen, Klammern und Sprunganweisungen vor dem Spielen.',
     ),
     formula: b(
       '‖: … :‖ · [1.] [2.] · D.C. al fine · D.S. al fine',
@@ -691,9 +730,10 @@ export const terms = [
   },
   {
     title: b('Natural note', 'Основная ступень'),
-    body: b(
-      'A note carrying one of the seven plain letter names, with no sharp or flat attached.',
-      'Ступень, обозначаемая только слоговым названием, без диеза и бемоля.',
+    body: nt(
+      'A note on an unaltered pitch class: C, D, E, F, G, A or B. These are the white keys of the piano; a natural sign may explicitly restore one after an alteration.',
+      'Звук одной из семи основных ступеней: до, ре, ми, фа, соль, ля или си, без повышения или понижения. Им соответствуют белые клавиши фортепиано. После альтерации основную ступень может восстанавливать знак бекара.',
+      'Ein Ton der unveränderten Stammtonreihe C, D, E, F, G, A, H. Diesen Tönen entsprechen die weißen Klaviertasten; ein Auflösungszeichen kann nach einer Veränderung den Stammton wiederherstellen.',
     ),
     lesson: 'note-names',
   },
@@ -706,10 +746,11 @@ export const terms = [
     lesson: 'note-names',
   },
   {
-    title: b('Octave register', 'Регистр'),
-    body: b(
-      'The stretch of pitches from one C up to the B above it, for example C4 to B4.',
-      'Участок звукоряда в пределах одной октавы, от до до ближайшего си над ним.',
+    title: nt('Octave register', 'Октавный диапазон', 'Oktavlage'),
+    body: nt(
+      'An octave-based naming range from C to the B above it, for example C4–B4. Register in a broader musical sense means a region of pitch and need not span exactly one octave.',
+      'Диапазон от до до ближайшего си выше него, используемый для названия октав, например первая октава. Более общее понятие регистра обозначает область высот и не обязано совпадать с одной октавой.',
+      'Ein Bereich der Oktavbenennung von C bis zum H darüber, etwa c′–h′. Ein Register im weiteren musikalischen Sinn ist ein Tonhöhenbereich und muss nicht genau eine Oktave umfassen.',
     ),
     lesson: 'note-names',
   },
@@ -723,9 +764,10 @@ export const terms = [
   },
   {
     title: b('Middle C', 'До первой октавы'),
-    body: b(
-      'The C nearest the middle of a piano keyboard, written C4 and sounding at about 261.6 Hz.',
-      'До в середине фортепианной клавиатуры, начало первой октавы, около 261,6 Гц.',
+    body: nt(
+      'The C near the middle of a piano keyboard, written C4. At A4 = 440 Hz in twelve-tone equal temperament, its frequency is about 261.6 Hz; another reference pitch or tuning changes that frequency.',
+      'До в средней части фортепианной клавиатуры, начало первой октавы. При ля первой октавы = 440 Гц в двенадцатиступенном равномерном строе его частота примерно 261,6 Гц; при другой опорной частоте или строе она меняется.',
+      'Das c nahe der Klaviaturmitte, geschrieben c′. Bei a′ = 440 Hz in zwölfstufiger gleichstufiger Stimmung liegt es bei etwa 261,6 Hz; ein anderer Bezugston oder eine andere Stimmung verändert diese Frequenz.',
     ),
     lesson: 'note-names',
   },
@@ -746,7 +788,7 @@ export const terms = [
     lesson: 'staff',
   },
   {
-    title: b('Space', 'Промежуток'),
+    title: nt('Space', 'Межлинейный промежуток', 'Zwischenraum'),
     body: b(
       'A space is the gap between two neighbouring lines, and it carries a note head just as a line does.',
       'Промежуток — расстояние между соседними линейками, и нота размещается на нём так же, как на линейке.',
@@ -818,7 +860,7 @@ export const terms = [
     lesson: 'clefs',
   },
   {
-    title: b('Brace', 'Акколада'),
+    title: nt('Brace', 'Акколада', 'Geschweifte Klammer'),
     body: b(
       'A brace is the curved sign that joins two staves into a single keyboard system.',
       'Акколада — фигурная скобка, которая соединяет нотоносцы в одну систему.',
@@ -827,9 +869,10 @@ export const terms = [
   },
   {
     title: b('Accidental', 'Знак альтерации'),
-    body: b(
-      'A sign placed before a note head that raises or lowers the written pitch.',
-      'Знак перед нотной головкой, повышающий или понижающий записанную высоту.',
+    body: nt(
+      'A sign that specifies a note’s alteration relative to its natural letter name: sharp, flat, double sharp, double flat or natural. A natural restores the unaltered pitch; signs are not added to one another.',
+      'Знак, указывающий изменение основной ступени: диез, бемоль, дубль-диез, дубль-бемоль или бекар. Бекар восстанавливает основную ступень; знаки не складываются друг с другом.',
+      'Ein Zeichen, das die Veränderung gegenüber dem Stammton festlegt: Kreuz, Be, Doppelkreuz, Doppel-Be oder Auflösungszeichen. Das Auflösungszeichen stellt den Stammton wieder her; die Zeichen werden nicht addiert.',
     ),
     lesson: 'accidental-signs',
   },
@@ -914,7 +957,7 @@ export const terms = [
     lesson: 'accidental-scope',
   },
   {
-    title: b('Tie', 'Лига'),
+    title: nt('Tie', 'Связующая лига', 'Haltebogen'),
     body: b(
       'A curved line joining two note heads of the same pitch into one sound.',
       'Дуга, соединяющая две ноты одной высоты в один звук.',
@@ -946,7 +989,7 @@ export const terms = [
     lesson: 'enharmonics',
   },
   {
-    title: b('Letter name', 'Основная ступень'),
+    title: nt('Letter name', 'Название основной ступени', 'Stammtonname'),
     body: b(
       'The plain name of a note before any accidental is added.',
       'Основное название ноты до прибавления знака альтерации.',
@@ -963,17 +1006,19 @@ export const terms = [
   },
   {
     title: b('Raised degree', 'Повышенная ступень'),
-    body: b(
-      'A scale degree written a semitone higher than its plain form.',
-      'Ступень, записанная на полутон выше своего основного вида.',
+    body: nt(
+      'A degree raised relative to the scale being discussed, usually by a semitone: G becomes G♯ when the seventh degree of A natural minor is raised.',
+      'Ступень, повышенная относительно рассматриваемой гаммы, обычно на полутон: при повышении VII ступени ля натурального минора соль превращается в соль-диез.',
+      'Eine gegenüber der betrachteten Tonleiter erhöhte Stufe, meist um einen Halbton: Wird die siebte Stufe der natürlichen a-Moll-Tonleiter erhöht, wird G zu Gis.',
     ),
     lesson: 'enharmonics',
   },
   {
     title: b('Lowered degree', 'Пониженная ступень'),
-    body: b(
-      'A scale degree written a semitone lower than its plain form.',
-      'Ступень, записанная на полутон ниже своего основного вида.',
+    body: nt(
+      'A degree lowered relative to the scale being discussed, usually by a semitone: lowering the third degree of C major changes E to E♭.',
+      'Ступень, пониженная относительно рассматриваемой гаммы, обычно на полутон: при понижении III ступени до мажора ми превращается в ми-бемоль.',
+      'Eine gegenüber der betrachteten Tonleiter erniedrigte Stufe, meist um einen Halbton: Wird die dritte Stufe von C-Dur erniedrigt, wird E zu Es.',
     ),
     lesson: 'enharmonics',
   },
@@ -1003,9 +1048,10 @@ export const terms = [
   },
   {
     title: b('Whole note', 'Целая нота'),
-    body: b(
-      'The longest value of the common series; two half notes fill it exactly.',
-      'Самая долгая длительность обычного ряда: её точно заполняют две половинные.',
+    body: nt(
+      'A note value equal to two half notes or four quarter notes. It is drawn with an open head and no stem. Longer values, such as the breve, also exist; a whole note is not always a whole bar.',
+      'Длительность, равная двум половинным или четырём четвертям. Записывается незакрашенной головкой без штиля. Существуют и более долгие значения, например бревис; целая нота не всегда занимает ровно такт.',
+      'Ein Notenwert von zwei Halben oder vier Vierteln, mit offenem Kopf ohne Hals. Längere Werte wie die Brevis gibt es ebenfalls; eine ganze Note füllt nicht in jeder Taktart einen ganzen Takt.',
     ),
     lesson: 'durations',
   },
@@ -1059,9 +1105,10 @@ export const terms = [
   },
   {
     title: b('Slur', 'Артикуляционная лига'),
-    body: b(
-      'A curved line over notes of different pitch that asks for legato.',
-      'Дуга над нотами разной высоты, требующая легато.',
+    body: nt(
+      'A curved line above or below a group of notes indicating connection or grouping. Depending on the instrument, it can also specify a playing technique. Unlike a tie, it does not add the notes’ values into one sustained sound.',
+      'Дуга над или под группой нот, обозначающая связное исполнение или объединение группы. В зависимости от инструмента она может указывать и приём игры. В отличие от связующей лиги, она не складывает длительности в один выдержанный звук.',
+      'Ein Bogen über oder unter einer Notengruppe, der Verbindung oder Gruppierung anzeigt. Je nach Instrument kann er auch eine Spieltechnik vorschreiben. Anders als ein Haltebogen addiert er die Notenwerte nicht zu einem gehaltenen Ton.',
     ),
     lesson: 'dots-ties',
   },
@@ -1098,10 +1145,15 @@ export const terms = [
     lesson: 'beat-division',
   },
   {
-    title: b('Irregular group', 'Нерегулярная группа'),
-    body: b(
-      'Any division of a value that halving alone cannot produce.',
-      'Любое деление длительности, которого нельзя получить одним делением пополам.',
+    title: nt(
+      'Irregular group',
+      'Особое деление длительностей',
+      'Unregelmäßige Teilung',
+    ),
+    body: nt(
+      'A rhythmic division that replaces the usual subdivision with a specified ratio. In a 3:2 triplet, three written eighth-note units take the time of two ordinary eighths; the group may include rests.',
+      'Деление длительности, заменяющее обычное дробление указанным отношением. В триоли 3:2 три записанные восьмые занимают время двух обычных восьмых; в группе возможны и паузы.',
+      'Eine rhythmische Teilung, die die übliche Unterteilung durch ein angegebenes Verhältnis ersetzt. In einer Triole 3:2 dauern drei notierte Achtel so lange wie zwei reguläre Achtel; die Gruppe kann auch Pausen enthalten.',
     ),
     lesson: 'beat-division',
   },
@@ -1146,7 +1198,7 @@ export const terms = [
     lesson: 'tempo',
   },
   {
-    title: b('Beats per minute', 'Ударов в минуту'),
+    title: nt('Beats per minute', 'Удары в минуту', 'Schläge pro Minute'),
     body: b(
       'The unit of a metronome mark: the count of beats in sixty seconds.',
       'Единица метрономического обозначения: число долей за шестьдесят секунд.',
@@ -1179,9 +1231,10 @@ export const terms = [
   },
   {
     title: b('Fermata', 'Фермата'),
-    body: b(
-      'A sign that holds a note or rest for as long as the performer takes.',
-      'Знак, продлевающий ноту или паузу настолько, насколько решит исполнитель.',
+    body: nt(
+      'A sign that prolongs a note or rest beyond its written value without specifying a fixed multiplier. The phrase, style and performance context guide the duration.',
+      'Знак продления ноты или паузы сверх записанной длительности без фиксированного множителя. Продолжительность определяется фразой, стилем и исполнительским контекстом.',
+      'Ein Zeichen, das eine Note oder Pause über ihren notierten Wert hinaus verlängert, ohne festen Faktor. Phrase, Stil und Aufführungskontext bestimmen die Dauer.',
     ),
     lesson: 'tempo',
   },
@@ -1194,7 +1247,8 @@ export const terms = [
     lesson: 'tempo',
   },
   {
-    title: b('piano (p)', 'пиано (p)'),
+    id: 'piano (p)',
+    title: nt('Piano (p)', 'Пиано (p)', 'Piano (p)'),
     body: b(
       'The mark p asks for a soft level relative to the passages around it.',
       'Знак p требует тихого звучания относительно соседних участков.',
@@ -1202,7 +1256,8 @@ export const terms = [
     lesson: 'dynamics',
   },
   {
-    title: b('forte (f)', 'форте (f)'),
+    id: 'forte (f)',
+    title: nt('Forte (f)', 'Форте (f)', 'Forte (f)'),
     body: b(
       'The mark f asks for a loud level relative to the passages around it.',
       'Знак f требует громкого звучания относительно соседних участков.',
@@ -1210,15 +1265,18 @@ export const terms = [
     lesson: 'dynamics',
   },
   {
-    title: b('mezzo (mp, mf)', 'меццо (mp, mf)'),
-    body: b(
-      'Mezzo means half, so mp and mf sit between piano and forte.',
-      'Mezzo значит «наполовину»: mp и mf занимают место между piano и forte.',
+    id: 'mezzo (mp, mf)',
+    title: nt('Mezzo (mp, mf)', 'Меццо (mp, mf)', 'Mezzo (mp, mf)'),
+    body: nt(
+      'Mezzo means “half” or “moderately”: mp asks for moderately soft playing and mf for moderately loud. These are relative dynamic levels, not an instruction to halve amplitude or perceived loudness.',
+      'Mezzo означает «наполовину» или «умеренно»: mp — умеренно тихо, mf — умеренно громко. Это относительные уровни динамики, а не указание вдвое уменьшить амплитуду или воспринимаемую громкость.',
+      'Mezzo bedeutet „halb“ oder „mäßig“: mp verlangt mäßig leises, mf mäßig lautes Spiel. Gemeint sind relative dynamische Grade, keine Halbierung der Amplitude oder der wahrgenommenen Lautstärke.',
     ),
     lesson: 'dynamics',
   },
   {
-    title: b('crescendo', 'крещендо'),
+    id: 'crescendo',
+    title: nt('Crescendo', 'Крещендо', 'Crescendo'),
     body: b(
       'A crescendo asks for a gradual increase in loudness across the passage it covers.',
       'Крещендо — постепенное усиление звучности на протяжении отмеченного отрезка.',
@@ -1226,7 +1284,8 @@ export const terms = [
     lesson: 'dynamics',
   },
   {
-    title: b('decrescendo', 'диминуэндо'),
+    id: 'decrescendo',
+    title: nt('Decrescendo', 'Диминуэндо', 'Decrescendo'),
     body: b(
       'A decrescendo, also written diminuendo, asks for a gradual decrease in loudness.',
       'Диминуэндо, оно же декрещендо, — постепенное ослабление звучности.',
@@ -1234,7 +1293,8 @@ export const terms = [
     lesson: 'dynamics',
   },
   {
-    title: b('hairpin', 'вилка'),
+    id: 'hairpin',
+    title: nt('Hairpin', 'Вилка', 'Gabel'),
     body: b(
       'A hairpin is the pair of converging lines that draws a crescendo or decrescendo over the staff.',
       'Вилка — пара сходящихся линий, обозначающая крещендо или диминуэндо у нотоносца.',
@@ -1242,7 +1302,8 @@ export const terms = [
     lesson: 'dynamics',
   },
   {
-    title: b('sforzato (sf, sfz)', 'сфорцато (sf, sfz)'),
+    id: 'sforzato (sf, sfz)',
+    title: nt('Sforzato (sf, sfz)', 'Сфорцато (sf, sfz)', 'Sforzato (sf, sfz)'),
     body: b(
       'Sforzato marks a single note as suddenly stronger than the level in force.',
       'Сфорцато отмечает отдельный звук как внезапно более сильный, чем установленный уровень.',
@@ -1250,7 +1311,8 @@ export const terms = [
     lesson: 'dynamics',
   },
   {
-    title: b('accent', 'акцент'),
+    id: 'accent',
+    title: nt('Accent', 'Акцент', 'Akzent'),
     body: b(
       'An accent sign asks for a single note to be given more weight than its neighbours.',
       'Знак акцента требует выделить один звук сильнее соседних.',
@@ -1258,7 +1320,8 @@ export const terms = [
     lesson: 'dynamics',
   },
   {
-    title: b('articulation', 'артикуляция'),
+    id: 'articulation',
+    title: nt('Articulation', 'Артикуляция', 'Artikulation'),
     body: b(
       'Articulation is how one note joins or separates from the note after it.',
       'Артикуляция — способ соединения или разделения соседних звуков.',
@@ -1266,15 +1329,18 @@ export const terms = [
     lesson: 'articulation',
   },
   {
-    title: b('staccato', 'стаккато'),
-    body: b(
-      'A dot over a note asks for staccato: the note is shortened and detached, the silence coming out of its own value.',
-      'Точка над нотой означает стаккато: звук укорачивается и отделяется, а тишина берётся из его собственной длительности.',
+    id: 'staccato',
+    title: nt('Staccato', 'Стаккато', 'Staccato'),
+    body: nt(
+      'A dot above or below a note asks for detached playing: the sound is shortened within its written value. A dot to the right of the note instead increases its value.',
+      'Точка над или под нотой означает отрывистое исполнение: звук укорачивается в пределах записанной длительности. Точка справа от ноты, напротив, увеличивает длительность.',
+      'Ein Punkt über oder unter der Note verlangt abgesetztes Spiel: Der Ton wird innerhalb seines Notenwerts verkürzt. Ein Punkt rechts neben der Note verlängert dagegen den Wert.',
     ),
     lesson: 'articulation',
   },
   {
-    title: b('staccatissimo', 'стаккатиссимо'),
+    id: 'staccatissimo',
+    title: nt('Staccatissimo', 'Стаккатиссимо', 'Staccatissimo'),
     body: b(
       'In modern engraving a wedge asks for staccatissimo, shorter than staccato.',
       'В современной нотной графике клин означает стаккатиссимо — короче, чем стаккато.',
@@ -1282,15 +1348,18 @@ export const terms = [
     lesson: 'articulation',
   },
   {
-    title: b('tenuto', 'тенуто'),
-    body: b(
-      'A short horizontal line over a note asks for its full written length, and often for a slight weight.',
-      'Короткая горизонтальная черта над нотой требует выдержать её полную длительность, часто с небольшим нажимом.',
+    id: 'tenuto',
+    title: nt('Tenuto', 'Тенуто', 'Tenuto'),
+    body: nt(
+      'A short horizontal line above or below a note asks that it be held, often with some emphasis. The instrument and context guide the execution; the line gives no fixed loudness.',
+      'Короткая горизонтальная черта над или под нотой требует выдержать звук, нередко с подчёркиванием. Исполнение зависит от инструмента и контекста; фиксированной громкости знак не задаёт.',
+      'Ein kurzer waagerechter Strich über oder unter der Note verlangt Aushalten, oft mit einer Betonung. Instrument und Zusammenhang bestimmen die Ausführung; das Zeichen legt keine feste Lautstärke fest.',
     ),
     lesson: 'articulation',
   },
   {
-    title: b('portato', 'портато'),
+    id: 'portato',
+    title: nt('Portato', 'Портато', 'Portato'),
     body: b(
       'Portato writes dots under a slur and asks for notes that are separated but not sharply detached.',
       'Портато записывают точками под лигой: звуки отделяются, но не резко.',
@@ -1298,7 +1367,8 @@ export const terms = [
     lesson: 'articulation',
   },
   {
-    title: b('phrasing', 'фразировка'),
+    id: 'phrasing',
+    title: nt('Phrasing', 'Фразировка', 'Phrasierung'),
     body: b(
       'Phrasing groups notes into units of musical sense and is not the same thing as articulation.',
       'Фразировка объединяет звуки в смысловые построения и не тождественна артикуляции.',
@@ -1306,7 +1376,8 @@ export const terms = [
     lesson: 'articulation',
   },
   {
-    title: b('double bar', 'двойная тактовая черта'),
+    id: 'double bar',
+    title: nt('Double bar', 'Двойная тактовая черта', 'Doppelstrich'),
     body: b(
       'A double bar is two thin lines marking the end of a section rather than the end of the piece.',
       'Двойная тактовая черта — две тонкие линии, отмечающие конец раздела, а не конец пьесы.',
@@ -1314,7 +1385,8 @@ export const terms = [
     lesson: 'repeats',
   },
   {
-    title: b('final bar line', 'заключительная черта'),
+    id: 'final bar line',
+    title: nt('Final bar line', 'Заключительная черта', 'Schlussstrich'),
     body: b(
       'A thin line followed by a thick one marks the end of the piece or movement.',
       'Тонкая линия с последующей жирной отмечает конец пьесы или части.',
@@ -1322,7 +1394,8 @@ export const terms = [
     lesson: 'repeats',
   },
   {
-    title: b('repeat sign', 'знак репризы'),
+    id: 'repeat sign',
+    title: nt('Repeat sign', 'Знак репризы', 'Wiederholungszeichen'),
     body: b(
       'A repeat sign is a double bar with two dots, and the dots face the music to be played again.',
       'Знак репризы — двойная черта с двумя точками, обращёнными к музыке, которую играют повторно.',
@@ -1330,7 +1403,8 @@ export const terms = [
     lesson: 'repeats',
   },
   {
-    title: b('first and second endings', 'вольты'),
+    id: 'first and second endings',
+    title: nt('First and second endings', 'Вольты', 'Wiederholungsklammer'),
     body: b(
       'First and second endings are bracketed bars that give the repeat a different continuation.',
       'Вольты — отмеченные скобками такты, дающие повторению другое продолжение.',
@@ -1338,7 +1412,8 @@ export const terms = [
     lesson: 'repeats',
   },
   {
-    title: b('da capo', 'da capo'),
+    id: 'da capo',
+    title: nt('Da capo', 'Da capo', 'Da capo'),
     body: b(
       'Da capo sends the reader back to the beginning of the piece.',
       'Da capo отсылает исполнителя к началу пьесы.',
@@ -1346,7 +1421,8 @@ export const terms = [
     lesson: 'repeats',
   },
   {
-    title: b('segno', 'сеньо'),
+    id: 'segno',
+    title: nt('Segno', 'Сеньо', 'Segno'),
     body: b(
       'The segno is the sign that marks the place a dal segno returns to.',
       'Сеньо — знак, отмечающий место, к которому возвращает указание dal segno.',
@@ -1354,7 +1430,8 @@ export const terms = [
     lesson: 'repeats',
   },
   {
-    title: b('dal segno', 'dal segno'),
+    id: 'dal segno',
+    title: nt('Dal segno', 'Dal segno', 'Dal segno'),
     body: b(
       'Dal segno sends the reader back to the segno rather than to the beginning.',
       'Dal segno отсылает не к началу, а к знаку сеньо.',
@@ -1362,7 +1439,8 @@ export const terms = [
     lesson: 'repeats',
   },
   {
-    title: b('fine', 'fine'),
+    id: 'fine',
+    title: nt('Fine', 'Fine', 'Fine'),
     body: b(
       'Fine marks where the piece stops after a da capo or dal segno return.',
       'Fine отмечает место остановки после возврата по da capo или dal segno.',
@@ -1371,7 +1449,9 @@ export const terms = [
   },
 ].map((term) => {
   const source =
-    notationTermSources[term.title.en] ?? notationTopicSources[term.lesson];
+    notationTermSources[
+      ('id' in term ? term.id : undefined) ?? term.title.en
+    ] ?? notationTopicSources[term.lesson];
   return 'source' in term || !source ? term : { ...term, source };
 });
 export const patterns: Record<
@@ -1555,9 +1635,9 @@ export const exerciseExplanations: Record<ErrorTag, LocalText> = {
     'Prüfe Kopf, Hals, Fähnchen oder Pausenform; bei der Ganztaktpause auch die Taktart.',
   ),
   'tempo-unit': nt(
-    'One marked beat lasts 60 divided by the metronome number, in seconds.',
-    'Одна указанная доля длится 60, делённое на число метронома, секунд.',
-    'Eine angegebene Zählzeit dauert 60 geteilt durch die Metronomzahl Sekunden.',
+    'To find one metronome unit’s duration in seconds, divide 60 by the metronome number. Read the marked note value first.',
+    'Чтобы найти длительность одного отсчёта метронома в секундах, разделите 60 на число метронома. Сначала прочитайте указанную рядом длительность.',
+    'Teile 60 durch die Metronomzahl, um die Dauer eines Metronomschlags in Sekunden zu erhalten. Lies zuerst den angegebenen Notenwert.',
   ),
   'dynamic-level': nt(
     'Move along the relative ladder from piano toward forte.',
@@ -1575,7 +1655,7 @@ export const exerciseExplanations: Record<ErrorTag, LocalText> = {
   // not on the page. The figure's own explanation supplies the specifics.
   'repeat-route': nt(
     'Re-read the sign that sends you back, the sign that stops you, and which of them count on this pass.',
-    'Перечитайте знак, отправляющий назад, знак, останавливающий движение, и то, какие из них действуют на этом проведении.',
+    'Проверьте, какой знак задаёт возврат, какой — остановку и какие указания действуют при этом повторе.',
     'Lies erneut, welches Zeichen zurückschickt, welches anhält und welche davon in diesem Durchgang gelten.',
   ),
   correct: b('That is the one.', 'Именно так.'),
@@ -1633,8 +1713,9 @@ export const exerciseExplanations: Record<ErrorTag, LocalText> = {
     'Use the stated ratio: in a 3:2 group, three written eighths fill the time of two ordinary eighths.',
     'Учитывайте указанное отношение: в группе 3:2 три записанные восьмые занимают время двух обычных восьмых.',
   ),
-  'added-wrong': b(
-    'The values simply add up. Count them in the smaller of the two.',
-    'Длительности просто складываются. Считайте их в меньшей из двух.',
+  'added-wrong': nt(
+    'Express all durations in the same unit, include any dots, then add or compare the values as the question asks.',
+    'Выразите все длительности в одной единице, учтите точки, затем сложите или сравните значения по условию задания.',
+    'Drücke alle Dauern in derselben Einheit aus und berücksichtige die Punkte. Addiere oder vergleiche die Werte anschließend so, wie es die Aufgabe verlangt.',
   ),
 };

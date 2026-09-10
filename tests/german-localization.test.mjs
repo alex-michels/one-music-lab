@@ -69,9 +69,10 @@ test('Every shipped lesson, term, formula, pattern and progression guide has thr
     ru: 'Лаборатория',
     de: 'Klanglabor',
   });
-  expect(lessons.find((l) => l.id === 'scales').formula.de).toBe(
-    'Dur: 2 – 2 – 1 – 2 – 2 – 2 – 1',
-  );
+  const majorFormula = lessons.find((l) => l.id === 'scales').formula.de;
+  expect(majorFormula).toContain('Dur');
+  expect(majorFormula).toContain('Halbtönen');
+  expect(majorFormula).toContain('2 – 2 – 1 – 2 – 2 – 2 – 1');
   expect(langFromStorage({ getItem: () => 'de' })).toBe('de');
   expect(langFromStorage({ getItem: () => 'DE' })).toBe('en');
 });

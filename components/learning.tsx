@@ -27,6 +27,7 @@ import {
   TOPIC_KINDS,
   paragraphAnchors,
   ruleKind,
+  ruleLabels,
   ruleTopic,
   topicById,
   topics,
@@ -203,21 +204,36 @@ export function Theory({
           <ArrowLeft size={16} />
           {t('All foundations', 'Все основы')}
         </button>
+        <section className="lesson-goal">
+          <h2>
+            {
+              nt('What you will learn', 'Чему вы научитесь', 'Das lernst du')[
+                lang
+              ]
+            }
+          </h2>
+          <p className="prose">{lesson.summary[lang]}</p>
+        </section>
+        <h2>
+          {nt('How it works', 'Как это устроено', 'So funktioniert es')[lang]}
+        </h2>
         {lesson.paragraphs.map((p, i) => (
           <p className="prose" key={i}>
             {p[lang]}
           </p>
         ))}
-        {/* The rule this topic teaches, asked right where it is stated, rather
-            than saved up for a page the reader has to go and find. */}
+        <h2>
+          {nt('At a glance', 'Главное на примере', 'Auf einen Blick')[lang]}
+        </h2>
+        <div className="formula">{lesson.formula[lang]}</div>
+        <NotationReading topic={lesson.id} lang={lang} />
+        {/* Explain and show the musical example before asking the reader to apply it. */}
         <InlineExercise
           key={`${lesson.id}-${anchor ?? ''}-${lang}`}
           lang={lang}
           topic={lesson.id}
           anchor={anchor}
         />
-        <div className="formula">{lesson.formula[lang]}</div>
-        <NotationReading topic={lesson.id} lang={lang} />
         {/* The experiment card links the explanation to its laboratory. */}
         <aside className="breakout lesson-experiment">
           <div className="eyebrow">{t('MAKE IT AUDIBLE', 'УСЛЫШЬТЕ ЭТО')}</div>
@@ -810,8 +826,7 @@ function staffPrompt(kind: ExerciseKind, t: Translate): string {
  * drill and into the text: the paragraph that states the rule, and the terms
  * that govern it.
  *
- * `topic` scopes it. `#/<lang>/drill` interleaves every rule, because
- * interleaved practice builds retrieval strength and blocked practice does not;
+ * `topic` scopes it. `#/<lang>/drill` interleaves every rule for mixed practice;
  * `#/<lang>/t/<topic>/drill` narrows it to the rules one passage teaches.
  */
 export function Practice({
@@ -884,11 +899,8 @@ function PracticeSession({
   return (
     <div className="lens-drill" data-lens="drill">
       <section className="drill-question">
-        <div className="eyebrow">
-          {scoped
-            ? topicById[topic as TopicId].title[lang]
-            : t('READING NOTATION', 'ЧТЕНИЕ НОТНОЙ ЗАПИСИ')}
-        </div>
+        <div className="eyebrow">{topicById[ruleTopic[rule]].title[lang]}</div>
+        <p className="drill-skill">{ruleLabels[rule][lang]}</p>
         {item.review || item.parts ? (
           <NotationResponse
             key={`${rule}-${drawn.seed}-${lang}`}
@@ -1049,63 +1061,92 @@ function RuleLedger({
           )}
         </p>
       )}
-      <dl className="ledger-rows">
-        {rules.map((rule) => {
-          const row = ledger.get(rule);
-          const topic = ruleTopic[rule];
-          return (
-            <div
-              key={rule}
-              className="ledger-row"
-              data-missed={row && row.missed > 0 ? 'yes' : undefined}
-            >
-              <dt>
-                <code className="num">{rule}</code>
-              </dt>
-              <dd>
-                <p className="ledger-tally">
-                  {rule === 'compare-beaming' ||
-                  rule === 'recognize-an-ornament'
-                    ? nt(
-                        'Unscored review',
-                        'Разбор без оценки',
-                        'Unbewerteter Vergleich',
-                      )[lang]
-                    : row
-                      ? `${count(row.asked, lang, 'questions')} · ${count(row.missed, lang, 'mistakes')}`
-                      : t('not yet asked', 'ещё не спрашивали')}
-                </p>
-                {row?.tag && <p>{exerciseExplanations[row.tag][lang]}</p>}
-                {/* Two exits, because a rule is taught in a passage and named
+      {topics
+        .filter((topic) => rules.some((rule) => ruleTopic[rule] === topic.id))
+        .map((group) => (
+          <section
+            className="ledger-group"
+            key={group.id}
+            aria-labelledby={`drill-group-${group.id}`}
+          >
+            <h3 id={`drill-group-${group.id}`}>
+              <a
+                href={hashOf({
+                  lang,
+                  lens: 'drill',
+                  topic: group.id,
+                  anchor: null,
+                })}
+              >
+                {group.title[lang]}
+              </a>
+            </h3>
+            <dl className="ledger-rows">
+              {rules
+                .filter((rule) => ruleTopic[rule] === group.id)
+                .map((rule) => {
+                  const row = ledger.get(rule);
+                  const topic = ruleTopic[rule];
+                  return (
+                    <div
+                      key={rule}
+                      data-rule={rule}
+                      className="ledger-row"
+                      data-missed={row && row.missed > 0 ? 'yes' : undefined}
+                    >
+                      <dt>
+                        <span className="rule-name">
+                          {ruleLabels[rule][lang]}
+                        </span>
+                      </dt>
+                      <dd>
+                        <p className="ledger-tally">
+                          {rule === 'compare-beaming' ||
+                          rule === 'recognize-an-ornament'
+                            ? nt(
+                                'Unscored review',
+                                'Разбор без оценки',
+                                'Unbewerteter Vergleich',
+                              )[lang]
+                            : row
+                              ? `${count(row.asked, lang, 'questions')} · ${count(row.missed, lang, 'mistakes')}`
+                              : t('not yet asked', 'ещё не спрашивали')}
+                        </p>
+                        {row?.tag && (
+                          <p>{exerciseExplanations[row.tag][lang]}</p>
+                        )}
+                        {/* Two exits, because a rule is taught in a passage and named
                     in the glossary, and a reader who missed it may want
                     either. */}
-                <p className="ledger-exits">
-                  <a
-                    href={hashOf({
-                      lang,
-                      lens: 'read',
-                      topic,
-                      anchor: rule,
-                    })}
-                  >
-                    {t('the passage', 'к тексту')}
-                  </a>
-                  <a
-                    href={hashOf({
-                      lang,
-                      lens: 'define',
-                      topic,
-                      anchor: null,
-                    })}
-                  >
-                    {t('the terms', 'к терминам')}
-                  </a>
-                </p>
-              </dd>
-            </div>
-          );
-        })}
-      </dl>
+                        <p className="ledger-exits">
+                          <a
+                            href={hashOf({
+                              lang,
+                              lens: 'read',
+                              topic,
+                              anchor: rule,
+                            })}
+                          >
+                            {t('the passage', 'к тексту')}
+                          </a>
+                          <a
+                            href={hashOf({
+                              lang,
+                              lens: 'define',
+                              topic,
+                              anchor: null,
+                            })}
+                          >
+                            {t('the terms', 'к терминам')}
+                          </a>
+                        </p>
+                      </dd>
+                    </div>
+                  );
+                })}
+            </dl>
+          </section>
+        ))}
       <button className="text-button" onClick={onStartOver}>
         {t('Start a new session', 'Начать новую сессию')}
       </button>

@@ -12,6 +12,7 @@ import { NotationReading } from '../../components/notation-reading.tsx';
 import { NotationResponse } from '../../components/notation-response.tsx';
 import { NotationWorkbench } from '../../components/notation-workbench.tsx';
 import { Practice, Theory } from '../../components/learning.tsx';
+import { lessons } from '../../lib/learning.ts';
 import { generateFrom } from '../../lib/exercises.ts';
 import {
   notationProgramme,
@@ -40,6 +41,77 @@ afterEach(async () => {
 const click = (name) =>
   act(async () => page.getByRole('button', { name, exact: true }).click());
 const c4 = { letter: 0, accidental: 0, octave: 4, midi: 60 };
+
+for (const { lang, headings } of [
+  {
+    lang: 'en',
+    headings: ['What you will learn', 'How it works', 'At a glance'],
+  },
+  {
+    lang: 'ru',
+    headings: ['Чему вы научитесь', 'Как это устроено', 'Главное на примере'],
+  },
+  {
+    lang: 'de',
+    headings: ['Das lernst du', 'So funktioniert es', 'Auf einen Blick'],
+  },
+]) {
+  test(`Every lesson explains and shows examples before practice, with localized sections in ${lang}`, async () => {
+    const openLab = vi.fn();
+    for (const lesson of lessons) {
+      await mount(Theory, {
+        lang,
+        lessonId: lesson.id,
+        anchor: null,
+        setLessonId: vi.fn(),
+        openLab,
+      });
+      expect(
+        [
+          ...container.querySelectorAll(
+            '.lesson-goal h2, .lesson-article > h2',
+          ),
+        ].map((h) => h.textContent),
+      ).toEqual(headings);
+      expect(container.querySelector('.lesson-goal p').textContent).toBe(
+        lesson.summary[lang],
+      );
+      const formula = container.querySelector('.formula');
+      const exercise = container.querySelector('.inline-exercise');
+      const reading = container.querySelector('.notation-reading');
+      if (exercise) {
+        expect(
+          formula.compareDocumentPosition(exercise) &
+            Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
+        if (reading)
+          expect(
+            reading.compareDocumentPosition(exercise) &
+              Node.DOCUMENT_POSITION_FOLLOWING,
+          ).toBeTruthy();
+      }
+      await act(() =>
+        container.querySelector('.lesson-experiment button').click(),
+      );
+      expect(openLab).toHaveBeenLastCalledWith(
+        lesson.hz,
+        lesson.wave,
+        lesson.id,
+      );
+    }
+    // Direct links still choose the requested rule after the worked example.
+    await mount(Theory, {
+      lang,
+      lessonId: 'dots-ties',
+      anchor: 'second-dot-adds-half-the-first',
+      setLessonId: vi.fn(),
+      openLab,
+    });
+    expect(container.querySelector('.inline-exercise').id).toBe(
+      'second-dot-adds-half-the-first',
+    );
+  });
+}
 
 test('Score figures have unique working glyph references and inherit both color themes', async () => {
   await mount('div', {
