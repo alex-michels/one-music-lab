@@ -1,7 +1,8 @@
 import { german, type GermanKey } from './german';
 import type { Lang } from './client-store';
+import { noteTextValue } from './note-text';
 
-export type LocalText = Record<Lang, string>;
+export type LocalText = Record<Lang, string> & { ruMarkup?: string };
 export type Translate = (en: GermanKey, ru: string) => string;
 
 /** No English fallback: a new source string must have a German catalog entry. */
@@ -10,7 +11,14 @@ export function translator(lang: Lang): Translate {
 }
 
 export function localText(en: GermanKey, ru: string): LocalText {
-  return { en, ru, de: german[en] };
+  return localizedText(en, ru, german[en]);
+}
+
+export function localizedText(en: string, ru: string, de: string): LocalText {
+  const value = noteTextValue(ru);
+  return value.markup
+    ? { en, ru: value.text, de, ruMarkup: value.markup }
+    : { en, ru, de };
 }
 
 /**

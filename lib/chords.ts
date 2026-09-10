@@ -1,3 +1,4 @@
+import { localizedText, type LocalText } from './i18n';
 import { german } from './german';
 import {
   pitchName,
@@ -669,7 +670,7 @@ export type ProgressionTemplate = {
   tempo: number;
   texture: Texture;
   steps: ChordStep[];
-  note: Record<MusicLanguage, string>;
+  note: LocalText;
   source: TemplateSource;
 };
 
@@ -818,11 +819,11 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(4, 'seventh'),
       step(0, 'minor'),
     ],
-    note: {
-      en: 'V7 contains the raised seventh degree of the minor scale: in C minor, its notes are G–B–D–F. Change this third chord to a minor seventh chord: G–B♭–D–F. Only B becomes B♭; the root stays G. Compare how the leading tone B and the natural minor seventh B♭ approach the tonic C.',
-      ru: 'V7 содержит повышенную VII ступень минора: в до миноре это соль–си–ре–фа. Замените этот третий аккорд малым минорным септаккордом: соль–си-бемоль–ре–фа. Меняется только си на си-бемоль, а основной тон соль остаётся. Сравните, как вводный тон си и VII ступень натурального минора си-бемоль переходят в тонику до.',
-      de: 'V7 enthält die erhöhte siebte Stufe der Molltonleiter: in c-Moll die Töne G–H–D–F. Ändere diesen dritten Akkord zu einem Mollseptakkord: G–B–D–F. Nur H wird zu B; der Grundton G bleibt. Vergleiche, wie der Leitton H und die natürliche siebte Mollstufe B zur Tonika C führen.',
-    },
+    note: localizedText(
+      'V7 contains the raised seventh degree of the minor scale: in C minor, its notes are G–B–D–F. Change this third chord to a minor seventh chord: G–B♭–D–F. Only B becomes B♭; the root stays G. Compare how the leading tone B and the natural minor seventh B♭ approach the tonic C.',
+      'V7 содержит повышенную VII ступень минора: в [[до]] миноре это [[соль]]–[[си]]–[[ре]]–[[фа]]. Замените этот третий аккорд малым минорным септаккордом: [[соль]]–[[си-бемоль]]–[[ре]]–[[фа]]. Меняется только [[си]] на [[си-бемоль]], а основной тон [[соль]] остаётся. Сравните, как вводный тон [[си]] и VII ступень натурального минора [[си-бемоль]] переходят в тонику [[до]].',
+      'V7 enthält die erhöhte siebte Stufe der Molltonleiter: in c-Moll die Töne G–H–D–F. Ändere diesen dritten Akkord zu einem Mollseptakkord: G–B–D–F. Nur H wird zu B; der Grundton G bleibt. Vergleiche, wie der Leitton H und die natürliche siebte Mollstufe B zur Tonika C führen.',
+    ),
     source: 'function',
   },
   {
@@ -841,11 +842,11 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(5, 'major'),
       step(4, 'major'),
     ],
-    note: {
-      en: 'The bass descends from the tonic to the fifth degree through the natural minor scale: C–B♭–A♭–G in C minor. Open Music Theory traces this lament schema from repeated bass patterns in early laments to rock. The final major chord contains the raised seventh degree, the leading tone, before the loop returns to the tonic.',
-      ru: 'Бас спускается от тоники к V ступени по звукам натурального минора: до–си-бемоль–ля-бемоль–соль в до миноре. Open Music Theory прослеживает схему ламенто от повторяющегося баса старинных плачей до рока. Последний мажорный аккорд содержит повышенную VII ступень — вводный тон, после которого цикл возвращается к тонике.',
-      de: 'Der Bass steigt von der Tonika zur fünften Stufe durch die natürliche Molltonleiter ab: C–B–As–G in c-Moll. Open Music Theory verfolgt dieses Lamentoschema vom wiederkehrenden Bass früher Klagegesänge bis zum Rock. Der letzte Durakkord enthält die erhöhte siebte Stufe, den Leitton, bevor der Zyklus zur Tonika zurückkehrt.',
-    },
+    note: localizedText(
+      'The bass descends from the tonic to the fifth degree through the natural minor scale: C–B♭–A♭–G in C minor. Open Music Theory traces this lament schema from repeated bass patterns in early laments to rock. The final major chord contains the raised seventh degree, the leading tone, before the loop returns to the tonic.',
+      'Бас спускается от тоники к V ступени по звукам натурального минора: [[до]]–[[си-бемоль]]–[[ля-бемоль]]–[[соль]] в [[до]] миноре. Open Music Theory прослеживает схему ламенто от повторяющегося баса старинных плачей до рока. Последний мажорный аккорд содержит повышенную VII ступень — вводный тон, после которого цикл возвращается к тонике.',
+      'Der Bass steigt von der Tonika zur fünften Stufe durch die natürliche Molltonleiter ab: C–B–As–G in c-Moll. Open Music Theory verfolgt dieses Lamentoschema vom wiederkehrenden Bass früher Klagegesänge bis zum Rock. Der letzte Durakkord enthält die erhöhte siebte Stufe, den Leitton, bevor der Zyklus zur Tonika zurückkehrt.',
+    ),
     source: 'classicalSchemas',
   },
   {

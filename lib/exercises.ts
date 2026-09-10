@@ -1,11 +1,12 @@
 import {
   keyboardPitch,
   octaveName,
-  pitchLabel,
-  pitchName,
+  pitchLabel as plainPitchLabel,
+  pitchName as plainPitchName,
   type MusicLanguage,
   type SpelledPitch,
 } from './notation';
+import { markPitchName, noteTextValue, plainNoteText } from './note-text';
 import { count } from './plural';
 import { pitchAtStep, type Clef } from './staff';
 import {
@@ -106,7 +107,12 @@ export const RULES = [
 ] as const;
 export type Rule = (typeof RULES)[number];
 
-export type Option = { id: string; label: string; tag: ErrorTag };
+export type Option = {
+  id: string;
+  label: string;
+  tag: ErrorTag;
+  labelMarkup?: string;
+};
 
 export type StaffSpec = {
   pitches: SpelledPitch[];
@@ -122,6 +128,7 @@ export type Item = {
   seed: number;
   lang: MusicLanguage;
   prompt: string;
+  promptMarkup?: string;
   options: Option[];
   /** Option id. Never an array index: an index cannot survive shuffling. */
   answer: string;
@@ -131,18 +138,76 @@ export type Item = {
   staff?: StaffSpec;
   figure?: string;
   explanation?: string;
+  explanationMarkup?: string;
   source?: { title: string; url: string };
   /** Reflection has no answer key and never enters the scored ledger. */
   review?: boolean;
   /** Each excerpt note is answered and explained independently. */
   parts?: {
     prompt: string;
+    promptMarkup?: string;
     answer: string;
+    answerMarkup?: string;
     options: Option[];
     kind?: 'pitch' | 'rhythm';
     explanation?: string;
+    explanationMarkup?: string;
   }[];
 };
+
+const pitchLabel = (pitch: SpelledPitch, lang: MusicLanguage) =>
+  markPitchName(plainPitchLabel(pitch, lang), lang);
+const pitchName = (pitch: SpelledPitch, lang: MusicLanguage) =>
+  markPitchName(plainPitchName(pitch, lang), lang);
+
+/** Plain answer keys/labels retain their public contract; styling is separate data. */
+function finishNoteText(item: Item): Item {
+  if (item.lang !== 'ru') return item;
+  const normalize = (fields: {
+    prompt: string;
+    explanation?: string;
+    answer: string;
+    options: Option[];
+  }) => {
+    const prompt = noteTextValue(fields.prompt);
+    const explanation = noteTextValue(fields.explanation ?? '');
+    return {
+      ...fields,
+      prompt: prompt.text,
+      ...(prompt.markup ? { promptMarkup: prompt.markup } : {}),
+      ...(fields.explanation !== undefined
+        ? { explanation: explanation.text }
+        : {}),
+      ...(explanation.markup ? { explanationMarkup: explanation.markup } : {}),
+      answer: plainNoteText(fields.answer),
+      options: fields.options.map((option) => {
+        const label = noteTextValue(option.label);
+        return {
+          ...option,
+          id: plainNoteText(option.id),
+          label: label.text,
+          ...(label.markup ? { labelMarkup: label.markup } : {}),
+        };
+      }),
+    };
+  };
+  return {
+    ...item,
+    ...normalize(item),
+    ...(item.parts
+      ? {
+          parts: item.parts.map((part) => {
+            const answer = noteTextValue(part.answer);
+            return {
+              ...part,
+              ...normalize(part),
+              ...(answer.markup ? { answerMarkup: answer.markup } : {}),
+            };
+          }),
+        }
+      : {}),
+  };
+}
 
 /** Deterministic 32-bit generator, the same one the property tests use. */
 function random(seed: number): () => number {
@@ -972,7 +1037,7 @@ export function generate(
   const next = random(seed);
   const built = builders[kind](next, level, lang);
   if (!built) return null;
-  return { kind, level, seed, lang, ...built };
+  return finishNoteText({ kind, level, seed, lang, ...built });
 }
 
 /** The first item at or after `seed` that the kind is willing to emit. */

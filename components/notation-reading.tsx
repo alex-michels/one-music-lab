@@ -6,6 +6,7 @@ import {
 import { nt } from '@/lib/notation-tasks';
 import type { Lang } from '@/lib/client-store';
 import { NotationFigure } from './notation-figure';
+import { NoteText } from './note-text';
 
 export function NotationReading({
   topic,
@@ -27,7 +28,9 @@ export function NotationReading({
           )[lang]
         }
       </h2>
-      <p>{chapter.text[lang]}</p>
+      <p>
+        <NoteText text={chapter.text} lang={lang} />
+      </p>
       <div className="notation-figure-grid">
         {chapter.figures.map((id) => (
           <figure key={id}>
@@ -47,9 +50,14 @@ export function NotationReading({
               }
             />
             <figcaption>
-              {id.startsWith('note-') || id.startsWith('rest-')
-                ? `1/${id.split('-')[1]}`
-                : (notationFigureDescriptions[id]?.[lang] ?? '')}
+              {id.startsWith('note-') || id.startsWith('rest-') ? (
+                `1/${id.split('-')[1]}`
+              ) : (
+                <NoteText
+                  text={notationFigureDescriptions[id] ?? ''}
+                  lang={lang}
+                />
+              )}
             </figcaption>
           </figure>
         ))}

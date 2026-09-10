@@ -60,6 +60,7 @@ import { StaffAnswer } from '@/components/staff-answer';
 import { NotationFigure } from './notation-figure';
 import { NotationResponse } from './notation-response';
 import { NotationReading } from './notation-reading';
+import { NoteText } from './note-text';
 import type { Wave } from '@/lib/music';
 type Lang = import('@/lib/client-store').Lang;
 const notationOrder = Object.keys(notationProgramme);
@@ -123,7 +124,9 @@ function InlineExercise({
     // link to the sentence rather than to the top of a lesson.
     <section className="inline-exercise" id={rule} ref={here}>
       <span className="eyebrow">{t('Try it here', 'Попробуйте здесь')}</span>
-      <p className="exercise-prompt">{item.prompt}</p>
+      <p className="exercise-prompt">
+        <NoteText text={item.prompt} markup={item.promptMarkup} lang={lang} />
+      </p>
       {item.figure && <NotationFigure id={item.figure} label={item.prompt} />}
       {item.staff && (
         <div className="exercise-staff">
@@ -152,7 +155,11 @@ function InlineExercise({
             }
             onClick={() => setChosen(option.id)}
           >
-            {option.label}
+            <NoteText
+              text={option.label}
+              markup={option.labelMarkup}
+              lang={lang}
+            />
           </button>
         ))}
       </div>
@@ -162,8 +169,17 @@ function InlineExercise({
             verdict.correct ? 'answer-feedback' : 'answer-feedback incorrect'
           }
         >
-          {exerciseExplanations[verdict.tag][lang]}
-          {item.explanation && <span> {item.explanation}</span>}
+          <NoteText text={exerciseExplanations[verdict.tag]} lang={lang} />
+          {item.explanation && (
+            <span>
+              {' '}
+              <NoteText
+                text={item.explanation}
+                markup={item.explanationMarkup}
+                lang={lang}
+              />
+            </span>
+          )}
         </p>
       )}
       {/* Into the drill scoped to this topic, not to the whole trainer: the
@@ -212,20 +228,24 @@ export function Theory({
               ]
             }
           </h2>
-          <p className="prose">{lesson.summary[lang]}</p>
+          <p className="prose">
+            <NoteText text={lesson.summary} lang={lang} />
+          </p>
         </section>
         <h2>
           {nt('How it works', 'Как это устроено', 'So funktioniert es')[lang]}
         </h2>
         {lesson.paragraphs.map((p, i) => (
           <p className="prose" key={i}>
-            {p[lang]}
+            <NoteText text={p} lang={lang} />
           </p>
         ))}
         <h2>
           {nt('At a glance', 'Главное на примере', 'Auf einen Blick')[lang]}
         </h2>
-        <div className="formula">{lesson.formula[lang]}</div>
+        <div className="formula">
+          <NoteText text={lesson.formula} lang={lang} />
+        </div>
         <NotationReading topic={lesson.id} lang={lang} />
         {/* Explain and show the musical example before asking the reader to apply it. */}
         <InlineExercise
@@ -239,7 +259,9 @@ export function Theory({
           <div className="eyebrow">{t('MAKE IT AUDIBLE', 'УСЛЫШЬТЕ ЭТО')}</div>
           <Headphones size={32} />
           <h3>{t('Try it in the lab', 'Попробуйте в лаборатории')}</h3>
-          <p>{lesson.experiment[lang]}</p>
+          <p>
+            <NoteText text={lesson.experiment} lang={lang} />
+          </p>
           <div className="lesson-experiment-actions">
             <button
               className="primary-button"
@@ -294,7 +316,7 @@ export function Theory({
                     ]
                   }
                 </span>
-                {previous.title[lang]}
+                <NoteText text={previous.title} lang={lang} />
               </a>
             )}
             {next && (
@@ -310,7 +332,7 @@ export function Theory({
                 <span>
                   {nt('Next lesson', 'Следующий урок', 'Nächste Lektion')[lang]}
                 </span>
-                {next.title[lang]}
+                <NoteText text={next.title} lang={lang} />
               </a>
             )}
           </nav>
@@ -339,7 +361,9 @@ export function Theory({
                     className="topic-row"
                     onClick={() => setLessonId(topic.id)}
                   >
-                    <span className="topic-name">{topic.title[lang]}</span>
+                    <span className="topic-name">
+                      <NoteText text={topic.title} lang={lang} />
+                    </span>
                     {topic.order === 0 && (
                       <span className="start-here">
                         {t('Start here', 'Начните здесь')}
@@ -578,7 +602,9 @@ export function Encyclopedia({
                   {/* Hue never carries the meaning alone: the kind is also
                       written out, so the index survives deuteranopia and print. */}
                   <span className="kind-bar" data-kind={kindOf(term)} />
-                  <span className="term-name">{term.title[lang]}</span>
+                  <span className="term-name">
+                    <NoteText text={term.title} lang={lang} />
+                  </span>
                   <span className="term-kind">{kindName[kindOf(term)]}</span>
                 </button>
               </li>
@@ -591,7 +617,9 @@ export function Encyclopedia({
           </ul>
           {!filtered.length && (
             <div className="index-actions">
-              <p>{hint[lang]}</p>
+              <p>
+                <NoteText text={hint} lang={lang} />
+              </p>
               {query && (
                 <button
                   className="text-button"
@@ -622,10 +650,17 @@ export function Encyclopedia({
             <p className="term-entry-kind">
               <span className="kind-bar" data-kind={kindOf(entry)} />
               {kindName[kindOf(entry)]} ·{' '}
-              {topicById[entry.lesson as TopicId].title[lang]}
+              <NoteText
+                text={topicById[entry.lesson as TopicId].title}
+                lang={lang}
+              />
             </p>
-            <h2>{entry.title[lang]}</h2>
-            <p>{entry.body[lang]}</p>
+            <h2>
+              <NoteText text={entry.title} lang={lang} />
+            </h2>
+            <p>
+              <NoteText text={entry.body} lang={lang} />
+            </p>
             <a
               className="text-button"
               href={hashOf({
@@ -672,7 +707,7 @@ export function Encyclopedia({
                   className="text-button"
                   href={hashOf({ lang, lens: 'read', topic: id, anchor: null })}
                 >
-                  {topicById[id as TopicId].title[lang]}
+                  <NoteText text={topicById[id as TopicId].title} lang={lang} />
                 </a>
               ))}
             {'forwardModules' in entry &&
@@ -899,8 +934,12 @@ function PracticeSession({
   return (
     <div className="lens-drill" data-lens="drill">
       <section className="drill-question">
-        <div className="eyebrow">{topicById[ruleTopic[rule]].title[lang]}</div>
-        <p className="drill-skill">{ruleLabels[rule][lang]}</p>
+        <div className="eyebrow">
+          <NoteText text={topicById[ruleTopic[rule]].title} lang={lang} />
+        </div>
+        <p className="drill-skill">
+          <NoteText text={ruleLabels[rule]} lang={lang} />
+        </p>
         {item.review || item.parts ? (
           <NotationResponse
             key={`${rule}-${drawn.seed}-${lang}`}
@@ -950,7 +989,13 @@ function PracticeSession({
                 />
               </div>
             )}
-            <h2 className="exercise-prompt">{item.prompt}</h2>
+            <h2 className="exercise-prompt">
+              <NoteText
+                text={item.prompt}
+                markup={item.promptMarkup}
+                lang={lang}
+              />
+            </h2>
             <div className="answer-grid">
               {item.options.map((option) => (
                 <button
@@ -965,7 +1010,13 @@ function PracticeSession({
                         : ''
                   }
                 >
-                  <span>{option.label}</span>
+                  <span>
+                    <NoteText
+                      text={option.label}
+                      markup={option.labelMarkup}
+                      lang={lang}
+                    />
+                  </span>
                   {chosen !== null && option.id === item.answer ? (
                     <Check size={18} />
                   ) : chosen === option.id ? (
@@ -987,8 +1038,17 @@ function PracticeSession({
                 ? t('That’s right.', 'Верно.')
                 : t('Not quite.', 'Не совсем.')}
             </strong>{' '}
-            {exerciseExplanations[verdict.tag][lang]}
-            {item.explanation && <span> {item.explanation}</span>}
+            <NoteText text={exerciseExplanations[verdict.tag]} lang={lang} />
+            {item.explanation && (
+              <span>
+                {' '}
+                <NoteText
+                  text={item.explanation}
+                  markup={item.explanationMarkup}
+                  lang={lang}
+                />
+              </span>
+            )}
           </output>
         )}
         {verdict && item.source && (
@@ -1078,7 +1138,7 @@ function RuleLedger({
                   anchor: null,
                 })}
               >
-                {group.title[lang]}
+                <NoteText text={group.title} lang={lang} />
               </a>
             </h3>
             <dl className="ledger-rows">
@@ -1096,7 +1156,7 @@ function RuleLedger({
                     >
                       <dt>
                         <span className="rule-name">
-                          {ruleLabels[rule][lang]}
+                          <NoteText text={ruleLabels[rule]} lang={lang} />
                         </span>
                       </dt>
                       <dd>
@@ -1113,7 +1173,12 @@ function RuleLedger({
                               : t('not yet asked', 'ещё не спрашивали')}
                         </p>
                         {row?.tag && (
-                          <p>{exerciseExplanations[row.tag][lang]}</p>
+                          <p>
+                            <NoteText
+                              text={exerciseExplanations[row.tag]}
+                              lang={lang}
+                            />
+                          </p>
                         )}
                         {/* Two exits, because a rule is taught in a passage and named
                     in the glossary, and a reader who missed it may want

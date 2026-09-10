@@ -12,6 +12,12 @@ import {
 import { parseNoteName } from '@/lib/staff-answers';
 import { pitchLabel, pitchName, type MusicLanguage } from '@/lib/notation';
 import type { Item } from '@/lib/exercises';
+import { NoteText } from './note-text';
+import { noteTextValue } from '@/lib/note-text';
+
+const russianInputHint = noteTextValue(
+  'Примеры: [[до]], [[до-диез]], [[ми-бемоль]], [[фа-дубль-диез]]. Достаточно названия ноты.',
+);
 
 // Localized controls for the bounded №553 prototype. This is not a score editor.
 export const staffWords = {
@@ -45,7 +51,7 @@ export const staffWords = {
     place: 'Поставить на стане',
     check: 'Проверить ответ',
     input: 'Название ноты',
-    hint: 'Примеры: до, до-диез, ми-бемоль, фа-дубль-диез. Достаточно названия ноты.',
+    hint: russianInputHint.text,
     invalid: 'Введите русское название ноты со знаком альтерации.',
     placePrompt: 'Поставьте эту ноту на стане:',
     position: 'Положение на стане',
@@ -225,9 +231,14 @@ export function StaffAnswer({
         ))}
       </fieldset>
       <h2 className="exercise-prompt">
-        {mode === 'place'
-          ? `${t.placePrompt} ${pitchLabel(target, lang)}`
-          : item.prompt}
+        {mode === 'place' ? (
+          <>
+            {t.placePrompt}{' '}
+            <NoteText text={pitchLabel(target, lang)} lang={lang} pitch />
+          </>
+        ) : (
+          <NoteText text={item.prompt} markup={item.promptMarkup} lang={lang} />
+        )}
       </h2>
       {mode === 'place' ? (
         <StaffPosition
@@ -270,7 +281,11 @@ export function StaffAnswer({
                     : ''
               }
             >
-              {option.label}
+              <NoteText
+                text={option.label}
+                markup={option.labelMarkup}
+                lang={lang}
+              />
             </button>
           ))}
         </div>
@@ -320,7 +335,13 @@ export function StaffAnswer({
                   spellCheck={false}
                 />
               </label>
-              <p id={hintId}>{t.hint}</p>
+              <p id={hintId}>
+                <NoteText
+                  text={t.hint}
+                  lang={lang}
+                  markup={russianInputHint.markup}
+                />
+              </p>
               {invalid && <p role="alert">{t.invalid}</p>}
             </>
           )}
@@ -336,9 +357,15 @@ export function StaffAnswer({
         <p>
           {t.answer}{' '}
           <strong>
-            {mode === 'place'
-              ? pitchLabel(target, lang)
-              : pitchName(target, lang)}
+            <NoteText
+              text={
+                mode === 'place'
+                  ? pitchLabel(target, lang)
+                  : pitchName(target, lang)
+              }
+              lang={lang}
+              pitch
+            />
           </strong>
         </p>
       )}

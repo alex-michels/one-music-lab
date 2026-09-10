@@ -53,24 +53,24 @@ export const lessons = [
     ),
     formula: nt(
       'f(n) = A4 × 2^((n − 69) / 12)',
-      'f(n) = f(ля первой октавы) × 2^((n − 69) / 12)',
+      'f(n) = f([[ля]] первой октавы) × 2^((n − 69) / 12)',
       'f(n) = f(a′) × 2^((n − 69) / 12)',
     ),
     paragraphs: [
       nt(
         'A reference pitch assigns a frequency to a named note. In this lab, that note is A4. If you change A4 from 440 to 432 Hz, the other frequencies shift by the same factor. The interval relationships stay the same.',
-        'Опорная частота связывает название ноты с частотой её звучания. Здесь это ля первой октавы. При изменении её частоты с 440 до 432 Гц остальные частоты меняются в той же пропорции. Интервальные отношения сохраняются.',
+        'Опорная частота связывает название ноты с частотой её звучания. Здесь это [[ля]] первой октавы. При изменении её частоты с 440 до 432 Гц остальные частоты меняются в той же пропорции. Интервальные отношения сохраняются.',
         'Ein Bezugston verbindet einen Tonnamen mit einer Frequenz. Hier ist es das eingestrichene a (a′). Änderst du es von 440 auf 432 Hz, ändern sich alle anderen Frequenzen im selben Verhältnis. Die Intervallverhältnisse bleiben erhalten.',
       ),
       nt(
         'A tuning system is a separate choice. Twelve-tone equal temperament divides an octave into twelve equal steps, each with the same frequency ratio. In the formula, n is the MIDI note number; A4 is 69. The formula applies to this temperament. The lab also offers fixed, A-based ratio maps for just and Pythagorean tuning. Those maps do not reproduce every historical practice or every musical key.',
-        'Музыкальный строй выбирают отдельно. Двенадцатиступенная равномерная темперация делит октаву на 12 шагов с одинаковым отношением частот. В формуле n — номер ноты MIDI; для ля первой октавы он равен 69. Формула относится именно к этому строю. В лаборатории есть также фиксированные таблицы отношений чистого и пифагорейского строя с опорой на ля. Они не воспроизводят все исторические практики и тональности.',
+        'Музыкальный строй выбирают отдельно. Двенадцатиступенная равномерная темперация делит октаву на 12 шагов с одинаковым отношением частот. В формуле n — номер ноты MIDI; для [[ля]] первой октавы он равен 69. Формула относится именно к этому строю. В лаборатории есть также фиксированные таблицы отношений чистого и пифагорейского строя с опорой на [[ля]]. Они не воспроизводят все исторические практики и тональности.',
         'Das Stimmungssystem wählst du unabhängig vom Bezugston. Die zwölfstufige gleichstufige Stimmung teilt die Oktave in zwölf Schritte mit jeweils gleichem Frequenzverhältnis. In der Formel ist n die MIDI-Notennummer; a′ hat die Nummer 69. Die Formel gilt für diese Stimmung. Das Labor bietet außerdem feste, auf A bezogene Verhältnistabellen für reine und pythagoreische Stimmung. Diese Modelle bilden nicht jede historische Praxis oder Tonart ab.',
       ),
     ],
     experiment: nt(
       'Select A4 = 432 Hz and play the keyboard. Switch tuning systems and listen to C♯5 against A4.',
-      'Задайте для ля первой октавы 432 Гц и сыграйте на клавиатуре. Сравните до-диез второй октавы с ля первой в разных строях.',
+      'Задайте для [[ля]] первой октавы 432 Гц и сыграйте на клавиатуре. Сравните [[до-диез]] второй октавы с [[ля]] первой в разных строях.',
       'Wähle a′ = 432 Hz und spiele auf der Klaviatur. Wechsle die Stimmungssysteme und vergleiche cis″ mit a′.',
     ),
     hz: 440,
@@ -93,7 +93,7 @@ export const lessons = [
       ),
       nt(
         'To name an interval, count its letter names, including both ends, then identify its quality. C–E spans C, D, E: a third. C–F spans four names: a fourth. C–D♯ and C–E♭ share the same keyboard distance in twelve-tone equal temperament, but are an augmented second and a minor third. In the formula, f₁ and f₂ are the two positive frequencies; use f₂ ≥ f₁ for an upward interval.',
-        'Чтобы назвать интервал, сосчитайте ступени, включая оба конца, затем определите его качество. До — ми охватывает до, ре, ми: это терция. До — фа охватывает четыре ступени: это кварта. В двенадцатиступенном равномерном строе до — ре-диез и до — ми-бемоль звучат одинаково, но записаны как увеличенная секунда и малая терция. В формуле f₁ и f₂ — две положительные частоты; для восходящего интервала f₂ ≥ f₁.',
+        'Чтобы назвать интервал, сосчитайте ступени, включая оба конца, затем определите его качество. [[До]] — [[ми]] охватывает [[до]], [[ре]], [[ми]]: это терция. [[До]] — [[фа]] охватывает четыре ступени: это кварта. В двенадцатиступенном равномерном строе [[до]] — [[ре-диез]] и [[до]] — [[ми-бемоль]] звучат одинаково, но записаны как увеличенная секунда и малая терция. В формуле f₁ и f₂ — две положительные частоты; для восходящего интервала f₂ ≥ f₁.',
         'Zähle für den Intervallnamen die Stammtonstufen einschließlich beider Endpunkte und bestimme dann die Intervallqualität. C–E umfasst C, D, E: eine Terz. C–F umfasst vier Stufen: eine Quarte. C–Dis und C–Es haben in zwölfstufiger gleichstufiger Stimmung denselben Tastenabstand, sind aber eine übermäßige Sekunde und eine kleine Terz. In der Formel sind f₁ und f₂ positive Frequenzen; für ein aufsteigendes Intervall gilt f₂ ≥ f₁.',
       ),
     ],
@@ -128,7 +128,7 @@ export const lessons = [
     ],
     experiment: nt(
       'Hold A4 and switch between sine, triangle, square and sawtooth. Keep the volume low while comparing.',
-      'Включите ля первой октавы и сравните синусоидальную, треугольную, прямоугольную и пилообразную формы волны. Сохраняйте небольшую громкость.',
+      'Включите [[ля]] первой октавы и сравните синусоидальную, треугольную, прямоугольную и пилообразную формы волны. Сохраняйте небольшую громкость.',
       'Halte a′ und wechsle zwischen Sinus, Dreieck, Rechteck und Sägezahn. Vergleiche bei niedriger Lautstärke.',
     ),
     hz: 440,
@@ -185,7 +185,7 @@ export const lessons = [
     paragraphs: [
       nt(
         'A triad has three different chord tones that can be arranged in thirds. A major triad has a major third and a perfect fifth above its root: C–E–G, for example. Lower the third by a semitone and C–E♭–G becomes a minor triad. Doubling a tone in another octave adds a voice, but no new chord member.',
-        'В трезвучии три разных звука, которые можно расположить по терциям. В мажорном трезвучии от основного тона строятся большая терция и чистая квинта: например, до — ми — соль. Понизьте терцовый тон на полутон — получится минорное трезвучие до — ми-бемоль — соль. Удвоение звука в другой октаве добавляет голос, но не новый звук в состав аккорда.',
+        'В трезвучии три разных звука, которые можно расположить по терциям. В мажорном трезвучии от основного тона строятся большая терция и чистая квинта: например, [[до]] — [[ми]] — [[соль]]. Понизьте терцовый тон на полутон — получится минорное трезвучие [[до]] — [[ми-бемоль]] — [[соль]]. Удвоение звука в другой октаве добавляет голос, но не новый звук в состав аккорда.',
         'Ein Dreiklang enthält drei verschiedene Akkordtöne, die sich in Terzen anordnen lassen. Beim Durdreiklang liegen eine große Terz und eine reine Quinte über dem Grundton, etwa C–E–G. Erniedrige den Terzton um einen Halbton: C–Es–G ist ein Molldreiklang. Eine Oktavverdopplung fügt eine Stimme hinzu, aber keinen neuen Akkordton.',
       ),
       b(
@@ -214,21 +214,21 @@ export const lessons = [
     ),
     formula: b(
       'C D E F G A B · C4 … B4 · C5',
-      'до ре ми фа соль ля си · первая октава: до … си · далее вторая',
+      '[[до]] [[ре]] [[ми]] [[фа]] [[соль]] [[ля]] [[си]] · первая октава: [[до]] … [[си]] · далее вторая',
     ),
     paragraphs: [
       b(
         'Seven names carry the natural notes: C, D, E, F, G, A and B. After B the series starts again at C, and the frequency of that C is twice the frequency of the C below it. That repeating distance is the octave.',
-        'Основных ступеней семь: до, ре, ми, фа, соль, ля, си. После си ряд начинается заново с до, и частота этого до вдвое больше, чем у предыдущего. Расстояние до повторения названия называется октавой.',
+        'Основных ступеней семь: [[до]], [[ре]], [[ми]], [[фа]], [[соль]], [[ля]], [[си]]. После [[си]] ряд начинается заново с [[до]], и частота этого [[до]] вдвое больше, чем у предыдущего. Расстояние до повторения названия называется октавой.',
       ),
       b(
         'A name alone does not fix a pitch, because every octave repeats it. Scientific pitch notation adds a number: middle C is C4, and the number rises at each C, so B4 lies just below C5. The reference pitch of this lab is A4 at 440 Hz.',
-        'Одно название не задаёт высоту: оно повторяется в каждой октаве, поэтому называют и октаву. Русские названия идут снизу вверх: субконтроктава, контроктава, большая, малая, первая, вторая, третья, четвёртая, пятая. Каждая октава начинается с до, и си первой октавы лежит непосредственно под до второй. Опорный тон лаборатории — ля первой октавы, 440 Гц.',
+        'Одно название не задаёт высоту: оно повторяется в каждой октаве, поэтому называют и октаву. Русские названия идут снизу вверх: субконтроктава, контроктава, большая, малая, первая, вторая, третья, четвёртая, пятая. Каждая октава начинается с [[до]], и [[си]] первой октавы лежит непосредственно под [[до]] второй. Опорный тон лаборатории — [[ля]] первой октавы, 440 Гц.',
       ),
     ],
     experiment: b(
       'In Notes, select C in octave 4. Use the note buttons up to B, then select C in octave 5. Play and name each note.',
-      'Во вкладке «Ноты» выберите до первой октавы. Пройдите кнопками ступеней до си, затем выберите до второй октавы. Проигрывайте и называйте каждую ноту.',
+      'Во вкладке «Ноты» выберите [[до]] первой октавы. Пройдите кнопками ступеней до [[си]], затем выберите [[до]] второй октавы. Проигрывайте и называйте каждую ноту.',
     ),
     hz: 261.625565,
     wave: 'triangle',
@@ -254,12 +254,12 @@ export const lessons = [
       ),
       b(
         'The places just above and below the staff bring the total to eleven before ledger lines are needed. Beyond them, short ledger lines continue the same alternation of lines and spaces: the next diatonic step does not always need another line. Notes are read left to right; vertically aligned notes sound together.',
-        'Места сразу над пятой линейкой и под первой дают всего одиннадцать позиций без добавочных линеек. Дальше чередование линеек и промежутков продолжается. Например, над скрипичным станом ля второй октавы стоит на первой добавочной линейке, си — в промежутке над ней, до третьей — на второй добавочной. Ноты читают слева направо; выстроенные по вертикали ноты звучат одновременно.',
+        'Места сразу над пятой линейкой и под первой дают всего одиннадцать позиций без добавочных линеек. Дальше чередование линеек и промежутков продолжается. Например, над скрипичным станом [[ля]] второй октавы стоит на первой добавочной линейке, [[си]] — в промежутке над ней, [[до]] третьей — на второй добавочной. Ноты читают слева направо; выстроенные по вертикали ноты звучат одновременно.',
       ),
     ],
     experiment: b(
       'Compare the two pitch examples: C4 and G4 one after another, then together. Relate what you hear to the order and alignment of notes on the staff.',
-      'Сравните два примера: до и соль первой октавы по очереди, затем одновременно. Соотнесите услышанное с порядком и вертикальным расположением нот на стане.',
+      'Сравните два примера: [[до]] и [[соль]] первой октавы по очереди, затем одновременно. Соотнесите услышанное с порядком и вертикальным расположением нот на стане.',
     ),
     hz: 261.625565,
     wave: 'triangle',
@@ -276,23 +276,23 @@ export const lessons = [
     ),
     formula: b(
       'G-clef line 2 = G4 · F-clef line 4 = F3 · C-clef = C4',
-      'Соль-ключ, 2-я линейка = соль первой октавы · Фа-ключ, 4-я линейка = фа малой октавы · До-ключ = до первой октавы',
+      '[[Соль]]-ключ, 2-я линейка = [[соль]] первой октавы · [[Фа]]-ключ, 4-я линейка = [[фа]] малой октавы · [[До]]-ключ = [[до]] первой октавы',
     ),
     paragraphs: [
       nt(
         'A note’s position needs a clef to tell us its pitch. The treble clef is a G clef that places G4 on the second line; the bass clef is an F clef that places F3 on the fourth. Count neighbouring note names up or down from that reference. Different clefs place different registers conveniently on the same five lines and reduce the need for ledger lines.',
-        'Чтобы определить высоту по положению ноты, нужен ключ. Скрипичный ключ — ключ соль: он указывает соль первой октавы на второй линейке. Басовый — ключ фа: он указывает фа малой октавы на четвёртой. От этой опорной ноты отсчитывают соседние ступени вверх или вниз. Разные ключи позволяют удобно записывать разные регистры на тех же пяти линейках и реже использовать добавочные.',
+        'Чтобы определить высоту по положению ноты, нужен ключ. Скрипичный ключ — ключ [[соль]]: он указывает [[соль]] первой октавы на второй линейке. Басовый — ключ [[фа]]: он указывает [[фа]] малой октавы на четвёртой. От этой опорной ноты отсчитывают соседние ступени вверх или вниз. Разные ключи позволяют удобно записывать разные регистры на тех же пяти линейках и реже использовать добавочные.',
         'Erst der Schlüssel ordnet einer Notenposition eine Tonhöhe zu. Der Violinschlüssel ist ein G-Schlüssel mit g′ auf der zweiten Linie; der Bassschlüssel ein F-Schlüssel mit f auf der vierten. Zähle von diesem Bezugston aus die benachbarten Stammtöne aufwärts oder abwärts. Verschiedene Schlüssel bringen unterschiedliche Tonlagen günstig auf denselben fünf Linien unter und sparen Hilfslinien.',
       ),
       nt(
         'Middle C (C4) sits on the first ledger line below a treble staff or above a bass staff. C clefs mark C4 with their centre: the alto clef on the third line, the tenor clef on the fourth. Piano music usually joins two staves with a brace; read the clef printed on each staff.',
-        'До первой октавы находится на первой добавочной линейке под скрипичным станом или над басовым. Ключи до указывают эту ноту своей серединой: альтовый — на третьей линейке, теноровый — на четвёртой. В фортепианной записи два стана обычно соединены акколадой; на каждом читайте его собственный ключ.',
+        '[[До]] первой октавы находится на первой добавочной линейке под скрипичным станом или над басовым. Ключи [[до]] указывают эту ноту своей серединой: альтовый — на третьей линейке, теноровый — на четвёртой. В фортепианной записи два стана обычно соединены акколадой; на каждом читайте его собственный ключ.',
         'Das eingestrichene c (c′) steht auf der ersten Hilfslinie unter dem Violinsystem oder über dem Basssystem. C-Schlüssel markieren c′ mit ihrer Mitte: der Altschlüssel auf der dritten, der Tenorschlüssel auf der vierten Linie. Klaviermusik verbindet gewöhnlich zwei Notensysteme mit einer geschweiften Klammer; lies den Schlüssel jedes Systems.',
       ),
     ],
     experiment: b(
       'Play G4, then F3, and hear how far apart the reference pitches of these two clefs actually sound.',
-      'Сыграйте соль первой октавы, затем фа малой октавы и услышьте, как далеко расходятся опорные ноты двух ключей.',
+      'Сыграйте [[соль]] первой октавы, затем [[фа]] малой октавы и услышьте, как далеко расходятся опорные ноты двух ключей.',
     ),
     hz: 391.995436,
     wave: 'triangle',
@@ -317,12 +317,12 @@ export const lessons = [
       ),
       b(
         'The sign stands to the left of the note head, on the same line or space, and is spoken after the letter: C sharp, B flat. The letter itself does not change. To replace a double sharp with a single sharp, the single sign is written alone.',
-        'Знак пишется слева от нотной головки, на той же линейке или в том же промежутке, а в названии идёт после ступени: до-диез, си-бемоль. Сама ступень при этом не меняется: нота остаётся на своём месте на нотоносце. Чтобы заменить дубль-диез простым диезом, пишут один диез.',
+        'Знак пишется слева от нотной головки, на той же линейке или в том же промежутке, а в названии идёт после ступени: [[до-диез]], [[си-бемоль]]. Сама ступень при этом не меняется: нота остаётся на своём месте на нотоносце. Чтобы заменить дубль-диез простым диезом, пишут один диез.',
       ),
     ],
     experiment: b(
       'Play C4 and C♯4 one after the other, then C4 and D4, and compare the two distances.',
-      'Сыграйте до первой октавы и до-диез, затем до и ре, и сравните два расстояния.',
+      'Сыграйте [[до]] первой октавы и [[до-диез]], затем [[до]] и [[ре]], и сравните два расстояния.',
     ),
     hz: 261.625565,
     wave: 'triangle',
@@ -353,7 +353,7 @@ export const lessons = [
     ],
     experiment: b(
       'Play B4, then B♭4, then the same pair an octave lower: one signature sign would cover both octaves.',
-      'Сыграйте си первой октавы, затем си-бемоль, потом ту же пару октавой ниже: один ключевой знак действовал бы в обеих октавах.',
+      'Сыграйте [[си]] первой октавы, затем [[си-бемоль]], потом ту же пару октавой ниже: один ключевой знак действовал бы в обеих октавах.',
     ),
     hz: 493.883301,
     wave: 'sine',
@@ -369,22 +369,22 @@ export const lessons = [
     ),
     formula: b(
       'C♯ = D♭ · F♯ = G♭ · E = F♭ · in equal temperament',
-      'до-диез = ре-бемоль · фа-диез = соль-бемоль · ми = фа-бемоль · в равномерном строе',
+      '[[до-диез]] = [[ре-бемоль]] · [[фа-диез]] = [[соль-бемоль]] · [[ми]] = [[фа-бемоль]] · в равномерном строе',
     ),
     paragraphs: [
       b(
         'In twelve-tone equal temperament one pitch can be written in more than one way. C sharp and D flat sound the same; so do F sharp and G flat, and E and F flat. Each spelling names a different letter, and the letter decides which scale degree the note occupies.',
-        'В двенадцатиступенном равномерном строе один и тот же звук можно записать по-разному. До-диез и ре-бемоль звучат одинаково; так же соотносятся фа-диез и соль-бемоль, ми и фа-бемоль. Каждая запись называет свою ступень, и именно ступень определяет место ноты в звукоряде.',
+        'В двенадцатиступенном равномерном строе один и тот же звук можно записать по-разному. [[До-диез]] и [[ре-бемоль]] звучат одинаково; так же соотносятся [[фа-диез]] и [[соль-бемоль]], [[ми]] и [[фа-бемоль]]. Каждая запись называет свою ступень, и именно ступень определяет место ноты в звукоряде.',
       ),
       nt(
         'Spelling identifies the written interval and its harmonic context. C–D sharp is an augmented second; C–E flat is a minor third. A sharp or flat alone does not determine the direction of the next note.',
-        'Запись определяет название интервала и проясняет гармонический контекст. До — ре-диез — увеличенная секунда, до — ми-бемоль — малая терция. Диез или бемоль сами по себе не определяют направление следующей ноты.',
+        'Запись определяет название интервала и проясняет гармонический контекст. [[До]] — [[ре-диез]] — увеличенная секунда, [[до]] — [[ми-бемоль]] — малая терция. Диез или бемоль сами по себе не определяют направление следующей ноты.',
         'Die Schreibweise bezeichnet das notierte Intervall und verdeutlicht den harmonischen Zusammenhang. C–Dis ist eine übermäßige Sekunde, C–Es eine kleine Terz. Ein Kreuz oder Be allein bestimmt nicht die Richtung des nächsten Tons.',
       ),
     ],
     experiment: b(
       'Set the lab to F♯4, then look for G♭4, and notice that both names point at one frequency.',
-      'Установите фа-диез первой октавы, затем найдите соль-бемоль и убедитесь, что оба названия указывают на одну частоту.',
+      'Установите [[фа-диез]] первой октавы, затем найдите [[соль-бемоль]] и убедитесь, что оба названия указывают на одну частоту.',
     ),
     hz: 369.994423,
     wave: 'triangle',
@@ -732,7 +732,7 @@ export const terms = [
     title: b('Natural note', 'Основная ступень'),
     body: nt(
       'A note on an unaltered pitch class: C, D, E, F, G, A or B. These are the white keys of the piano; a natural sign may explicitly restore one after an alteration.',
-      'Звук одной из семи основных ступеней: до, ре, ми, фа, соль, ля или си, без повышения или понижения. Им соответствуют белые клавиши фортепиано. После альтерации основную ступень может восстанавливать знак бекара.',
+      'Звук одной из семи основных ступеней: [[до]], [[ре]], [[ми]], [[фа]], [[соль]], [[ля]] или [[си]], без повышения или понижения. Им соответствуют белые клавиши фортепиано. После альтерации основную ступень может восстанавливать знак бекара.',
       'Ein Ton der unveränderten Stammtonreihe C, D, E, F, G, A, H. Diesen Tönen entsprechen die weißen Klaviertasten; ein Auflösungszeichen kann nach einer Veränderung den Stammton wiederherstellen.',
     ),
     lesson: 'note-names',
@@ -749,7 +749,7 @@ export const terms = [
     title: nt('Octave register', 'Октавный диапазон', 'Oktavlage'),
     body: nt(
       'An octave-based naming range from C to the B above it, for example C4–B4. Register in a broader musical sense means a region of pitch and need not span exactly one octave.',
-      'Диапазон от до до ближайшего си выше него, используемый для названия октав, например первая октава. Более общее понятие регистра обозначает область высот и не обязано совпадать с одной октавой.',
+      'Диапазон от [[до]] до ближайшего [[си]] выше него, используемый для названия октав, например первая октава. Более общее понятие регистра обозначает область высот и не обязано совпадать с одной октавой.',
       'Ein Bereich der Oktavbenennung von C bis zum H darüber, etwa c′–h′. Ein Register im weiteren musikalischen Sinn ist ein Tonhöhenbereich und muss nicht genau eine Oktave umfassen.',
     ),
     lesson: 'note-names',
@@ -758,15 +758,15 @@ export const terms = [
     title: b('Octave notation', 'Обозначения октав'),
     body: b(
       'Octave notation distinguishes registers. Scientific pitch uses numbers (C4), Helmholtz notation uses letter case and marks (c′), and Russian tradition uses names such as the first octave. These are different systems for identifying the same pitch.',
-      'Обозначение октавы уточняет высоту ноты. В русской традиции говорят «до первой октавы»; ту же высоту научная система обозначает C4, а система Гельмгольца — c′. Это разные системы обозначений, а не разные ноты.',
+      'Обозначение октавы уточняет высоту ноты. В русской традиции говорят «[[до]] первой октавы»; ту же высоту научная система обозначает C4, а система Гельмгольца — c′. Это разные системы обозначений, а не разные ноты.',
     ),
     lesson: 'note-names',
   },
   {
-    title: b('Middle C', 'До первой октавы'),
+    title: b('Middle C', '[[До]] первой октавы'),
     body: nt(
       'The C near the middle of a piano keyboard, written C4. At A4 = 440 Hz in twelve-tone equal temperament, its frequency is about 261.6 Hz; another reference pitch or tuning changes that frequency.',
-      'До в средней части фортепианной клавиатуры, начало первой октавы. При ля первой октавы = 440 Гц в двенадцатиступенном равномерном строе его частота примерно 261,6 Гц; при другой опорной частоте или строе она меняется.',
+      '[[До]] в средней части фортепианной клавиатуры, начало первой октавы. При [[ля]] первой октавы = 440 Гц в двенадцатиступенном равномерном строе его частота примерно 261,6 Гц; при другой опорной частоте или строе она меняется.',
       'Das c nahe der Klaviaturmitte, geschrieben c′. Bei a′ = 440 Hz in zwölfstufiger gleichstufiger Stimmung liegt es bei etwa 261,6 Hz; ein anderer Bezugston oder eine andere Stimmung verändert diese Frequenz.',
     ),
     lesson: 'note-names',
@@ -831,7 +831,7 @@ export const terms = [
     title: b('Treble clef', 'Скрипичный ключ'),
     body: b(
       'The treble clef is the G-clef whose curl encircles the second line and fixes G4 there.',
-      'Скрипичный ключ — соль-ключ, завиток которого обвивает вторую линейку и закрепляет на ней соль первой октавы.',
+      'Скрипичный ключ — [[соль]]-ключ, завиток которого обвивает вторую линейку и закрепляет на ней [[соль]] первой октавы.',
     ),
     lesson: 'clefs',
   },
@@ -839,15 +839,15 @@ export const terms = [
     title: b('Bass clef', 'Басовый ключ'),
     body: b(
       'The bass clef is the F-clef whose two dots surround the fourth line and fix F3 there.',
-      'Басовый ключ — фа-ключ, две точки которого стоят по сторонам четвёртой линейки и закрепляют на ней фа малой октавы.',
+      'Басовый ключ — [[фа]]-ключ, две точки которого стоят по сторонам четвёртой линейки и закрепляют на ней [[фа]] малой октавы.',
     ),
     lesson: 'clefs',
   },
   {
-    title: b('C clef', 'До-ключ'),
+    title: b('C clef', '[[До]]-ключ'),
     body: b(
       'A C clef names C4 on the line its centre marks: the third line for the alto clef, the fourth for the tenor clef.',
-      'До-ключ указывает до первой октавы на той линейке, где сходятся его половины: третья — альтовый ключ, четвёртая — теноровый.',
+      '[[До]]-ключ указывает [[до]] первой октавы на той линейке, где сходятся его половины: третья — альтовый ключ, четвёртая — теноровый.',
     ),
     lesson: 'clefs',
   },
@@ -1008,7 +1008,7 @@ export const terms = [
     title: b('Raised degree', 'Повышенная ступень'),
     body: nt(
       'A degree raised relative to the scale being discussed, usually by a semitone: G becomes G♯ when the seventh degree of A natural minor is raised.',
-      'Ступень, повышенная относительно рассматриваемой гаммы, обычно на полутон: при повышении VII ступени ля натурального минора соль превращается в соль-диез.',
+      'Ступень, повышенная относительно рассматриваемой гаммы, обычно на полутон: при повышении VII ступени [[ля]] натурального минора [[соль]] превращается в [[соль-диез]].',
       'Eine gegenüber der betrachteten Tonleiter erhöhte Stufe, meist um einen Halbton: Wird die siebte Stufe der natürlichen a-Moll-Tonleiter erhöht, wird G zu Gis.',
     ),
     lesson: 'enharmonics',
@@ -1017,7 +1017,7 @@ export const terms = [
     title: b('Lowered degree', 'Пониженная ступень'),
     body: nt(
       'A degree lowered relative to the scale being discussed, usually by a semitone: lowering the third degree of C major changes E to E♭.',
-      'Ступень, пониженная относительно рассматриваемой гаммы, обычно на полутон: при понижении III ступени до мажора ми превращается в ми-бемоль.',
+      'Ступень, пониженная относительно рассматриваемой гаммы, обычно на полутон: при понижении III ступени [[до]] мажора [[ми]] превращается в [[ми-бемоль]].',
       'Eine gegenüber der betrachteten Tonleiter erniedrigte Stufe, meist um einen Halbton: Wird die dritte Stufe von C-Dur erniedrigt, wird E zu Es.',
     ),
     lesson: 'enharmonics',
@@ -1026,7 +1026,7 @@ export const terms = [
     title: b('Chromatic semitone', 'Хроматический полутон'),
     body: b(
       'A semitone between two notes that share a letter, such as C and C sharp.',
-      'Полутон между двумя нотами одной ступени, например до и до-диез.',
+      'Полутон между двумя нотами одной ступени, например [[до]] и [[до-диез]].',
     ),
     lesson: 'enharmonics',
   },
@@ -1034,7 +1034,7 @@ export const terms = [
     title: b('Diatonic semitone', 'Диатонический полутон'),
     body: b(
       'A semitone between two neighbouring letters, such as C sharp and D.',
-      'Полутон между двумя соседними ступенями, например до-диез и ре.',
+      'Полутон между двумя соседними ступенями, например [[до-диез]] и [[ре]].',
     ),
     lesson: 'enharmonics',
   },

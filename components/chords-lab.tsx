@@ -1,4 +1,5 @@
 'use client';
+import { NoteText } from './note-text';
 import { translator } from '@/lib/i18n';
 
 import {
@@ -843,7 +844,12 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
               </span>
               <h2>{chordSymbol(key, chord, lang)}</h2>
               <p>
-                {definition[lang]} · {pitchName(construction[0], lang)}
+                {definition[lang]} ·{' '}
+                <NoteText
+                  text={pitchName(construction[0], lang)}
+                  lang={lang}
+                  pitch
+                />
               </p>
             </div>
             <div className="chord-inspector-tools">
@@ -943,8 +949,12 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                   )
                 }
               >
-                <strong>{pitchName(p, lang)}</strong>
-                <small>{pitchLabel(p, lang)}</small>
+                <strong>
+                  <NoteText text={pitchName(p, lang)} lang={lang} pitch />
+                </strong>
+                <small>
+                  <NoteText text={pitchLabel(p, lang)} lang={lang} pitch />
+                </small>
                 {i === 0 && <em>{t('bass', 'бас')}</em>}
               </button>
             ))}
@@ -975,8 +985,18 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
           </figure>
           <p className="chord-insight">
             {t('Root', 'Основной тон')}:{' '}
-            <strong>{pitchName(construction[0], lang)}</strong> ·{' '}
-            {t('Bass', 'Бас')}: <strong>{pitchName(notes[0], lang)}</strong>.{' '}
+            <strong>
+              <NoteText
+                text={pitchName(construction[0], lang)}
+                lang={lang}
+                pitch
+              />
+            </strong>{' '}
+            · {t('Bass', 'Бас')}:{' '}
+            <strong>
+              <NoteText text={pitchName(notes[0], lang)} lang={lang} pitch />
+            </strong>
+            .{' '}
             {t(
               'An inversion changes the lowest note, not the root.',
               'Обращение меняет нижний звук, но не основной тон.',
@@ -994,7 +1014,14 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
               )}
               :{' '}
               <strong>
-                {common.length ? common.join(', ') : t('none', 'нет')}
+                {common.length
+                  ? common.map((name, index) => (
+                      <span key={index}>
+                        {index > 0 && ', '}
+                        <NoteText text={name} lang={lang} pitch />
+                      </span>
+                    ))
+                  : t('none', 'нет')}
               </strong>
               .{' '}
               {t(
@@ -1042,9 +1069,12 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                   <span className="chord-roman">{romanNumeral(key, item)}</span>
                   <strong>{chordSymbol(key, item, lang)}</strong>
                   <small>
-                    {chordNotes(key, item)
-                      .map((p) => pitchName(p, lang))
-                      .join(' · ')}
+                    {chordNotes(key, item).map((p, index) => (
+                      <span key={index}>
+                        {index > 0 && ' · '}
+                        <NoteText text={pitchName(p, lang)} lang={lang} pitch />
+                      </span>
+                    ))}
                   </small>
                   <Plus size={16} />
                 </button>
@@ -1093,7 +1123,9 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                 ? t(' · starting example', ' · исходный пример')
                 : ''}
             </h3>
-            <p>{template.note[lang]}</p>
+            <p>
+              <NoteText text={template.note} lang={lang} />
+            </p>
             <p>
               {t(
                 'Change one thing at a time: chord type, bass, order, then tempo. Listen before deciding which version you prefer. Every change can be undone, including loading another example.',
@@ -1122,7 +1154,7 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                   key={i}
                   onClick={() => setAnswer(p.midi % 12)}
                 >
-                  {pitchName(p, lang)}
+                  <NoteText text={pitchName(p, lang)} lang={lang} pitch />
                 </button>
               ))}
             </div>
@@ -1135,7 +1167,12 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                       'Yes. The root stays',
                       'Верно. Основной тон остаётся',
                     )}{' '}
-                    {pitchName(construction[0], lang)}.
+                    <NoteText
+                      text={pitchName(construction[0], lang)}
+                      lang={lang}
+                      pitch
+                    />
+                    .
                   </>
                 ) : (
                   <>
@@ -1143,7 +1180,12 @@ export function ChordsLab({ lang }: { lang: MusicLanguage }) {
                       'That is a chord member, but the root is',
                       'Это аккордовый тон, но основной тон —',
                     )}{' '}
-                    {pitchName(construction[0], lang)}.{' '}
+                    <NoteText
+                      text={pitchName(construction[0], lang)}
+                      lang={lang}
+                      pitch
+                    />
+                    .{' '}
                     {t(
                       'Use the construction formula; changing the bass does not change the root.',
                       'Ориентируйтесь на формулу строения: смена баса не меняет основной тон.',
