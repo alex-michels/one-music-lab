@@ -181,7 +181,9 @@ test('All six German lessons include translated prose, experiments and formulas,
     openLab: vi.fn(),
     anchor: null,
   });
-  expect(container.querySelectorAll('.topic-row')).toHaveLength(lessons.length);
+  expect(container.querySelectorAll('.chapter-lessons > li')).toHaveLength(
+    lessons.length,
+  );
   await render(Encyclopedia, {
     lang: 'de',
     openLesson: vi.fn(),

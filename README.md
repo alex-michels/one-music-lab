@@ -32,7 +32,15 @@ and still requires the owner's authorization.
 
 - **Notation programme (№558):** thirteen connected EN/RU/DE lessons, bounded Notes-lab experiments, per-note practice feedback and sourced reference entries. Start with **Read → Note names and octaves** and follow the previous/next lesson links; use the four views of each topic to read, experiment, practise and look up terms. In **Play → Notes**, choose a note, accidental, octave and clef; compare its written and sounding pitch, play short examples, place notes on the staff, and compare key signatures and octave shifts. Labelled menus support keyboard selection and readable light/dark themes; scores use light ink in dark mode, while piano keys retain their colours. The [PDF coverage and evidence record](docs/notation-programme.md) explains the programme's scope and checks for personal learning. Public release remains separate.
 
-All teaching material follows the [connected chapter requirement](docs/engineering.md#task-537): progressive explanations and examples, chapter contents, previous/next lessons and links to related experiments, exercises and definitions. Extending this structure across all subjects remains tracked by №537/542.
+**Connected chapters (№537/542):** Read now groups all 19 existing lessons into five
+chapters across Foundations and Expression and performance. Each has goals,
+prerequisites, contents and previous/next lesson links; Play, Drill and Define
+share the same chapter indexes. The optional five-question starting check suggests
+an explanation to revisit without restricting access or claiming mastery.
+Direct chapter links include the language, for example `/#/de/c/rhythm/read`.
+The [learning-route guide](docs/learning-routes.md) explains the order, diagnostic,
+returning to experiments and how to add future lessons. The full numbered
+curriculum remains separate from this structure for the available material.
 
 Lessons present a learning goal, explanation and worked example before practice.
 The practice ledger groups skills by topic with headings in the selected language;

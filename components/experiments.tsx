@@ -1,7 +1,7 @@
 'use client';
 import { translator, fixedNumber } from '@/lib/i18n';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Play, Sparkles, Volume2 } from 'lucide-react';
 import { count } from '@/lib/plural';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -30,20 +30,38 @@ type PlaySequence = (
   spacing?: number,
   wave?: Wave,
 ) => Promise<void>;
+export type ExperimentSnapshot = {
+  kind: keyof typeof patterns;
+  selected: number;
+  root: string;
+};
 export function Experiments({
   lang,
   reference,
   tuning,
   play,
+  initialKind = 'intervals',
+  snapshot,
+  onSnapshot,
 }: {
   lang: Lang;
   reference: number;
   tuning: Tuning;
   play: PlaySequence;
+  initialKind?: keyof typeof patterns;
+  snapshot?: ExperimentSnapshot;
+  onSnapshot?: (value: ExperimentSnapshot) => void;
 }) {
-  const [kind, setKind] = useState<keyof typeof patterns>('intervals');
-  const [selected, setSelected] = useState(3);
-  const [root, setRoot] = useState('A');
+  const [kind, setKind] = useState<keyof typeof patterns>(
+    snapshot?.kind ?? initialKind,
+  );
+  const [selected, setSelected] = useState(
+    snapshot?.selected ?? (initialKind === 'scales' ? 0 : 3),
+  );
+  const [root, setRoot] = useState(snapshot?.root ?? 'A');
+  useEffect(() => {
+    onSnapshot?.({ kind, selected, root });
+  }, [kind, selected, root, onSnapshot]);
   const t = translator(lang);
   const pattern = patterns[kind][Math.min(selected, patterns[kind].length - 1)];
   const tonic = spellPattern(root, { steps: [0], degrees: [0] })[0];

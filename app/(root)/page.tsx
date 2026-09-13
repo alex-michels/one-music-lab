@@ -7,11 +7,15 @@ import {
   type Translate,
 } from '@/lib/i18n';
 import { localizedNoteName } from '@/lib/notation';
+import { lessons } from '@/lib/learning';
 
 import { flushSync } from 'react-dom';
 import { Theory, Practice, Encyclopedia } from '@/components/learning';
-import { ChordsLab } from '@/components/chords-lab';
+import { ChordsLab, type ChordsLabSnapshot } from '@/components/chords-lab';
+import { CourseIndex, CourseNavigation } from '@/components/course-navigation';
+import { collectionTitle, courseAddresses } from '@/lib/course';
 import { PlayLens } from '@/components/play-lens';
+import type { ExperimentSnapshot } from '@/components/experiments';
 import {
   initialNotesLabState,
   notationLessonPresets,
@@ -109,6 +113,7 @@ const routeStore = createClientStore<Route>(
     routeFromHash(window.location.hash, {
       lang: addressedLang(),
       topics: TOPIC_IDS,
+      ...courseAddresses,
     }),
   { lang: 'en', lens: DEFAULT_LENS, topic: null, anchor: null },
 );
@@ -117,6 +122,7 @@ const langStore = createClientStore<Lang>(
     routeFromHash(window.location.hash, {
       lang: addressedLang(),
       topics: TOPIC_IDS,
+      ...courseAddresses,
     }).lang,
   'en',
 );
@@ -225,8 +231,8 @@ function SubjectLine({
     define: t('Define', 'Определения'),
   };
   // Every lens is scoped now except that a subject only has a drill if the
-  // generator can ask about it: eight of the nineteen topics have a rule, and
-  // for the other eleven the rail says so rather than opening a drill that
+  // generator can ask about it: thirteen of the nineteen topics have a rule, and
+  // for the other six the rail says so rather than opening a drill that
   // would have to invent a question.
   const shows = (lens: Lens) =>
     route.topic === null ||
@@ -391,6 +397,9 @@ function Navigation({
 }
 export default function Home() {
   const [exporting, setExporting] = useState(false);
+  const [experimentSnapshot, setExperimentSnapshot] =
+    useState<ExperimentSnapshot>();
+  const [chordsSnapshot, setChordsSnapshot] = useState<ChordsLabSnapshot>();
   const lang = useSyncExternalStore(
     langStore.subscribe,
     langStore.getSnapshot,
@@ -423,18 +432,7 @@ export default function Home() {
   const [frequency, setFrequency] = useState(440);
   const [labTab, setLabTab] = useState<'tone' | 'notes'>('tone');
   const [notesState, setNotesState] = useState(initialNotesLabState);
-  const destination = route.lens + '/' + (route.topic ?? '');
-  const [labDestination, setLabDestination] = useState<string | null>(null);
-  if (labDestination !== destination) {
-    setLabDestination(destination);
-    if (route.lens === 'play' && route.topic) {
-      const preset = Object.hasOwn(notationLessonPresets, route.topic)
-        ? notationLessonPresets[route.topic]
-        : null;
-      setLabTab(preset ? 'notes' : 'tone');
-      if (preset) setNotesState({ ...initialNotesLabState, ...preset });
-    }
-  }
+  const [labTopic, setLabTopic] = useState<string | null>(null);
   const [reference, setReference] = useState(440);
   const [tuning, setTuning] = useState<Tuning>('equal');
   const [wave, setWave] = useState<Wave>('sine');
@@ -442,6 +440,23 @@ export default function Home() {
   const [playing, setPlaying] = useState(false);
   const [octave, setOctave] = useState(4);
   const [error, setError] = useState<LocalText | null>(null);
+  // Returning from theory/practice/reference keeps the current experiment.
+  // A different topic loads its authored preset, including on a direct link.
+  if (route.lens === 'play' && !route.collection && route.topic !== labTopic) {
+    setLabTopic(route.topic);
+    setExperimentSnapshot(undefined);
+    const preset =
+      route.topic && Object.hasOwn(notationLessonPresets, route.topic)
+        ? notationLessonPresets[route.topic]
+        : null;
+    const lesson = lessons.find((entry) => entry.id === route.topic);
+    setLabTab(preset ? 'notes' : 'tone');
+    if (preset) setNotesState({ ...initialNotesLabState, ...preset });
+    if (lesson) {
+      setFrequency(lesson.hz);
+      setWave(lesson.wave as Wave);
+    }
+  }
   const audio = useRef<AudioEngine | null>(null);
   const t = translator(lang);
   const displayNote = (midi: number) =>
@@ -583,6 +598,7 @@ export default function Home() {
     go({ lang, lens: 'play', topic: lessonId, anchor: null });
     setHz(hz);
     setWave(shape);
+    setExperimentSnapshot(undefined);
     const preset = Object.hasOwn(notationLessonPresets, lessonId)
       ? notationLessonPresets[lessonId]
       : null;
@@ -636,11 +652,13 @@ export default function Home() {
         : null;
     document.title = topic
       ? `${topic.title[lang]} — One Music Lab`
-      : 'OML — One Music Lab';
+      : collectionTitle(route.collection)
+        ? `${collectionTitle(route.collection)![lang]} — One Music Lab`
+        : 'OML — One Music Lab';
     try {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
     } catch {}
-  }, [lang, route.topic]);
+  }, [lang, route.topic, route.collection]);
   // A single-document app changes the page without telling anyone: aria-current
   // marks the new place but announces nothing at the moment of arrival, and
   // focus stays on a control that has just re-rendered.
@@ -656,16 +674,20 @@ export default function Home() {
     // scroll. Move the viewport explicitly as well as announcing the topic.
     headingRef.current?.focus({ preventScroll: true });
     headingRef.current?.scrollIntoView({ block: 'start' });
-  }, [route.lens, route.topic]);
+  }, [route.lens, route.topic, route.collection]);
   // The first hashchange listener this app has had. Back and Forward move
   // through the site now instead of leaving it, and a pasted address is read
   // the same way whether it arrives on load or afterwards.
   useEffect(() => {
     const reread = () => {
       moved.current = true;
+      audio.current?.stopAll();
+      setPlaying(false);
+      setError(null);
       const next = routeFromHash(window.location.hash, {
         lang,
         topics: TOPIC_IDS,
+        ...courseAddresses,
       });
       routeStore.set(next);
       if (next.lang !== lang) setLang(next.lang);
@@ -741,13 +763,14 @@ export default function Home() {
       e.metaKey ||
       e.altKey ||
       page !== 'lab' ||
+      route.collection !== undefined ||
       labTab !== 'tone'
     )
       return;
     const target = e.target as HTMLElement;
     if (
       target.closest(
-        'input,textarea,select,button,[role="slider"],[role="combobox"],[role="tab"],[contenteditable="true"]',
+        'a,summary,input,textarea,select,button,[role="slider"],[role="combobox"],[role="tab"],[contenteditable="true"]',
       )
     )
       return;
@@ -851,7 +874,9 @@ export default function Home() {
     practice: t('One rule at a time.', 'По одному правилу за раз.'),
     encyclopedia: t('The language of music.', 'Язык музыки.'),
   };
-  const subjectTitle = openTopic ? openTopic.title[lang] : pageHeading[page];
+  const subjectTitle = openTopic
+    ? openTopic.title[lang]
+    : (collectionTitle(route.collection)?.[lang] ?? pageHeading[page]);
   const tuningNames = {
     equal: t('12-tone equal temperament', '12-ступенный равномерный'),
     just: t('Just intonation · A', 'Чистый строй · от A'),
@@ -943,8 +968,17 @@ export default function Home() {
               go={go}
               headingRef={headingRef}
             />
-            {page === 'lab' ? (
+            <CourseNavigation route={route} />
+            {route.collection ? (
+              <CourseIndex route={route} />
+            ) : page === 'lab' ? (
               <PlayLens
+                key={route.topic ?? 'free'}
+                experimentKind={
+                  route.topic === 'scales' ? 'scales' : 'intervals'
+                }
+                experimentSnapshot={experimentSnapshot}
+                onExperimentSnapshot={setExperimentSnapshot}
                 lang={lang}
                 t={t}
                 labTab={labTab}
@@ -981,7 +1015,11 @@ export default function Home() {
                 exporting={exporting}
               />
             ) : page === 'chords' ? (
-              <ChordsLab lang={lang} />
+              <ChordsLab
+                lang={lang}
+                snapshot={chordsSnapshot}
+                onSnapshot={setChordsSnapshot}
+              />
             ) : page === 'theory' ? (
               <Theory
                 lang={lang}

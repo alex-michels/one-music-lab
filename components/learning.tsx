@@ -1,9 +1,11 @@
 'use client';
 import { nt } from '@/lib/notation-tasks';
 import {
-  notationForwardLinks,
-  notationProgramme,
-} from '@/lib/notation-programme';
+  CourseIndex,
+  LessonConnections,
+  LessonNavigation,
+} from './course-navigation';
+import { notationForwardLinks } from '@/lib/notation-programme';
 import { termAnchor, termSearchText } from '@/lib/topics';
 import { translator, type Translate } from '@/lib/i18n';
 
@@ -63,7 +65,6 @@ import { NotationReading } from './notation-reading';
 import { NoteText } from './note-text';
 import type { Wave } from '@/lib/music';
 type Lang = import('@/lib/client-store').Lang;
-const notationOrder = Object.keys(notationProgramme);
 
 type SortBy = 'term' | 'kind';
 
@@ -210,9 +211,6 @@ export function Theory({
 }) {
   const t = translator(lang);
   const lesson = lessons.find((l) => l.id === lessonId);
-  const position = notationOrder.indexOf(lessonId ?? '');
-  const previous = topicById[notationOrder[position - 1] as TopicId];
-  const next = topicById[notationOrder[position + 1] as TopicId];
   if (lesson)
     return (
       <article className="lens-read lesson-article">
@@ -220,6 +218,7 @@ export function Theory({
           <ArrowLeft size={16} />
           {t('All foundations', 'Все основы')}
         </button>
+        <LessonConnections topic={lesson.id as TopicId} lang={lang} />
         <section className="lesson-goal">
           <h2>
             {
@@ -284,99 +283,12 @@ export function Theory({
           {t('Further reading', 'Для дальнейшего чтения')}
           <ArrowUpRight size={15} />
         </a>
-        {position >= 0 && (
-          <nav
-            className="lesson-navigation"
-            aria-label={
-              nt(
-                'Notation programme',
-                'Программа нотной записи',
-                'Notenschrift lernen',
-              )[lang]
-            }
-          >
-            <p className="eyebrow">
-              {nt('Lesson', 'Урок', 'Lektion')[lang]} {position + 1} /{' '}
-              {notationOrder.length}
-            </p>
-            {previous && (
-              <a
-                rel="prev"
-                href={hashOf({
-                  lang,
-                  lens: 'read',
-                  topic: previous.id,
-                  anchor: null,
-                })}
-              >
-                <span>
-                  {
-                    nt('Previous lesson', 'Предыдущий урок', 'Vorige Lektion')[
-                      lang
-                    ]
-                  }
-                </span>
-                <NoteText text={previous.title} lang={lang} />
-              </a>
-            )}
-            {next && (
-              <a
-                rel="next"
-                href={hashOf({
-                  lang,
-                  lens: 'read',
-                  topic: next.id,
-                  anchor: null,
-                })}
-              >
-                <span>
-                  {nt('Next lesson', 'Следующий урок', 'Nächste Lektion')[lang]}
-                </span>
-                <NoteText text={next.title} lang={lang} />
-              </a>
-            )}
-          </nav>
-        )}
+        <LessonNavigation topic={lesson.id as TopicId} lang={lang} />
       </article>
     );
-  const groupName: Record<TopicKind, string> = {
-    sign: t('Signs on the page', 'Знаки на бумаге'),
-    concept: t('Ideas and definitions', 'Понятия и определения'),
-    measure: t('Rhythm and duration', 'Ритм и длительность'),
-    tone: t('Sound itself', 'Сам звук'),
-  };
   return (
     <div className="lens-read">
-      {/* Grouped by subject; the notation lessons also have a reading route. */}
-      {TOPIC_KINDS.map((group) => {
-        const inGroup = topics.filter((topic) => topic.kind === group);
-        if (!inGroup.length) return null;
-        return (
-          <section className="topic-group" key={group}>
-            <h2>{groupName[group]}</h2>
-            <ul role="list">
-              {inGroup.map((topic) => (
-                <li key={topic.id}>
-                  <button
-                    className="topic-row"
-                    onClick={() => setLessonId(topic.id)}
-                  >
-                    <span className="topic-name">
-                      <NoteText text={topic.title} lang={lang} />
-                    </span>
-                    {topic.order === 0 && (
-                      <span className="start-here">
-                        {t('Start here', 'Начните здесь')}
-                      </span>
-                    )}
-                    <ArrowUpRight size={16} />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </section>
-        );
-      })}
+      <CourseIndex route={{ lang, lens: 'read', topic: null, anchor: null }} />
       <p className="culture-note">
         {t(
           'Musical traditions deserve their own context, terminology and sources. A raga or maqam is not simply a scale preset.',
@@ -871,6 +783,30 @@ export function Practice({
   lang: Lang;
   topic: string | null;
 }) {
+  if (
+    topic &&
+    Object.hasOwn(paragraphAnchors, topic) &&
+    paragraphAnchors[topic as TopicId].length === 0
+  )
+    return (
+      <section className="practice-unavailable">
+        <p>
+          {
+            nt(
+              'This lesson has no scored exercise yet. Use its experiment and explanation to explore the topic.',
+              'Для этого урока пока нет оцениваемого упражнения. Исследуйте тему с помощью эксперимента и объяснения.',
+              'Für diese Lektion gibt es noch keine bewertete Aufgabe. Erkunde das Thema mit dem Experiment und der Erklärung.',
+            )[lang]
+          }
+        </p>
+        <a href={hashOf({ lang, topic, lens: 'play', anchor: null })}>
+          {nt('Open the lab', 'Открыть лабораторию', 'Labor öffnen')[lang]}
+        </a>
+        <a href={hashOf({ lang, topic, lens: 'read', anchor: null })}>
+          {nt('Read the lesson', 'Читать урок', 'Lektion lesen')[lang]}
+        </a>
+      </section>
+    );
   return (
     <PracticeSession key={`${lang}-${topic ?? ''}`} lang={lang} topic={topic} />
   );

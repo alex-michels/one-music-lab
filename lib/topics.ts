@@ -22,7 +22,8 @@ import { notationLessonPresets } from './notation-experiments';
 import { notationProgramme, type NotationTopic } from './notation-programme';
 
 /**
- * In reading order, which is the order lib/learning.ts writes them in. The list
+ * In legacy inventory order, matching lib/learning.ts. Teaching order now lives
+ * in lib/course.ts, independently of these stable identities. The list
  * is spelled out rather than derived so that `Record<TopicId, …>` below is
  * exhaustive at compile time; a test asserts it still matches `lessons`.
  */
@@ -261,7 +262,7 @@ export const ruleKind: Record<Rule, ExerciseKind> = {
 
 export type Topic = {
   id: TopicId;
-  /** Reading order, and the only sequence the site claims. */
+  /** Legacy inventory position; use lib/course.ts for chapter/reading order. */
   order: number;
   kind: TopicKind;
   title: LocalText;
