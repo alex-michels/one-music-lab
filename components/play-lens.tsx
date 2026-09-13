@@ -1,4 +1,5 @@
 'use client';
+import type { ExperimentSnapshot } from './experiments';
 import { useEffect, useEffectEvent, useRef, type RefObject } from 'react';
 import {
   Activity,
@@ -311,6 +312,9 @@ export function PlayLens({
   navigate,
   download,
   exporting,
+  experimentKind,
+  experimentSnapshot,
+  onExperimentSnapshot,
 }: {
   lang: Lang;
   t: Translate;
@@ -351,6 +355,9 @@ export function PlayLens({
   navigate: (page: Page) => void;
   download: () => void;
   exporting: boolean;
+  experimentKind?: ExperimentSnapshot['kind'];
+  experimentSnapshot?: ExperimentSnapshot;
+  onExperimentSnapshot?: (value: ExperimentSnapshot) => void;
 }) {
   const playKeyboardNote = (midi: number) => {
     if (labTab === 'notes') {
@@ -747,6 +754,9 @@ export function PlayLens({
         </div>
       </section>
       <Experiments
+        initialKind={experimentKind}
+        snapshot={experimentSnapshot}
+        onSnapshot={onExperimentSnapshot}
         lang={lang}
         reference={reference}
         tuning={tuning}

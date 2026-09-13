@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile, readdir, stat } from 'node:fs/promises';
+import { mkdir, readFile, readdir, stat } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { createServer } from 'node:http';
 import { chromium } from 'playwright';
@@ -122,7 +122,7 @@ await test('Browser assets contain no font CDN fallback or source maps', async (
   }
 });
 
-await test('The portable Notes lab renders while every external request is blocked', async () => {
+await test('Portable labs and chapter routes work with external requests blocked', async () => {
   const server = createServer(async (request, response) => {
     try {
       const pathname = decodeURIComponent(
@@ -197,10 +197,60 @@ await test('The portable Notes lab renders while every external request is block
       await page.locator('.notation-workbench output').textContent(),
       /E♭4/,
     );
+    for (const [lang, title] of [
+      ['en', 'Rhythm and musical time'],
+      ['ru', 'Ритм и музыкальное время'],
+      ['de', 'Rhythmus und musikalische Zeit'],
+    ]) {
+      for (const lens of ['read', 'play', 'drill', 'define']) {
+        await page.goto(`${origin}/#/${lang}/c/rhythm/${lens}`);
+        await page
+          .getByRole('heading', { name: title, exact: true, level: 1 })
+          .waitFor();
+        assert.equal(await page.locator('.chapter-lessons > li').count(), 4);
+        assert.equal(await page.locator('html').getAttribute('lang'), lang);
+        await page.reload();
+        await page
+          .getByRole('heading', { name: title, exact: true, level: 1 })
+          .waitFor();
+        assert.equal(
+          await page.locator('.chapter-lessons > li').count(),
+          4,
+          'A reloaded fragment keeps its chapter',
+        );
+      }
+    }
+    await mkdir('outputs/learning-routes', { recursive: true });
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto(`${origin}/#/en/read`);
+    await page.locator('.entry-diagnostic').waitFor();
+    await page.screenshot({
+      path: 'outputs/learning-routes/chapters-desktop.png',
+      fullPage: true,
+    });
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.goto(`${origin}/#/ru/c/pitch-relationships/read`);
+    await page
+      .getByRole('heading', {
+        name: 'Строй, интервалы, гаммы и аккорды',
+        level: 1,
+        exact: true,
+      })
+      .waitFor();
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+      true,
+    );
+    await page.screenshot({
+      path: 'outputs/learning-routes/chapter-mobile.png',
+      fullPage: true,
+    });
     assert.deepEqual(
       external,
       [],
-      'The Notes lab tried to fetch an external resource',
+      'The labs or chapters tried to fetch an external resource',
     );
   } finally {
     await browser?.close();

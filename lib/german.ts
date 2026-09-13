@@ -873,10 +873,6 @@ export const german = {
   'written so far': 'bisher geschrieben',
   'The plan for the rest is in the roadmap.':
     'Der Plan für alles Weitere steht in der Roadmap.',
-  'Signs on the page': 'Zeichen auf dem Papier',
-  'Ideas and definitions': 'Begriffe und Definitionen',
-  'Rhythm and duration': 'Rhythmus und Dauer',
-  'Sound itself': 'Der Klang selbst',
   'Try it here': 'Hier ausprobieren',
   'Practise this rule': 'Diese Regel üben',
   // The drill lens: the rule ledger and the two exits out of it.

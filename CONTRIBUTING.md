@@ -38,6 +38,15 @@ links, route boundaries and mobile/keyboard navigation. Requirements and remaini
 general implementation are [№537/542](docs/engineering.md#task-537), assessed in
 [gate G](docs/release-criteria.md).
 
+Register each new lesson in `lib/course.ts` with chapter membership and an
+EN/RU/DE transition. Give each chapter a goal and prerequisite lesson links;
+prerequisites must appear earlier in the route. Use the shared section/chapter
+indexes in every view, preserving existing topic IDs and reference anchors.
+`courseProblems` and the course tests reject omissions, duplicates, empty groups
+and forward/self dependencies. Keep diagnostic sampling explicit and sourced;
+correct sample answers must not certify untested chapters. See the
+[authoring contract and evidence](docs/learning-routes.md).
+
 ### Learning copy and headings
 
 Write clear, natural EN/RU/DE prose with comparable explanatory depth. Introduce

@@ -7,6 +7,7 @@ import { Encyclopedia, Practice, Theory } from '../../components/learning.tsx';
 import Home from '../../app/(root)/page.tsx';
 import { initialNotesLabState } from '../../lib/notation-experiments.ts';
 import { lessons, terms } from '../../lib/learning.ts';
+import { readingOrder, lessonPosition } from '../../lib/course.ts';
 import { termAnchor, termSearchText, TOPIC_IDS } from '../../lib/topics.ts';
 import { routeFromHash } from '../../lib/client-store.ts';
 import { notationForwardLinks } from '../../lib/notation-programme.ts';
@@ -58,39 +59,30 @@ test('A pasted term address opens the same reference after application hydration
 });
 
 for (const lang of ['en', 'ru', 'de']) {
-  test(`The thirteen notation lessons form a complete reading route in ${lang}`, async () => {
-    const order = [
-      'note-names',
-      'staff',
-      'clefs',
-      'accidental-signs',
-      'accidental-scope',
-      'enharmonics',
-      'durations',
-      'dots-ties',
-      'beat-division',
-      'tempo',
-      'dynamics',
-      'articulation',
-      'repeats',
-    ];
+  test(`All nineteen lessons form a complete reading route in ${lang}`, async () => {
+    const order = readingOrder;
     await page.viewport(390, 844);
     await mount(Home);
     await act(async () => {
-      window.history.replaceState(null, '', `#/${lang}/t/note-names/read`);
+      window.history.replaceState(null, '', `#/${lang}/t/sound/read`);
       window.dispatchEvent(new HashChangeEvent('hashchange'));
     });
     for (let index = 0; index < order.length; index++) {
       const nav = container.querySelector('.lesson-navigation');
       expect(nav).not.toBeNull();
-      expect(nav.querySelector('p').textContent).toContain(`${index + 1} / 13`);
+      const position = lessonPosition(order[index]);
+      expect(nav.querySelector('p').textContent).toContain(
+        `${position.inChapter + 1} / ${position.chapter.lessons.length}`,
+      );
       const previous = nav.querySelector('[rel="prev"]');
       const next = nav.querySelector('[rel="next"]');
       expect(previous?.hash ?? null).toBe(
         index ? `#/${lang}/t/${order[index - 1]}/read` : null,
       );
       expect(next?.hash ?? null).toBe(
-        index < 12 ? `#/${lang}/t/${order[index + 1]}/read` : null,
+        index + 1 < order.length
+          ? `#/${lang}/t/${order[index + 1]}/read`
+          : null,
       );
       expect(nav.scrollWidth).toBeLessThanOrEqual(nav.clientWidth + 1);
       if (next) {
@@ -223,8 +215,8 @@ for (const lang of ['en', 'ru', 'de']) {
   });
 }
 
-test('Notation navigation is absent from the index, unrelated lessons and unknown lesson IDs', async () => {
-  for (const lessonId of [null, 'sound', 'missing']) {
+test('Lesson navigation is absent from the index and unknown lesson IDs', async () => {
+  for (const lessonId of [null, 'missing']) {
     await mount(Theory, {
       lang: 'en',
       lessonId,

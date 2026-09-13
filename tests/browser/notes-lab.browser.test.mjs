@@ -34,6 +34,16 @@ afterEach(async () => {
 
 const click = (name) =>
   act(async () => page.getByRole('button', { name, exact: true }).click());
+const openLesson = (name) =>
+  act(async () =>
+    page
+      .elementLocator(
+        [...container.querySelectorAll('.chapter-lessons > li > a')].find(
+          (link) => link.textContent === name,
+        ),
+      )
+      .click(),
+  );
 const readout = (label) => {
   const row = [...container.querySelectorAll('.note-readout dl > div')].find(
     (d) => d.querySelector('dt').textContent === label,
@@ -197,7 +207,7 @@ test('Tempo lesson opens its working example and sends the chosen tempo to audio
   const { preview, stop } = observeAudio();
   await mount();
   await click(/Music theory/);
-  await click(/Tempo and its marks/);
+  await openLesson('Tempo and its marks');
   await click('Open this experiment');
   expect(container.querySelector('.notes-lab')).not.toBeNull();
   await click('♩ = 120');
@@ -230,9 +240,7 @@ test('Each rhythmic lesson selects its actual controls and dynamics retains the 
     ['Printed order, played order', 'Repeat with a changed ending'],
   ]) {
     await click(/Music theory/);
-    if (container.querySelector('.lesson-article'))
-      await click('All foundations');
-    await click(new RegExp(lesson));
+    await openLesson(lesson);
     await click('Open this experiment');
     expect(
       [...container.querySelectorAll('.notation-example-actions button')].some(
@@ -241,11 +249,7 @@ test('Each rhythmic lesson selects its actual controls and dynamics retains the 
     ).toBe(true);
   }
   await click(/Music theory/);
-  // The index is an address of its own now, so arriving at it already closes
-  // whatever lesson was open; the guard keeps the test honest either way.
-  if (container.querySelector('.lesson-article'))
-    await click('All foundations');
-  await click(/Loudness without a number/);
+  await openLesson('Loudness without a number');
   await click('Open this experiment');
   expect(container.querySelector('.notes-lab')).not.toBeNull();
   expect(container.querySelector('.instrument-grid')).toBeNull();
@@ -303,4 +307,35 @@ test('Keyboard and staff placement update the same pitch and sound it only on in
   expect(readout('MIDI number')).toBe('64');
   expect(preview).toHaveBeenCalledTimes(2);
   expect(preview.mock.calls[1][0][0]).toBeCloseTo(329.627557, 4);
+});
+
+// Actual rendered stop envelopes are covered by audio.browser.test.mjs.
+// Here the integration must dispatch stop even for a native breadcrumb link.
+test('A native chapter link stops active sound and returning does not restart it', async () => {
+  const { start, stop } = observeAudio();
+  await mount();
+  await act(async () => {
+    window.location.hash = '#/en/t/sound/play';
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+  });
+  await click('Play tone Space');
+  expect(start).toHaveBeenCalledOnce();
+  stop.mockClear();
+  await act(async () =>
+    page
+      .elementLocator(
+        container.querySelector('.course-breadcrumbs a[href*="/c/"]'),
+      )
+      .click(),
+  );
+  await expect
+    .poll(() => window.location.hash)
+    .toBe('#/en/c/first-sounds/play');
+  await expect.poll(() => stop.mock.calls.length).toBeGreaterThan(0);
+  await openLesson('Sound & frequency');
+  await expect.poll(() => window.location.hash).toBe('#/en/t/sound/play');
+  expect(start).toHaveBeenCalledOnce();
+  expect(container.querySelector('.play-button').textContent).toContain(
+    'Play tone',
+  );
 });

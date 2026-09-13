@@ -209,11 +209,16 @@ test('A topic scopes the drill to the rules that topic teaches', async () => {
   expect(asked.length).toBeGreaterThan(0);
   expect(asked.length).toBeLessThanOrEqual(scoped.length);
 
-  // A topic with no rule is not given an invented drill; it falls back to the
-  // interleaved one rather than showing an empty ledger.
+  // An unscored topic explains the gap and points to its own lab and lesson.
   await unmount();
   await render('en', 'sound');
-  expect(rows()).toHaveLength(RULES.length);
+  expect(rows()).toHaveLength(0);
+  expect(container.querySelector('.practice-unavailable')).not.toBeNull();
+  expect(
+    [...container.querySelectorAll('.practice-unavailable a')].map(
+      (link) => link.hash,
+    ),
+  ).toEqual(['#/en/t/sound/play', '#/en/t/sound/read']);
 });
 
 test('Every rule produces an answerable question in all three languages', async () => {

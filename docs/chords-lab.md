@@ -119,8 +119,10 @@ experiment**, or open `/#chords`.
 Вкладка **Проверьте себя** объясняет отличие основного тона от баса;
 **Термины и источники** содержит определения и ссылки.
 
-Settings and the edited phrase live in the mounted lab session: navigating
-away or reloading resets them, and the undo history goes with them. There is no
+Settings, the edited phrase and undo/redo history live in the current app session.
+The shared learning route (№537/542) retains them when you visit a lesson,
+definition or another chapter and return; playback stops on leaving the lab.
+Reloading the app clears this temporary context. There is no
 account, upload, remote storage, automatic save, or audio export in this
 release. The one thing that is remembered per browser is the navigation panel's
 width, which is an interface preference rather than musical work.
@@ -343,6 +345,7 @@ than a discovery. Each names the roadmap module it would serve.
   a set of pitches and checks it against the chord — plus a rule for what
   counts as correct (pitch classes, or register and doubling too). That is a
   content decision as much as a technical one.
-- **Keeping your work.** The phrase lives in the mounted session. Naming,
+- **Keeping your work.** The phrase survives navigation within the current app
+  session, but not a reload. Naming,
   saving, sharing or exporting a progression touches P07 (files and personal
   data) and is not a change to make casually.

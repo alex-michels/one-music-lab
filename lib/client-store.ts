@@ -139,6 +139,8 @@ export type Route = {
    * string in `location.hash`, match no element and scroll nowhere.
    */
   anchor: string | null;
+  /** A section/chapter index uses the same four views, without inventing a topic. */
+  collection?: { kind: 'section' | 'chapter'; id: string };
 };
 
 /** Five nav pages onto four lenses, until each lens has a layout of its own. */
@@ -169,6 +171,10 @@ export function routeForPage(page: Page, lang: Lang): Route {
 }
 
 export function hashOf(route: Route): string {
+  if (!route.topic && route.collection) {
+    const kind = route.collection.kind === 'section' ? 's' : 'c';
+    return `#/${route.lang}/${kind}/${route.collection.id}/${route.lens}`;
+  }
   if (!route.topic) return `#/${route.lang}/${route.lens}`;
   const anchor = route.anchor ? `~${route.anchor}` : '';
   return `#/${route.lang}/t/${route.topic}/${route.lens}${anchor}`;
@@ -184,7 +190,12 @@ export function hashOf(route: Route): string {
  */
 export function routeFromHash(
   hash: string,
-  context: { lang: Lang; topics: readonly string[] },
+  context: {
+    lang: Lang;
+    topics: readonly string[];
+    sections?: readonly string[];
+    chapters?: readonly string[];
+  },
 ): Route {
   const text = hash.startsWith('#') ? hash.slice(1) : hash;
   if (text === '' || text === '/')
@@ -202,6 +213,20 @@ export function routeFromHash(
   const named = LANGUAGES.some((code) => code === parts[0]);
   const lang = named ? (parts[0] as Lang) : context.lang;
   const rest = named ? parts.slice(1) : parts;
+
+  if (rest[0] === 's' || rest[0] === 'c') {
+    const ids = rest[0] === 's' ? context.sections : context.chapters;
+    const id = rest[1];
+    if (!ids?.includes(id) || rest.length > 3)
+      return { lang, lens: 'read', topic: null, anchor: null };
+    return {
+      lang,
+      lens: LENSES.find((candidate) => candidate === rest[2]) ?? 'read',
+      topic: null,
+      anchor: null,
+      collection: { kind: rest[0] === 's' ? 'section' : 'chapter', id },
+    };
+  }
 
   const topical = rest[0] === 't';
   // `#/en/t` names a subject and then does not say which one.

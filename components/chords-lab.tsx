@@ -132,6 +132,15 @@ type Draft = {
   edited: boolean;
 };
 type History = { past: Draft[]; present: Draft; future: Draft[] };
+/** In-memory lesson context; playback is always stopped when this view leaves. */
+export type ChordsLabSnapshot = {
+  history: History;
+  selectedCard: number;
+  sevenths: boolean;
+  tone: ChordTone;
+  volume: number;
+  repeats: number;
+};
 /** Deep enough for a working session, short enough to stay a fixed cost. */
 const HISTORY_LIMIT = 60;
 /**
@@ -167,25 +176,39 @@ function fromTemplate(index: number, tonic = 0): Draft {
   };
 }
 
-export function ChordsLab({ lang }: { lang: MusicLanguage }) {
+export function ChordsLab({
+  lang,
+  snapshot,
+  onSnapshot,
+}: {
+  lang: MusicLanguage;
+  snapshot?: ChordsLabSnapshot;
+  onSnapshot?: (value: ChordsLabSnapshot) => void;
+}) {
   const t = translator(lang);
-  const [history, setHistory] = useState<History>(() => ({
-    past: [],
-    present: fromTemplate(1),
-    future: [],
-  }));
+  const [history, setHistory] = useState<History>(
+    () =>
+      snapshot?.history ?? {
+        past: [],
+        present: fromTemplate(1),
+        future: [],
+      },
+  );
   const draft = history.present;
   const { key, chords, tempo, texture } = draft;
-  const [selectedCard, setSelected] = useState(0);
+  const [selectedCard, setSelected] = useState(snapshot?.selectedCard ?? 0);
   // Undo, redo and deletion can shorten the phrase under the selection.
   const selected = Math.min(selectedCard, chords.length - 1);
   const [replaced, setReplaced] = useState(false);
   // Set when a scale change left the progression sounding exactly as it did.
   const [scaleWasSilent, setScaleWasSilent] = useState(false);
-  const [sevenths, setSevenths] = useState(false);
-  const [tone, setTone] = useState<ChordTone>('triangle');
-  const [volume, setVolume] = useState(40);
-  const [repeats, setRepeats] = useState(1);
+  const [sevenths, setSevenths] = useState(snapshot?.sevenths ?? false);
+  const [tone, setTone] = useState<ChordTone>(snapshot?.tone ?? 'triangle');
+  const [volume, setVolume] = useState(snapshot?.volume ?? 40);
+  const [repeats, setRepeats] = useState(snapshot?.repeats ?? 1);
+  useEffect(() => {
+    onSnapshot?.({ history, selectedCard, sevenths, tone, volume, repeats });
+  }, [history, selectedCard, sevenths, tone, volume, repeats, onSnapshot]);
   const [playing, setPlaying] = useState(false);
   const [pending, setPending] = useState(false);
   const [active, setActive] = useState(-1);
