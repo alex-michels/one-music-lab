@@ -1,5 +1,9 @@
 # Third-party notices
 
+Zod 4.6.4 is a development dependency for content-schema validation (MIT,
+Colin McDonnell). Its upstream notice is retained in `LICENSES/zod-MIT.txt`.
+The browser application does not import Zod or the content validator.
+
 The project was initially scaffolded using `@openai/create-sites@0.3.0` with
 the bundled Shadcn/Base UI catalog. Original project licensing does not replace
 the licenses of the scaffold, copied components or installed dependencies.

@@ -6,6 +6,9 @@
     "node": ">=22.13.0"
   },
   "scripts": {
+    "content:check": "vitest run --project unit tests/content-catalog.test.mjs",
+    "prebuild": "npm run content:check",
+    "prebuild:static": "npm run content:check",
     "dev": "vinext dev",
     "build": "vinext build",
     "build:static": "vinext build --mode static",
@@ -68,7 +71,8 @@
     "verovio": "6.3.0",
     "vite": "8.0.13",
     "vitest": "5.0.0",
-    "wrangler": "4.92.0"
+    "wrangler": "4.92.0",
+    "zod": "4.6.4"
   },
   "type": "module"
 }

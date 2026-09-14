@@ -7,6 +7,12 @@ historical topics must first be split into named, reviewable releases.
 
 ## Local workflow
 
+Educational records are authored in `lib/content/topics/`, with shared sources
+and assets in `lib/content/`. Follow the [content schema](docs/content-schema.md)
+for stable IDs, revisions, scope, prerequisites, EN/RU/DE text and provenance.
+Run `npm run content:check` when editing content; both builds also run this
+check. A valid schema does not certify source claims or satisfy gate G.
+
 Follow the [README](README.md) to install Node 24 and run `npm ci`. Create a branch
 from current `main`, make a bounded change, and open a PR back to `main`. The owner
 reviews/merges and controls deployment. Do not commit generated build output,

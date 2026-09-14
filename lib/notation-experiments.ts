@@ -174,45 +174,4 @@ export function planNotationExample(id: NotationExampleId, tempo: number) {
 }
 
 /** Lessons share the lab's actual controls; unknown/old lessons retain their tone preset. */
-export const notationLessonPresets: Record<
-  string,
-  Pick<NotesLabState, 'note' | 'group'>
-> = {
-  'note-names': {
-    note: { letter: 0, accidental: 0, octave: 4 },
-    group: 'pitch',
-  },
-  staff: { note: { letter: 0, accidental: 0, octave: 4 }, group: 'pitch' },
-  clefs: { note: { letter: 0, accidental: 0, octave: 4 }, group: 'pitch' },
-  'accidental-signs': {
-    note: { letter: 0, accidental: 0, octave: 4 },
-    group: 'pitch',
-  },
-  'accidental-scope': {
-    note: { letter: 6, accidental: 0, octave: 4 },
-    group: 'pitch',
-  },
-  enharmonics: {
-    note: { letter: 3, accidental: 1, octave: 4 },
-    group: 'pitch',
-  },
-  durations: {
-    note: { letter: 0, accidental: 0, octave: 4 },
-    group: 'durations',
-  },
-  'dots-ties': { note: { letter: 1, accidental: 0, octave: 4 }, group: 'ties' },
-  'beat-division': {
-    note: { letter: 0, accidental: 0, octave: 4 },
-    group: 'division',
-  },
-  tempo: { note: { letter: 0, accidental: 0, octave: 4 }, group: 'tempo' },
-  articulation: {
-    note: { letter: 0, accidental: 0, octave: 4 },
-    group: 'articulation',
-  },
-  repeats: { note: { letter: 0, accidental: 0, octave: 4 }, group: 'repeats' },
-  dynamics: {
-    note: { letter: 0, accidental: 0, octave: 4 },
-    group: 'dynamics',
-  },
-};
+export { notationLessonPresets } from './content/adapters';
