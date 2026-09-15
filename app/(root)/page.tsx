@@ -846,6 +846,7 @@ function HomeSession({
       return;
     }
     if (
+      !ready ||
       e.repeat ||
       e.ctrlKey ||
       e.metaKey ||
@@ -979,6 +980,11 @@ function HomeSession({
         {t('Skip to content', 'К содержанию')}
       </a>
       <SidebarProvider
+        // The server cannot read the browser's profile. Keep its placeholder
+        // controls inert until restoration finishes, so an early click cannot
+        // be consumed by the instance that hydration is about to replace.
+        inert={!ready}
+        aria-busy={!ready}
         style={{ '--sidebar-width': sidebarWidth + 'px' } as CSSProperties}
       >
         <Navigation

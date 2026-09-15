@@ -102,6 +102,17 @@ in the browser matrix. Run the repository's unit tests, three-engine browser
 matrix, full-denominator coverage, typecheck, lint, formatting, Workers and static
 builds before accepting this change. Task acceptance remains solely in ROADMAP.
 
+The local full-denominator run covers 94 production files. The persistence module
+reaches 100% statements, branches, functions and lines. The data panel reaches
+100% lines/branches/functions, with 52/55 statements: V8 creates three uncovered
+setter-binding entries at its `useState` destructuring declarations, despite
+the browser tests exercising each setter and resulting state. The raw statement
+maps have no end column for these entries. This is the same source-mapping debt
+tracked in [issue 39](https://github.com/alex-michels/one-music-lab/issues/39)
+under task 518, owned by the repository maintainer; no exclusion or coverage
+suppression is added. Overall coverage debt remains visible and is not presented
+as 100% project coverage.
+
 The already accepted chapter/navigation work (PR 40, tasks 537/542) and content
 schema (PR 41, task 530) are reflected in ROADMAP alongside this work. No new
 educational claims, media licenses or public deployment are introduced here.

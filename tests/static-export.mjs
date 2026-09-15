@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdir, readFile, readdir, stat } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { createServer } from 'node:http';
-import { chromium } from 'playwright';
+import { chromium, firefox, webkit } from 'playwright';
 
 const root = resolve('dist/client');
 const html = await readFile(join(root, 'index.html'), 'utf8');
@@ -251,10 +251,15 @@ await test('Portable labs and chapter routes work with external requests blocked
     // beyond component tests whose module stores can outlive an unmount.
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto(`${origin}/#/en/play`);
-    await page.getByRole('button', { name: 'Tone', exact: true }).click();
+    await page
+      .getByRole('button', { name: 'Tone generator', exact: true })
+      .click();
     await page.locator('#frequency').fill('528');
     await page.locator('#frequency').press('Tab');
     await page.reload();
+    await page
+      .locator('[data-slot="sidebar-wrapper"][aria-busy="false"]')
+      .waitFor();
     assert.equal(await page.locator('#frequency').inputValue(), '528');
     await page.goto(`${origin}/#/en/t/staff/read`);
     await page
@@ -322,6 +327,35 @@ await test('Portable labs and chapter routes work with external requests blocked
     await page
       .locator('.local-data')
       .screenshot({ path: 'outputs/local-learning-data/mobile.png' });
+    // Component tests inspect the exported Blob; these exercise the browsers'
+    // actual download lifecycle, including object-URL cleanup.
+    for (const engine of [firefox, webkit]) {
+      const backupBrowser = await engine.launch();
+      try {
+        const backupPage = await backupBrowser.newPage();
+        await backupPage.route('**/*', (route) => {
+          if (new URL(route.request().url()).origin === origin)
+            return route.continue();
+          external.push(route.request().url());
+          return route.abort();
+        });
+        await backupPage.goto(origin);
+        await backupPage.locator('.local-data summary').click();
+        const downloadingBackup = backupPage.waitForEvent('download');
+        await backupPage
+          .getByRole('button', { name: 'Export backup', exact: true })
+          .click();
+        const actualDownload = await downloadingBackup;
+        assert.equal(await actualDownload.failure(), null, engine.name());
+        const actualBackup = JSON.parse(
+          await readFile(await actualDownload.path(), 'utf8'),
+        );
+        assert.equal(actualBackup.format, 'one-music-lab');
+        assert.equal(actualBackup.version, 1);
+      } finally {
+        await backupBrowser.close();
+      }
+    }
     assert.deepEqual(
       external,
       [],
