@@ -265,6 +265,13 @@ await test('Portable labs and chapter routes work with external requests blocked
     await page
       .getByRole('checkbox', { name: 'I have worked through this lesson' })
       .check();
+    assert.deepEqual(
+      await page.evaluate(
+        () => JSON.parse(localStorage.getItem('oml-profile')).completed,
+      ),
+      ['staff'],
+      'Marking the lesson must save it before opening another tab',
+    );
     const reopened = await context.newPage();
     await reopened.goto(origin);
     // A visible server-rendered lesson can still have its default unchecked
@@ -275,6 +282,20 @@ await test('Portable labs and chapter routes work with external requests blocked
     await reopened
       .getByRole('checkbox', { name: 'I have worked through this lesson' })
       .waitFor();
+    assert.deepEqual(
+      await reopened.evaluate(
+        () => JSON.parse(localStorage.getItem('oml-profile')).completed,
+      ),
+      ['staff'],
+      'The reopened page must preserve the saved lesson marker',
+    );
+    // Parent readiness and child external-store subscriptions can settle in
+    // separate React commits. Wait for the user-visible restored form state.
+    await reopened.waitForFunction(
+      () => document.querySelector('.lesson-progress input')?.checked === true,
+      undefined,
+      { timeout: 10_000 },
+    );
     assert.equal(await reopened.getByRole('checkbox').isChecked(), true);
     assert.match(reopened.url(), /#\/en\/t\/staff\/read$/);
     await reopened.close();
