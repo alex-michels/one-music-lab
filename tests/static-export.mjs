@@ -344,6 +344,36 @@ await test('Portable labs and chapter routes work with external requests blocked
       .locator('.local-data')
       .screenshot({ path: 'outputs/local-learning-data/desktop.png' });
     await page.setViewportSize({ width: 360, height: 800 });
+    // Resizing returns before matchMedia subscribers and layout transitions
+    // necessarily finish. Require the responsive result, with useful geometry
+    // if an element continues to overflow after the viewport has settled.
+    try {
+      await page.waitForFunction(
+        () => document.documentElement.scrollWidth <= innerWidth,
+        undefined,
+        { timeout: 5000 },
+      );
+    } catch (cause) {
+      const geometry = await page.evaluate(() => ({
+        viewport: innerWidth,
+        document: document.documentElement.scrollWidth,
+        overflowing: [...document.querySelectorAll('body *')]
+          .filter(
+            (element) => element.getBoundingClientRect().right > innerWidth + 1,
+          )
+          .map((element) => ({
+            tag: element.tagName,
+            class: element.getAttribute('class'),
+            width: element.getBoundingClientRect().width,
+            right: element.getBoundingClientRect().right,
+          }))
+          .slice(-12),
+      }));
+      throw new Error(
+        `Mobile learning data overflow: ${JSON.stringify(geometry)}`,
+        { cause },
+      );
+    }
     assert.equal(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
