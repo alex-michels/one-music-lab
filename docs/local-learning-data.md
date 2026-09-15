@@ -98,7 +98,10 @@ and quota errors, conflicts, counters and URL precedence. Browser tests cover
 EN/RU/DE controls, mobile layout, reading markers, export/import cancellation and
 confirmation, storage errors, preserved practice history, and silent restoration
 of the main lab. Existing navigation, notation, practice and audio suites remain
-in the browser matrix. Run the repository's unit tests, three-engine browser
+in the browser matrix. The built static artifact also checks native Space/Enter
+activation for marking, cancellation and reset in all three engines and locales,
+in dedicated pages so parallel component-test iframes cannot compete for focus.
+Run the repository's unit tests, three-engine browser
 matrix, full-denominator coverage, typecheck, lint, formatting, Workers and static
 builds before accepting this change. Task acceptance remains solely in ROADMAP.
 
