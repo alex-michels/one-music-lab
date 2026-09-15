@@ -267,6 +267,11 @@ await test('Portable labs and chapter routes work with external requests blocked
       .check();
     const reopened = await context.newPage();
     await reopened.goto(origin);
+    // A visible server-rendered lesson can still have its default unchecked
+    // marker. Inspect saved state only after browser-profile restoration.
+    await reopened
+      .locator('[data-slot="sidebar-wrapper"][aria-busy="false"]')
+      .waitFor();
     await reopened
       .getByRole('checkbox', { name: 'I have worked through this lesson' })
       .waitFor();
