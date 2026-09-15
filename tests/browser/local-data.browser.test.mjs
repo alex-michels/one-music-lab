@@ -109,10 +109,13 @@ for (const [lang, mark, reset, cancel, confirm, title] of [
     const button = container.querySelector(
       '.local-data-confirm button:last-child',
     );
-    button.focus();
-    await act(async () => userEvent.keyboard('{Enter}'));
+    // Focus and Enter belong to one provider command. A DOM-only focus followed
+    // by a separate global key command can target the wrong iframe in Firefox.
+    await act(async () =>
+      userEvent.type(page.elementLocator(button), '{Enter}'),
+    );
     expect(button.textContent).toBe(confirm);
-    expect(restored).toHaveBeenCalledWith(emptyProfile());
+    await expect.poll(() => restored.mock.calls).toEqual([[emptyProfile()]]);
     expect(profileStore.getSnapshot().profile.completed).toEqual([]);
     expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
       window.innerWidth + 1,
