@@ -34,6 +34,7 @@ export const unchangedCopies = importedCopies
 export const authoredProductionCode = [
   'app/**/*.{ts,tsx}',
   'components/learning.tsx',
+  'components/local-data.tsx',
   'components/course-navigation.tsx',
   'components/entry-diagnostic.tsx',
   'components/note-text.tsx',
@@ -113,7 +114,12 @@ export default defineConfig({
         // Pre-bundle what the component tests import, so the browser run is
         // not reloaded halfway through by a discovered dependency.
         optimizeDeps: {
-          include: ['react', 'react-dom/client', 'react/jsx-dev-runtime'],
+          include: [
+            'react',
+            'react-dom/client',
+            'react/jsx-dev-runtime',
+            'zod',
+          ],
         },
         test: {
           name: 'browser',
@@ -132,6 +138,7 @@ export default defineConfig({
            */
           testTimeout: 120_000,
           include: ['tests/browser/*.test.mjs'],
+          setupFiles: ['tests/browser/profile-isolation.mjs'],
           browser: {
             enabled: true,
             headless: true,

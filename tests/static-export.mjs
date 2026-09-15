@@ -247,6 +247,81 @@ await test('Portable labs and chapter routes work with external requests blocked
       path: 'outputs/learning-routes/chapter-mobile.png',
       fullPage: true,
     });
+    // A real document reload verifies hydration against saved browser data,
+    // beyond component tests whose module stores can outlive an unmount.
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(`${origin}/#/en/play`);
+    await page.getByRole('button', { name: 'Tone', exact: true }).click();
+    await page.locator('#frequency').fill('528');
+    await page.locator('#frequency').press('Tab');
+    await page.reload();
+    assert.equal(await page.locator('#frequency').inputValue(), '528');
+    await page.goto(`${origin}/#/en/t/staff/read`);
+    await page
+      .getByRole('checkbox', { name: 'I have worked through this lesson' })
+      .check();
+    const reopened = await context.newPage();
+    await reopened.goto(origin);
+    await reopened
+      .getByRole('checkbox', { name: 'I have worked through this lesson' })
+      .waitFor();
+    assert.equal(await reopened.getByRole('checkbox').isChecked(), true);
+    assert.match(reopened.url(), /#\/en\/t\/staff\/read$/);
+    await reopened.close();
+    await page.goto(`${origin}/#/en/t/dots-ties/drill`);
+    await page.locator('.drill-question .answer-grid button').first().click();
+    await page.locator('.local-data summary').click();
+    const downloading = page.waitForEvent('download');
+    await page
+      .getByRole('button', { name: 'Export backup', exact: true })
+      .click();
+    const downloaded = await downloading;
+    const backup = await readFile(await downloaded.path());
+    const original = JSON.parse(backup.toString('utf8'));
+    assert.deepEqual(original.completed, ['staff']);
+    assert.equal(original.lab.frequency, 528);
+    assert.equal(
+      Object.values(original.answers).reduce((sum, row) => sum + row.asked, 0),
+      1,
+    );
+    await page
+      .getByRole('button', { name: 'Reset local data', exact: true })
+      .click();
+    await page
+      .getByRole('button', { name: 'Confirm replacement', exact: true })
+      .click();
+    assert.equal(await page.locator('#frequency').inputValue(), '440');
+    await page.locator('.local-data summary').click();
+    await page.locator('input[type=file]').setInputFiles({
+      name: 'backup.json',
+      mimeType: 'application/json',
+      buffer: backup,
+    });
+    await page
+      .getByRole('button', { name: 'Confirm replacement', exact: true })
+      .click();
+    await page.locator('.drill-question').waitFor();
+    const restored = await page.evaluate(() =>
+      JSON.parse(localStorage.getItem('oml-profile')),
+    );
+    assert.deepEqual(restored.completed, original.completed);
+    assert.deepEqual(restored.answers, original.answers);
+    assert.equal(restored.lab.frequency, 528);
+    await page.locator('.local-data summary').click();
+    await mkdir('outputs/local-learning-data', { recursive: true });
+    await page
+      .locator('.local-data')
+      .screenshot({ path: 'outputs/local-learning-data/desktop.png' });
+    await page.setViewportSize({ width: 360, height: 800 });
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+      true,
+    );
+    await page
+      .locator('.local-data')
+      .screenshot({ path: 'outputs/local-learning-data/mobile.png' });
     assert.deepEqual(
       external,
       [],

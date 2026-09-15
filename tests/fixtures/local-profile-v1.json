@@ -1,0 +1,23 @@
+{
+  "format": "one-music-lab",
+  "version": 1,
+  "settings": { "language": "ru", "theme": "dark", "sidebarWidth": 280 },
+  "lastRoute": "#/ru/t/dots-ties/drill",
+  "completed": ["staff", "clefs"],
+  "answers": { "dot-adds-half": { "asked": 5, "missed": 2, "tag": "forgot-the-dot" } },
+  "lab": {
+    "topic": "staff", "frequency": 432, "reference": 442,
+    "tuning": "just", "wave": "triangle", "volume": 12, "octave": 3,
+    "tab": "notes",
+    "notes": { "note": { "letter": 2, "accidental": -1, "octave": 4 }, "group": "pitch", "tempo": 120 },
+    "experiment": { "kind": "scales", "selected": 0, "root": "C" },
+    "chords": {
+      "history": { "past": [], "future": [], "present": {
+        "key": { "tonic": 2, "mode": "minor" },
+        "chords": [{ "degree": 0, "quality": "minor", "inversion": 1, "beats": 4, "octave": 3 }],
+        "tempo": 72, "texture": "arpeggio", "template": 0, "edited": true
+      } },
+      "selectedCard": 0, "sevenths": false, "tone": "sine", "volume": 20, "repeats": 2
+    }
+  }
+}

@@ -1,5 +1,7 @@
 'use client';
 import { nt } from '@/lib/notation-tasks';
+import { LessonProgress } from './local-data';
+import { saveAnswers } from '@/lib/local-profile';
 import {
   CourseIndex,
   LessonConnections,
@@ -116,7 +118,21 @@ function InlineExercise({
         <NotationResponse
           key={`${rule}-${lang}`}
           item={item}
-          onComplete={() => setChosen('review')}
+          onComplete={(results) => {
+            if (chosen !== null) return;
+            saveAnswers(
+              item.rule,
+              results.map((correct, index) => ({
+                correct,
+                tag: correct
+                  ? 'correct'
+                  : item.parts?.[index].kind === 'rhythm'
+                    ? 'duration-symbol'
+                    : 'wrong-written-note',
+              })),
+            );
+            setChosen('review');
+          }}
         />
       </section>
     );
@@ -154,7 +170,11 @@ function InlineExercise({
                   : 'answer-wrong'
                 : ''
             }
-            onClick={() => setChosen(option.id)}
+            onClick={() => {
+              if (chosen !== null) return;
+              saveAnswers(item.rule, [grade(item, option.id)]);
+              setChosen(option.id);
+            }}
           >
             <NoteText
               text={option.label}
@@ -246,6 +266,7 @@ export function Theory({
           <NoteText text={lesson.formula} lang={lang} />
         </div>
         <NotationReading topic={lesson.id} lang={lang} />
+        <LessonProgress topic={lesson.id as TopicId} lang={lang} />
         {/* Explain and show the musical example before asking the reader to apply it. */}
         <InlineExercise
           key={`${lesson.id}-${anchor ?? ''}-${lang}`}
@@ -702,9 +723,8 @@ const ERROR_TAGS = Object.keys(exerciseExplanations);
 /**
  * The ledger, above the lens rather than inside it: a reader who follows a row
  * out to the passage that teaches the rule and comes back has not lost the
- * reason they left. It is `sessionStorage` and not `localStorage` on purpose —
- * a permanent record of a reader's mistakes is a mastery record by the back
- * door, and this site does not keep one.
+ * reason they left. Session misses guide the next draw. The separate local
+ * profile keeps answer counts across sessions, without claiming mastery.
  */
 const drillStore = createClientStore<Ledger>(
   () =>
@@ -720,6 +740,9 @@ function saveLedger(next: Ledger) {
   try {
     sessionStorageOrNull()?.setItem(DRILL_STORAGE_KEY, serializeLedger(next));
   } catch {}
+}
+export function resetPracticeSession() {
+  saveLedger(EMPTY_LEDGER);
 }
 
 /**
@@ -852,6 +875,7 @@ function PracticeSession({
     setChosen(id);
     // Written from the item, not from the draw: the item knows which rule it
     // actually asked about, and the ledger may only claim what happened.
+    saveAnswers(item.rule, [resultFor(id)]);
     saveLedger(recordAnswer(ledger, item.rule, resultFor(id)));
   };
   const nextQuestion = () => {
@@ -882,6 +906,17 @@ function PracticeSession({
             item={item}
             onComplete={(results) => {
               if (chosen !== null) return;
+              saveAnswers(
+                item.rule,
+                results.map((correct, index) => ({
+                  correct,
+                  tag: correct
+                    ? 'correct'
+                    : item.parts?.[index].kind === 'rhythm'
+                      ? 'duration-symbol'
+                      : 'wrong-written-note',
+                })),
+              );
               if (results.length)
                 saveLedger(
                   results.reduce(

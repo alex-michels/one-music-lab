@@ -305,8 +305,49 @@ test('Keyboard and staff placement update the same pitch and sound it only on in
   await click('Line 1');
   expect(readout('Written')).toBe('E');
   expect(readout('MIDI number')).toBe('64');
+  expect(
+    JSON.parse(localStorage.getItem('oml-profile')).lab.notes.note,
+  ).toEqual({
+    letter: 2,
+    accidental: 0,
+    octave: 4,
+  });
   expect(preview).toHaveBeenCalledTimes(2);
   expect(preview.mock.calls[1][0][0]).toBeCloseTo(329.627557, 4);
+});
+
+test('Clef and staff range survive a remount without replaying the selected example', async () => {
+  const { preview } = observeAudio();
+  await mount();
+  await click('Notes');
+  await chooseNotation('Clef', 'Bass');
+  const range = container.querySelector('.note-placement input[type=range]');
+  await act(async () => {
+    Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      'value',
+    ).set.call(range, '3');
+    range.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await click('Four steady beats');
+  const saved = JSON.parse(localStorage.getItem('oml-profile'));
+  expect(saved.lab.notes).toMatchObject({
+    clef: 'bass',
+    ledgerLines: 3,
+    selectedExample: 'pulse',
+  });
+  const plays = preview.mock.calls.length;
+  await act(() => root.unmount());
+  container.remove();
+  await mount();
+  expect(
+    container.querySelector('.note-placement input[type=range]').value,
+  ).toBe('3');
+  expect(
+    page.getByRole('combobox', { name: 'Clef', exact: true }).element()
+      .textContent,
+  ).toContain('Bass');
+  expect(preview.mock.calls.length).toBe(plays);
 });
 
 // Actual rendered stop envelopes are covered by audio.browser.test.mjs.

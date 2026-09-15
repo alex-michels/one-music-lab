@@ -135,6 +135,9 @@ export type NotesLabState = {
   note: WrittenNote;
   group: NotationGroup;
   tempo: 60 | 120;
+  clef?: import('./staff').Clef;
+  ledgerLines?: number;
+  selectedExample?: NotationExampleId;
 };
 export const initialNotesLabState: NotesLabState = {
   note: { letter: 0, accidental: 0, octave: 4 },

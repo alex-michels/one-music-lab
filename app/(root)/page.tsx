@@ -10,7 +10,19 @@ import { localizedNoteName } from '@/lib/notation';
 import { lessons } from '@/lib/learning';
 
 import { flushSync } from 'react-dom';
-import { Theory, Practice, Encyclopedia } from '@/components/learning';
+import {
+  Theory,
+  Practice,
+  Encyclopedia,
+  resetPracticeSession,
+} from '@/components/learning';
+import { LocalData, useLocalProfile } from '@/components/local-data';
+import {
+  profileStore,
+  initialRoute,
+  isLearningAddress,
+  type LocalProfile,
+} from '@/lib/local-profile';
 import { ChordsLab, type ChordsLabSnapshot } from '@/components/chords-lab';
 import { CourseIndex, CourseNavigation } from '@/components/course-navigation';
 import { collectionTitle, courseAddresses } from '@/lib/course';
@@ -67,14 +79,10 @@ import {
   createClientStore,
   hashOf,
   langFromPath,
-  langFromStorage,
-  localStorageOrNull,
   pageForRoute,
   resolveTheme,
   routeForPage,
   routeFromHash,
-  sidebarWidthFromStorage,
-  themeFromStorage,
   type Lang,
   type Page,
   type Lens,
@@ -105,33 +113,33 @@ import {
 function addressedLang(): Lang {
   return (
     langFromPath(window.location.pathname) ??
-    langFromStorage(localStorageOrNull())
+    profileStore.getSnapshot().profile.settings.language
   );
 }
 const routeStore = createClientStore<Route>(
   () =>
-    routeFromHash(window.location.hash, {
-      lang: addressedLang(),
-      topics: TOPIC_IDS,
-      ...courseAddresses,
-    }),
+    initialRoute(
+      window.location.hash,
+      addressedLang(),
+      profileStore.getSnapshot().profile,
+    ),
   { lang: 'en', lens: DEFAULT_LENS, topic: null, anchor: null },
 );
 const langStore = createClientStore<Lang>(
   () =>
-    routeFromHash(window.location.hash, {
-      lang: addressedLang(),
-      topics: TOPIC_IDS,
-      ...courseAddresses,
-    }).lang,
+    initialRoute(
+      window.location.hash,
+      addressedLang(),
+      profileStore.getSnapshot().profile,
+    ).lang,
   'en',
 );
 const sidebarWidthStore = createClientStore<number>(
-  () => sidebarWidthFromStorage(localStorageOrNull()),
+  () => profileStore.getSnapshot().profile.settings.sidebarWidth,
   SIDEBAR_WIDTH.preferred,
 );
 const themeStore = createClientStore<Theme>(
-  () => themeFromStorage(localStorageOrNull()),
+  () => profileStore.getSnapshot().profile.settings.theme,
   DEFAULT_THEME,
 );
 /**
@@ -396,10 +404,32 @@ function Navigation({
   );
 }
 export default function Home() {
+  const saved = useLocalProfile();
+  return (
+    <HomeSession
+      key={`${saved.ready}-${saved.revision}`}
+      initial={saved.profile}
+      ready={saved.ready}
+      restored={saved.revision > 0}
+    />
+  );
+}
+function HomeSession({
+  initial,
+  ready,
+  restored,
+}: {
+  initial: LocalProfile;
+  ready: boolean;
+  restored: boolean;
+}) {
   const [exporting, setExporting] = useState(false);
-  const [experimentSnapshot, setExperimentSnapshot] =
-    useState<ExperimentSnapshot>();
-  const [chordsSnapshot, setChordsSnapshot] = useState<ChordsLabSnapshot>();
+  const [experimentSnapshot, setExperimentSnapshot] = useState<
+    ExperimentSnapshot | undefined
+  >(initial.lab.experiment);
+  const [chordsSnapshot, setChordsSnapshot] = useState<
+    ChordsLabSnapshot | undefined
+  >(initial.lab.chords);
   const lang = useSyncExternalStore(
     langStore.subscribe,
     langStore.getSnapshot,
@@ -428,17 +458,17 @@ export default function Home() {
   const setLang = langStore.set;
   const headingRef = useRef<HTMLHeadingElement>(null);
   // Set by a deliberate move, read by the effect that moves focus.
-  const moved = useRef(false);
-  const [frequency, setFrequency] = useState(440);
-  const [labTab, setLabTab] = useState<'tone' | 'notes'>('tone');
-  const [notesState, setNotesState] = useState(initialNotesLabState);
-  const [labTopic, setLabTopic] = useState<string | null>(null);
-  const [reference, setReference] = useState(440);
-  const [tuning, setTuning] = useState<Tuning>('equal');
-  const [wave, setWave] = useState<Wave>('sine');
-  const [volume, setVolume] = useState(18);
+  const moved = useRef(restored);
+  const [frequency, setFrequency] = useState(initial.lab.frequency);
+  const [labTab, setLabTab] = useState<'tone' | 'notes'>(initial.lab.tab);
+  const [notesState, setNotesState] = useState(initial.lab.notes);
+  const [labTopic, setLabTopic] = useState<string | null>(initial.lab.topic);
+  const [reference, setReference] = useState(initial.lab.reference);
+  const [tuning, setTuning] = useState<Tuning>(initial.lab.tuning);
+  const [wave, setWave] = useState<Wave>(initial.lab.wave);
+  const [volume, setVolume] = useState(initial.lab.volume);
   const [playing, setPlaying] = useState(false);
-  const [octave, setOctave] = useState(4);
+  const [octave, setOctave] = useState(initial.lab.octave);
   const [error, setError] = useState<LocalText | null>(null);
   // Returning from theory/practice/reference keeps the current experiment.
   // A different topic loads its authored preset, including on a direct link.
@@ -458,6 +488,64 @@ export default function Home() {
     }
   }
   const audio = useRef<AudioEngine | null>(null);
+  // Only persist a client snapshot, never the prerendered server defaults.
+  useEffect(() => {
+    if (!ready) return;
+    profileStore.update((current) => ({
+      ...current,
+      settings: { language: lang, theme, sidebarWidth },
+      lastRoute: isLearningAddress(hashOf({ ...route, lang }))
+        ? hashOf({ ...route, lang })
+        : null,
+      lab: {
+        topic: labTopic as TopicId | null,
+        frequency,
+        reference,
+        tuning,
+        wave,
+        volume,
+        octave,
+        tab: labTab,
+        notes: {
+          ...notesState,
+          note: {
+            letter: notesState.note.letter,
+            accidental: notesState.note.accidental,
+            octave: notesState.note.octave,
+          },
+        },
+        experiment: experimentSnapshot,
+        chords: chordsSnapshot,
+      },
+    }));
+  }, [
+    ready,
+    lang,
+    theme,
+    sidebarWidth,
+    route,
+    labTopic,
+    frequency,
+    reference,
+    tuning,
+    wave,
+    volume,
+    octave,
+    labTab,
+    notesState,
+    experimentSnapshot,
+    chordsSnapshot,
+  ]);
+  function restore(next: LocalProfile) {
+    audio.current?.stopAll();
+    resetPracticeSession();
+    const nextRoute = initialRoute('', next.settings.language, next);
+    routeStore.set(nextRoute);
+    langStore.set(next.settings.language);
+    themeStore.set(next.settings.theme);
+    sidebarWidthStore.set(next.settings.sidebarWidth);
+    window.history.replaceState(null, '', hashOf(nextRoute));
+  }
   const t = translator(lang);
   const displayNote = (midi: number) =>
     lang === 'de' ? localizedNoteName(midi, lang) : noteName(midi);
@@ -969,6 +1057,7 @@ export default function Home() {
               headingRef={headingRef}
             />
             <CourseNavigation route={route} />
+            <LocalData lang={lang} onRestore={restore} />
             {route.collection ? (
               <CourseIndex route={route} />
             ) : page === 'lab' ? (

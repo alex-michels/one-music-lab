@@ -635,8 +635,9 @@ that govern it. Rules not yet asked read "not yet asked".
 
 **Ledger lifetime**, or the exits destroy the thing they exist for: a `drillLedger` store
 beside `langStore` in `lib/client-store.ts`, `Map<Rule, {asked, missed}>`, backed by
-**`sessionStorage`** under `oml-drill-session` — session and not local, because a permanent
-record of a reader's mistakes is a mastery record by the back door. It lives *above* the
+**`sessionStorage`** under `oml-drill-session`. Task 538 adds separate local attempt
+counts in `oml-profile`, explicitly described as history rather than mastery; see
+[local learning data](local-learning-data.md). The adaptive session ledger lives *above* the
 lens so a read or define round trip preserves it, is never keyed by language (the key is
 `Item.rule`; only the explanation is localized), and is cleared by one explicit
 "Start a new session" control.

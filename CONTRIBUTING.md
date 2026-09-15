@@ -7,6 +7,13 @@ historical topics must first be split into named, reviewable releases.
 
 ## Local workflow
 
+Browser-owned learning data has a separate versioned contract in
+`lib/local-profile.ts`; see [local learning data](docs/local-learning-data.md).
+Keep import validation strict and bounded, preserve unsupported data, add an
+explicit migration for incompatible schema changes, and test old backups.
+Restoring settings must never construct or start an audio engine. Do not turn
+personal reading markers or raw answer counts into mastery claims.
+
 Educational records are authored in `lib/content/topics/`, with shared sources
 and assets in `lib/content/`. Follow the [content schema](docs/content-schema.md)
 for stable IDs, revisions, scope, prerequisites, EN/RU/DE text and provenance.
