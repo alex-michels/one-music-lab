@@ -115,6 +115,21 @@ for (const [lang, mark, reset, cancel, confirm, title] of [
       window.innerWidth + 1,
     );
   });
+test('The native backup file control fits a mobile viewport with enlarged text', async () => {
+  await page.viewport(320, 800);
+  await mount('de');
+  const input = container.querySelector('input[type=file]');
+  // Native file controls have different intrinsic widths across operating
+  // systems. Larger text also exercises the user's text-size preference.
+  input.style.fontSize = '24px';
+  expect(input.getBoundingClientRect().right).toBeLessThanOrEqual(
+    window.innerWidth,
+  );
+  expect(input.getBoundingClientRect().width).toBeLessThanOrEqual(
+    input.parentElement.getBoundingClientRect().width,
+  );
+});
+
 test('An exported JSON file imports only after confirmation, keeping settings and progress', async () => {
   const p = emptyProfile();
   p.completed = ['staff'];

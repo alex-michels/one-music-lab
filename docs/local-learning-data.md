@@ -101,6 +101,8 @@ of the main lab. Existing navigation, notation, practice and audio suites remain
 in the browser matrix. The built static artifact also checks native Space/Enter
 activation for marking, cancellation and reset in all three engines and locales,
 in dedicated pages so parallel component-test iframes cannot compete for focus.
+Mobile layout tests also enlarge the native file control's text to catch
+intrinsic-width differences between operating systems without hiding overflow.
 Run the repository's unit tests, three-engine browser
 matrix, full-denominator coverage, typecheck, lint, formatting, Workers and static
 builds before accepting this change. Task acceptance remains solely in ROADMAP.
