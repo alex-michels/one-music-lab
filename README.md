@@ -195,7 +195,20 @@ The persistent oscillator and previews stop on navigation, page hiding, page exi
 
 ## Content model
 
-`lib/music.ts` is the independent pitch/ratio model. `lib/audio.ts` owns browser audio. `lib/learning.ts` holds paired English/Russian educational content and scale/chord patterns. `components/learning.tsx` connects learning, listening and exercises. New languages can extend the paired content model and language selector. Tuning maps are specific A-based chromatic choices; just intonation does not have one universal chromatic scale. MIDI labels use scientific pitch notation; A4 corresponds to ля первой октавы in Russian notation. The keyboard intentionally displays pitch labels with sharps rather than full context-sensitive enharmonic spelling.
+The site uses versioned files, with no database. `lib/content/topics/` holds the
+19 existing topics and their EN/RU/DE lessons, experiments, exercises and
+concepts; `lib/content/sources.ts` and `assets.ts` hold citations and provenance.
+The [content schema](docs/content-schema.md) documents stable IDs, scope,
+prerequisites, revisions and inherited source gaps. Run `npm run content:check`
+to validate authoring; both build commands run it automatically. `lib/learning.ts`
+retains the existing UI access patterns and scale/chord patterns.
+
+`lib/music.ts` is the independent pitch/ratio model; `lib/audio.ts` owns browser
+audio. `components/learning.tsx` connects reading, listening and practice.
+Tuning maps are specific A-based chromatic choices; just intonation does not
+have one universal chromatic scale. MIDI labels use scientific pitch notation;
+A4 corresponds to ля первой октавы in Russian notation. The keyboard retains
+its existing sharp-based pitch labels.
 
 ## Validation limits
 

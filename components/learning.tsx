@@ -590,7 +590,7 @@ export function Encyclopedia({
                 )[lang]
               }
             </a>
-            {'source' in entry && (
+            {entry.source !== undefined && (
               <a
                 className="source-link"
                 href={entry.source.url}
@@ -600,7 +600,7 @@ export function Encyclopedia({
                 {entry.source.title}
               </a>
             )}
-            {'furtherSources' in entry &&
+            {entry.furtherSources !== undefined &&
               entry.furtherSources.map((source) => (
                 <a
                   key={source.url}
@@ -612,7 +612,7 @@ export function Encyclopedia({
                   {source.title}
                 </a>
               ))}
-            {'relatedTopics' in entry &&
+            {entry.relatedTopics !== undefined &&
               entry.relatedTopics.map((id) => (
                 <a
                   key={id}
@@ -622,7 +622,7 @@ export function Encyclopedia({
                   <NoteText text={topicById[id as TopicId].title} lang={lang} />
                 </a>
               ))}
-            {'forwardModules' in entry &&
+            {entry.forwardModules !== undefined &&
               entry.forwardModules.map((id) => (
                 <a
                   key={id}
