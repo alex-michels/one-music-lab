@@ -3944,3 +3944,39 @@ h1 {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+/* Practice feedback remains readable inside both the lesson and narrow lab panels. */
+.practice-hints,
+.attempt-notice,
+.later-check,
+.creative-reflection,
+.coaching-history {
+  margin-block: 1rem;
+  overflow-wrap: anywhere;
+}
+.practice-hints ol {
+  padding-inline-start: 1.5rem;
+}
+.practice-hints li + li {
+  margin-block-start: 0.5rem;
+}
+.later-check {
+  font-weight: 600;
+}
+.attempt-notice,
+.creative-reflection output {
+  display: block;
+}
+.creative-reflection fieldset {
+  min-width: 0;
+  margin-block: 1rem;
+}
+.creative-reflection label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-inline-end: 1rem;
+  min-height: 44px;
+}
+.coaching-history h3 {
+  margin-block: 1rem 0.4rem;
+}

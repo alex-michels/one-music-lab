@@ -26,6 +26,13 @@ import {
 } from './notation-experiments';
 import { experimentTonics } from './notation';
 import { chordQualities, progressionTemplates, textures } from './chords';
+import {
+  coachingSchema,
+  emptyCoaching,
+  recordAttempt,
+  type Attempt,
+  type Coaching,
+} from './practice-coach';
 
 export const PROFILE_KEY = 'oml-profile';
 export const MAX_BACKUP_BYTES = 1_000_000;
@@ -91,7 +98,7 @@ export function isLearningAddress(value: string): boolean {
       )
   );
 }
-export const profileSchema = z.strictObject({
+const profileV1Schema = z.strictObject({
   format: z.literal('one-music-lab'),
   version: z.literal(1),
   settings: z.strictObject({
@@ -145,11 +152,16 @@ export const profileSchema = z.strictObject({
       .optional(),
   }),
 });
+export const profileSchema = profileV1Schema.extend({
+  version: z.literal(2),
+  coaching: coachingSchema,
+});
 export type LocalProfile = z.infer<typeof profileSchema>;
 export function emptyProfile(): LocalProfile {
   return {
     format: 'one-music-lab',
-    version: 1,
+    version: 2,
+    coaching: emptyCoaching(),
     settings: {
       language: 'en',
       theme: 'system',
@@ -196,8 +208,20 @@ export function migrateLegacy(
 export function parseBackup(text: string): LocalProfile {
   if (new TextEncoder().encode(text).length > MAX_BACKUP_BYTES)
     throw new Error('backup-size');
-  // Version 1 is the first portable format. Never guess how to downgrade a future format.
-  return profileSchema.parse(JSON.parse(text));
+  const value: unknown = JSON.parse(text);
+  // Validate the entire older format before adding new, explicitly unknown history.
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    'version' in value &&
+    value.version === 1
+  )
+    return {
+      ...profileV1Schema.parse(value),
+      version: 2,
+      coaching: emptyCoaching(),
+    };
+  return profileSchema.parse(value);
 }
 export function serializeProfile(profile: LocalProfile): string {
   // All arrays, strings and counts are bounded by the schema; canonical output
@@ -254,7 +278,7 @@ export function createProfileStore(
     const text = serializeProfile(profile);
     if (
       !replace &&
-      text === JSON.stringify(current.profile) &&
+      text === serializeProfile(current.profile) &&
       current.problem === null &&
       observed !== null
     )
@@ -306,7 +330,9 @@ export const profileStore = createProfileStore(
 export function saveAnswers(
   rule: Rule,
   results: readonly Pick<Verdict, 'correct' | 'tag'>[],
+  attempt?: Omit<Attempt, 'correct'>,
 ) {
+  if (results.length === 0) return;
   profileStore.update((profile) => {
     const ledger = new Map(
       Object.entries(profile.answers) as [Rule, LedgerRow][],
@@ -316,8 +342,29 @@ export function saveAnswers(
       if (current.get(rule)?.asked === Number.MAX_SAFE_INTEGER) return current;
       return recordAnswer(current, rule, result);
     }, ledger);
-    return { ...profile, answers: Object.fromEntries(next) };
+    return {
+      ...profile,
+      answers: Object.fromEntries(next),
+      coaching: attempt
+        ? {
+            ...profile.coaching,
+            knowledge: recordAttempt(profile.coaching.knowledge, rule, {
+              ...attempt,
+              correct: results.every((result) => result.correct),
+            }),
+          }
+        : profile.coaching,
+    };
   });
+}
+export function saveHearing(key: keyof Coaching['hearing'], attempt: Attempt) {
+  profileStore.update((profile) => ({
+    ...profile,
+    coaching: {
+      ...profile.coaching,
+      hearing: recordAttempt(profile.coaching.hearing, key, attempt),
+    },
+  }));
 }
 export function initialRoute(
   hash: string,

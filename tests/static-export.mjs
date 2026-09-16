@@ -407,7 +407,7 @@ await test('Portable labs and chapter routes work with external requests blocked
           await readFile(await actualDownload.path(), 'utf8'),
         );
         assert.equal(actualBackup.format, 'one-music-lab');
-        assert.equal(actualBackup.version, 1);
+        assert.equal(actualBackup.version, 2);
         // Run native keyboard input in a dedicated page, avoiding competing
         // iframe focus in the parallel component-test runner. Exercise the
         // actual static artifact, each locale and each engine at mobile width.
@@ -488,6 +488,68 @@ await test('Portable labs and chapter routes work with external requests blocked
             ),
             [],
             `${engine.name()} ${lang}: confirmed keyboard reset`,
+          );
+          // Task 539: native keyboard activation on the actual built artifact,
+          // outside competing component-test iframes, in every locale/engine.
+          await backupPage.goto(`${origin}/#/${lang}/t/enharmonics/drill`);
+          await backupPage.locator('.practice-hints button').press('Space');
+          assert.equal(
+            await backupPage.locator('.practice-hints li').count(),
+            1,
+          );
+          await backupPage.locator('.practice-hints button').press('Enter');
+          assert.equal(
+            await backupPage.locator('.practice-hints li').count(),
+            2,
+          );
+          await backupPage
+            .locator('.drill-question .answer-grid button')
+            .first()
+            .press('Enter');
+          await backupPage.waitForFunction(
+            () =>
+              JSON.parse(localStorage.getItem('oml-profile')).coaching
+                .knowledge['enharmonic-respelling']?.assisted.asked === 1,
+          );
+          await backupPage.reload();
+          await backupPage.locator('.drill-question').waitFor();
+          assert.equal(
+            await backupPage.evaluate(
+              () =>
+                JSON.parse(localStorage.getItem('oml-profile')).coaching
+                  .knowledge['enharmonic-respelling'].pending.remaining,
+            ),
+            3,
+          );
+          await backupPage.goto(`${origin}/#/${lang}/t/chords/play`);
+          await backupPage
+            .locator('.chord-learning [role="tab"]')
+            .nth(1)
+            .press('Enter');
+          await backupPage.locator('.creative-reflection').waitFor();
+          for (const field of await backupPage
+            .locator('.creative-reflection fieldset')
+            .all())
+            await field.locator('input').first().press('Space');
+          await backupPage
+            .locator('.creative-reflection button')
+            .press('Enter');
+          await backupPage.waitForFunction(
+            () =>
+              JSON.parse(localStorage.getItem('oml-profile')).coaching
+                .creative !== null,
+          );
+          assert.deepEqual(
+            await backupPage.evaluate(
+              () =>
+                JSON.parse(localStorage.getItem('oml-profile')).coaching
+                  .creative,
+            ),
+            {
+              intention: 'revisit',
+              comparison: 'revisit',
+              explanation: 'revisit',
+            },
           );
         }
       } finally {

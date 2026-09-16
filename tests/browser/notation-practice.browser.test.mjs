@@ -380,7 +380,7 @@ test('A short excerpt records each note and preserves partial success in the led
   expect(
     rowFor('read-a-short-excerpt').querySelector('.ledger-tally').textContent,
   ).toBe(`${total} questions · 1 mistake`);
-  expect(container.querySelector('[aria-live]').textContent).toContain(
-    `${total - 1} / ${total}`,
-  );
+  expect(
+    container.querySelector('.notation-response [aria-live]').textContent,
+  ).toContain(`${total - 1} / ${total}`);
 });

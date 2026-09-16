@@ -11,6 +11,7 @@ import {
   serializeProfile,
 } from '../../lib/local-profile.ts';
 import '../../app/globals.css';
+import { emptyCoachingRow } from '../../lib/practice-coach.ts';
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 let root, container;
@@ -135,11 +136,24 @@ test('An exported JSON file imports only after confirmation, keeping settings an
   p.completed = ['staff'];
   p.settings.theme = 'dark';
   p.answers['natural-name'] = { asked: 3, missed: 1, tag: 'wrong-letter' };
+  p.coaching.knowledge['natural-name'] = {
+    ...emptyCoachingRow(),
+    pending: { remaining: 2, seed: 102 },
+  };
+  p.coaching.hearing.octave = {
+    ...emptyCoachingRow(),
+    independent: { asked: 2, correct: 1 },
+  };
+  p.coaching.creative = {
+    intention: 'met',
+    comparison: 'revisit',
+    explanation: 'met',
+  };
   profileStore.replace(p);
   await mount();
-  expect(container.querySelector('.saved-answers').textContent).toContain(
-    'Answered: 3',
-  );
+  expect(
+    container.querySelector('.local-data details > .saved-answers').textContent,
+  ).toContain('Answered: 3');
   let blob;
   const createURL = URL.createObjectURL.bind(URL);
   vi.spyOn(URL, 'createObjectURL').mockImplementation((value) => {

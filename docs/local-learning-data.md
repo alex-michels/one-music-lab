@@ -1,4 +1,4 @@
-# Local learning data — task 538
+# Local learning data — tasks 538/539
 
 ## Using it
 
@@ -25,7 +25,9 @@ storage write does not apply an import/reset to the live app.
   tags from Drill and inline theory exercises. A written multipart exercise
   contributes one answer per graded part. Self-reviewed tasks with no grading
   contribute no count. These are records of attempts, not mastery, topic
-  completion under gate G, or a language/subject review.
+  completion under gate G, or a language/subject review. Task 539 adds separate
+  knowledge/hearing attempts with and without hints, pending later checks and
+  the last three-criterion creative self-assessment; see [feedback](practice-feedback.md).
 - Sound lab: frequency, reference pitch, tuning, waveform, volume, keyboard
   octave, selected tone/notes tab and topic context; notation pitch spelling,
   clef, ledger-line range, example choice/group/tempo; interval/scale/chord
@@ -34,11 +36,12 @@ storage write does not apply an import/reset to the live app.
   selection and playback preferences. Playback itself is never stored.
 
 The session ledger still controls adaptive question selection; **Start a new
-session** clears that ledger, not the saved history. A restored/imported practice
-view starts with an unanswered question. Entry-diagnostic answers, listening
-experiments, chord-root self-checks, search filters, the notation workbench's
+session** clears that ledger, not the saved history or pending later checks. A restored/imported practice
+view starts with an unanswered question and offers due work within its scope.
+Entry-diagnostic answers, chord-root self-checks, search filters, the notation workbench's
 temporary manipulations and in-flight exercises remain local to their current
-view. No microphone input, audio files, playback position, random seed, timestamps,
+view. Pending checks store a generated-example seed or hearing root. No microphone
+input, audio files, playback position, timestamps,
 identity, account or analytics are recorded by this feature.
 
 Changing to another topic still loads that topic's authored lab preset. Returning
@@ -67,7 +70,10 @@ partially written fields.
 
 ## Version contract and migrations
 
-Version **1**, format **one-music-lab**, is the first portable backup format.
+Version **2**, format **one-music-lab**, is the current portable backup format.
+Version **1** remains accepted through its original strict schema and an explicit
+migration: old fields survive, and new coaching history starts empty. Old answer
+counts have unknown hint use and are never relabelled as independent successes.
 Its strict schema rejects unknown keys, topics/rules, noncanonical addresses,
 duplicate markers, impossible counters, invalid notes/chords, and out-of-range
 audio settings. Counters are safe integers; a saturated counter stays saturated.
@@ -78,13 +84,13 @@ content schema remains an authoring/build check as documented in task 530.
 
 The pre-538 separate language/theme/sidebar keys and current session ledger are
 the **version-0 storage layout**. On first access without an `oml-profile`,
-`migrateLegacy` reads their existing validated values and constructs version 1.
-The first successful autosave commits it. Later starts read version 1 directly,
+`migrateLegacy` reads their existing validated values and constructs version 2.
+The first successful autosave commits it. Later starts read the current record,
 so session answers are not repeatedly imported. Legacy preference keys continue
 to be mirrored for compatibility and are overwritten with defaults on reset;
 the practice session is cleared. Other applications' storage is never cleared.
 
-For a future incompatible change: preserve the version-1 schema and fixtures,
+For a future incompatible change: preserve the older schemas and fixtures,
 add an explicit old-to-new migration, increment `version`, validate the migrated
 document before writing, and add round-trip/error tests. Do not interpret unknown
 future versions as defaults and silently overwrite them. Content IDs remain the
@@ -107,7 +113,7 @@ Run the repository's unit tests, three-engine browser
 matrix, full-denominator coverage, typecheck, lint, formatting, Workers and static
 builds before accepting this change. Task acceptance remains solely in ROADMAP.
 
-The local full-denominator run covers 94 production files. The persistence module
+The task-538 local full-denominator run covered 94 production files. The persistence module
 reaches 100% statements, branches, functions and lines. The data panel reaches
 100% lines/branches/functions, with 52/55 statements: V8 creates three uncovered
 setter-binding entries at its `useState` destructuring declarations, despite

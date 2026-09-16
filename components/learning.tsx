@@ -1,7 +1,15 @@
 'use client';
 import { nt } from '@/lib/notation-tasks';
-import { LessonProgress } from './local-data';
-import { saveAnswers } from '@/lib/local-profile';
+import { LessonProgress, useLocalProfile } from './local-data';
+import { profileStore, saveAnswers } from '@/lib/local-profile';
+import {
+  dueQuestion,
+  itemForRule,
+  nextSeed,
+  type QuestionDraw,
+} from '@/lib/practice-coach';
+import { practiceHints } from '@/lib/practice-hints';
+import { PracticeHints, AttemptNotice, checkLabel } from './practice-coach';
 import {
   CourseIndex,
   LessonConnections,
@@ -30,7 +38,6 @@ import {
   TOPIC_IDS,
   TOPIC_KINDS,
   paragraphAnchors,
-  ruleKind,
   ruleLabels,
   ruleTopic,
   topicById,
@@ -38,15 +45,7 @@ import {
   type TopicId,
   type TopicKind,
 } from '@/lib/topics';
-import {
-  RULES,
-  generateFrom,
-  grade,
-  type ExerciseKind,
-  type Item,
-  type Level,
-  type Rule,
-} from '@/lib/exercises';
+import { RULES, grade, type ExerciseKind, type Rule } from '@/lib/exercises';
 import {
   DRILL_STORAGE_KEY,
   EMPTY_LEDGER,
@@ -97,6 +96,8 @@ function InlineExercise({
 }) {
   const t = translator(lang);
   const [chosen, setChosen] = useState<string | null>(null);
+  const [hints, setHints] = useState(0);
+  const { profile } = useLocalProfile();
   const here = useRef<HTMLElement>(null);
   const rules = Object.hasOwn(paragraphAnchors, topic)
     ? paragraphAnchors[topic as TopicId]
@@ -115,6 +116,13 @@ function InlineExercise({
   if (item.review || item.parts)
     return (
       <section className="inline-exercise" id={rule} ref={here}>
+        <PracticeHints
+          lang={lang}
+          hints={practiceHints[item.kind]}
+          shown={hints}
+          onHint={() => setHints(hints + 1)}
+          answered={chosen !== null}
+        />
         <NotationResponse
           key={`${rule}-${lang}`}
           item={item}
@@ -130,10 +138,19 @@ function InlineExercise({
                     ? 'duration-symbol'
                     : 'wrong-written-note',
               })),
+              { seed: 1, assisted: hints > 0, check: false },
             );
             setChosen('review');
           }}
         />
+        {chosen !== null && !item.review && (
+          <AttemptNotice
+            lang={lang}
+            assisted={hints > 0}
+            check={false}
+            pending={profile.coaching.knowledge[rule]?.pending ?? null}
+          />
+        )}
       </section>
     );
   return (
@@ -158,6 +175,13 @@ function InlineExercise({
           />
         </div>
       )}
+      <PracticeHints
+        lang={lang}
+        hints={practiceHints[item.kind]}
+        shown={hints}
+        onHint={() => setHints(hints + 1)}
+        answered={chosen !== null}
+      />
       <div className="answer-grid">
         {item.options.map((option) => (
           <button
@@ -172,7 +196,11 @@ function InlineExercise({
             }
             onClick={() => {
               if (chosen !== null) return;
-              saveAnswers(item.rule, [grade(item, option.id)]);
+              saveAnswers(item.rule, [grade(item, option.id)], {
+                seed: 1,
+                assisted: hints > 0,
+                check: false,
+              });
               setChosen(option.id);
             }}
           >
@@ -185,7 +213,7 @@ function InlineExercise({
         ))}
       </div>
       {verdict && (
-        <p
+        <output
           className={
             verdict.correct ? 'answer-feedback' : 'answer-feedback incorrect'
           }
@@ -201,7 +229,15 @@ function InlineExercise({
               />
             </span>
           )}
-        </p>
+        </output>
+      )}
+      {verdict && (
+        <AttemptNotice
+          lang={lang}
+          assisted={hints > 0}
+          check={false}
+          pending={profile.coaching.knowledge[rule]?.pending ?? null}
+        />
       )}
       {/* Into the drill scoped to this topic, not to the whole trainer: the
           reader asked about this rule, so this is the rule to practise. */}
@@ -746,28 +782,6 @@ export function resetPracticeSession() {
 }
 
 /**
- * An item that tests the drawn rule.
- *
- * Two of the kinds ask about more than one rule — `octave-region` carries the
- * register in its rule and `dotted-value` asks about the first dot or the
- * second — so the level and the seed are both searched until the generator
- * emits the rule that was asked for. Failure is explicit: an unrelated
- * question must never stand in for the rule named by a lesson or ledger link.
- */
-function itemForRule(rule: Rule, seed: number, lang: Lang): Item {
-  const kind = ruleKind[rule];
-  // Successive questions start at different complexities. Searching from level
-  // 1 every time would leave advanced variants unreachable for single-rule kinds.
-  const firstLevel = Math.floor((seed - 1) / 101) % 3;
-  for (let i = 0; i < 256; i += 1) {
-    const level = (((firstLevel + i) % 3) + 1) as Level;
-    const item = generateFrom(kind, level, seed + i * 31, lang);
-    if (item.rule === rule) return item;
-  }
-  throw new Error(`No question found for rule ${rule}`);
-}
-
-/**
  * A picture of a question must not read the answer out.
  *
  * `components/staff.tsx` names itself from the pitches it drew, which is the
@@ -855,11 +869,16 @@ function PracticeSession({
   const eligible = scoped && scoped.length > 0 ? scoped : RULES;
   // The seed is the item. Keeping it in state means a reader can be sent back
   // to the exact question they saw, and the tests can reproduce it.
-  const [drawn, setDrawn] = useState<{ rule: Rule; seed: number }>(() => ({
-    rule: eligible[0],
-    seed: 1,
-  }));
+  const [drawn, setDrawn] = useState<QuestionDraw>(
+    () =>
+      dueQuestion(
+        profileStore.getSnapshot().profile.coaching.knowledge,
+        eligible,
+      ) ?? { rule: eligible[0], seed: 1, check: false },
+  );
   const [chosen, setChosen] = useState<string | null>(null);
+  const [hints, setHints] = useState(0);
+  const { profile } = useLocalProfile();
   // A scope change is a different drill; the first question has to come from
   // the rules the address now names rather than from the ones it used to.
   const rule = eligible.includes(drawn.rule) ? drawn.rule : eligible[0];
@@ -875,20 +894,38 @@ function PracticeSession({
     setChosen(id);
     // Written from the item, not from the draw: the item knows which rule it
     // actually asked about, and the ledger may only claim what happened.
-    saveAnswers(item.rule, [resultFor(id)]);
+    saveAnswers(item.rule, [resultFor(id)], {
+      seed: drawn.seed,
+      assisted: hints > 0,
+      check: drawn.check,
+    });
     saveLedger(recordAnswer(ledger, item.rule, resultFor(id)));
   };
   const nextQuestion = () => {
-    setDrawn((previous) => ({
-      rule: drawRule(eligible, ledger, Math.random()),
-      seed: previous.seed + 101,
-    }));
+    setDrawn(
+      (previous) =>
+        dueQuestion(
+          profileStore.getSnapshot().profile.coaching.knowledge,
+          eligible,
+        ) ?? {
+          rule: drawRule(eligible, ledger, Math.random()),
+          seed: nextSeed(previous.seed),
+          check: false,
+        },
+    );
     setChosen(null);
+    setHints(0);
   };
   const startOver = () => {
     saveLedger(EMPTY_LEDGER);
-    setDrawn({ rule: eligible[0], seed: 1 });
+    setDrawn(
+      dueQuestion(
+        profileStore.getSnapshot().profile.coaching.knowledge,
+        eligible,
+      ) ?? { rule: eligible[0], seed: 1, check: false },
+    );
     setChosen(null);
+    setHints(0);
   };
   const missedAny = eligible.some((r) => (ledger.get(r)?.missed ?? 0) > 0);
   return (
@@ -900,6 +937,14 @@ function PracticeSession({
         <p className="drill-skill">
           <NoteText text={ruleLabels[rule]} lang={lang} />
         </p>
+        {drawn.check && <p className="later-check">{checkLabel[lang]}</p>}
+        <PracticeHints
+          lang={lang}
+          hints={practiceHints[item.kind]}
+          shown={hints}
+          onHint={() => setHints(hints + 1)}
+          answered={chosen !== null}
+        />
         {item.review || item.parts ? (
           <NotationResponse
             key={`${rule}-${drawn.seed}-${lang}`}
@@ -916,6 +961,7 @@ function PracticeSession({
                       ? 'duration-symbol'
                       : 'wrong-written-note',
                 })),
+                { seed: drawn.seed, assisted: hints > 0, check: drawn.check },
               );
               if (results.length)
                 saveLedger(
@@ -1031,6 +1077,33 @@ function PracticeSession({
           >
             {item.source.title}
           </a>
+        )}
+        {chosen !== null && !item.review && (
+          <>
+            <AttemptNotice
+              lang={lang}
+              assisted={hints > 0}
+              check={drawn.check}
+              pending={profile.coaching.knowledge[rule]?.pending ?? null}
+            />
+            <a
+              className="text-button"
+              href={hashOf({
+                lang,
+                topic: ruleTopic[rule],
+                lens: 'read',
+                anchor: rule,
+              })}
+            >
+              {
+                nt(
+                  'Review this explanation',
+                  'Повторить объяснение',
+                  'Erklärung wiederholen',
+                )[lang]
+              }
+            </a>
+          </>
         )}
         {/* Never on a timer. The explanation is the point of getting it wrong,
             and a question that advances itself takes it away from a slow
