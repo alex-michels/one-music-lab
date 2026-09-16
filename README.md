@@ -13,6 +13,17 @@ pending. The page metadata uses
 The OML abbreviation, saved language preference, and WAV filename prefix remain
 compatible with the existing prototype.
 
+**Learning data** below the chapter navigation saves your current position,
+personal lesson markers, graded theory/Drill answer counts, language, theme,
+navigation width and main laboratory settings in this browser. Open it to export
+a JSON backup, import one with a replacement confirmation, or reset everything
+with confirmation. Returning without a specific lesson link resumes your last
+position; restored instruments remain silent until you play them. There is no
+account, database, cloud synchronization or upload. Browser profiles and site
+addresses have separate storage; export before changing either or clearing site
+data. See [local learning data](docs/local-learning-data.md) for scope, recovery,
+format versions and limitations.
+
 Original code is **Apache-2.0**; original educational content is **CC BY 4.0**.
 See [LICENSE](LICENSE), [CONTENT-LICENSE.md](CONTENT-LICENSE.md) and
 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Paid hosted services or optional

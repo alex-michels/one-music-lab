@@ -1,6 +1,70 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
+
+.local-data {
+  border-block: 1px solid var(--c-rule);
+  padding: 12px 0;
+  margin-bottom: 24px;
+  overflow-wrap: anywhere;
+}
+.local-data summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.local-data h2 {
+  font-size: 16px;
+  margin-top: 20px;
+}
+.local-data p,
+.lesson-progress p {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-block: 8px;
+}
+.local-data-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+.local-data-actions label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+.local-data input[type='file'] {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+.local-data-confirm {
+  border: 1px solid var(--c-rule);
+  padding: 16px;
+  margin-top: 16px;
+  min-width: 0;
+}
+.local-data-confirm button {
+  margin: 4px;
+}
+.saved-answers > div {
+  margin-block: 10px;
+}
+.saved-answers dd {
+  font-size: 14px;
+  color: var(--c-ink-2);
+}
+.lesson-progress {
+  padding: 16px 0;
+}
+.lesson-progress input {
+  margin-right: 6px;
+  accent-color: var(--c-ink);
+}
+
 @custom-variant dark (&:is(.dark *));
 /* Original Chords lab surface; shares the sound lab's colour and type tokens. */
 .chords-lab {

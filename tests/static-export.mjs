@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdir, readFile, readdir, stat } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { createServer } from 'node:http';
-import { chromium } from 'playwright';
+import { chromium, firefox, webkit } from 'playwright';
 
 const root = resolve('dist/client');
 const html = await readFile(join(root, 'index.html'), 'utf8');
@@ -247,6 +247,253 @@ await test('Portable labs and chapter routes work with external requests blocked
       path: 'outputs/learning-routes/chapter-mobile.png',
       fullPage: true,
     });
+    // A real document reload verifies hydration against saved browser data,
+    // beyond component tests whose module stores can outlive an unmount.
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(`${origin}/#/en/play`);
+    await page
+      .getByRole('button', { name: 'Tone generator', exact: true })
+      .click();
+    await page.locator('#frequency').fill('528');
+    await page.locator('#frequency').press('Tab');
+    await page.reload();
+    await page
+      .locator('[data-slot="sidebar-wrapper"][aria-busy="false"]')
+      .waitFor();
+    assert.equal(await page.locator('#frequency').inputValue(), '528');
+    await page.goto(`${origin}/#/en/t/staff/read`);
+    await page
+      .getByRole('checkbox', { name: 'I have worked through this lesson' })
+      .check();
+    assert.deepEqual(
+      await page.evaluate(
+        () => JSON.parse(localStorage.getItem('oml-profile')).completed,
+      ),
+      ['staff'],
+      'Marking the lesson must save it before opening another tab',
+    );
+    const reopened = await context.newPage();
+    await reopened.goto(origin);
+    // A visible server-rendered lesson can still have its default unchecked
+    // marker. Inspect saved state only after browser-profile restoration.
+    await reopened
+      .locator('[data-slot="sidebar-wrapper"][aria-busy="false"]')
+      .waitFor();
+    await reopened
+      .getByRole('checkbox', { name: 'I have worked through this lesson' })
+      .waitFor();
+    assert.deepEqual(
+      await reopened.evaluate(
+        () => JSON.parse(localStorage.getItem('oml-profile')).completed,
+      ),
+      ['staff'],
+      'The reopened page must preserve the saved lesson marker',
+    );
+    // Parent readiness and child external-store subscriptions can settle in
+    // separate React commits. Wait for the user-visible restored form state.
+    await reopened.waitForFunction(
+      () => document.querySelector('.lesson-progress input')?.checked === true,
+      undefined,
+      { timeout: 10_000 },
+    );
+    assert.equal(await reopened.getByRole('checkbox').isChecked(), true);
+    assert.match(reopened.url(), /#\/en\/t\/staff\/read$/);
+    await reopened.close();
+    await page.goto(`${origin}/#/en/t/dots-ties/drill`);
+    await page.locator('.drill-question .answer-grid button').first().click();
+    await page.locator('.local-data summary').click();
+    const downloading = page.waitForEvent('download');
+    await page
+      .getByRole('button', { name: 'Export backup', exact: true })
+      .click();
+    const downloaded = await downloading;
+    const backup = await readFile(await downloaded.path());
+    const original = JSON.parse(backup.toString('utf8'));
+    assert.deepEqual(original.completed, ['staff']);
+    assert.equal(original.lab.frequency, 528);
+    assert.equal(
+      Object.values(original.answers).reduce((sum, row) => sum + row.asked, 0),
+      1,
+    );
+    await page
+      .getByRole('button', { name: 'Reset local data', exact: true })
+      .click();
+    await page
+      .getByRole('button', { name: 'Confirm replacement', exact: true })
+      .click();
+    assert.equal(await page.locator('#frequency').inputValue(), '440');
+    await page.locator('.local-data summary').click();
+    await page.locator('input[type=file]').setInputFiles({
+      name: 'backup.json',
+      mimeType: 'application/json',
+      buffer: backup,
+    });
+    await page
+      .getByRole('button', { name: 'Confirm replacement', exact: true })
+      .click();
+    await page.locator('.drill-question').waitFor();
+    const restored = await page.evaluate(() =>
+      JSON.parse(localStorage.getItem('oml-profile')),
+    );
+    assert.deepEqual(restored.completed, original.completed);
+    assert.deepEqual(restored.answers, original.answers);
+    assert.equal(restored.lab.frequency, 528);
+    await page.locator('.local-data summary').click();
+    await mkdir('outputs/local-learning-data', { recursive: true });
+    await page
+      .locator('.local-data')
+      .screenshot({ path: 'outputs/local-learning-data/desktop.png' });
+    await page.setViewportSize({ width: 360, height: 800 });
+    // Resizing returns before matchMedia subscribers and layout transitions
+    // necessarily finish. Require the responsive result, with useful geometry
+    // if an element continues to overflow after the viewport has settled.
+    try {
+      await page.waitForFunction(
+        () => document.documentElement.scrollWidth <= innerWidth,
+        undefined,
+        { timeout: 5000 },
+      );
+    } catch (cause) {
+      const geometry = await page.evaluate(() => ({
+        viewport: innerWidth,
+        document: document.documentElement.scrollWidth,
+        overflowing: [...document.querySelectorAll('body *')]
+          .filter(
+            (element) => element.getBoundingClientRect().right > innerWidth + 1,
+          )
+          .map((element) => ({
+            tag: element.tagName,
+            class: element.getAttribute('class'),
+            width: element.getBoundingClientRect().width,
+            right: element.getBoundingClientRect().right,
+          }))
+          .slice(-12),
+      }));
+      throw new Error(
+        `Mobile learning data overflow: ${JSON.stringify(geometry)}`,
+        { cause },
+      );
+    }
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+      true,
+    );
+    await page
+      .locator('.local-data')
+      .screenshot({ path: 'outputs/local-learning-data/mobile.png' });
+    // Component tests inspect the exported Blob; these exercise the browsers'
+    // actual download lifecycle, including object-URL cleanup.
+    for (const engine of [chromium, firefox, webkit]) {
+      const backupBrowser = await engine.launch();
+      try {
+        const backupPage = await backupBrowser.newPage();
+        await backupPage.route('**/*', (route) => {
+          if (new URL(route.request().url()).origin === origin)
+            return route.continue();
+          external.push(route.request().url());
+          return route.abort();
+        });
+        await backupPage.goto(origin);
+        await backupPage.locator('.local-data summary').click();
+        const downloadingBackup = backupPage.waitForEvent('download');
+        await backupPage
+          .getByRole('button', { name: 'Export backup', exact: true })
+          .click();
+        const actualDownload = await downloadingBackup;
+        assert.equal(await actualDownload.failure(), null, engine.name());
+        const actualBackup = JSON.parse(
+          await readFile(await actualDownload.path(), 'utf8'),
+        );
+        assert.equal(actualBackup.format, 'one-music-lab');
+        assert.equal(actualBackup.version, 1);
+        // Run native keyboard input in a dedicated page, avoiding competing
+        // iframe focus in the parallel component-test runner. Exercise the
+        // actual static artifact, each locale and each engine at mobile width.
+        await backupPage.setViewportSize({ width: 360, height: 800 });
+        for (const [lang, mark, reset, cancel, confirm] of [
+          [
+            'en',
+            'I have worked through this lesson',
+            'Reset local data',
+            'Cancel',
+            'Confirm replacement',
+          ],
+          [
+            'ru',
+            'Я проработал(а) этот урок',
+            'Сбросить локальные данные',
+            'Отмена',
+            'Подтвердить замену',
+          ],
+          [
+            'de',
+            'Ich habe diese Lektion durchgearbeitet',
+            'Lokale Daten zurücksetzen',
+            'Abbrechen',
+            'Ersetzen bestätigen',
+          ],
+        ]) {
+          await backupPage.goto(`${origin}/#/${lang}/t/staff/read`);
+          await backupPage
+            .locator('[data-slot="sidebar-wrapper"][aria-busy="false"]')
+            .waitFor();
+          const marker = backupPage.getByRole('checkbox', { name: mark });
+          await marker.press('Space');
+          await backupPage.waitForFunction(
+            () =>
+              document.querySelector('.lesson-progress input')?.checked ===
+              true,
+          );
+          assert.equal(
+            await marker.isChecked(),
+            true,
+            `${engine.name()} ${lang}: keyboard marker`,
+          );
+          if (
+            !(await backupPage
+              .locator('.local-data details')
+              .evaluate((details) => details.open))
+          )
+            await backupPage.locator('.local-data summary').press('Enter');
+          await backupPage
+            .getByRole('button', { name: reset, exact: true })
+            .press('Enter');
+          await backupPage
+            .getByRole('button', { name: cancel, exact: true })
+            .press('Enter');
+          await backupPage
+            .locator('.local-data-confirm')
+            .waitFor({ state: 'detached' });
+          assert.equal(
+            await marker.isChecked(),
+            true,
+            `${engine.name()} ${lang}: cancellation keeps marker`,
+          );
+          await backupPage
+            .getByRole('button', { name: reset, exact: true })
+            .press('Enter');
+          await backupPage
+            .getByRole('button', { name: confirm, exact: true })
+            .press('Enter');
+          await backupPage.locator('#frequency').waitFor();
+          assert.equal(
+            await backupPage.locator('#frequency').inputValue(),
+            '440',
+          );
+          assert.deepEqual(
+            await backupPage.evaluate(
+              () => JSON.parse(localStorage.getItem('oml-profile')).completed,
+            ),
+            [],
+            `${engine.name()} ${lang}: confirmed keyboard reset`,
+          );
+        }
+      } finally {
+        await backupBrowser.close();
+      }
+    }
     assert.deepEqual(
       external,
       [],

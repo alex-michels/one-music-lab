@@ -1,6 +1,6 @@
 # Third-party notices
 
-Zod 4.6.4 is a development dependency for content-schema validation (MIT,
+Zod 4.6.4 validates authored content and local learning-data backups (MIT,
 Colin McDonnell). Its upstream notice is retained in `LICENSES/zod-MIT.txt`.
 The browser application does not import Zod or the content validator.
 

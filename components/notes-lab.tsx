@@ -1,5 +1,4 @@
 'use client';
-import { useState } from 'react';
 import { Piano, Volume2, Square } from 'lucide-react';
 import {
   notationExamples,
@@ -125,11 +124,10 @@ export function NotesLab({
   stop: () => void;
 }) {
   const t = translator(lang);
-  const [clef, setClef] = useState<Clef>('treble');
-  const [ledgerLines, setLedgerLines] = useState(1);
+  const clef = state.clef ?? 'treble';
+  const ledgerLines = state.ledgerLines ?? 1;
   const placement = placementRange(ledgerLines);
-  const [selectedExample, setSelectedExample] =
-    useState<NotationExampleId | null>(null);
+  const selectedExample = state.selectedExample ?? null;
   const exampleIds = (
     Object.keys(notationExamples) as NotationExampleId[]
   ).filter((id) => notationExamples[id].group === state.group);
@@ -223,7 +221,7 @@ export function NotesLab({
               value,
               label: clefNames[value][lang],
             }))}
-            onChange={(value) => setClef(value as Clef)}
+            onChange={(value) => onChange({ ...state, clef: value as Clef })}
           />
         </div>
       </section>
@@ -353,7 +351,7 @@ export function NotesLab({
                 }
                 aria-pressed={activeExample === id}
                 onClick={() => {
-                  setSelectedExample(id);
+                  onChange({ ...state, selectedExample: id });
                   void playExample(id, state.tempo);
                 }}
               >
@@ -430,7 +428,7 @@ export function NotesLab({
               value={ledgerLines}
               onChange={(event) => {
                 stop();
-                setLedgerLines(Number(event.target.value));
+                onChange({ ...state, ledgerLines: Number(event.target.value) });
               }}
             />
           </label>
