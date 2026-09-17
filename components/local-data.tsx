@@ -5,6 +5,7 @@ import { nt } from '@/lib/notation-tasks';
 import { topicById, ruleLabels, type TopicId } from '@/lib/topics';
 import { type Rule } from '@/lib/exercises';
 import { NoteText } from './note-text';
+import { CoachingHistory } from './practice-coach';
 import {
   emptyProfile,
   MAX_BACKUP_BYTES,
@@ -176,11 +177,12 @@ export function LocalData({
           ))}
         </ul>
         <h2>{text('Practice history', 'История практики', 'Übungsverlauf')}</h2>
+        <CoachingHistory lang={lang} coaching={profile.coaching} />
         <p>
           {text(
-            'Graded theory and Drill answers, including parts of written exercises. Listening experiments and self-checks stay in the current view. These counts do not certify mastery; a new session keeps this history.',
-            'Проверенные ответы в теории и упражнениях, включая части письменных заданий. Слуховые эксперименты и самопроверка остаются в текущем представлении. Эти числа не подтверждают освоение; новая сессия сохраняет историю.',
-            'Bewertete Antworten aus Theorie und Übungen, einschließlich Teilaufgaben. Hörexperimente und Selbstkontrollen bleiben in der aktuellen Ansicht. Die Zahlen bestätigen keine Beherrschung; eine neue Sitzung behält diesen Verlauf.',
+            'All graded theory and Drill answers, including individual parts of written exercises and earlier history without hint information. A new session keeps this history.',
+            'Все проверенные ответы в теории и упражнениях, включая отдельные части письменных заданий и прежнюю историю без сведений о подсказках. Новая сессия сохраняет историю.',
+            'Alle bewerteten Antworten aus Theorie und Übungen, einschließlich einzelner Teilaufgaben und früherer Antworten ohne Hinweisangaben. Eine neue Sitzung behält diesen Verlauf.',
           )}
         </p>
         <dl className="saved-answers">

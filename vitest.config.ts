@@ -35,6 +35,7 @@ export const authoredProductionCode = [
   'app/**/*.{ts,tsx}',
   'components/learning.tsx',
   'components/local-data.tsx',
+  'components/practice-coach.tsx',
   'components/course-navigation.tsx',
   'components/entry-diagnostic.tsx',
   'components/note-text.tsx',

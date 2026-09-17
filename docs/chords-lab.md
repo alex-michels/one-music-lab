@@ -45,6 +45,12 @@ settled by this release.
 Open **Chords lab** in navigation, follow the button under **A little
 experiment**, or open `/#chords`.
 
+The **Try a challenge** tab also offers creative self-assessment: choose an
+intention, edit your progression, compare an alternative, and explicitly assess
+three criteria. The latest reflection is saved in Learning data, separately from
+knowledge and hearing. It is your judgment, not an automatic quality score;
+later chord edits do not update it. See [task 539](practice-feedback.md).
+
 1. Choose a starting point. The picker is a library grouped by family:
    cadences, classical schemas, pop and rock loops, jazz turnarounds, blues
    forms, and colour (mode mixture and an applied dominant), plus a single

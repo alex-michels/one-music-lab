@@ -28,9 +28,11 @@ test('The committed version-1 backup remains readable independently of current d
     new URL('./fixtures/local-profile-v1.json', import.meta.url),
     'utf8',
   );
-  expect(parseBackup(serializeProfile(parseBackup(original)))).toEqual(
-    JSON.parse(original),
-  );
+  expect(parseBackup(serializeProfile(parseBackup(original)))).toEqual({
+    ...JSON.parse(original),
+    version: 2,
+    coaching: emptyProfile().coaching,
+  });
 });
 function memory(entries = {}) {
   const values = new Map(Object.entries(entries));
@@ -194,7 +196,7 @@ for (const [label, mutate] of [
   [
     'future version',
     (p) => {
-      p.version = 2;
+      p.version = 3;
     },
   ],
   [
@@ -455,6 +457,11 @@ test('Unchanged settings avoid redundant writes and notify only on actual profil
   expect(spy).toHaveBeenCalledTimes(1);
   expect(listener).toHaveBeenCalledTimes(1);
   unsubscribe();
+  // Versioned schema fields can have a different key order from caller-created
+  // defaults. A reset must not make unchanged autosaves write forever.
+  store.replace(emptyProfile());
+  store.update((p) => p);
+  expect(spy).toHaveBeenCalledTimes(2);
 });
 test('Recorded answers retain actual mistakes and saturate without rounding large counters', () => {
   vi.stubGlobal('localStorage', memory());

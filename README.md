@@ -24,6 +24,15 @@ addresses have separate storage; export before changing either or clearing site
 data. See [local learning data](docs/local-learning-data.md) for scope, recovery,
 format versions and limitations.
 
+**Practice feedback (№539):** Read and Drill offer two optional hints, explain
+errors and queue a changed example after three further completed questions.
+Play → Intervals tracks hearing separately and transposes later checks.
+Play → Chords → Try a challenge offers three explicit self-assessment criteria
+for your creative experiment. Learning data distinguishes attempts with/without
+hints and creative reflection; these are observations, not a mastery certificate.
+Version-1 backups migrate to version 2 without losing existing work.
+See [practice feedback](docs/practice-feedback.md) for use, sources and limits.
+
 Original code is **Apache-2.0**; original educational content is **CC BY 4.0**.
 See [LICENSE](LICENSE), [CONTENT-LICENSE.md](CONTENT-LICENSE.md) and
 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Paid hosted services or optional

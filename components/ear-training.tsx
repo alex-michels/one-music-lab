@@ -1,5 +1,11 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { nt } from '@/lib/notation-tasks';
+import { HEARING_KEYS, hearingQuestion } from '@/lib/practice-coach';
+import { hearingHints } from '@/lib/practice-hints';
+import { profileStore, saveHearing } from '@/lib/local-profile';
+import { useLocalProfile } from './local-data';
+import { PracticeHints, AttemptNotice, checkLabel } from './practice-coach';
 import { ArrowRight, Check, Headphones, Play, Volume2, X } from 'lucide-react';
 import { localNumber, translator } from '@/lib/i18n';
 import { german } from '@/lib/german';
@@ -42,12 +48,10 @@ const quizIntervals = [
  * Hearing the distance between two notes, as an experiment on the play lens of
  * intervals rather than half of the trainer.
  *
- * It left the trainer because it cannot join the trainer's ledger honestly: its
- * four intervals are hard-coded here and carry neither a rule nor an error tag,
- * so every answer given here would be work the ledger silently ignored. It also
- * gates answering on `hasHeard` — the one place on the site where a reader who
- * cannot hear cannot answer at all — which is a property of an instrument, not
- * of a drill.
+ * Hearing has its own four categories and local assessment history. It never
+ * contributes to the written-knowledge ledger. Answering requires a successful
+ * playback request; it cannot prove listening or attention. A visual alternative
+ * would measure a different skill.
  */
 export function EarTraining({
   lang,
@@ -63,11 +67,25 @@ export function EarTraining({
     index: number;
     root: number;
     reference: number;
+    check: boolean;
   } | null>(null);
   const [answer, setAnswer] = useState<number | null>(null);
   const [hasHeard, setHasHeard] = useState(false);
+  const [hints, setHints] = useState(0);
+  const [failed, setFailed] = useState(false);
+  const { profile } = useLocalProfile();
+  const request = useRef(0);
+  useEffect(
+    () => () => {
+      request.current += 1;
+    },
+    [],
+  );
   const replay = async (q = question) => {
     if (q) {
+      const token = ++request.current;
+      setHasHeard(false);
+      setFailed(false);
       try {
         await play(
           [
@@ -77,26 +95,36 @@ export function EarTraining({
           0.75,
           'sine',
         );
-        setHasHeard(true);
+        if (request.current === token) setHasHeard(true);
       } catch {
-        setHasHeard(false);
+        if (request.current === token) setFailed(true);
       }
     }
   };
   const next = () => {
     const q = {
-      index: Math.floor(Math.random() * quizIntervals.length),
-      root: 57 + Math.floor(Math.random() * 12),
+      ...hearingQuestion(
+        profileStore.getSnapshot().profile.coaching.hearing,
+        Math.floor(Math.random() * quizIntervals.length),
+        57 + Math.floor(Math.random() * 12),
+      ),
       reference,
     };
     setQuestion(q);
     setAnswer(null);
     setHasHeard(false);
+    setHints(0);
     void replay(q);
   };
   const choose = (i: number) => {
     if (!question || answer !== null || !hasHeard) return;
     setAnswer(i);
+    saveHearing(HEARING_KEYS[question.index], {
+      correct: i === question.index,
+      assisted: hints > 0,
+      seed: question.root,
+      check: question.check,
+    });
   };
   return (
     <div className="ear-training">
@@ -127,10 +155,29 @@ export function EarTraining({
         </button>
       ) : (
         <>
+          {question.check && <p className="later-check">{checkLabel[lang]}</p>}
           <button className="secondary-button" onClick={() => void replay()}>
             <Volume2 size={18} />
             {t('Listen again', 'Послушать ещё раз')}
           </button>
+          {failed && (
+            <p role="alert">
+              {
+                nt(
+                  'Audio could not start. Try listening again.',
+                  'Звук не запустился. Послушайте ещё раз.',
+                  'Die Wiedergabe konnte nicht starten. Höre erneut zu.',
+                )[lang]
+              }
+            </p>
+          )}
+          <PracticeHints
+            lang={lang}
+            hints={hearingHints}
+            shown={hints}
+            onHint={() => setHints(hints + 1)}
+            answered={answer !== null}
+          />
           <div className="answer-grid">
             {quizIntervals.map((option, i) => (
               <button
@@ -170,6 +217,25 @@ export function EarTraining({
               </strong>{' '}
               {quizIntervals[question.index][lang]} ·{' '}
               {count(quizIntervals[question.index].step, lang, 'semitones')}.
+              {answer !== question.index && (
+                <span>
+                  {' '}
+                  {
+                    (quizIntervals[answer].step <
+                    quizIntervals[question.index].step
+                      ? nt(
+                          'Your choice is narrower than the played interval.',
+                          'Выбранный интервал уже прозвучавшего.',
+                          'Deine Auswahl ist enger als das gespielte Intervall.',
+                        )
+                      : nt(
+                          'Your choice is wider than the played interval.',
+                          'Выбранный интервал шире прозвучавшего.',
+                          'Deine Auswahl ist weiter als das gespielte Intervall.',
+                        ))[lang]
+                  }
+                </span>
+              )}
               <span className="answer-detail">
                 {lang === 'de'
                   ? intervalLabels(
@@ -183,6 +249,28 @@ export function EarTraining({
                 {localNumber(question.reference, lang)} Hz
               </span>
             </output>
+          )}
+          {answer !== null && (
+            <>
+              <AttemptNotice
+                lang={lang}
+                assisted={hints > 0}
+                check={question.check}
+                pending={
+                  profile.coaching.hearing[HEARING_KEYS[question.index]]
+                    ?.pending ?? null
+                }
+              />
+              <a href={`#/${lang}/t/intervals/read`}>
+                {
+                  nt(
+                    'Review intervals',
+                    'Повторить интервалы',
+                    'Intervalle wiederholen',
+                  )[lang]
+                }
+              </a>
+            </>
           )}
           {answer !== null && (
             <button className="primary-button" onClick={next}>

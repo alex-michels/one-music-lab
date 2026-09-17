@@ -1,5 +1,6 @@
 'use client';
 import { NoteText } from './note-text';
+import { CreativeReflection } from './practice-coach';
 import { translator } from '@/lib/i18n';
 
 import {
@@ -1161,6 +1162,7 @@ export function ChordsLab({
             </a>
           </TabsContent>
           <TabsContent value="practice">
+            <CreativeReflection lang={lang} />
             <h3>
               {t('Which pitch is the root?', 'Какой звук — основной тон?')}
             </h3>
