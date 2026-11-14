@@ -52,7 +52,7 @@ knowledge and hearing. It is your judgment, not an automatic quality score;
 later chord edits do not update it. See [task 539](practice-feedback.md).
 
 1. Choose a starting point. The picker is a library grouped by family:
-   cadences, classical schemas, pop and rock loops, jazz turnarounds, blues
+   cadences, classical schemas, pop and rock loops, jazz progressions, blues
    forms, and colour (mode mixture and an applied dominant), plus a single
    tonic chord to build from nothing. Each entry names its Roman numerals, and
    the **Listen & explore** tab carries its explanation and the reading it
@@ -158,14 +158,19 @@ width, which is an interface preference rather than musical work.
   III/VI/VII roots get flats. Lowercase indicates minor or diminished quality;
   symbols distinguish sevenths, suspensions and ninths. This convention is
   explained in the UI and is not presented as the only analysis convention.
-- A card is additionally marked `V/x` when, and only when, its chord is
-  major-quality on a degree whose own scale triad is not, **and** the following
-  chord's root lies a perfect fifth below. Both halves are required, because an
-  applied dominant is defined by its resolution. The consequences are
-  deliberate: the key's own dominant is never marked; a blues I7 moving to IV7
-  is never marked, because the tonic triad is already major; `♭VII` in minor is
-  never marked, for the same reason. Cases the rule cannot prove keep their
-  degree numeral alone, which is a description rather than an analysis.
+- A card is additionally marked `V/x` when, and only when, its chord is a
+  major triad or a major–minor seventh, either with or without a ninth, on a
+  degree whose own scale triad is not major, **and** the following chord is
+  built on a major or minor triad with its root a perfect fifth below. Both
+  halves are required, because an applied dominant is defined by its
+  resolution. A chord with a major seventh is not a dominant, and a diminished
+  chord cannot be tonicized (Hutchinson §17.3), so `IImaj7–V` and `III–vi°`
+  are not marked; an augmented or suspended target is not marked either. The
+  other consequences are deliberate: the key's own dominant is never marked; a
+  blues I7 moving to IV7 is never marked, because the tonic triad is already
+  major; `♭VII` in minor is never marked, for the same reason. Cases the rule
+  cannot prove keep their degree numeral alone, which is a description rather
+  than an analysis.
 - Bass choices rotate the written chord tones into ascending register; a
   compound ninth can span more than one octave. This is not automatic smooth
   voice leading, SATB assessment, an unrestricted slash-bass or a drop-voicing
@@ -181,7 +186,9 @@ width, which is an interface preference rather than musical work.
   microtonal blue-note intonation.
 - This lab has its own fixed 12-TET reference, A4 = 440 Hz, and straight 4/4.
   Sound-lab tuning/reference controls do not alter it. One beat is a quarter
-  note; the twelve-bar examples contain 48 beats each.
+  note; the twelve-bar examples contain 48 beats each, one chord to the bar
+  except the jazz blues, whose last two bars hold the turnaround
+  `I7–VI7–ii7–V7` at two chords to the bar.
 - Each chord carries its own register, offered between 1 and 6. The stored
   number is the octave the key's tonic is spelled in while that chord is built,
   which is what holds degree spelling steady across a transposition; it is not

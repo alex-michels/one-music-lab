@@ -86,16 +86,16 @@ export const patterns: Record<
       degrees: [0, 2, 4],
     },
     {
-      de: german['Diminished'],
-      en: 'Diminished',
-      ru: 'Уменьшённое',
+      de: german['Diminished triad'],
+      en: 'Diminished triad',
+      ru: 'Уменьшённое трезвучие',
       steps: [0, 3, 6],
       degrees: [0, 2, 4],
     },
     {
-      de: german['Augmented'],
-      en: 'Augmented',
-      ru: 'Увеличенное',
+      de: german['Augmented triad'],
+      en: 'Augmented triad',
+      ru: 'Увеличенное трезвучие',
       steps: [0, 4, 8],
       degrees: [0, 2, 4],
     },
@@ -229,8 +229,8 @@ export const exerciseExplanations: Record<ErrorTag, LocalText> = {
     'Ступень верна, знак — нет. Проверьте, на сколько знак смещает ноту.',
   ),
   'same-sound-other-spelling': b(
-    'That sounds the same but is written on another step, which is what the task asked to change.',
-    'Это звучит так же, но записано от другой ступени, а изменить нужно было именно запись.',
+    'That is the spelling you started with. It sounds the same, but the task asked you to respell the note with a different letter.',
+    'Это исходная запись. Звучит она так же, но по условию ноту нужно было записать на другой ступени.',
   ),
   'forgot-the-dot': b(
     'That is the value with no dots. The first dot adds half the original value.',
@@ -251,16 +251,21 @@ export const exerciseExplanations: Record<ErrorTag, LocalText> = {
   'ignored-the-sign': nt(
     'Check the effective accidental. A local sign replaces the signature at that letter and octave; it can still apply to a later note in the bar or a tied continuation.',
     'Проверьте действующий знак. Случайный знак заменяет ключевой на той же ступени в той же октаве; он может сохраняться у последующей ноты в такте или у связанного продолжения.',
-    'Prüfe das geltende Versetzungszeichen. Es ersetzt das Tonartvorzeichen für denselben Stammton in derselben Oktave und kann noch für eine spätere Note im Takt oder eine gebundene Fortsetzung gelten.',
+    'Prüfe, welches Zeichen gerade gilt. Ein Versetzungszeichen im Takt ersetzt die Vorzeichnung für denselben Stammton in derselben Oktave; es kann auch noch für eine spätere Note im Takt oder für eine übergebundene Fortsetzung gelten.',
   ),
   'carried-the-sign-too-far': nt(
     'For a new attack after the barline, read the key signature again unless a new local sign applies. A tied continuation retains the previous pitch but does not set a local accidental for later attacks.',
     'При новой атаке после тактовой черты снова учитывайте ключевые знаки, если не действует новый случайный знак. Связанное продолжение сохраняет прежнюю высоту, но не устанавливает случайный знак для последующих атак.',
-    'Für einen neuen Anschlag nach dem Taktstrich gilt wieder die Tonart, sofern kein neues Versetzungszeichen gilt. Eine gebundene Fortsetzung behält die vorherige Tonhöhe, setzt aber kein Versetzungszeichen für spätere Anschläge.',
+    'Für eine neu angeschlagene Note nach dem Taktstrich gilt wieder die Vorzeichnung, sofern im neuen Takt kein Versetzungszeichen für sie gesetzt ist. Eine übergebundene Fortsetzung behält die vorherige Tonhöhe, überträgt ihr Versetzungszeichen aber nicht auf später angeschlagene Noten.',
+  ),
+  'carried-the-sign-to-another-octave': nt(
+    'A sign inside the bar applies only to its own letter in its own octave. In another octave, read the key signature.',
+    'Случайный знак действует только на той ступени и в той октаве, где он записан. В другой октаве действуют ключевые знаки.',
+    'Ein Versetzungszeichen gilt nur für seinen Stammton in seiner Oktavlage. In einer anderen Oktave gilt die Vorzeichnung.',
   ),
   'one-step-too-long': b(
-    'That value is one step longer than the group uses. The written value comes from the next larger regular division, not from the starting value.',
-    'Эта длительность на ступень длиннее той, которой записана группа. Записывают ближайшей большей регулярной длительностью, а не исходной.',
+    'That value is twice as long as the group needs. Divide the starting value by the second number of the ratio: the result is the value the group is written in.',
+    'Эта длительность вдвое крупнее нужной. Разделите исходную длительность на второе число отношения — получится длительность, которой записывают ноты группы.',
   ),
   'counted-the-written-value': b(
     'Use the stated ratio: in a 3:2 group, three written eighths fill the time of two ordinary eighths.',

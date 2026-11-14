@@ -1,5 +1,10 @@
 // Original German translations. Terminology and scope: docs/german-localization.md.
 // English source keys make every addition require a German translation at typecheck.
+// Only strings that `translator`, `localText` or `german[…]` look up belong
+// here. The German of lesson text, experiment instructions and glossary entries
+// is the `de` field of their records in lib/content, and a text written as
+// `nt(en, ru, de)` carries its own. Neither reads this file, so a copy kept
+// here is shown nowhere and goes stale unnoticed.
 export const german = {
   'An octave shift keeps the note name. Count the registers in the requested direction.':
     'Bei einer Oktavversetzung bleibt der Tonname erhalten. Zähle die Oktavlagen in der angegebenen Richtung.',
@@ -36,27 +41,6 @@ export const german = {
   'Quarter notes per minute': 'Viertelnoten pro Minute',
   'Each button plays a finite example. Compare the attacks and gaps at the same tempo; the oscillator illustrates timing, not an instrument-specific articulation rule.':
     'Jede Schaltfläche spielt ein begrenztes Beispiel. Vergleiche die Toneinsätze und Pausen bei gleichem Tempo; der Tongenerator veranschaulicht Zeitverhältnisse, keine instrumentenspezifische Artikulationsregel.',
-  'The places just above and below the staff bring the total to eleven before ledger lines are needed. Beyond them, short ledger lines continue the same alternation of lines and spaces: the next diatonic step does not always need another line. Notes are read left to right; vertically aligned notes sound together.':
-    'Die Plätze unmittelbar über und unter dem System ergeben insgesamt elf Positionen ohne Hilfslinien. Außerhalb setzen kurze Hilfslinien den Wechsel von Linien und Zwischenräumen fort: Nicht jeder nächste diatonische Schritt braucht eine weitere Linie. Noten werden von links nach rechts gelesen; senkrecht ausgerichtete Noten erklingen gleichzeitig.',
-  'Octave notation': 'Oktavbezeichnungen',
-  'Octave notation distinguishes registers. Scientific pitch uses numbers (C4), Helmholtz notation uses letter case and marks (c′), and Russian tradition uses names such as the first octave. These are different systems for identifying the same pitch.':
-    'Oktavbezeichnungen unterscheiden die Tonlagen. Die wissenschaftliche Schreibweise verwendet Zahlen (C4), die Helmholtz-Bezeichnung Groß- und Kleinbuchstaben mit Strichen (c′); die russische Tradition verwendet Oktavnamen. Diese verschiedenen Systeme bezeichnen dieselbe Tonhöhe.',
-  'In Notes, select C in octave 4. Use the note buttons up to B, then select C in octave 5. Play and name each note.':
-    'Wähle unter Noten das c′. Gehe mit den Tonknöpfen bis h′ und wähle dann c″. Spiele und benenne jeden Ton.',
-  'Compare the two pitch examples: C4 and G4 one after another, then together. Relate what you hear to the order and alignment of notes on the staff.':
-    'Vergleiche die Tonhöhenbeispiele: c′ und g′ nacheinander, dann gleichzeitig. Vergleiche das Gehörte mit der Reihenfolge und vertikalen Anordnung der Noten im Notensystem.',
-  'Compare One whole note, Two half notes and Four quarter notes at the same tempo. The written values fill the same four quarter-note beats; count the attacks.':
-    'Vergleiche bei gleichem Tempo eine ganze Note, zwei halbe Noten und vier Viertelnoten. Die notierten Werte füllen dieselben vier Viertelzählzeiten; zähle die Toneinsätze.',
-  'Compare Two separate quarter notes with Two quarter notes tied. Both fill two beats; the tied example has one attack and one sustained sound.':
-    'Vergleiche zwei getrennte Viertelnoten mit zwei Vierteln unter einem Haltebogen. Beide füllen zwei Zählzeiten; das gebundene Beispiel hat nur einen Toneinsatz und einen durchgehenden Klang.',
-  'At the same tempo, compare Two eighths per beat and Three triplet eighths per beat. Each example fills four beats; only the division changes.':
-    'Vergleiche bei gleichem Tempo zwei Achtel und drei Triolenachtel je Zählzeit. Beide Beispiele füllen vier Zählzeiten; nur die Unterteilung ändert sich.',
-  'Choose ♩ = 60 and play Four steady beats, then repeat at ♩ = 120. Count four beats each time and compare their spacing.':
-    'Wähle ♩ = 60 und spielen Sie vier gleichmäßige Zählzeiten, dann wiederhole bei ♩ = 120. Zähle jeweils vier Zählzeiten und vergleiche die Abstände der Einsätze.',
-  'Compare Full-length tones and Short detached tones at the same tempo. Listen to the gaps while the onsets stay in the same places. Instrumental articulation needs its own technique.':
-    'Vergleiche bei gleichem Tempo Töne in voller Dauer und kurze abgesetzte Töne. Die Einsätze bleiben an denselben Stellen, die Pausen ändern sich. Instrumentale Artikulation erfordert die jeweilige Spieltechnik.',
-  'Play the four-note figure, then compare its repeat with the version that changes the ending. Each repeated example has eight attacks; listen for the last pitch.':
-    'Spiele die Figur aus vier Tönen und vergleiche ihre Wiederholung mit der Fassung mit geändertem Schluss. Beide Wiederholungsbeispiele haben acht Einsätze; achte auf den letzten Ton.',
   Navigation: 'Navigation',
   'Navigate between the music laboratories and learning pages.':
     'Zwischen den Musiklaboren und Lernseiten wechseln.',
@@ -72,10 +56,6 @@ export const german = {
   Practice: 'Übungen',
   Encyclopedia: 'Lexikon',
   'YOUR MUSIC WORKSPACE': 'DEIN RAUM FÜR MUSIK',
-  'EXPLORE BY DOING': 'DURCH AUSPROBIEREN ENTDECKEN',
-  'Make theory audible.': 'Theorie hörbar machen.',
-  'Every sound is a place to start.': 'Jeder Klang kann ein Anfang sein.',
-  'Explore the foundations': 'Die Grundlagen entdecken',
   'An open world of music': 'Eine offene Welt der Musik',
   Sine: 'Sinus',
   Triangle: 'Dreieck',
@@ -141,13 +121,10 @@ export const german = {
     'Leertaste zum Abspielen · Esc zum Stoppen · A–K für die Klaviatur',
   'Start quietly. Keep listening comfortable.':
     'Beginne leise. Höre in angenehmer Lautstärke.',
-  'All foundations': 'Alle Grundlagen',
   'Further reading': 'Weiterführende Lektüre',
   'MAKE IT AUDIBLE': 'MACH ES HÖRBAR',
   'Try it in the lab': 'Im Labor ausprobieren',
   'Open this experiment': 'Dieses Experiment öffnen',
-  'Train your ear': 'Dein Gehör trainieren',
-  'short lessons': 'kurze Lektionen',
   'Musical traditions deserve their own context, terminology and sources. A raga or maqam is not simply a scale preset.':
     'Musikalische Traditionen brauchen ihren eigenen Kontext, ihre Begriffe und Quellen. Ein Raga oder Maqam ist mehr als eine vorgegebene Tonleiter.',
   'Search musical terms': 'Musikalische Begriffe suchen',
@@ -164,7 +141,6 @@ export const german = {
   'That’s right.': 'Richtig.',
   'Keep listening.': 'Höre noch einmal hin.',
   'Next interval': 'Nächstes Intervall',
-  'THIS SESSION': 'DIESE ÜBUNGSRUNDE',
   'Sing the first note, then the second. Notice the distance, not just whether it sounds familiar.':
     'Singe erst den ersten, dann den zweiten Ton. Achte auf den Abstand und nicht nur darauf, ob der Klang vertraut wirkt.',
   'A little experiment': 'Ein kleines Experiment',
@@ -180,8 +156,8 @@ export const german = {
     'Einige Töne liegen außerhalb von 20–20.000 Hz. Passe die Frequenz für a′ an, um das vollständige Experiment zu hören.',
   'Note spelling follows the selected tonic and scale or interval degrees. Semitone offsets identify keyboard steps; their sizes depend on your tuning.':
     'Die Tonnamen folgen dem gewählten Grundton und den Tonleiter- oder Intervallstufen. Halbtonabstände bezeichnen hier Klaviaturschritte; ihre Größe hängt von der Stimmung ab.',
-  'Classical melodic minor raises degrees 6 and 7 going up; going down it uses natural minor. Blues here is a fixed-key model with a lowered fifth.':
-    'In der klassischen melodischen Molltonleiter werden aufwärts die 6. und 7. Stufe erhöht; abwärts entspricht sie der natürlichen Molltonleiter. Das Bluesmodell verwendet feste Tonhöhen und eine erniedrigte Quinte.',
+  'Classical melodic minor raises degrees 6 and 7 going up; going down it uses natural minor. Blues here is a fixed-key model: the minor pentatonic with an added lowered fifth.':
+    'In der klassischen melodischen Molltonleiter werden aufwärts die 6. und 7. Stufe erhöht; abwärts entspricht sie der natürlichen Molltonleiter. Das Bluesmodell verwendet feste Tonhöhen: die Moll-Pentatonik mit einer zusätzlichen erniedrigten Quinte.',
   'Minor scales: §3.1': 'Molltonleitern: §3.1',
   'Progression editor': 'Akkordfolgen bearbeiten',
   'MAKE A LITTLE MUSIC': 'GESTALTE EIN STÜCK MUSIK',
@@ -303,89 +279,17 @@ export const german = {
     'V/x erscheint nur, wenn ein Akkord anstelle des leitereigenen Moll- oder verminderten Dreiklangs einen Durklang bildet und der nächste Akkordgrundton eine Quinte tiefer liegt. Beide Bedingungen müssen erfüllt sein: Die Deutung als Zwischendominante hängt von der Fortschreitung ab. Andernfalls zeigt das Labor nur die Stufenziffer.',
   'A model to experiment with': 'Ein Modell zum Experimentieren',
   'This lab uses 12-tone equal temperament, A4 = 440 Hz, and straight 4/4. The examples are harmonic starting points drawn from the readings below. They do not model every tradition, phrasing, or rule of voice leading, and a chord pattern alone does not establish a style or certify a cadence.':
-    'Dieses Labor verwendet die zwölfstufige gleichstufige Stimmung, a′ = 440 Hz und einen geraden 4/4-Takt. Die Beispiele sind harmonische Ausgangspunkte auf Grundlage der unten genannten Quellen. Sie bilden nicht jede Tradition, Phrasierung oder Stimmführungsregel ab. Eine Akkordfolge allein bestimmt weder einen Stil noch eine Schlusswirkung.',
+    'Dieses Labor verwendet die zwölfstufige gleichstufige Stimmung, a′ = 440 Hz und einen 4/4-Takt ohne Swing. Die Beispiele sind harmonische Ausgangspunkte auf Grundlage der unten genannten Quellen. Sie bilden nicht jede Tradition, Phrasierung oder Stimmführungsregel ab. Eine Akkordfolge allein bestimmt weder einen Stil noch eine Schlusswirkung.',
   Inversions: 'Umkehrungen',
   Ninths: 'Nonenakkorde',
   'Start quietly · Esc to stop · Editing stops playback · Every change can be undone · Sound stays in your browser':
     'Leise beginnen · Esc zum Stoppen · Bearbeiten stoppt die Wiedergabe · Jede Änderung lässt sich rückgängig machen · Der Klang entsteht in deinem Browser',
-  'Sound & frequency': 'Schall & Frequenz',
-  Acoustics: 'Akustik',
-  'Pitch is our perception of how high or low a sound is. Frequency strongly influences pitch, but a complex sound can contain many frequencies. Timbre depends on their relative strength and on how the sound develops over time.':
-    'Tonhöhe bezeichnet, wie hoch oder tief wir einen Klang wahrnehmen. Die Frequenz beeinflusst sie stark, doch ein komplexer Klang enthält viele Frequenzen. Die Klangfarbe hängt von deren Stärkeverhältnis und vom zeitlichen Verlauf ab.',
-  'Play 220 Hz, then double it to 440 Hz. The second tone is one octave higher.':
-    'Spiele 220 Hz und verdopple anschließend auf 440 Hz. Der zweite Ton liegt eine Oktave höher.',
-  'A reference, a whole system': 'Ein Bezugston für ein ganzes System',
-  Tuning: 'Stimmung',
-  'A reference pitch assigns a frequency to a named note. In this lab, that note is A4. If you change A4 from 440 to 432 Hz, the other frequencies shift by the same factor. The interval relationships stay the same.':
-    'Ein Bezugston verbindet einen Tonnamen mit einer Frequenz. Hier ist es das eingestrichene a (a′). Änderst du es von 440 auf 432 Hz, ändern sich alle anderen Frequenzen im selben Verhältnis. Die Intervallverhältnisse bleiben erhalten.',
-  'Select A4 = 432 Hz and play the keyboard. Switch tuning systems and listen to C♯5 against A4.':
-    'Wähle a′ = 432 Hz und spiele auf der Klaviatur. Wechsle die Stimmungssysteme und vergleiche cis″ mit a′.',
-  'The distance between notes': 'Der Abstand zwischen Tönen',
-  'Hear the building blocks of melody and harmony.':
-    'Höre die Bausteine von Melodie und Harmonie.',
-  'An interval describes the relationship between two pitches. Play them one after another to hear a melodic interval, or together to hear a harmonic interval. In equal temperament, an octave spans twelve semitones, or 1,200 cents.':
-    'Ein Intervall beschreibt das Verhältnis zweier Tonhöhen. Nacheinander gespielt bilden sie ein melodisches, gleichzeitig ein harmonisches Intervall. In gleichstufiger Stimmung umfasst eine Oktave zwölf Halbtöne beziehungsweise 1.200 Cent.',
-  'Compare a minor third (3 semitones), a major third (4) and a perfect fifth (7). Sing the second note before playing it.':
-    'Vergleiche eine kleine Terz (3 Halbtöne), eine große Terz (4) und eine reine Quinte (7). Singe den zweiten Ton, bevor du ihn abspielst.',
-  'One pitch, many colours': 'Eine Tonhöhe, viele Klangfarben',
-  'Explore the partials inside a sound.': 'Entdecke die Teiltöne eines Klangs.',
-  'Ideal square and triangle waves contain odd harmonics; an ideal sawtooth contains both even and odd harmonics. Real instrument timbres also depend on attack, decay, noise and sometimes non-harmonic partials. A waveform alone is not an instrument model.':
-    'Ideale Rechteck- und Dreieckschwingungen enthalten nur ungeradzahlige Harmonische; eine ideale Sägezahnschwingung enthält gerade und ungerade. Die Klangfarbe realer Instrumente hängt auch von Einschwingvorgang, Abklingen, Geräuschanteilen und mitunter nicht harmonischen Teiltönen ab. Eine Wellenform allein ist noch kein Instrumentenmodell.',
-  'Hold A4 and switch between sine, triangle, square and sawtooth. Keep the volume low while comparing.':
-    'Halte a′ und wechsle zwischen Sinus, Dreieck, Rechteck und Sägezahn. Vergleiche bei niedriger Lautstärke.',
-  Melody: 'Melodie',
-  'A scale orders a collection of pitches. A major scale follows a repeating pattern of whole tones and semitones. A mode also concerns how a tonal centre and characteristic notes are heard; it is more than starting a familiar scale on another key.':
-    'Eine Tonleiter ordnet eine Auswahl von Tonhöhen. Die Durtonleiter folgt einer wiederkehrenden Folge von Ganz- und Halbtonschritten. Ein Modus betrifft auch die Wahrnehmung eines tonalen Zentrums und charakteristischer Töne; er ist mehr als eine bekannte Tonleiter mit einem anderen Anfangston.',
-  'Try major, natural minor, Dorian and pentatonic collections in the lab. The blues example is a six-note equal-tempered simplification. Expressive blue notes are not restricted to fixed piano-key pitches.':
-    'Probiere Dur, natürliches Moll, Dorisch und pentatonische Tonleitern im Labor aus. Das Bluesbeispiel ist eine gleichstufige Vereinfachung mit sechs Tönen. Ausdrucksvolle Blue Notes sind nicht auf feste Klaviertonhöhen beschränkt.',
-  'Use the same tonic for major and Dorian. Listen especially to the third and seventh scale degrees.':
-    'Wähle für Dur und Dorisch denselben Grundton. Achte besonders auf die dritte und siebte Stufe.',
-  'Building a chord': 'Einen Akkord aufbauen',
-  Harmony: 'Harmonik',
-  'Add a seventh for a four-note chord. A dominant seventh uses offsets 0, 4, 7 and 10 semitones in equal temperament. Chord meaning also depends on context, voicing, rhythm and voice leading. An isolated chord cannot explain a whole harmonic style.':
-    'Mit einer zusätzlichen Septime entsteht ein Vierklang. Ein Dominantseptakkord hat in gleichstufiger Stimmung die Halbtonabstände 0, 4, 7 und 10 vom Grundton. Die Bedeutung eines Akkords hängt auch von Kontext, Lage, Rhythmus und Stimmführung ab. Ein einzelner Akkord erklärt noch keinen harmonischen Stil.',
-  'Compare major and minor on the same root, first as an arpeggio and then together.':
-    'Vergleiche Dur und Moll über demselben Grundton, zuerst als Arpeggio und dann gleichzeitig.',
-  'The number of cycles per second of a periodic signal, measured in hertz.':
-    'Anzahl der Schwingungen eines periodischen Signals pro Sekunde, gemessen in Hertz.',
-  Pitch: 'Tonhöhe',
-  'The perceived highness or lowness of a sound; related to, but distinct from, frequency.':
-    'Die wahrgenommene Höhe oder Tiefe eines Klangs; eng mit der Frequenz verbunden, aber nicht mit ihr identisch.',
-  'A chosen frequency for a named note, used as an anchor for tuning other notes.':
-    'Eine festgelegte Frequenz für einen benannten Ton, an der sich die Stimmung anderer Töne orientiert.',
-  Cent: 'Cent',
-  'One hundredth of an equal-tempered semitone. There are 1,200 cents in an octave.':
-    'Ein Hundertstel eines gleichstufigen Halbtons. Eine Oktave umfasst 1.200 Cent.',
-  'An interval with a 2:1 frequency ratio in the tuning systems used here.':
-    'Ein Intervall mit dem Frequenzverhältnis 2:1 in den hier verwendeten Stimmungssystemen.',
-  'Equal temperament': 'Gleichstufige Stimmung',
-  'A system with equal frequency ratios between adjacent steps. Here, twelve steps divide the octave.':
-    'Ein Stimmungssystem mit gleichen Frequenzverhältnissen zwischen benachbarten Stufen. Hier unterteilen zwölf Stufen die Oktave.',
-  'Just intonation': 'Reine Stimmung',
-  'Tuning based on selected simple whole-number ratios. A fixed ratio map depends on its tonal reference.':
-    'Eine Stimmung auf Grundlage ausgewählter einfacher ganzzahliger Frequenzverhältnisse. Eine feste Zuordnung solcher Verhältnisse hängt vom tonalen Bezugspunkt ab.',
-  Harmonic: 'Harmonischer Teilton',
-  'A sinusoidal component at a whole-number multiple of a fundamental frequency.':
-    'Ein sinusförmiger Anteil mit einer Frequenz, die ein ganzzahliges Vielfaches der Grundfrequenz ist.',
-  'The qualities that distinguish sounds beyond pitch and loudness, including spectrum and temporal envelope.':
-    'Eigenschaften, die Klänge unabhängig von Tonhöhe und Lautstärke unterscheiden, darunter Spektrum und zeitliche Hüllkurve.',
-  Scale: 'Tonleiter',
-  'An ordered collection of pitches. A scale alone does not describe a complete musical tradition.':
-    'Eine geordnete Auswahl von Tonhöhen. Eine Tonleiter allein beschreibt keine vollständige musikalische Tradition.',
-  Triad: 'Dreiklang',
-  'A three-pitch-class chord that can be arranged as two stacked thirds.':
-    'Ein Akkord aus drei Tonklassen, die sich als zwei übereinandergeschichtete Terzen anordnen lassen.',
-  'Voice leading': 'Stimmführung',
-  'The way individual melodic lines move from one sonority to the next.':
-    'Die Bewegung einzelner melodischer Stimmen von einem Zusammenklang zum nächsten.',
   'Minor second': 'Kleine Sekunde',
   'Major second': 'Große Sekunde',
   'Perfect fourth': 'Reine Quarte',
   'Tritone (augmented fourth)': 'Tritonus (übermäßige Quarte)',
   'Major triad': 'Durdreiklang',
   'Minor triad': 'Molldreiklang',
-  Diminished: 'Verminderter Dreiklang',
-  Augmented: 'Übermäßiger Dreiklang',
   'Dominant seventh': 'Dominantseptakkord',
   'Major seventh': 'Durseptakkord mit großer Septime',
   'Minor seventh': 'Mollseptakkord mit kleiner Septime',
@@ -405,7 +309,7 @@ export const german = {
   Cadences: 'Schlusswendungen',
   'Classical schemas': 'Klassische Satzmodelle',
   'Pop and rock loops': 'Pop- und Rockschleifen',
-  'Jazz turnarounds': 'Jazz-Turnarounds',
+  'Jazz progressions': 'Jazzprogressionen',
   'Blues forms': 'Bluesformen',
   'Colour and chromatics': 'Farben & Chromatik',
   'One chord · build your own': 'Ein Akkord · selbst gestalten',
@@ -421,23 +325,23 @@ export const german = {
   'The same first three chords as the authentic cadence, with vi in place of I. Hutchinson notes that the term covers V resolving to anything other than I, of which V–vi is only the commonest case. Change the last chord back to I and compare.':
     'Die ersten drei Akkorde entsprechen dem authentischen Schluss, doch vi ersetzt I. Hutchinson fasst unter dem Begriff Fortschreitungen von V zu anderen Akkorden als I zusammen; V–vi ist der häufigste Fall. Ändere den letzten Akkord zurück zu I und vergleiche.',
   'Plagal ending · IV–I after the close':
-    'Plagaler Nachsatz · IV–I nach dem Schluss',
+    'Plagaler Anhang · IV–I nach dem Schluss',
   'An authentic close followed by the IV–I gesture often added after it. Hutchinson’s harmonic-function chapter treats a IV that moves to I as a prolongation of the tonic rather than a preparation for the dominant, which is why this feels like an afterword and not a new departure.':
-    'Auf einen authentischen Schluss folgt die oft angefügte Wendung IV–I. In Hutchinsons Kapitel über harmonische Funktionen gilt IV vor I als Erweiterung des Tonikabereichs und nicht als Vorbereitung der Dominante. Die Wendung wirkt deshalb wie ein Nachsatz.',
+    'Auf einen authentischen Schluss folgt die oft angefügte Wendung IV–I. In Hutchinsons Kapitel über harmonische Funktionen gilt IV vor I als Erweiterung des Tonikabereichs und nicht als Vorbereitung der Dominante. Die Wendung wirkt deshalb wie ein Nachwort und nicht wie ein neuer Aufbruch.',
   'Minor key · the leading tone': 'Molltonart · der Leitton',
   'Lament · a descending minor tetrachord':
     'Lamento · ein absteigender Molltetrachord',
   'Circle of fifths · roots falling by fifths':
     'Quintfall · Grundtöne in fallenden Quinten',
   'Every root falls a perfect fifth to the next. Hutchinson gives iii–vi–ii–V as a circle segment and ii–V–I as its shortest form; the chain can be lengthened, rotated or started anywhere. Try switching every chord to its seventh to hear the jazz version of the same motion.':
-    'Jeder Grundton fällt eine reine Quinte zum nächsten. Hutchinson bezeichnet iii–vi–ii–V als Ausschnitt einer Quintfallkette und ii–V–I als ihre kürzeste Form. Die Kette lässt sich verlängern, versetzen und an anderen Punkten beginnen. Erweitere alle Dreiklänge zu Septakkorden und höre dieselbe Bewegung im Jazzklang.',
+    'Jeder Grundton fällt eine reine Quinte zum nächsten. Hutchinson bezeichnet iii–vi–ii–V als Ausschnitt einer Quintfallkette und ii–V–I als ihre kürzeste Form. Die Kette lässt sich verlängern, rotieren oder an jeder Stelle beginnen. Erweitere alle Dreiklänge zu Septakkorden und höre dieselbe Bewegung im Jazzklang.',
   'Singer/songwriter · four chords': 'Singer-Songwriter · vier Akkorde',
   'Open Music Theory groups the common pop loops by which chord the major tonic is approached from; here it is IV, a plagal approach. Move the first chord to the end and listen again: the same four chords can suggest a different centre through order and emphasis.':
     'Open Music Theory ordnet verbreitete Popschleifen danach, von welchem Akkord aus sie die Durtonika erreichen. Hier geschieht das von IV aus, also plagal. Verschiebe den ersten Akkord ans Ende: Reihenfolge und Betonung können bei denselben vier Akkorden ein anderes Zentrum nahelegen.',
   'Singer/songwriter, rotated · minor or major?':
-    'Singer-Songwriter, versetzt · Moll oder Dur?',
+    'Singer-Songwriter, rotiert · Moll oder Dur?',
   'The same cycle begun on vi. Open Music Theory calls this rotation tonally ambiguous: it can be heard as vi–IV–I–V in the major key or i–♭VI–♭III–♭VII in the relative minor, because neither reading gets an authentic cadence. Decide for yourself which chord sounds like home.':
-    'Derselbe Zyklus beginnt auf vi. Open Music Theory beschreibt diese Drehung als tonal mehrdeutig: Sie lässt sich als vi–IV–I–V in Dur oder i–♭VI–♭III–♭VII in der parallelen Molltonart hören, da beide Deutungen ohne authentischen Schluss auskommen. Entscheide selbst, welcher Akkord wie ein Ruhepunkt klingt.',
+    'Derselbe Zyklus beginnt auf vi. Open Music Theory beschreibt diese Rotation als tonal mehrdeutig: Sie lässt sich als vi–IV–I–V in Dur oder als i–♭VI–♭III–♭VII in der parallelen Molltonart hören, weil keine der beiden Deutungen durch einen authentischen Schluss bestätigt wird. Entscheide selbst, welcher Akkord wie ein Ruhepunkt klingt.',
   'Doo-wop · the ballad cycle': 'Doo-Wop · der Balladenzyklus',
   'Named for its use in rock ballads of the 1950s and early 1960s. Of the common four-chord cycles this is the one that approaches the tonic from V, the traditional authentic motion — which is what makes it sound the most classical of the three.':
     'Benannt nach seiner Verwendung in Rockballaden der 1950er und frühen 1960er Jahre. Unter diesen verbreiteten Vierakkordzyklen erreicht er die Tonika von V aus, mit der traditionellen authentischen Fortschreitung. Deshalb erinnert er am stärksten an klassische Harmonik.',
@@ -460,11 +364,11 @@ export const german = {
   'Two of the commonest alterations at once: IV in the second bar, and a dominant in the last bar to turn the form around. Open Music Theory describes the twelve-bar blues as a frame that survives such changes — it is hard to find a blues that alters nothing.':
     'Zwei häufige Änderungen zugleich: IV im zweiten Takt und die Dominante im letzten Takt als Rückleitung. Open Music Theory beschreibt den zwölftaktigen Blues als Grundgerüst, das solche Änderungen zulässt. Vollständig unveränderte Fassungen sind selten.',
   'Minor blues · sevenths turn minor': 'Mollblues · Septakkorde in Moll',
-  'The tonic and subdominant become minor sevenths while the dominant keeps its major third. Because the major V falling to a minor iv sounds anticlimactic, the last phrase replaces V–IV–i with the minor ii–V–i.':
-    'Tonika und Subdominante werden zu Mollseptakkorden, die Dominante behält ihre große Terz. Weil die Folge von Dur-V zu Moll-iv die Spannung zurücknehmen kann, ersetzt die letzte Phrase V–IV–i durch ii–V–i in Moll.',
+  'The tonic and subdominant become minor sevenths while the dominant keeps its major third. Because the major V falling to a minor iv can sound anticlimactic, the last phrase replaces V–iv–i with the minor ii–V–i.':
+    'Tonika und Subdominante werden zu Mollseptakkorden, die Dominante behält ihre große Terz. Weil die Folge von Dur-V zu Moll-iv die Spannung zurücknehmen kann, ersetzt die letzte Phrase V–iv–i durch ii–V–i in Moll.',
   'Jazz blues · ii–V inside the form': 'Jazzblues · ii–V innerhalb der Form',
-  'The blues frame with jazz motion added: bar eight turns vi into a dominant that leads to ii, and the last phrase uses ii–V–I in place of the plagal V–IV–I. Watch for the V7/ii label on the eighth chord — the lab marks it only because the next chord confirms it.':
-    'Die Bluesform wird um typische Jazzfortschreitungen erweitert: Im achten Takt wird vi zu einer Dominante von ii; die letzte Phrase verwendet ii–V–I statt V–IV–I mit plagalem Ende. Achte beim achten Akkord auf V7/ii. Das Labor zeigt die Deutung nur an, wenn der folgende Akkord sie bestätigt.',
+  'The blues frame with jazz motion added: bar eight turns vi into a dominant that leads to ii, the last phrase uses ii–V–I in place of the plagal V–IV–I, and the final two bars run I–VI7–ii7–V7 as a turnaround back to the top. Watch for the V7/ii label on each VI7 — the lab marks it only because the next chord confirms it.':
+    'Die Bluesform wird um typische Jazzfortschreitungen erweitert: Im achten Takt wird vi zu einer Dominante von ii; die letzte Phrase verwendet ii–V–I statt V–IV–I mit plagalem Ende, und die beiden Schlusstakte führen mit I–VI7–ii7–V7 als Turnaround zum Anfang zurück. Achte bei jedem VI7 auf V7/ii. Das Labor zeigt die Deutung nur an, wenn der folgende Akkord sie bestätigt.',
   'Borrowed iv · a minor chord in a major key':
     'Entlehnte iv · ein Mollakkord in Dur',
   'The same subdominant twice, major then minor. Hutchinson calls borrowing from the parallel minor mode mixture, and names the lowered sixth degree as its commonest carrier — that is the one note that changes here. Nothing in the key signature moves; only the chord’s third.':
@@ -491,332 +395,28 @@ export const german = {
   '{tonic} blues (12-TET)': 'Bluestonleiter auf {tonic} (12-TET)',
   Language: 'Sprache',
   Space: 'Leertaste',
-  'T = 1 / f': 'T = 1 / f',
-  'f(n) = A4 × 2^((n − 69) / 12)': 'f(n) = f(a′) × 2^((n − 69) / 12)',
-  'cents = 1200 × log₂(f₂ / f₁)': 'Cent = 1200 × log₂(f₂ / f₁)',
-  'fₖ = k × f₁': 'fₖ = k × f₁',
   // Notation programme (roadmap №558).
-  'Note names and octaves': 'Tonnamen und Oktavlagen',
-  Notation: 'Notenschrift',
-  'Name any natural note and say which octave it sits in.':
-    'Benenne jeden Stammton und bestimme seine Oktavlage.',
-  'C D E F G A B · C4 … B4 · C5': 'C D E F G A H · c′ … h′ · c″',
-  'Seven names carry the natural notes: C, D, E, F, G, A and B. After B the series starts again at C, and the frequency of that C is twice the frequency of the C below it. That repeating distance is the octave.':
-    'Sieben Namen tragen die Stammtöne: C, D, E, F, G, A und H. Nach dem H beginnt die Reihe wieder bei C, und dieses C schwingt doppelt so schnell wie das C darunter. Dieser wiederkehrende Abstand heißt Oktave.',
-  'A name alone does not fix a pitch, because every octave repeats it. Scientific pitch notation adds a number: middle C is C4, and the number rises at each C, so B4 lies just below C5. The reference pitch of this lab is A4 at 440 Hz.':
-    'Ein Name allein legt noch keine Tonhöhe fest, denn jede Oktave wiederholt ihn. Die Helmholtz-Bezeichnung ergänzt deshalb die Lage: große Oktave C bis H, kleine Oktave c bis h, eingestrichene Oktave c′ bis h′, zweigestrichene Oktave c″ bis h″. Jede Oktave beginnt bei ihrem C, das h′ liegt also unmittelbar unter dem c″. Der Kammerton dieses Labors ist a′ mit 440 Hz.',
-  'Natural note': 'Stammton',
   'Note name': 'Tonname',
-  'A name that identifies a note in every octave at once, not one single pitch.':
-    'Ein Name, der einen Ton in allen Oktaven zugleich bezeichnet und nicht eine einzelne Tonhöhe.',
-  'Octave register': 'Oktavlage',
-  'Middle C': 'Eingestrichenes c',
-  'Five lines, four spaces': 'Fünf Linien, vier Zwischenräume',
-  '5 lines + 4 spaces = 9 places · one place above and one below = 11 · counted from the bottom':
-    '5 Linien + 4 Zwischenräume = 9 Plätze · je ein Platz darüber und darunter = 11 · von unten gezählt',
-  'A staff is five parallel lines with four spaces between them, nine places in all. Lines and spaces are both counted from the bottom: the lowest line is the first line, the lowest space the first space. A note head sits on a line, crossed by it, or inside a space.':
-    'Das Notensystem besteht aus fünf waagerechten Linien und vier Zwischenräumen, zusammen neun Plätzen. Beide werden von unten nach oben gezählt: die unterste Linie ist die erste Linie, der unterste Zwischenraum der erste Zwischenraum. Ein Notenkopf steht auf einer Linie, die ihn durchschneidet, oder in einem Zwischenraum.',
-  Staff: 'Notensystem',
-  'The staff is the set of five lines and four spaces on which pitches are written.':
-    'Das Notensystem ist die Folge von fünf Linien und vier Zwischenräumen, auf denen Tonhöhen notiert werden.',
-  'Staff line': 'Notenlinie',
-  'A staff line is one of the five lines, numbered from the bottom upwards.':
-    'Eine Notenlinie ist eine der fünf Linien, die von unten nach oben gezählt werden.',
-  'A space is the gap between two neighbouring lines, and it carries a note head just as a line does.':
-    'Ein Zwischenraum liegt zwischen zwei benachbarten Notenlinien und trägt einen Notenkopf ebenso wie eine Linie.',
-  'Note head': 'Notenkopf',
-  'The note head is the oval whose centre marks the line or space that gives the pitch.':
-    'Der Notenkopf ist das Oval, dessen Mitte die Linie oder den Zwischenraum und damit die Tonhöhe angibt.',
-  Stem: 'Notenhals',
-  'The stem is the vertical line attached to the head; it belongs to duration, not to pitch.':
-    'Der Notenhals ist der senkrechte Strich am Notenkopf; er gehört zur Dauer, nicht zur Tonhöhe.',
-  'Ledger line': 'Hilfslinie',
-  'A ledger line is a short line added above or below the staff to carry pitches beyond its eleven places.':
-    'Eine Hilfslinie ist eine kurze Linie über oder unter dem Notensystem, die es über seine elf Plätze hinaus fortsetzt.',
-  'One clef, one fixed pitch': 'Ein Schlüssel, ein fester Ton',
-  'G-clef line 2 = G4 · F-clef line 4 = F3 · C-clef = C4':
-    'G-Schlüssel 2. Linie = g′ · F-Schlüssel 4. Linie = f · C-Schlüssel = c′',
-  'Play G4, then F3, and hear how far apart the reference pitches of these two clefs actually sound.':
-    'Spiele g′ und danach das kleine f und höre, wie weit die Bezugstöne dieser beiden Schlüssel auseinanderliegen.',
   Clef: 'Notenschlüssel',
-  'A clef fixes one named pitch on one staff line, and every other pitch is counted from it.':
-    'Ein Notenschlüssel legt einen benannten Ton auf einer Linie fest, von dem aus alle anderen gezählt werden.',
-  'Treble clef': 'Violinschlüssel',
-  'The treble clef is the G-clef whose curl encircles the second line and fixes G4 there.':
-    'Der Violinschlüssel ist der G-Schlüssel, dessen Schleife die zweite Linie umschließt und dort g′ festlegt.',
-  'Bass clef': 'Bassschlüssel',
-  'The bass clef is the F-clef whose two dots surround the fourth line and fix F3 there.':
-    'Der Bassschlüssel ist der F-Schlüssel, dessen zwei Punkte die vierte Linie einschließen und dort das kleine f festlegen.',
-  'C clef': 'C-Schlüssel',
-  'A C clef names C4 on the line its centre marks: the third line for the alto clef, the fourth for the tenor clef.':
-    'Ein C-Schlüssel benennt c′ auf der Linie, die seine Mitte bezeichnet: die dritte beim Altschlüssel, die vierte beim Tenorschlüssel.',
-  System: 'Akkolade',
-  'A system is the set of staves that are read together because they sound at the same time.':
-    'Eine Akkolade ist die Gruppe von Notensystemen, die zusammen gelesen werden, weil sie gleichzeitig erklingen.',
-  Brace: 'geschweifte Klammer',
-  'A brace is the curved sign that joins two staves into a single keyboard system.':
-    'Die geschweifte Klammer ist das Zeichen, das zwei Notensysteme zu einer Akkolade verbindet.',
-  'The five signs': 'Die fünf Zeichen',
-  'Read the five accidentals and know how far each moves.':
-    'Die fünf Versetzungszeichen lesen und ihre Wirkung kennen.',
-  '♯ +1 · ♭ −1 · × +2 · ♭♭ −2 · ♮ 0 (semitones)':
-    'Kreuz +1 · Be −1 · Doppelkreuz +2 · Doppel-Be −2 · Auflösungszeichen 0 (Halbtöne)',
-  'An accidental changes the pitch of the written note it stands before. A sharp raises it by a semitone, a flat lowers it by a semitone; the double sharp raises by a whole tone, the double flat lowers by a whole tone. A natural cancels any of them.':
-    'Ein Versetzungszeichen verändert die Tonhöhe des Stammtons, vor dem es steht. Das Kreuz erhöht um einen Halbton, das Be erniedrigt um einen Halbton. Das Doppelkreuz erhöht um einen Ganzton, das Doppel-Be erniedrigt um einen Ganzton. Das Auflösungszeichen nimmt die Veränderung zurück und stellt den Stammton wieder her.',
-  'The sign stands to the left of the note head, on the same line or space, and is spoken after the letter: C sharp, B flat. The letter itself does not change. To replace a double sharp with a single sharp, the single sign is written alone.':
-    'Das Zeichen steht links vom Notenkopf, auf derselben Linie oder in demselben Zwischenraum. Im Deutschen steckt die Veränderung zugleich im Namen: Das Kreuz hängt die Silbe -is an, das Doppelkreuz -isis, aus C werden Cis und Cisis. Das Be hängt -es an, das Doppel-Be -eses, aus D werden Des und Deses. Unregelmäßig gebildet sind Es, As und B; das doppelt erniedrigte H heißt Heses. Soll aus einem Doppelkreuz ein einfaches Kreuz werden, steht das einfache Zeichen allein.',
-  'Play C4 and C♯4 one after the other, then C4 and D4, and compare the two distances.':
-    'Spiele c′ und cis′ nacheinander, dann c′ und d′, und vergleiche die beiden Abstände.',
   Accidental: 'Versetzungszeichen',
-  Sharp: 'Kreuz',
-  'A sign that raises the written note by one semitone.':
-    'Ein Zeichen, das den Stammton um einen Halbton erhöht; der Name erhält die Endung -is.',
-  Flat: 'Be',
-  'A sign that lowers the written note by one semitone.':
-    'Ein Zeichen, das den Stammton um einen Halbton erniedrigt. Meist wird -es angehängt; die gebräuchlichen Ausnahmen sind Es, As und B (das erniedrigte H).',
-  'Double sharp': 'Doppelkreuz',
-  'A sign that raises the written note by two semitones.':
-    'Ein Zeichen, das den Stammton um einen Ganzton erhöht; der Name erhält die Endung -isis.',
-  'Double flat': 'Doppel-Be',
-  'A sign that lowers the written note by two semitones.':
-    'Ein Zeichen, das den Stammton um einen Ganzton erniedrigt. Die Namen lauten Ceses, Deses, Eses, Feses, Geses, Ases und Heses; für Ases kommt auch Asas vor.',
-  Natural: 'Auflösungszeichen',
-  'A sign that removes an earlier raising or lowering of a note.':
-    'Ein Zeichen, das eine Erhöhung oder Erniedrigung zurücknimmt.',
-  Semitone: 'Halbton',
-  'The smallest step between adjacent keys in twelve-tone equal temperament.':
-    'Der kleinste Schritt zwischen benachbarten Tasten in der zwölfstufigen gleichstufigen Stimmung.',
-  'Whole tone': 'Ganzton',
-  'An interval that spans two semitones.': 'Ein Abstand von zwei Halbtönen.',
   'How far a sign reaches': 'Wie weit ein Zeichen gilt',
-  'Know where each accidental starts and where it stops.':
-    'Erkennen, wo ein Vorzeichen gilt und wo es endet.',
-  'Signature: whole piece, every octave · In the bar: to the barline, one octave':
-    'Vorzeichnung: ganzes Stück, alle Oktaven · Versetzungszeichen: bis zum Taktstrich, eine Oktave',
-  'A key signature stands at the start of every system, after the clef. Each of its signs applies to its letter for the whole piece and in every octave, until a new signature replaces it. Signs do not add up: a flat in the signature and a flat in the bar are still one flat.':
-    'Die Vorzeichnung steht am Anfang jeder Notenzeile hinter dem Schlüssel. Jedes ihrer Zeichen gilt für seinen Stammton im ganzen Stück und in allen Oktaven, bis eine neue Vorzeichnung sie ersetzt. Zeichen addieren sich nicht: Ein Be in der Vorzeichnung und ein Be im Takt ergeben zusammen ein Be, keine doppelte Erniedrigung.',
-  'Play B4, then B♭4, then the same pair an octave lower: one signature sign would cover both octaves.':
-    'Spiele h′, dann b′ und danach dasselbe Paar eine Oktave tiefer: Ein einziges Vorzeichen würde für beide Oktaven gelten.',
-  'Key signature': 'Vorzeichnung',
-  'The group of sharps or flats printed after the clef.':
-    'Die Gruppe von Kreuzen oder Be-Zeichen hinter dem Schlüssel.',
-  Bar: 'Takt',
-  'The span of music between two barlines.':
-    'Der Abschnitt zwischen zwei Taktstrichen.',
-  Barline: 'Taktstrich',
-  'The vertical line that separates one bar from the next.':
-    'Der senkrechte Strich, der einen Takt vom nächsten trennt.',
-  Tie: 'Haltebogen',
-  'A curved line joining two note heads of the same pitch into one sound.':
-    'Ein Bogen, der zwei Notenköpfe derselben Tonhöhe zu einem Klang verbindet.',
-  'Courtesy accidental': 'Vorsichtszeichen',
-  'A sign printed where the rule does not require it, to remove doubt.':
-    'Ein Zeichen, das über die Regel hinaus gesetzt wird, um Zweifel auszuschließen.',
-  'Staff system': 'Notenzeile',
-  'One line of music running across the page.':
-    'Eine Zeile der Notenschrift, die über die Seite läuft.',
-  'Two spellings, one sound': 'Zwei Schreibweisen, ein Klang',
-  'Tell enharmonic spellings apart and know why the spelling matters.':
-    'Enharmonische Schreibweisen unterscheiden und ihren Sinn verstehen.',
-  'C♯ = D♭ · F♯ = G♭ · E = F♭ · in equal temperament':
-    'Cis = Des · Fis = Ges · E = Fes · in gleichstufiger Stimmung',
-  'In twelve-tone equal temperament one pitch can be written in more than one way. C sharp and D flat sound the same; so do F sharp and G flat, and E and F flat. Each spelling names a different letter, and the letter decides which scale degree the note occupies.':
-    'In der zwölfstufigen gleichstufigen Stimmung lässt sich derselbe Klang unterschiedlich schreiben. Cis und Des klingen gleich, ebenso Fis und Ges oder E und Fes. Jede Schreibweise nennt einen anderen Stammton, und der Stammton bestimmt, welche Stufe der Ton in der Tonleiter einnimmt.',
-  'Set the lab to F♯4, then look for G♭4, and notice that both names point at one frequency.':
-    'Stelle fis′ ein, suche danach ges′ und stelle fest, dass beide Namen auf dieselbe Frequenz führen.',
   'Enharmonic spelling': 'Enharmonische Verwechslung',
-  'Two different written notes that sound as one pitch in equal temperament.':
-    'Zwei verschiedene Schreibweisen, die in gleichstufiger Stimmung denselben Klang ergeben.',
-  'Letter name': 'Stammton',
-  'The plain name of a note before any accidental is added.':
-    'Der unveränderte Tonname vor jedem Versetzungszeichen.',
-  'Scale degree': 'Tonleiterstufe',
-  'The numbered position a note occupies in its scale.':
-    'Die nummerierte Position, die ein Ton in seiner Tonleiter einnimmt.',
-  'Raised degree': 'Erhöhte Stufe',
-  'Lowered degree': 'Erniedrigte Stufe',
-  'Chromatic semitone': 'Chromatischer Halbton',
-  'A semitone between two notes that share a letter, such as C and C sharp.':
-    'Ein Halbton zwischen zwei Tönen desselben Stammtons, etwa C und Cis.',
-  'Diatonic semitone': 'Diatonischer Halbton',
-  'A semitone between two neighbouring letters, such as C sharp and D.':
-    'Ein Halbton zwischen zwei benachbarten Stammtönen, etwa Cis und D.',
-  'Note values and rests': 'Notenwerte und Pausen',
-  'Read how long each written note lasts.':
-    'Lesen, wie lange eine geschriebene Note dauert.',
-  'whole = 2 halves = 4 quarters = 8 eighths = 16 sixteenths':
-    'Ganze = 2 Halbe = 4 Viertel = 8 Achtel = 16 Sechzehntel',
-  'A note value says how long a note lasts in relation to the others, not in seconds. Each value is two of the next smaller one. The chain runs whole, half, quarter, eighth, sixteenth, and continues by halving. Only a tempo turns these relations into clock time.':
-    'Ein Notenwert sagt, wie lange eine Note im Verhältnis zu den anderen klingt, nicht in Sekunden. Jeder Wert enthält zwei des nächstkleineren: ganze Note, halbe Note, Viertelnote, Achtelnote, Sechzehntelnote und so weiter durch Halbieren. Erst das Tempo macht daraus messbare Zeit.',
-  'The shape of a note carries its value. An open head without a stem is a whole note; with a stem it is a half; a filled head a quarter, and each added flag halves the value again. Every value has its own rest, and the whole rest also stands for a silent bar.':
-    'Die Form der Note trägt ihren Wert. Ein leerer Kopf ohne Hals ist eine ganze Note, mit Hals eine halbe, ein ausgefüllter Kopf eine Viertelnote, und jedes weitere Fähnchen halbiert den Wert erneut. Zu jedem Wert gehört eine eigene Pause; die ganze Pause gilt außerdem als Taktpause, gleich wie lang der Takt ist.',
-  'Note value': 'Notenwert',
-  'The written length of a note, given in relation to the other values rather than in seconds.':
-    'Die geschriebene Dauer einer Note, die im Verhältnis zu den anderen Werten steht und nicht in Sekunden.',
-  'Whole note': 'Ganze Note',
-  Rest: 'Pause',
-  'A sign for silence that lasts a stated note value.':
-    'Ein Zeichen für Schweigen von einem bestimmten Notenwert.',
-  'Whole-bar rest': 'Taktpause',
-  'The whole rest used for a silent bar, whatever the length of that bar.':
-    'Die ganze Pause für einen schweigenden Takt, gleich wie lang dieser Takt ist.',
-  Flag: 'Fähnchen',
-  'A hook on the stem; each flag halves the note value again.':
-    'Ein Haken am Notenhals; jedes Fähnchen halbiert den Wert erneut.',
-  'Dots and ties': 'Punkt und Haltebogen',
-  'Write lengths the plain halving series cannot reach.':
-    'Werte schreiben, die das reine Halbieren nicht liefert.',
-  "A dot after a note head adds half of that note's value. A dotted note therefore lasts as long as three of the next smaller unit: a dotted half equals three quarters. A second dot adds half of what the first dot added, and the same rule applies to rests.":
-    'Ein Punkt hinter dem Notenkopf verlängert die Note um die Hälfte ihres Wertes. Eine punktierte Note dauert deshalb so lange wie drei des nächstkleineren Wertes: eine punktierte Halbe entspricht drei Vierteln. Ein zweiter Punkt fügt die Hälfte des ersten Punktes hinzu. Für Pausen gilt dieselbe Regel.',
-  'Dotted note': 'Punktierte Note',
-  'A note followed by a dot, lasting three of the next smaller unit.':
-    'Eine Note mit Punkt, die drei nächstkleinere Werte lang dauert.',
-  'Double dot': 'Doppelpunktierung',
-  'A second dot that adds half of what the first dot added.':
-    'Ein zweiter Punkt, der die Hälfte des ersten Punktes hinzufügt.',
-  'Dotted rest': 'Punktierte Pause',
-  'A rest lengthened by a dot in exactly the way a note is.':
-    'Eine Pause, die ein Punkt genauso verlängert wie eine Note.',
-  Slur: 'Bindebogen',
-  Legato: 'Legato',
-  'Playing or singing without a break between consecutive notes.':
-    'Spielen oder Singen ohne Unterbrechung zwischen aufeinanderfolgenden Tönen.',
-  'Dividing the beat': 'Die Zählzeit teilen',
-  Rhythm: 'Rhythmus',
-  'Mark a division into three, and read beamed groups.':
-    'Dreiteilungen kennzeichnen und Balkengruppen lesen.',
-  'triplet = 3 in the time of 2  ·  ratio 7:4':
-    'Triole = 3 statt 2  ·  Verhältnis 7:4',
-  'A beam replaces the flags on notes shorter than a quarter: one beam for each flag the note would carry. Beams group notes so that the beat can be seen at a glance, which is why grouping follows the metre rather than the melody. Modern vocal music is beamed by beat, like instrumental music.':
-    'Ein Balken ersetzt die Fähnchen bei Noten unter dem Viertelwert: ein Balken für jedes Fähnchen. Die Balkengruppen machen die Zählzeiten auf einen Blick sichtbar, deshalb richtet sich die Gruppierung nach dem Metrum und nicht nach der Melodie. Moderne Vokalmusik wird wie Instrumentalmusik nach Zählzeiten gebalkt; die Balkung nach Silben ist ältere Praxis.',
-  Beat: 'Zählzeit',
-  'The unit of pulse that the written note values are counted against.':
-    'Die Einheit des Pulses, gegen die die geschriebenen Notenwerte gezählt werden.',
-  Triplet: 'Triole',
-  'Three notes written in the time normally taken by two of that value.':
-    'Drei Noten in der Zeit, die sonst zwei desselben Wertes einnehmen.',
-  Duplet: 'Duole',
-  'Two notes written in the time normally taken by three of that value.':
-    'Zwei Noten in der Zeit, die sonst drei desselben Wertes einnehmen.',
-  'Irregular group': 'Unregelmäßige Gruppe',
-  'Ratio mark': 'Verhältnisangabe',
-  'Two numbers such as 7:4, printed when the written value could be misread.':
-    'Zwei Zahlen wie 7:4, gedruckt, wenn der geschriebene Wert missverstanden werden könnte.',
-  Beam: 'Balken',
-  'A thick line replacing flags; one beam stands for one flag.':
-    'Ein dicker Strich anstelle der Fähnchen; ein Balken steht für ein Fähnchen.',
-  Grouping: 'Gruppierung',
-  'The choice of which notes share a beam, so that the beat stays visible.':
-    'Die Wahl, welche Noten einen Balken teilen, damit die Zählzeit sichtbar bleibt.',
-  'Tempo and its marks': 'Tempo und seine Zeichen',
-  Performance: 'Vortrag',
-  'The speed at which the beats of a piece follow one another.':
-    'Die Geschwindigkeit, mit der die Zählzeiten eines Stückes aufeinander folgen.',
-  'Metronome mark': 'Metronomzahl',
-  'A note value with a number, fixing how many such beats fill one minute.':
-    'Ein Notenwert mit einer Zahl, die festlegt, wie viele solcher Schläge auf eine Minute gehen.',
-  'Beats per minute': 'Schläge pro Minute',
-  'The unit of a metronome mark: the count of beats in sixty seconds.':
-    'Die Einheit der Metronomzahl: die Zahl der Schläge in sechzig Sekunden.',
-  Accelerando: 'Accelerando',
-  'A direction to become gradually faster.':
-    'Die Anweisung, allmählich schneller zu werden.',
-  Ritardando: 'Ritardando',
-  'A direction to become gradually slower.':
-    'Die Anweisung, allmählich langsamer zu werden.',
-  'A tempo': 'A tempo',
-  'A direction to return to the speed that was in force before the change.':
-    'Die Anweisung, zum Tempo zurückzukehren, das vor der Änderung galt.',
-  Fermata: 'Fermate',
-  Agogics: 'Agogik',
-  'The small changes of speed that shape a performance.':
-    'Die kleinen Tempoänderungen, die einen Vortrag gestalten.',
-  'Loudness without a number': 'Lautstärke ohne Zahl',
-  'pp < p < mp < mf < f < ff': 'pp < p < mp < mf < f < ff',
-  'piano (p)': 'piano (p)',
-  'The mark p asks for a soft level relative to the passages around it.':
-    'Das Zeichen p verlangt eine im Verhältnis zur Umgebung leise Stufe.',
-  'forte (f)': 'forte (f)',
-  'The mark f asks for a loud level relative to the passages around it.':
-    'Das Zeichen f verlangt eine im Verhältnis zur Umgebung laute Stufe.',
-  'mezzo (mp, mf)': 'mezzo (mp, mf)',
-  crescendo: 'Crescendo',
-  'A crescendo asks for a gradual increase in loudness across the passage it covers.':
-    'Ein Crescendo verlangt eine allmähliche Zunahme der Lautstärke über die bezeichnete Strecke.',
-  decrescendo: 'Decrescendo',
-  'A decrescendo, also written diminuendo, asks for a gradual decrease in loudness.':
-    'Ein Decrescendo, auch Diminuendo geschrieben, verlangt eine allmähliche Abnahme der Lautstärke.',
-  hairpin: 'Gabel',
-  'A hairpin is the pair of converging lines that draws a crescendo or decrescendo over the staff.':
-    'Eine Gabel ist das Linienpaar, das ein Crescendo oder Decrescendo am Notensystem darstellt.',
-  'sforzato (sf, sfz)': 'Sforzato (sf, sfz)',
-  'Sforzato marks a single note as suddenly stronger than the level in force.':
-    'Sforzato kennzeichnet einen einzelnen Ton als plötzlich stärker als die geltende Stufe.',
-  accent: 'Akzent',
-  'An accent sign asks for a single note to be given more weight than its neighbours.':
-    'Ein Akzentzeichen verlangt, einen einzelnen Ton stärker zu gewichten als seine Nachbarn.',
-  'Joined or separated': 'Gebunden oder getrennt',
-  articulation: 'Artikulation',
-  'Articulation is how one note joins or separates from the note after it.':
-    'Artikulation ist die Art, wie ein Ton mit dem folgenden verbunden oder von ihm getrennt wird.',
-  staccato: 'Staccato',
-  staccatissimo: 'Staccatissimo',
-  'In modern engraving a wedge asks for staccatissimo, shorter than staccato.':
-    'Im modernen Notensatz verlangt der Keil Staccatissimo, kürzer als Staccato.',
-  tenuto: 'Tenuto',
-  portato: 'Portato',
-  'Portato writes dots under a slur and asks for notes that are separated but not sharply detached.':
-    'Portato schreibt Punkte unter einem Bogen und verlangt Töne, die getrennt, aber nicht scharf abgesetzt sind.',
-  phrasing: 'Phrasierung',
-  'Phrasing groups notes into units of musical sense and is not the same thing as articulation.':
-    'Phrasierung fasst Töne zu Sinneinheiten zusammen und ist nicht dasselbe wie Artikulation.',
-  'Printed order, played order': 'Notierte und gespielte Reihenfolge',
-  '‖: … :‖ · [1.] [2.] · D.C. al fine · D.S. al fine':
-    '‖: … :‖ · [1.] [2.] · D.C. al fine · D.S. al fine',
-  'A double bar divides one section from the next; a thin line followed by a thick one ends the piece. A repeat sign is a double bar with two dots, and the dots face the music to be played again. When two repeated sections meet, the two signs share a single bar line.':
-    'Ein Doppelstrich trennt einen Abschnitt vom nächsten; ein dünner Strich mit folgendem dicken beendet das Stück. Das Wiederholungszeichen ist ein Doppelstrich mit zwei Punkten, wobei die Punkte zu der Musik zeigen, die noch einmal erklingt. Treffen zwei zu wiederholende Abschnitte aufeinander, teilen sich beide Zeichen einen Strich.',
-  'double bar': 'Doppelstrich',
-  'A double bar is two thin lines marking the end of a section rather than the end of the piece.':
-    'Der Doppelstrich besteht aus zwei dünnen Strichen und markiert das Ende eines Abschnitts, nicht das des Stücks.',
-  'final bar line': 'Schlussstrich',
-  'A thin line followed by a thick one marks the end of the piece or movement.':
-    'Ein dünner Strich mit folgendem dicken Strich beendet das Stück oder den Satz.',
-  'repeat sign': 'Wiederholungszeichen',
-  'A repeat sign is a double bar with two dots, and the dots face the music to be played again.':
-    'Das Wiederholungszeichen ist ein Doppelstrich mit zwei Punkten, die zu der noch einmal zu spielenden Musik zeigen.',
-  'first and second endings': 'Wiederholungsklammer',
-  'First and second endings are bracketed bars that give the repeat a different continuation.':
-    'Wiederholungsklammern sind eingeklammerte Takte, die der Wiederholung einen anderen Fortgang geben.',
-  'da capo': 'da capo',
-  'Da capo sends the reader back to the beginning of the piece.':
-    'Da capo führt zum Anfang des Stücks zurück.',
-  segno: 'Segno',
-  'The segno is the sign that marks the place a dal segno returns to.':
-    'Das Segno ist das Zeichen, zu dem ein dal segno zurückführt.',
-  'dal segno': 'dal segno',
-  'Dal segno sends the reader back to the segno rather than to the beginning.':
-    'Dal segno führt nicht zum Anfang, sondern zum Segno zurück.',
-  fine: 'fine',
-  'Fine marks where the piece stops after a da capo or dal segno return.':
-    'Fine bezeichnet die Stelle, an der das Stück nach der Rückkehr durch da capo oder dal segno endet.',
-  Level: 'Stufe',
   'Next question': 'Nächste Frage',
   'Not quite.': 'Nicht ganz.',
-  Exercise: 'Übung',
   Registers: 'Oktavlagen',
   'Altered notes': 'Versetzungszeichen',
   'Dotted values': 'Punktierte Werte',
   'Irregular groups': 'Unregelmäßige Teilungen',
   'Tied values': 'Übergebundene Werte',
-  'That is the one.': 'Genau der ist es.',
+  'That is the one.': 'Genau das ist es.',
   'That is the neighbouring step. Count the letters, not the keys.':
     'Das ist die Nachbarstufe. Zähle die Stufen, nicht die Tasten.',
   'The step is right, the sign is not. Check how far the sign moves the note.':
-    'Die Stufe stimmt, das Vorzeichen nicht. Prüfe, wie weit das Zeichen den Ton versetzt.',
-  'That sounds the same but is written on another step, which is what the task asked to change.':
-    'Das klingt gleich, steht aber auf einer anderen Stufe — und genau die Schreibweise war zu ändern.',
+    'Die Stufe stimmt, das Versetzungszeichen nicht. Prüfe, wie weit das Zeichen den Ton versetzt.',
+  'That is the spelling you started with. It sounds the same, but the task asked you to respell the note with a different letter.':
+    'Das ist die Ausgangsschreibweise. Sie klingt gleich, verlangt war aber die Schreibweise mit einem anderen Stammton.',
   'That is how many parts the value was divided into, not how long it lasts.':
-    'Das ist die Anzahl der Teile, nicht die Dauer eines Teils.',
+    'Das ist die Anzahl der Teile, in die der Wert geteilt wurde, nicht seine Dauer.',
   // Notes lab (roadmap №558).
   Notes: 'Noten',
   'FROM WRITING TO SOUND': 'VON DER SCHRIFT ZUM KLANG',
@@ -830,11 +430,11 @@ export const german = {
   'Hear this note': 'Diesen Ton hören',
   'The frequency follows the reference pitch and the tuning map chosen in the tone generator. The written note does not change when they do.':
     'Die Frequenz richtet sich nach dem Kammerton und der Stimmung, die im Tongenerator gewählt sind. Die Schreibweise des Tons ändert sich dadurch nicht.',
-  'IF YOU ALSO USE SOFTWARE': 'WENN SIE AUCH AM RECHNER ARBEITEN',
+  'IF YOU ALSO USE SOFTWARE': 'WENN DU AUCH MIT MUSIKSOFTWARE ARBEITEST',
   'MIDI fixes the note number, not the name of its octave. The same key that is number 60 here appears as C3 in some programs, C4 in others and C5 in a few. Read the number when the names disagree.':
     'MIDI legt die Nummer eines Tons fest, nicht den Namen seiner Oktavlage. Dieselbe Taste mit der Nummer 60 heißt in manchen Programmen C3, in anderen C4 und in einigen C5. Wenn die Namen auseinandergehen, gilt die Nummer.',
-  'That value is one step longer than the group uses. The written value comes from the next larger regular division, not from the starting value.':
-    'Dieser Wert ist eine Stufe länger als der, mit dem die Gruppe notiert wird. Der Notenwert ergibt sich aus der nächstgrößeren regelmäßigen Teilung, nicht aus dem Ausgangswert.',
+  'That value is twice as long as the group needs. Divide the starting value by the second number of the ratio: the result is the value the group is written in.':
+    'Dieser Wert ist doppelt so lang wie nötig. Teile den Ausgangswert durch die zweite Zahl des Verhältnisses; das Ergebnis ist der Notenwert, mit dem die Gruppe notiert wird.',
   // Staff-based exercises (roadmap №553).
   'Read a note': 'Einen Ton lesen',
   'Change of clef': 'Schlüsselwechsel',
@@ -858,7 +458,7 @@ export const german = {
   Topic: 'Thema',
   All: 'Alle',
   sign: 'Zeichen',
-  concept: 'Begriff',
+  concept: 'Konzept',
   measure: 'Maß',
   tone: 'Klang',
   'No term matches': 'Kein Begriff passt',
@@ -888,7 +488,7 @@ export const german = {
   // the answer out to a screen reader before it has been asked.
   'The place to read in another clef':
     'Die Stelle, die im anderen Schlüssel zu lesen ist',
-  'The bar the sign stands in': 'Der Takt, in dem das Vorzeichen steht',
+  'The bar the sign stands in': 'Der Takt, in dem das Versetzungszeichen steht',
   'Exercises use 12-tone equal temperament. Your chosen A4 is captured when each question starts.':
     'Die Übungen verwenden die zwölfstufige gleichstufige Stimmung. Die gewählte Frequenz für a′ wird zu Beginn jeder Frage übernommen.',
 } as const;

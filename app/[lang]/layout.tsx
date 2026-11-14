@@ -1,3 +1,4 @@
+import { BOOT_SCRIPT } from '@/lib/theme-boot';
 import '../globals.css';
 
 /**
@@ -20,12 +21,15 @@ export default async function LanguageLayout({
 }>) {
   const { lang } = await params;
   return (
-    <html lang={lang}>
+    <html lang={lang} suppressHydrationWarning>
       {/* The document supports both themes and the export cannot know which one
-          this reader wants, so it declares both and leaves `data-theme` to the
-          effect that resolves it. */}
+          this reader wants. The inline script resolves it from the reader's own
+          browser before the first paint; see app/(root)/layout.tsx. */}
       <meta name="color-scheme" content="light dark" />
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
+        {children}
+      </body>
     </html>
   );
 }

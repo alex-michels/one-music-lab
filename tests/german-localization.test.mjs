@@ -10,8 +10,14 @@ import {
   siteDescription,
   fixedNumber,
 } from '../lib/i18n.ts';
-import { lessons, terms, patterns } from '../lib/learning.ts';
+import {
+  exerciseExplanations,
+  lessons,
+  terms,
+  patterns,
+} from '../lib/learning.ts';
 import { scales } from '../lib/scales.ts';
+import { generateFrom } from '../lib/exercises.ts';
 import {
   chordQualities,
   chordNotes,
@@ -255,12 +261,115 @@ test('German counters decline the drill lens nouns too', () => {
     ['questions', 'Frage', 'Fragen'],
     ['mistakes', 'Fehler', 'Fehler'],
     ['terms', 'Begriff', 'Begriffe'],
-    ['lessons', 'Lektion', 'Lektionen'],
+    ['lessons', 'kurze Lektion', 'kurze Lektionen'],
   ]) {
     expect(count(1, 'de', noun)).toBe(`1 ${one}`);
     for (const n of [0, 2, 11, 21])
       expect(count(n, 'de', noun)).toBe(`${n} ${other}`);
   }
+  // The scope line under the course index counts “short lessons”. German used
+  // to count plain „Lektionen“, so it said less than the other two languages.
+  expect(count(19, 'en', 'lessons')).toBe('19 short lessons');
+  expect(count(19, 'ru', 'lessons')).toBe('19 коротких уроков');
+  expect(count(19, 'de', 'lessons')).toBe('19 kurze Lektionen');
+});
+
+test('A triad has one full name in the pattern list and in the chords lab, in every language', () => {
+  // The diminished and augmented entries of the pattern list were bare
+  // adjectives in English and Russian («Уменьшённое») next to the full German
+  // „Verminderter Dreiklang“. The chosen option is shown on its own, where an
+  // adjective without its noun reads as an unfinished phrase.
+  const triads = patterns.chords.filter((entry) => entry.steps.length === 3);
+  expect(triads.map((entry) => entry.steps.join(' '))).toEqual([
+    '0 4 7',
+    '0 3 7',
+    '0 3 6',
+    '0 4 8',
+  ]);
+  for (const triad of triads) {
+    const inLab = Object.values(chordQualities).find(
+      (quality) => quality.steps.join(' ') === triad.steps.join(' '),
+    );
+    for (const lang of LANGUAGES)
+      expect(triad[lang], triad.en).toBe(inLab[lang]);
+  }
+});
+
+test('German feedback on accidentals keeps the words of the lesson it is shown under', () => {
+  // The lesson opposes „Vorzeichnung“ (the signature) and „Versetzungszeichen“
+  // (a sign before a note) and calls a note tied across the barline
+  // „übergebunden“; plain „gebunden“ is the articulation lesson's word for
+  // legato. The feedback said „Vorzeichen“, „Tonart“ and „gebundene
+  // Fortsetzung“ for the same three things.
+  const lesson = lessons
+    .find((entry) => entry.id === 'accidental-scope')
+    .paragraphs.map((paragraph) => paragraph.de)
+    .join(' ');
+  const words = ['Vorzeichnung', 'Versetzungszeichen', 'übergebunden'];
+  for (const word of words) expect(lesson).toContain(word);
+  for (const tag of ['ignored-the-sign', 'carried-the-sign-too-far']) {
+    const feedback = exerciseExplanations[tag].de;
+    for (const word of words) expect(feedback, tag).toContain(word);
+    expect(feedback, tag).not.toMatch(/(?<!über)gebunden|Tonart|Vorzeichen\b/);
+  }
+  // A wrong sign in front of the right note is a Versetzungszeichen too.
+  expect(exerciseExplanations['wrong-alteration'].de).toContain(
+    'Versetzungszeichen',
+  );
+  expect(exerciseExplanations['wrong-alteration'].de).not.toMatch(
+    /Vorzeichen\b/,
+  );
+  // And the picture that question is asked about is named with the same word.
+  expect(german['The bar the sign stands in']).toContain('Versetzungszeichen');
+});
+
+test('German explanations of the accidental tasks say what applies again after the barline: the signature', () => {
+  // „Die Tonart gilt“ is loose: what applies again to a fresh attack is the
+  // Vorzeichnung. The sentence may still speak of „das Vorzeichen der Tonart“.
+  const loose = /gilt[^.;]*\bdie Tonart\b/;
+  const bareTie = /(?<![Üü]ber)gebunden/;
+  let scoped = 0;
+  for (let seed = 0; seed < 200; seed++) {
+    const item = generateFrom('accidental-scope', 3, seed, 'de');
+    // Only the items drawn as a figure carry this explanation.
+    if (!item.figure) continue;
+    scoped += 1;
+    expect(item.explanation).toContain('wieder die Vorzeichnung');
+    expect(item.explanation).not.toMatch(loose);
+    expect(item.explanation).not.toMatch(bareTie);
+  }
+  expect(scoped).toBeGreaterThan(50);
+  let attacked = 0;
+  let tied = 0;
+  for (const level of [2, 3])
+    for (let seed = 0; seed < 40; seed++) {
+      const item = generateFrom('short-excerpt', level, seed, 'de');
+      for (const part of item.parts.filter((entry) => entry.kind === 'pitch')) {
+        if (part.explanation.includes('Übergebundene Fortsetzung')) tied += 1;
+        else {
+          attacked += 1;
+          expect(part.explanation).toContain(
+            'wieder die Vorzeichnung (hier ohne Vorzeichen)',
+          );
+        }
+        expect(part.explanation).not.toMatch(/Tonart/);
+        expect(part.explanation).not.toMatch(bareTie);
+      }
+    }
+  // Both branches were read, so neither sentence can change unnoticed.
+  expect(attacked).toBeGreaterThan(0);
+  expect(tied).toBeGreaterThan(0);
+});
+
+test('The define lens does not call a kind of topic by the name of its Term column', () => {
+  // German had „Begriff“ for both, so an index row read „Begriff“ in the
+  // column „Art“ beside a column headed „Begriff“.
+  const kinds = ['sign', 'concept', 'measure', 'tone'].map(
+    (kind) => german[kind],
+  );
+  expect(new Set(kinds).size).toBe(4);
+  expect(kinds).not.toContain(german.Term);
+  expect(kinds).not.toContain(german.Kind);
 });
 
 /**
@@ -294,6 +403,13 @@ function sourceFiles() {
       // Tests are excluded on purpose: a key kept alive only by a test that
       // mentions it is exactly the dead key this is looking for.
       .filter((path) => !path.startsWith('tests/'))
+      // So are the content records. They carry their own German in a `de`
+      // field and never read this catalogue, so an English sentence found
+      // only there proves nothing: more than two hundred stale copies of
+      // lesson, experiment and glossary text passed this gate that way, five
+      // of them with a German title that differed from the one the lesson
+      // shows.
+      .filter((path) => !path.startsWith('lib/content/'))
       .filter((path) => path !== 'lib/german.ts')
       .map((path) => join(root, path))
   );
@@ -308,6 +424,7 @@ test('Every German entry translates a string the site still says', () => {
     orphans,
     'delete these from lib/german.ts, or use them: nothing outside the catalogue says them',
   ).toEqual([]);
-  // And the catalogue is the size the site needs, not a historical record.
-  expect(Object.keys(german).length).toBeGreaterThan(600);
+  // And the catalogue is the size the interface needs, not a historical
+  // record: 388 entries once the copies of lesson text had gone.
+  expect(Object.keys(german).length).toBeGreaterThan(380);
 });

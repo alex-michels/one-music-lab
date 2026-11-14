@@ -22,7 +22,7 @@ const content: TopicBundle = {
   },
   lesson: {
     id: 'dots-ties',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
@@ -51,7 +51,7 @@ const content: TopicBundle = {
       {
         en: "A dot after a note head adds half of that note's value. A dotted note therefore lasts as long as three of the next smaller unit: a dotted half equals three quarters. A second dot adds half of what the first dot added, and the same rule applies to rests.",
         ru: 'Точка справа от головки прибавляет половину длительности этой ноты. Поэтому нота с точкой равна трём следующим меньшим: половинная с точкой — трём четвертям. Вторая точка прибавляет половину того, что прибавила первая. То же правило действует и для пауз.',
-        de: 'Ein Punkt hinter dem Notenkopf verlängert die Note um die Hälfte ihres Wertes. Eine punktierte Note dauert deshalb so lange wie drei des nächstkleineren Wertes: eine punktierte Halbe entspricht drei Vierteln. Ein zweiter Punkt fügt die Hälfte des ersten Punktes hinzu. Für Pausen gilt dieselbe Regel.',
+        de: 'Ein Punkt hinter dem Notenkopf verlängert die Note um die Hälfte ihres Wertes. Eine punktierte Note dauert deshalb so lange wie drei des nächstkleineren Wertes: eine punktierte Halbe entspricht drei Vierteln. Ein zweiter Punkt fügt die Hälfte dessen hinzu, was der erste Punkt hinzugefügt hat. Für Pausen gilt dieselbe Regel.',
       },
       {
         en: 'A tie joins equal pitches into one sustained sound and adds their durations, including across barlines. An articulation slur connects a group of notes without adding their values. A phrasing slur describes a larger musical grouping.',
@@ -59,6 +59,67 @@ const content: TopicBundle = {
         de: 'Ein Haltebogen verbindet gleiche Tonhöhen zu einem gehaltenen Klang und addiert ihre Dauern, auch über Taktstriche hinweg. Ein Bindebogen verbindet eine Notengruppe, ohne deren Werte zu addieren. Ein Phrasierungsbogen bezeichnet eine größere musikalische Einheit.',
       },
     ],
+    guide: {
+      question: {
+        en: 'How do you write a length that halving alone never gives, such as three quarters?',
+        ru: 'Как записать длительность, которую не даёт одно лишь деление пополам, например три четверти?',
+        de: 'Wie schreibst du eine Dauer, die das reine Halbieren nicht liefert, zum Beispiel drei Viertel?',
+      },
+      example: [
+        {
+          en: 'Take a half note. It lasts as long as two quarter notes.',
+          ru: 'Возьмите половинную ноту. Она длится столько же, сколько две четверти.',
+          de: 'Nimm eine halbe Note. Sie dauert so lange wie zwei Viertelnoten.',
+        },
+        {
+          en: 'Put a dot after its head. The dot adds half of the note’s value, one quarter, so the dotted half lasts three quarters: counted in quarters, 2 × 3/2 = 3.',
+          ru: 'Поставьте точку справа от головки. Точка прибавляет половину длительности ноты, то есть одну четверть, и половинная с точкой длится три четверти: в четвертях 2 × 3/2 = 3.',
+          de: 'Setze einen Punkt hinter den Notenkopf. Der Punkt verlängert die Note um die Hälfte ihres Wertes, also um ein Viertel: Die punktierte Halbe dauert drei Viertel, in Vierteln gezählt 2 × 3/2 = 3.',
+        },
+        {
+          en: 'A second dot adds half of what the first dot added: half of a quarter, an eighth. The double-dotted half then lasts seven eighths: counted in eighths, 4 + 2 + 1 = 7, the same as 4 × 7/4.',
+          ru: 'Вторая точка прибавляет половину того, что прибавила первая: половину четверти, то есть восьмую. Половинная с двумя точками длится семь восьмых: в восьмых 4 + 2 + 1 = 7, то же, что 4 × 7/4.',
+          de: 'Ein zweiter Punkt fügt die Hälfte dessen hinzu, was der erste hinzugefügt hat: die Hälfte eines Viertels, also ein Achtel. Die doppelt punktierte Halbe dauert dann sieben Achtel: in Achteln gezählt 4 + 2 + 1 = 7, genauso viel wie 4 × 7/4.',
+        },
+        {
+          en: 'A tie reaches the same three quarters by adding instead. Tie a half note to a quarter note of the same pitch: two quarters plus one are three quarters, held as one sustained sound.',
+          ru: 'Связующая лига даёт те же три четверти иначе — сложением. Соедините ею половинную и четверть одной высоты: две четверти плюс одна — это три четверти, слитые в один протяжённый звук.',
+          de: 'Ein Haltebogen erreicht dieselben drei Viertel stattdessen durch Addieren. Verbinde damit eine halbe Note und eine Viertelnote gleicher Tonhöhe: Zwei Viertel plus eines sind drei Viertel, gehalten als ein einziger Klang.',
+        },
+      ],
+      listen: {
+        en: 'Play “Two separate quarter notes”, then “Two quarter notes tied”. Both fill two beats. The first has two attacks; the tied example has one attack and one sustained sound.',
+        ru: 'Послушайте пример «Две отдельные четверти», затем «Две четверти под лигой продления» (лига продления — та же связующая лига). Оба примера занимают две доли. В первом слышны две атаки, во втором — одна атака и один протяжённый звук.',
+        de: 'Spiele „Zwei getrennte Viertelnoten“ und danach „Zwei Viertelnoten mit Haltebogen“. Beide füllen zwei Zählzeiten. Im ersten Beispiel hörst du zwei Toneinsätze, im Beispiel mit Haltebogen nur einen Toneinsatz und einen durchgehenden Klang.',
+      },
+      mistake: {
+        en: 'It is tempting to think that a dot doubles the note’s value. It adds only half of the original value: a half note is two quarters, its dot adds one more, so a dotted half lasts three quarters, not four.',
+        ru: 'Легко решить, что точка удваивает длительность ноты. На самом деле она прибавляет только половину исходной длительности: половинная равна двум четвертям, точка добавляет ещё одну, поэтому половинная с точкой длится три четверти, а не четыре.',
+        de: 'Man denkt leicht, ein Punkt verdopple den Notenwert. Er fügt aber nur die Hälfte des ursprünglichen Werts hinzu: Eine halbe Note entspricht zwei Vierteln, der Punkt fügt eines hinzu, also dauert die punktierte Halbe drei Viertel, nicht vier.',
+      },
+      takeaways: [
+        {
+          en: 'A dot adds half of the note’s value, so a dotted note lasts 1 + 1/2 = 3/2 of the original value.',
+          ru: 'Точка прибавляет половину длительности ноты, поэтому нота с точкой длится 1 + 1/2 = 3/2 исходной длительности.',
+          de: 'Ein Punkt verlängert die Note um die Hälfte ihres Wertes, deshalb dauert die punktierte Note 1 + 1/2 = 3/2 des Ausgangswerts.',
+        },
+        {
+          en: 'A second dot adds half of what the first dot added, so a double-dotted note lasts 1 + 1/2 + 1/4 = 7/4 of the original value.',
+          ru: 'Вторая точка прибавляет половину того, что прибавила первая, поэтому нота с двумя точками длится 1 + 1/2 + 1/4 = 7/4 исходной длительности.',
+          de: 'Ein zweiter Punkt fügt die Hälfte dessen hinzu, was der erste hinzugefügt hat, deshalb dauert die doppelt punktierte Note 1 + 1/2 + 1/4 = 7/4 des Ausgangswerts.',
+        },
+        {
+          en: 'A dot lengthens a rest in exactly the way it lengthens a note.',
+          ru: 'Паузу точка удлиняет точно так же, как ноту.',
+          de: 'Ein Punkt verlängert eine Pause genauso wie eine Note.',
+        },
+        {
+          en: 'A tie joins equal pitches into one sustained sound and adds their values; a slur does not add values.',
+          ru: 'Связующая лига соединяет ноты одной высоты в один протяжённый звук и складывает их длительности; артикуляционная лига их не складывает.',
+          de: 'Ein Haltebogen verbindet gleiche Tonhöhen zu einem gehaltenen Klang und addiert ihre Dauern; ein Bindebogen addiert keine Werte.',
+        },
+      ],
+    },
     sourceId: 'source-050',
     experimentId: 'dots-ties',
     reading: {
@@ -66,8 +127,8 @@ const content: TopicBundle = {
       sourceId: 'source-009',
       text: {
         en: 'A dotted quarter equals three eighths; a double-dotted quarter equals seven sixteenths. Dots also extend rests. Tied notes add their durations without a new attack. A tie links equal pitches; a slur indicates connection or grouping and does not add their values. Whether a value fits in the bar is arithmetic; whether its spelling shows the beat clearly is a separate question.',
-        ru: 'Четверть с точкой равна трём восьмым, с двумя точками — семи шестнадцатым. Точки увеличивают и паузы. Связующая лига суммирует длительности без новой атаки. Она соединяет ноты одной высоты; артикуляционная лига указывает связность или группировку и не складывает их длительности. Помещается ли значение в такт — вопрос арифметики; хорошо ли запись показывает доли — отдельный вопрос.',
-        de: 'Eine punktierte Viertel entspricht drei Achteln, eine doppelt punktierte Viertel sieben Sechzehnteln. Punkte verlängern auch Pausen. Ein Haltebogen addiert Dauern ohne neuen Anschlag. Er verbindet gleiche Tonhöhen; ein Bindebogen zeigt Verbindung oder Gruppierung und addiert keine Werte. Ob ein Wert in den Takt passt, ist eine Rechenfrage; ob seine Schreibweise die Zählzeiten gut zeigt, eine andere.',
+        ru: 'Четверть с точкой равна трём восьмым, с двумя точками — семи шестнадцатым. Точки удлиняют и паузы. Связующая лига суммирует длительности без новой атаки. Она соединяет ноты одной высоты; артикуляционная лига указывает связность или группировку и не складывает их длительности. Помещается ли длительность в такт — вопрос арифметики; насколько ясно запись показывает доли — отдельный вопрос.',
+        de: 'Eine punktierte Viertel entspricht drei Achteln, eine doppelt punktierte Viertel sieben Sechzehnteln. Punkte verlängern auch Pausen. Ein Haltebogen addiert Dauern ohne neuen Toneinsatz. Er verbindet gleiche Tonhöhen; ein Bindebogen zeigt Verbindung oder Gruppierung und addiert keine Werte. Ob ein Wert in den Takt passt, ist eine Rechenfrage; ob seine Schreibweise die Zählzeiten gut zeigt, eine andere.',
       },
       assetIds: [
         'figure-dotted',
@@ -80,15 +141,15 @@ const content: TopicBundle = {
   },
   experiment: {
     id: 'dots-ties',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
     topicId: 'dots-ties',
     instructions: {
       en: 'Compare Two separate quarter notes with Two quarter notes tied. Both fill two beats; the tied example has one attack and one sustained sound.',
-      ru: 'Сравните две отдельные четверти с двумя четвертями под лигой продления. Обе записи заполняют две доли; под лигой слышны одна атака и один протяжённый звук.',
-      de: 'Vergleiche zwei getrennte Viertelnoten mit zwei Vierteln unter einem Haltebogen. Beide füllen zwei Zählzeiten; das gebundene Beispiel hat nur einen Toneinsatz und einen durchgehenden Klang.',
+      ru: 'Сравните примеры «Две отдельные четверти» и «Две четверти под лигой продления» (лига продления — та же связующая лига). Обе записи занимают две доли; во втором примере слышны одна атака и один протяжённый звук.',
+      de: 'Vergleiche „Zwei getrennte Viertelnoten“ mit „Zwei Viertelnoten mit Haltebogen“. Beide füllen zwei Zählzeiten; das Beispiel mit Haltebogen hat nur einen Toneinsatz und einen durchgehenden Klang.',
     },
     engine: 'sound-lab',
     preset: {
@@ -215,7 +276,7 @@ const content: TopicBundle = {
   concepts: [
     {
       id: 'Dotted note',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -230,13 +291,13 @@ const content: TopicBundle = {
       body: {
         en: 'A note followed by a dot, lasting three of the next smaller unit.',
         ru: 'Нота с точкой справа, равная трём следующим меньшим длительностям.',
-        de: 'Eine Note mit Punkt, die drei nächstkleinere Werte lang dauert.',
+        de: 'Eine Note mit Punkt; sie dauert so lange wie drei Noten des nächstkleineren Wertes.',
       },
       sourceId: 'source-018',
     },
     {
       id: 'Double dot',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -251,7 +312,7 @@ const content: TopicBundle = {
       body: {
         en: 'A second dot that adds half of what the first dot added.',
         ru: 'Вторая точка, прибавляющая половину того, что прибавила первая.',
-        de: 'Ein zweiter Punkt, der die Hälfte des ersten Punktes hinzufügt.',
+        de: 'Ein zweiter Punkt, der die Hälfte dessen hinzufügt, was der erste Punkt hinzugefügt hat.',
       },
       sourceId: 'source-018',
     },

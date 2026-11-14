@@ -31,8 +31,10 @@ transpose the two-note example while preserving the interval. They use the
 existing four ascending interval categories in 12-TET, a sine tone and the
 reference captured at the start of the question. Replaying is allowed and does
 not count as a hint. Pitch names and the numerical answer appear only after
-answering. Failed or superseded playback requests cannot unlock a new
-question. A successful request permits answering; the audio engine resolves once
+answering; in every language the two pitch names are spelled as the interval
+is named (a minor third above C4 is E♭4, not D♯4; German shows c′ → es′).
+Failed or superseded playback requests cannot unlock a new question.
+A successful request permits answering; the audio engine resolves once
 tones are scheduled, not once listening is complete. Muted hardware, later manual
 stops and attention are not measured. Existing bounded audio generation and stop
 controls remain in force. Existing Sound lab Russian
@@ -96,8 +98,9 @@ educational text CC BY 4.0; third-party source licenses are unchanged.
 
 Pure tests check scheduling boundaries, immutable updates, assistance, failed
 checks, scope, counter saturation, bounded generation failure, changed examples
-for every scored rule, locale/order invariance, transposed hearing and strict
-backup migration/round trips. Browser tests exercise real rendered exercises,
+for every scored rule, locale/order invariance, transposed hearing, the
+spelling of the played pair and strict backup migration/round trips. Browser
+tests exercise real rendered exercises,
 delayed checks after leaving a page, multipart errors, hint reset, duplicate
 submissions, failed/stale playback, all three reflection criteria and narrow
 EN/RU/DE history layouts. The existing audio engine, notation, keyboard and

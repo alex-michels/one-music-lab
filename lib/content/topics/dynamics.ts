@@ -32,7 +32,7 @@ const content: TopicBundle = {
   },
   lesson: {
     id: 'dynamics',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
@@ -50,7 +50,7 @@ const content: TopicBundle = {
     summary: {
       en: 'Distinguish dynamic levels, gradual changes and accents.',
       ru: 'Различайте уровни динамики, постепенные изменения и акценты.',
-      de: 'Unterscheide dynamische Grade, allmähliche Änderungen und Akzente.',
+      de: 'Unterscheide Dynamikstufen, allmähliche Änderungen und Akzente.',
     },
     formula: {
       en: 'pp < p < mp < mf < f < ff',
@@ -61,23 +61,89 @@ const content: TopicBundle = {
       {
         en: 'Dynamic marks guide the strength of the sound: p (piano) means soft, f (forte) loud, mp (mezzo piano) moderately soft and mf (mezzo forte) moderately loud. They establish a level within the musical context; p at the start of a piece does not require an earlier loud passage. They specify no fixed decibel value. Instrument, room and ensemble balance affect how a mark is realized.',
         ru: 'Динамические обозначения указывают силу звучания: p (пиано) — тихо, f (форте) — громко, mp (меццо-пиано) — умеренно тихо, mf (меццо-форте) — умеренно громко. Они задают уровень в музыкальном контексте: пиано в начале пьесы не требует предшествующего громкого участка. Фиксированного значения в децибелах у этих знаков нет. Исполнение зависит от инструмента, помещения и баланса ансамбля.',
-        de: 'Dynamikzeichen geben die Klangstärke an: p (piano) heißt leise, f (forte) laut, mp (mezzopiano) mäßig leise und mf (mezzoforte) mäßig laut. Sie bestimmen einen Grad im musikalischen Zusammenhang; ein p am Stückanfang setzt keine vorherige laute Stelle voraus. Einen festen Dezibelwert geben sie nicht an. Instrument, Raum und Ensemblebalance beeinflussen die Ausführung.',
+        de: 'Dynamikzeichen geben die Klangstärke an: p (piano) heißt leise, f (forte) laut, mp (mezzopiano) mäßig leise und mf (mezzoforte) mäßig laut. Sie legen eine Dynamikstufe im musikalischen Zusammenhang fest; ein p am Stückanfang setzt keine vorherige laute Stelle voraus. Einen festen Dezibelwert geben sie nicht an. Instrument, Raum und Ensemblebalance beeinflussen die Ausführung.',
       },
       {
-        en: 'Crescendo increases the level and decrescendo decreases it over the indicated span. An accent or sforzato emphasizes an event relative to the surrounding dynamic level; it does not prescribe a fixed sound pressure.',
-        ru: 'Крещендо усиливает звучание, диминуэндо ослабляет его на указанном участке. Акцент или сфорцато выделяет событие относительно окружающей динамики, не задавая фиксированного звукового давления.',
-        de: 'Crescendo steigert, Decrescendo verringert die Lautstärke auf der angegebenen Strecke. Akzent oder Sforzato betont ein Ereignis im Verhältnis zur umgebenden Dynamik und legt keinen festen Schalldruck fest.',
+        en: 'Crescendo (cresc.) gradually increases the level, and decrescendo or diminuendo (decresc., dim.) gradually decreases it, over the indicated span. An accent or sforzato makes a single note or chord stand out from the surrounding dynamic level; it does not prescribe a fixed sound pressure.',
+        ru: 'На указанном участке крещендо (cresc.) постепенно усиливает звучание, а диминуэндо, или декрещендо (dim., decresc.), постепенно ослабляет его. Акцент или сфорцато выделяет отдельный звук или аккорд на фоне окружающей динамики и не задаёт фиксированного звукового давления.',
+        de: 'Crescendo (cresc.) steigert die Lautstärke allmählich, Decrescendo oder Diminuendo (decresc., dim.) verringert sie allmählich über die angegebene Strecke. Akzent oder Sforzato hebt einen einzelnen Ton oder Akkord gegenüber der umgebenden Dynamik hervor und legt keinen festen Schalldruck fest.',
       },
     ],
+    guide: {
+      question: {
+        en: 'How loud is forte if the score gives no number for it?',
+        ru: 'Насколько громко нужно играть форте, если в нотах нет никакого числа?',
+        de: 'Wie laut ist forte, wenn in den Noten keine Zahl dafür steht?',
+      },
+      example: [
+        {
+          en: 'Start with two marks: p (piano) means soft and f (forte) means loud. So p < f.',
+          ru: 'Начнём с двух знаков: p (пиано) — тихо, f (форте) — громко. Значит, p < f.',
+          de: 'Beginne mit zwei Zeichen: p (piano) heißt leise, f (forte) heißt laut. Also p < f.',
+        },
+        {
+          en: 'Between them stand the two mezzo marks: mp (mezzo piano) is moderately soft and mf (mezzo forte) moderately loud. The row is now p < mp < mf < f.',
+          ru: 'Между ними стоят два знака с mezzo: mp (меццо-пиано) — умеренно тихо, mf (меццо-форте) — умеренно громко. Получается ряд p < mp < mf < f.',
+          de: 'Dazwischen stehen die beiden Mezzo-Zeichen: mp (mezzopiano) heißt mäßig leise, mf (mezzoforte) mäßig laut. Die Reihe lautet nun p < mp < mf < f.',
+        },
+        {
+          en: 'One step further out on each side: pp is softer than p, and ff is louder than f. That gives the ladder of this lesson: pp < p < mp < mf < f < ff.',
+          ru: 'Ещё по одному шагу в каждую сторону: pp тише, чем p, а ff громче, чем f. Так получается шкала этого урока: pp < p < mp < mf < f < ff.',
+          de: 'Noch einen Schritt weiter nach außen auf jeder Seite: pp ist leiser als p, ff lauter als f. So entsteht die Skala dieser Lektion: pp < p < mp < mf < f < ff.',
+        },
+        {
+          en: 'Which mark is the next louder one after mp? Move one step along the ladder towards forte: it is mf.',
+          ru: 'Какой знак идёт следующим по громкости после mp? Сделайте один шаг по шкале в сторону форте: это mf.',
+          de: 'Welches Zeichen ist das nächstlautere nach mp? Gehe auf der Skala einen Schritt in Richtung forte: Es ist mf.',
+        },
+        {
+          en: 'So where does forte stand? Louder than mf and softer than ff, and the ladder says no more than this order. None of the marks names a decibel value: how a mark is realized depends on the instrument, the room and the ensemble balance.',
+          ru: 'Где же стоит форте? Громче, чем mf, и тише, чем ff, — шкала только расставляет знаки по порядку. Ни один из них не задаёт значения в децибелах: исполнение зависит от инструмента, помещения и баланса ансамбля.',
+          de: 'Wo steht also forte? Lauter als mf und leiser als ff – mehr als diese Reihenfolge gibt die Skala nicht an. Keines der Zeichen nennt einen Dezibelwert: Die Ausführung hängt von Instrument, Raum und Ensemblebalance ab.',
+        },
+      ],
+      listen: {
+        en: 'At a comfortable volume, play Softer, then Louder. The pitch is the same; only the level changes. What you hear is a contrast between two levels, not a measured p or f: the musical meaning of those marks depends on context.',
+        ru: 'На комфортной громкости послушайте пример «Тише», затем «Громче». Высота одна и та же, меняется только громкость. Вы слышите контраст двух уровней, а не измеренные пиано и форте: музыкальный смысл этих знаков зависит от контекста.',
+        de: 'Spiele bei angenehmer Hörlautstärke „Leiser“ und dann „Lauter“. Der Ton ist derselbe, nur die Lautstärke ändert sich. Du hörst einen Kontrast zwischen zwei Stufen, kein gemessenes p oder f: Die musikalische Bedeutung dieser Zeichen hängt vom Zusammenhang ab.',
+      },
+      mistake: {
+        en: 'Mezzo means “half” or “moderately”, so mp and mf are easily read as “half as loud”. They are relative levels: mp is moderately soft and mf moderately loud, so mp < mf. Neither asks you to halve the amplitude or the perceived loudness.',
+        ru: 'Mezzo означает «наполовину» или «умеренно», поэтому mp и mf легко принять за «половину громкости». Это относительные уровни динамики: mp — умеренно тихо, mf — умеренно громко, то есть mp < mf. Ни один из них не требует вдвое уменьшить амплитуду или воспринимаемую громкость.',
+        de: 'Mezzo bedeutet „halb“ oder „mäßig“, deshalb liest du mp und mf leicht als „halb so laut“. Es sind relative Dynamikstufen: mp heißt mäßig leise, mf mäßig laut, also mp < mf. Keines der beiden verlangt, die Amplitude oder die wahrgenommene Lautstärke zu halbieren.',
+      },
+      takeaways: [
+        {
+          en: 'Dynamic marks set a level within the musical context; they specify no fixed decibel value.',
+          ru: 'Динамические обозначения задают уровень в музыкальном контексте; фиксированного значения в децибелах у них нет.',
+          de: 'Dynamikzeichen legen eine Dynamikstufe im musikalischen Zusammenhang fest; einen festen Dezibelwert geben sie nicht an.',
+        },
+        {
+          en: 'The ladder pp < p < mp < mf < f < ff is relative: it orders the marks from softer to louder, and pppp and ffff extend it at both ends.',
+          ru: 'Шкала pp < p < mp < mf < f < ff относительна: она расставляет знаки от тихого к громкому, а pppp и ffff продолжают её в обе стороны.',
+          de: 'Die Skala pp < p < mp < mf < f < ff ist relativ: Sie ordnet die Zeichen von leise nach laut, und pppp und ffff erweitern sie an beiden Enden.',
+        },
+        {
+          en: 'Crescendo gradually raises the level and decrescendo or diminuendo gradually lowers it, but only over the indicated span.',
+          ru: 'Крещендо постепенно усиливает звучание, а диминуэндо, или декрещендо, постепенно ослабляет его — но только на указанном участке.',
+          de: 'Crescendo steigert die Lautstärke allmählich, Decrescendo oder Diminuendo verringert sie allmählich, aber nur über die angegebene Strecke.',
+        },
+        {
+          en: 'An accent or sforzato makes a single note or chord stand out from the surrounding dynamic level.',
+          ru: 'Акцент или сфорцато выделяет отдельный звук или аккорд на фоне окружающей динамики.',
+          de: 'Akzent oder Sforzato hebt einen einzelnen Ton oder Akkord gegenüber der umgebenden Dynamik hervor.',
+        },
+      ],
+    },
     sourceId: 'source-054',
     experimentId: 'dynamics',
     reading: {
       pages: '26–28',
       sourceId: 'source-012',
       text: {
-        en: 'Separate a sustained level from an accent: fp asks for a strong onset followed by a soft continuation; sfz emphasizes an event. A crescendo hairpin governs its drawn span, not an endless increase. pppp and ffff extend the relative ladder. Calando or morendo can combine changes of motion and intensity; interpret them with the phrase and edition.',
-        ru: 'Отличайте постоянный уровень от акцента: fp требует громкого начала с тихим продолжением; sfz выделяет отдельное событие. Вилка крещендо относится к указанному участку, а не к бесконечному усилению. pppp и ffff расширяют относительную шкалу. Calando или morendo могут объединять изменения движения и силы звучания; учитывайте фразу и редакцию.',
-        de: 'Unterscheide einen anhaltenden Grad von einer Betonung: fp verlangt einen kräftigen Beginn mit leiser Fortsetzung; sfz hebt ein Ereignis hervor. Eine Crescendogabel gilt für ihre gezeichnete Strecke, nicht für endloses Lauterwerden. pppp und ffff erweitern die relative Skala. Calando oder morendo können Bewegung und Intensität zugleich verändern; beachte Phrase und Ausgabe.',
+        en: 'Separate a sustained level from an accent: fp asks for a strong onset followed by a soft continuation; sfz emphasizes a single note or chord. A crescendo hairpin applies only to the span it covers; it does not ask for an endless increase. pppp and ffff extend the relative ladder. Calando or morendo can combine changes of motion and intensity; interpret them with the phrase and edition.',
+        ru: 'Отличайте постоянный уровень от акцента: fp требует громкого начала с тихим продолжением; sfz выделяет отдельный звук или аккорд. Вилка крещендо действует только на отмеченном ею участке и не означает бесконечного усиления. pppp и ffff расширяют относительную шкалу. Calando или morendo могут объединять изменения движения и силы звучания; учитывайте фразу и редакцию.',
+        de: 'Unterscheide eine anhaltende Dynamikstufe von einer Betonung: fp verlangt einen kräftigen Beginn mit leiser Fortsetzung; sfz hebt einen einzelnen Ton oder Akkord hervor. Eine Crescendogabel gilt nur für die Strecke, die sie überspannt; sie verlangt kein endloses Lauterwerden. pppp und ffff erweitern die relative Skala. Calando oder morendo können Bewegung und Intensität zugleich verändern; beachte Phrase und Ausgabe.',
       },
       assetIds: ['figure-dynamic-hairpin', 'figure-dynamic-fp'],
     },
@@ -111,7 +177,7 @@ const content: TopicBundle = {
   exercises: [
     {
       id: 'relative-dynamic-level',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -119,7 +185,7 @@ const content: TopicBundle = {
       label: {
         en: 'Compare dynamic levels',
         ru: 'Сравнение уровней динамики',
-        de: 'Dynamische Grade vergleichen',
+        de: 'Dynamikstufen vergleichen',
       },
       generator: 'performance-marks',
       sourceIds: ['source-012'],
@@ -129,7 +195,7 @@ const content: TopicBundle = {
   concepts: [
     {
       id: 'Character and emphasis',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -143,7 +209,7 @@ const content: TopicBundle = {
       },
       body: {
         en: 'Dolce asks for sweetness; espressivo for expression. Rinforzando (rinf., rfz) requests emphasis. Calando suggests subsiding; morendo dying away. Follow the phrase and edition when translating these directions into timing and intensity.',
-        ru: 'Dolce — нежно; espressivo — выразительно. Rinforzando (rinf., rfz) требует подчёркивания. Calando — затихая; morendo — замирая. Изменения времени и силы звучания уточняйте по фразе и редакции.',
+        ru: 'Dolce — нежно; espressivo — выразительно. Rinforzando (rinf., rfz) требует подчёркивания. Calando — затихая; morendo — замирая. Как именно менять темп и силу звучания, определяйте по фразе и редакции.',
         de: 'Dolce verlangt Lieblichkeit, espressivo Ausdruck. Rinforzando (rinf., rfz) fordert Betonung. Calando bedeutet nachlassend, morendo ersterbend. Übertrage diese Angaben im Zusammenhang mit Phrase und Ausgabe auf Zeitmaß und Intensität.',
       },
       sourceId: 'source-003',
@@ -171,7 +237,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Character: line and expression',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -185,20 +251,20 @@ const content: TopicBundle = {
       },
       aliases: {
         en: 'cantabile; dolce; espressivo; affettuoso; amabile; con anima; con dolore; dolente; sotto voce',
-        ru: 'кантабиле; дольче; эспрессиво; аффеттуозо; амабиле; с душой; с болью; жалобно; вполголоса',
+        ru: 'кантабиле; дольче; эспрессиво; аффеттуозо; амабиле; кон анима; кон долоре; доленте; сотто воче; с душой; с болью; жалобно; скорбно; вполголоса',
         de: 'cantabile; dolce; espressivo; affettuoso; amabile; con anima; con dolore; dolente; sotto voce',
       },
       body: {
-        en: 'Cantabile asks for a singing line; dolce and amabile for gentleness; espressivo for expressive shaping. Affettuoso suggests warmth of feeling, con anima animation of expression, con dolore/dolente sorrow. Sotto voce restrains the delivery. These directions concern the manner of the phrase; they cannot be reduced to one gain or tempo setting.',
-        ru: 'Cantabile требует певучей линии, dolce и amabile — мягкости, espressivo — выразительной формы. Affettuoso передаёт теплоту чувства, con anima — одушевлённость, con dolore/dolente — скорбь. Sotto voce сдерживает подачу звука. Эти указания относятся к ведению фразы и не сводятся к одной настройке громкости или темпа.',
-        de: 'Cantabile verlangt eine singende Linie, dolce und amabile Sanftheit, espressivo ausdrucksvolle Gestaltung. Affettuoso legt gefühlsvolle Wärme nahe, con anima Beseeltheit, con dolore/dolente Schmerz. Sotto voce nimmt den Vortrag zurück. Diese Angaben betreffen die Gestaltung der Phrase, nicht einen einzigen Lautstärke- oder Temporegler.',
+        en: 'Cantabile asks for a singing line; dolce and amabile for gentleness; espressivo for expressive shaping. Affettuoso suggests warmth of feeling, con anima animation of expression, con dolore/dolente sorrow. Sotto voce asks for a hushed undertone. These directions concern the manner of the phrase; they cannot be reduced to one gain or tempo setting.',
+        ru: 'Cantabile требует певучей линии, dolce и amabile — мягкости, espressivo — выразительной формы. Affettuoso передаёт теплоту чувства, con anima — одушевлённость, con dolore/dolente — скорбь. Sotto voce — вполголоса, приглушённо. Эти указания относятся к ведению фразы и не сводятся к одной настройке громкости или темпа.',
+        de: 'Cantabile verlangt eine singende Linie, dolce und amabile Sanftheit, espressivo ausdrucksvolle Gestaltung. Affettuoso legt gefühlsvolle Wärme nahe, con anima Beseeltheit, con dolore/dolente Schmerz. Sotto voce heißt mit gedämpfter Stimme, halblaut. Diese Angaben betreffen die Gestaltung der Phrase, nicht einen einzigen Lautstärke- oder Temporegler.',
       },
       sourceId: 'source-003',
       furtherSourceIds: ['source-032'],
     },
     {
       id: 'Character: motion and weight',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -212,7 +278,7 @@ const content: TopicBundle = {
       },
       aliases: {
         en: 'agitato; animato; brillante; con brio; furioso; tempestoso; tumultuoso; maestoso; marciale; grave; serioso; giusto; grazioso; giocoso; scherzando; piacevole; secco',
-        ru: 'ажитато; анимато; брилланте; кон брио; фуриозо; маэстозо; марциально; граве; сериозо; грациозо; джокозо; скерцандо; сухо',
+        ru: 'ажитато; анимато; брилланте; кон брио; фуриозо; темпестозо; тумультуозо; маэстозо; марчиале; граве; сериозо; джусто; грациозо; джокозо; скерцандо; пьячеволе; секко',
         de: 'agitato; animato; brillante; con brio; furioso; tempestoso; tumultuoso; maestoso; marciale; grave; serioso; giusto; grazioso; giocoso; scherzando; piacevole; secco',
       },
       body: {
@@ -225,7 +291,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Subsiding directions',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -244,7 +310,7 @@ const content: TopicBundle = {
       },
       body: {
         en: 'Calando asks the passage to subside; morendo suggests dying away, perdendosi losing itself, smorzando fading out. The phrase may need both less motion and less intensity. Do not automatically assign every word the same ritardando or volume curve: the printed dynamics, tempo and edition establish the context.',
-        ru: 'Calando предлагает успокоить и ослабить движение; morendo — замирая, perdendosi — теряясь, smorzando — угасая. Фразе могут понадобиться и меньшая подвижность, и меньшая сила. Не назначайте каждому слову одинаковое замедление или кривую громкости: контекст задают выписанные темп, динамика и редакция.',
+        ru: 'Calando — затихая; morendo — замирая, perdendosi — теряясь, smorzando — угасая. Фразе могут понадобиться и меньшая подвижность, и меньшая сила. Не назначайте каждому слову одинаковое замедление или кривую громкости: контекст задают выписанные темп, динамика и редакция.',
         de: 'Calando lässt die Passage nachlassen; morendo bedeutet ersterbend, perdendosi sich verlierend, smorzando verlöschend. Die Phrase kann weniger Bewegung und weniger Intensität verlangen. Ordne nicht jedem Wort dieselbe Verzögerung oder Lautstärkekurve zu: gedruckte Dynamik, Tempo und Ausgabe bestimmen den Zusammenhang.',
       },
       sourceId: 'source-003',
@@ -279,7 +345,7 @@ const content: TopicBundle = {
     },
     {
       id: 'piano (p)',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -292,15 +358,15 @@ const content: TopicBundle = {
         de: 'Piano (p)',
       },
       body: {
-        en: 'The mark p asks for a soft level relative to the passages around it.',
-        ru: 'Знак p требует тихого звучания относительно соседних участков.',
-        de: 'Das Zeichen p verlangt eine im Verhältnis zur Umgebung leise Stufe.',
+        en: 'The mark p (Italian piano, “soft”) asks for a soft level within the dynamic range of the piece. It names no fixed decibel value: how soft depends on the instrument, the ensemble and the musical context.',
+        ru: 'Знак p (итал. piano — «тихо») требует тихого звучания в пределах динамического диапазона пьесы. Фиксированного значения в децибелах он не задаёт: насколько тихо — зависит от инструмента, ансамбля и музыкального контекста.',
+        de: 'Das Zeichen p (ital. piano, „leise“) verlangt eine leise Stufe innerhalb des dynamischen Rahmens des Stücks. Es nennt keinen festen Dezibelwert: Wie leise, hängt von Instrument, Ensemble und musikalischem Zusammenhang ab.',
       },
       sourceId: 'source-012',
     },
     {
       id: 'forte (f)',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -313,15 +379,15 @@ const content: TopicBundle = {
         de: 'Forte (f)',
       },
       body: {
-        en: 'The mark f asks for a loud level relative to the passages around it.',
-        ru: 'Знак f требует громкого звучания относительно соседних участков.',
-        de: 'Das Zeichen f verlangt eine im Verhältnis zur Umgebung laute Stufe.',
+        en: 'The mark f (Italian forte, “loud”) asks for a loud level within the dynamic range of the piece. It names no fixed decibel value: how loud depends on the instrument, the ensemble and the musical context.',
+        ru: 'Знак f (итал. forte — «громко») требует громкого звучания в пределах динамического диапазона пьесы. Фиксированного значения в децибелах он не задаёт: насколько громко — зависит от инструмента, ансамбля и музыкального контекста.',
+        de: 'Das Zeichen f (ital. forte, „laut“) verlangt eine laute Stufe innerhalb des dynamischen Rahmens des Stücks. Es nennt keinen festen Dezibelwert: Wie laut, hängt von Instrument, Ensemble und musikalischem Zusammenhang ab.',
       },
       sourceId: 'source-012',
     },
     {
       id: 'mezzo (mp, mf)',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -336,7 +402,7 @@ const content: TopicBundle = {
       body: {
         en: 'Mezzo means “half” or “moderately”: mp asks for moderately soft playing and mf for moderately loud. These are relative dynamic levels, not an instruction to halve amplitude or perceived loudness.',
         ru: 'Mezzo означает «наполовину» или «умеренно»: mp — умеренно тихо, mf — умеренно громко. Это относительные уровни динамики, а не указание вдвое уменьшить амплитуду или воспринимаемую громкость.',
-        de: 'Mezzo bedeutet „halb“ oder „mäßig“: mp verlangt mäßig leises, mf mäßig lautes Spiel. Gemeint sind relative dynamische Grade, keine Halbierung der Amplitude oder der wahrgenommenen Lautstärke.',
+        de: 'Mezzo bedeutet „halb“ oder „mäßig“: mp verlangt mäßig leises, mf mäßig lautes Spiel. Gemeint sind relative Dynamikstufen, keine Halbierung der Amplitude oder der wahrgenommenen Lautstärke.',
       },
       sourceId: 'source-012',
     },
@@ -363,7 +429,7 @@ const content: TopicBundle = {
     },
     {
       id: 'decrescendo',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -376,15 +442,15 @@ const content: TopicBundle = {
         de: 'Decrescendo',
       },
       body: {
-        en: 'A decrescendo, also written diminuendo, asks for a gradual decrease in loudness.',
-        ru: 'Диминуэндо, оно же декрещендо, — постепенное ослабление звучности.',
-        de: 'Ein Decrescendo, auch Diminuendo geschrieben, verlangt eine allmähliche Abnahme der Lautstärke.',
+        en: 'A decrescendo (decresc.), also called diminuendo (dim.), asks for a gradual decrease in loudness.',
+        ru: 'Диминуэндо (dim.), оно же декрещендо (decresc.), — постепенное ослабление звучности.',
+        de: 'Ein Decrescendo (decresc.), auch Diminuendo (dim.) genannt, verlangt eine allmähliche Abnahme der Lautstärke.',
       },
       sourceId: 'source-012',
     },
     {
       id: 'hairpin',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -397,9 +463,9 @@ const content: TopicBundle = {
         de: 'Gabel',
       },
       body: {
-        en: 'A hairpin is the pair of converging lines that draws a crescendo or decrescendo over the staff.',
-        ru: 'Вилка — пара сходящихся линий, обозначающая крещендо или диминуэндо у нотоносца.',
-        de: 'Eine Gabel ist das Linienpaar, das ein Crescendo oder Decrescendo am Notensystem darstellt.',
+        en: 'A hairpin is a pair of lines joined at one end, drawn alongside the staff. Opening towards the right (<) it marks a crescendo; closing towards the right (>) a decrescendo. It applies only to the span it covers.',
+        ru: 'Вилка — знак из двух линий, сходящихся в одной точке; его ставят у нотоносца. Раскрывающаяся вправо вилка (<) обозначает крещендо, сужающаяся вправо (>) — диминуэндо. Знак действует только на отмеченном им участке.',
+        de: 'Eine Gabel besteht aus zwei Linien, die an einem Ende zusammenlaufen, und steht am Notensystem. Öffnet sie sich nach rechts (<), bedeutet sie Crescendo; schließt sie sich nach rechts (>), Decrescendo. Sie gilt nur für die Strecke, die sie überspannt.',
       },
       sourceId: 'source-012',
     },

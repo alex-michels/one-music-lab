@@ -42,6 +42,21 @@ import type {
 
 const waveTypes: Wave[] = ['sine', 'triangle', 'square', 'sawtooth'];
 
+/**
+ * Where a frequency lies along the generator's slider, from 0 (20 Hz) to 1
+ * (20 kHz). The slider is logarithmic: equal distances are equal ratios, three
+ * decades from end to end.
+ */
+export function frequencyScalePosition(hz: number): number {
+  return Math.log10(hz / 20) / 3;
+}
+const SCALE_MARKS: readonly (readonly [number, string])[] = [
+  [20, '20 Hz'],
+  [100, '100'],
+  [1000, '1k'],
+  [20000, '20k Hz'],
+];
+
 function WaveIcon({ wave }: { wave: Wave }) {
   const d =
     wave === 'sine'
@@ -123,10 +138,16 @@ function useOscilloscope(
           const width = c.clientWidth,
             height = c.clientHeight,
             dpr = Math.min(window.devicePixelRatio || 1, 2);
-          const resized = c.width !== width * dpr || c.height !== height * dpr;
+          // Whole pixels on both sides of the comparison. A canvas stores its
+          // size as an integer, so at a device ratio of 1.25 or 1.5 the
+          // fractional product never matched and the backing store was
+          // reallocated, and the ink re-read, on every frame.
+          const pixelWidth = Math.round(width * dpr);
+          const pixelHeight = Math.round(height * dpr);
+          const resized = c.width !== pixelWidth || c.height !== pixelHeight;
           if (resized) {
-            c.width = width * dpr;
-            c.height = height * dpr;
+            c.width = pixelWidth;
+            c.height = pixelHeight;
           }
           if (resized || !ink) ink = readInk(c);
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -464,11 +485,19 @@ export function PlayLens({
                   setHz(20 * 2 ** (Array.isArray(v) ? v[0] : v))
                 }
               />
+              {/* Each mark stands where the slider puts that frequency. The scale
+                  is logarithmic, so 100 Hz is under a quarter of the way along
+                  and 1 kHz just past the middle; spread evenly, the marks said
+                  200 Hz and 2 kHz. */}
               <div className="range-labels">
-                <span>20 Hz</span>
-                <span>100</span>
-                <span>1k</span>
-                <span>20k Hz</span>
+                {SCALE_MARKS.map(([hz, label]) => (
+                  <span
+                    key={hz}
+                    style={{ left: `${frequencyScalePosition(hz) * 100}%` }}
+                  >
+                    {label}
+                  </span>
+                ))}
               </div>
             </div>
             <div className="transport">

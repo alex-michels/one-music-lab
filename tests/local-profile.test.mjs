@@ -153,6 +153,27 @@ test('All supported chord history slots fit in a portable backup', () => {
     ).toThrow();
   }
 });
+test('Every bass position the Chords lab offers can be saved, and none beyond the chord’s own tones', () => {
+  const save = (chord) => {
+    const p = populated();
+    p.lab.chords.history.present.chords = [{ degree: 0, beats: 4, ...chord }];
+    return parseBackup(serializeProfile(p)).lab.chords.history.present
+      .chords[0];
+  };
+  // A ninth chord has five tones, so its ninth can be the bass (position 4).
+  // Saving that choice used to throw inside the autosave and stop all saving.
+  for (const quality of ['ninth', 'maj9', 'min9'])
+    expect(save({ quality, inversion: 4 })).toMatchObject({
+      quality,
+      inversion: 4,
+    });
+  expect(save({ quality: 'seventh', inversion: 3 }).inversion).toBe(3);
+  // Still bounded by the chord: a seventh chord has no fifth tone, a triad no
+  // fourth, and nothing has a sixth.
+  expect(() => save({ quality: 'seventh', inversion: 4 })).toThrow();
+  expect(() => save({ quality: 'major', inversion: 3 })).toThrow();
+  expect(() => save({ quality: 'maj9', inversion: 5 })).toThrow();
+});
 test('A portable backup round-trips musical settings, chord edits, route and honest counts', () => {
   expect(parseBackup(serializeProfile(populated()))).toEqual(populated());
   const data = memory();

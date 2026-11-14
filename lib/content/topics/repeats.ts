@@ -30,7 +30,7 @@ const content: TopicBundle = {
   },
   lesson: {
     id: 'repeats',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
@@ -51,31 +51,111 @@ const content: TopicBundle = {
       de: 'Verfolge Wiederholungen, Klammern und Sprunganweisungen vor dem Spielen.',
     },
     formula: {
-      en: '‖: … :‖ · [1.] [2.] · D.C. al fine · D.S. al fine',
-      ru: '‖: … :‖ · [1.] [2.] · D.C. al fine · D.S. al fine',
-      de: '‖: … :‖ · [1.] [2.] · D.C. al fine · D.S. al fine',
+      en: '‖: … :‖ · [1.] [2.] · D.C. al Fine · D.S. al Fine',
+      ru: '‖: … :‖ · [1.] [2.] · D.C. al Fine · D.S. al Fine',
+      de: '‖: … :‖ · [1.] [2.] · D.C. al Fine · D.S. al Fine',
     },
     paragraphs: [
       {
-        en: 'A double bar divides one section from the next; a thin line followed by a thick one ends the piece. A repeat sign is a double bar with two dots, and the dots face the music to be played again. When two repeated sections meet, the two signs share a single bar line.',
-        ru: 'Двойная тактовая черта отделяет один раздел от другого; тонкая черта с последующей жирной завершает пьесу. Знак репризы — двойная черта с двумя точками, обращёнными к тому, что играется повторно. Когда два повторяемых раздела соседствуют, оба знака делят одну черту.',
-        de: 'Ein Doppelstrich trennt einen Abschnitt vom nächsten; ein dünner Strich mit folgendem dicken beendet das Stück. Das Wiederholungszeichen ist ein Doppelstrich mit zwei Punkten, wobei die Punkte zu der Musik zeigen, die noch einmal erklingt. Treffen zwei zu wiederholende Abschnitte aufeinander, teilen sich beide Zeichen einen Strich.',
+        en: 'A double bar divides one section from the next; a thin line followed by a thick one ends the piece. A repeat sign is a thin and a thick line with two dots; the dots face the music to be played again. When two repeated sections meet, the two signs share a single bar line.',
+        ru: 'Двойная тактовая черта отделяет один раздел от другого; тонкая черта с последующей жирной завершает пьесу. Знак репризы — тонкая и жирная черты с двумя точками, обращёнными к тому, что играется повторно. Когда два повторяемых раздела соседствуют, оба знака делят одну черту.',
+        de: 'Ein Doppelstrich trennt einen Abschnitt vom nächsten; ein dünner Strich mit folgendem dicken beendet das Stück. Das Wiederholungszeichen besteht aus einem dünnen und einem dicken Strich mit zwei Punkten; die Punkte zeigen zu der Musik, die noch einmal erklingt. Treffen zwei zu wiederholende Abschnitte aufeinander, teilen sich beide Zeichen einen Strich.',
       },
       {
         en: 'Play ending 1 before the repeat, then skip it and take ending 2. Da capo returns to the beginning; dal segno returns to the segno. Al Fine means stop at Fine on the return; al Coda instead directs a transfer to the coda at its indicated point. Read the complete instruction before tracing the route.',
         ru: 'Перед повтором сыграйте первую вольту, затем пропустите её и перейдите ко второй. Da capo возвращает к началу, dal segno — к сеньо. Al Fine означает остановиться у Fine после возврата; al Coda — перейти в коду в указанном месте. Прослеживайте путь, прочитав указание целиком.',
-        de: 'Spiele vor der Wiederholung die erste Klammer, überspringe sie danach und nimm die zweite. Da capo führt zum Anfang, dal segno zum Segno. Al Fine verlangt beim Rücklauf den Schluss bei Fine; al Coda stattdessen den Sprung zur Coda an der bezeichneten Stelle. Lies die vollständige Anweisung, bevor du den Weg verfolgst.',
+        de: 'Spiele vor der Wiederholung die erste Klammer, überspringe sie danach und nimm die zweite. Da capo führt zum Anfang, dal segno zum Segno. Al Fine verlangt, nach dem Rücksprung bei Fine zu schließen; al Coda stattdessen den Sprung zur Coda an der bezeichneten Stelle. Lies die vollständige Anweisung, bevor du den Weg verfolgst.',
       },
     ],
+    guide: {
+      question: {
+        en: 'When the score sends you back, in what order do you actually play what is printed?',
+        ru: 'В каком порядке играть записанное, если ноты отправляют вас назад?',
+        de: 'In welcher Reihenfolge spielst du das Gedruckte, wenn die Noten dich zurückschicken?',
+      },
+      example: [
+        {
+          en: 'Start with a four-note figure: C4, D4, E4, G4. Played once, it has four attacks.',
+          ru: 'Начните с фигуры из четырёх нот: до, ре, ми, соль первой октавы. Сыгранная один раз, она даёт четыре атаки.',
+          de: 'Beginne mit einer Figur aus vier Tönen: c′, d′, e′, g′. Einmal gespielt, hat sie vier Einsätze.',
+          ruMarkup:
+            'Начните с фигуры из четырёх нот: [[до]], [[ре]], [[ми]], [[соль]] первой октавы. Сыгранная один раз, она даёт четыре атаки.',
+        },
+        {
+          en: 'Put it between repeat signs: ‖: C4 D4 E4 G4 :‖. The dots face the music to be played again, so the figure sounds twice: eight attacks.',
+          ru: 'Поставьте её между знаками репризы: ‖: до ре ми соль :‖. Точки обращены к тому, что играется повторно, поэтому фигура звучит дважды: восемь атак.',
+          de: 'Setze sie zwischen Wiederholungszeichen: ‖: c′ d′ e′ g′ :‖. Die Punkte zeigen zu der Musik, die noch einmal erklingt, also wird die Figur zweimal gespielt: acht Einsätze.',
+          ruMarkup:
+            'Поставьте её между знаками репризы: ‖: [[до]] [[ре]] [[ми]] [[соль]] :‖. Точки обращены к тому, что играется повторно, поэтому фигура звучит дважды: восемь атак.',
+        },
+        {
+          en: 'Now give the repeat two endings. The first three notes, C4 D4 E4, form the body, A; ending 1 holds G4 and ending 2 holds C4.',
+          ru: 'Теперь добавьте к повтору две вольты. Первые три ноты, до ре ми, — основной участок А; в первой вольте стоит соль, во второй — до.',
+          de: 'Versieh die Wiederholung nun mit zwei Klammern. Die ersten drei Töne, c′ d′ e′, bilden Abschnitt A; unter Klammer 1 steht g′, unter Klammer 2 c′.',
+          ruMarkup:
+            'Теперь добавьте к повтору две вольты. Первые три ноты, [[до]] [[ре]] [[ми]], — основной участок А; в первой вольте стоит [[соль]], во второй — [[до]].',
+        },
+        {
+          en: 'First pass: play A and ending 1, C4 D4 E4 G4. Go back, play A again, skip ending 1 and take ending 2: C4 D4 E4 C4.',
+          ru: 'Первое проведение: участок А и первая вольта — до ре ми соль. Вернитесь, сыграйте А ещё раз, пропустите первую вольту и перейдите ко второй: до ре ми до.',
+          de: 'Erster Durchgang: Abschnitt A und Klammer 1, also c′ d′ e′ g′. Geh zurück, spiele A noch einmal, überspringe Klammer 1 und nimm Klammer 2: c′ d′ e′ c′.',
+          ruMarkup:
+            'Первое проведение: участок А и первая вольта — [[до]] [[ре]] [[ми]] [[соль]]. Вернитесь, сыграйте А ещё раз, пропустите первую вольту и перейдите ко второй: [[до]] [[ре]] [[ми]] [[до]].',
+        },
+        {
+          en: 'The route is A, ending 1, A, ending 2. There are still eight attacks, but the last note is now C4 instead of G4.',
+          ru: 'Получился путь: А, первая вольта, А, вторая вольта. Атак по-прежнему восемь, но последняя нота теперь до, а не соль.',
+          de: 'Der Weg lautet A, Klammer 1, A, Klammer 2. Es bleiben acht Einsätze, aber der letzte Ton ist jetzt c′ statt g′.',
+          ruMarkup:
+            'Получился путь: А, первая вольта, А, вторая вольта. Атак по-прежнему восемь, но последняя нота теперь [[до]], а не [[соль]].',
+        },
+      ],
+      listen: {
+        en: 'Play “Four-note figure”, then “Repeat the figure” and “Repeat with a changed ending”. Both repeated examples have eight attacks. Listen for the last pitch: G4 in the plain repeat, C4 where the ending changes.',
+        ru: 'Послушайте пример «Фигура из четырёх нот», затем «Повторить фигуру» и «Повторить с другим окончанием». В обоих примерах с повтором восемь атак. Вслушайтесь в последнюю высоту: при простом повторе это соль первой октавы, при другом окончании — до той же октавы.',
+        de: 'Spiele „Figur aus vier Tönen“, dann „Die Figur wiederholen“ und „Mit geändertem Schluss wiederholen“. Beide Wiederholungsbeispiele haben acht Einsätze. Achte auf den letzten Ton: g′ bei der einfachen Wiederholung, c′ beim geänderten Schluss.',
+        ruMarkup:
+          'Послушайте пример «Фигура из четырёх нот», затем «Повторить фигуру» и «Повторить с другим окончанием». В обоих примерах с повтором восемь атак. Вслушайтесь в последнюю высоту: при простом повторе это [[соль]] первой октавы, при другом окончании — [[до]] той же октавы.',
+      },
+      mistake: {
+        en: 'Ending 1 is not played again on the second pass. It is tempting to go through it once more and only then reach ending 2, but after going back you skip ending 1 and take ending 2. In the example that gives C4 D4 E4 C4, not C4 D4 E4 G4 C4.',
+        ru: 'Во втором проведении первая вольта не играется. Легко пройти её ещё раз и лишь потом попасть во вторую, но после возврата первую вольту нужно пропустить и перейти ко второй. В примере это до ре ми до, а не до ре ми соль до.',
+        de: 'Klammer 1 wird im zweiten Durchgang nicht noch einmal gespielt. Es liegt nahe, sie erneut zu durchlaufen und erst dann zu Klammer 2 zu gehen, doch nach dem Rücksprung überspringst du Klammer 1 und nimmst Klammer 2. Im Beispiel heißt das c′ d′ e′ c′, nicht c′ d′ e′ g′ c′.',
+        ruMarkup:
+          'Во втором проведении первая вольта не играется. Легко пройти её ещё раз и лишь потом попасть во вторую, но после возврата первую вольту нужно пропустить и перейти ко второй. В примере это [[до]] [[ре]] [[ми]] [[до]], а не [[до]] [[ре]] [[ми]] [[соль]] [[до]].',
+      },
+      takeaways: [
+        {
+          en: 'Read the complete instruction and trace the route before you play.',
+          ru: 'Прочитайте указание целиком и проследите путь, прежде чем играть.',
+          de: 'Lies die vollständige Anweisung und verfolge den Weg, bevor du spielst.',
+        },
+        {
+          en: 'The dots of a repeat sign face the music to be played again.',
+          ru: 'Точки знака репризы обращены к тому, что играется повторно.',
+          de: 'Die Punkte des Wiederholungszeichens zeigen zu der Musik, die noch einmal erklingt.',
+        },
+        {
+          en: 'Ending 1 is played before the repeat; the second time you skip it and take ending 2.',
+          ru: 'Первую вольту играют перед повтором; во второй раз её пропускают и переходят ко второй.',
+          de: 'Klammer 1 spielst du vor der Wiederholung; beim zweiten Mal überspringst du sie und nimmst Klammer 2.',
+        },
+        {
+          en: 'Da capo returns to the beginning and dal segno to the segno; al Fine means stop at Fine on the return.',
+          ru: 'Da capo возвращает к началу, dal segno — к сеньо; al Fine означает остановиться у Fine после возврата.',
+          de: 'Da capo führt zum Anfang, dal segno zum Segno; al Fine verlangt, nach dem Rücksprung bei Fine zu schließen.',
+        },
+      ],
+    },
     sourceId: 'source-056',
     experimentId: 'repeats',
     reading: {
       pages: '18–22',
       sourceId: 'source-016',
       text: {
-        en: 'Trace a route before playing: for a body A with endings B and C, repeat signs and first/second endings give A–B–A–C. D.C. returns to the beginning, D.S. to the segno; al Fine or al Coda supplies the stopping or transfer instruction. A percent repeat substitutes a previous measure; tremolo slashes abbreviate repetitions. simile asks you to continue the established manner.',
-        ru: 'Перед исполнением проследите путь: основной участок А с окончаниями Б и В под первой и второй вольтами даёт А–Б–А–В. D.C. возвращает к началу, D.S. — к сеньо; al Fine или al Coda уточняет остановку или переход. Знак повторения такта заменяет предыдущий такт; черты тремоло сокращают запись повторений. Simile предлагает продолжать установленный способ исполнения.',
-        de: 'Verfolge vor dem Spielen den Weg: Ein Abschnitt A mit den Endungen B und C unter erster und zweiter Klammer ergibt A–B–A–C. D.C. führt zum Anfang, D.S. zum Segno; al Fine oder al Coda bestimmt Halt oder Weiterleitung. Ein Taktwiederholungszeichen ersetzt den vorigen Takt; Tremolostriche kürzen Wiederholungen ab. Simile verlangt die Fortsetzung der etablierten Spielweise.',
+        en: 'Trace a route before playing: for a body A with endings B and C, repeat signs and first/second endings give A–B–A–C. D.C. returns to the beginning, D.S. to the segno; al Fine or al Coda supplies the stopping or transfer instruction. A measure-repeat sign (it looks like a percent sign) means: play the previous measure again; tremolo slashes abbreviate repeated notes. Simile asks you to continue the established manner.',
+        ru: 'Перед исполнением проследите путь: основной участок А с окончаниями Б и В под первой и второй вольтами даёт А–Б–А–В. D.C. возвращает к началу, D.S. — к сеньо; al Fine или al Coda уточняет остановку или переход. Знак повторения такта (похож на знак процента) означает: сыграть предыдущий такт ещё раз; черты тремоло сокращают запись повторяющихся звуков. Simile предлагает продолжать установленный способ исполнения.',
+        de: 'Verfolge vor dem Spielen den Weg: Ein Abschnitt A mit den Schlüssen B und C unter erster und zweiter Klammer ergibt A–B–A–C. D.C. führt zum Anfang, D.S. zum Segno; al Fine oder al Coda bestimmt, wo du aufhörst oder wohin du springst. Ein Taktwiederholungszeichen (es ähnelt dem Prozentzeichen) bedeutet: den vorigen Takt noch einmal spielen; Tremolostriche kürzen Tonwiederholungen ab. Simile verlangt, die bisherige Spielweise fortzusetzen.',
       },
       assetIds: [
         'figure-tremolo',
@@ -135,7 +215,7 @@ const content: TopicBundle = {
   concepts: [
     {
       id: 'Tremolo notation',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -148,9 +228,9 @@ const content: TopicBundle = {
         de: 'Tremolonotation',
       },
       body: {
-        en: 'Stem slashes abbreviate repeated notes; strokes between notes can indicate alternation. Distinguish measured and unmeasured instructions.',
+        en: 'Slashes through a stem abbreviate repetitions of one note; strokes between two notes indicate alternation between them. Distinguish tremolo with an exactly notated rhythm (measured) from tremolo without an exact number of repetitions (unmeasured).',
         ru: 'Черты на штиле сокращённо обозначают повторение звука; черты между нотами — чередование звуков. Различайте тремоло с точно заданным ритмом и тремоло без точного числа повторений.',
-        de: 'Halsstriche kürzen Tonwiederholungen ab; Striche zwischen Noten können einen Wechsel anzeigen. Unterscheide gemessene und ungemessene Angaben.',
+        de: 'Striche durch den Hals kürzen Tonwiederholungen ab; Striche zwischen zwei Noten zeigen einen Wechsel dieser Töne an. Unterscheide das Tremolo mit genau notiertem Rhythmus (gemessen) vom Tremolo ohne genaue Zahl der Wiederholungen (ungemessen).',
       },
       sourceId: 'source-016',
     },
@@ -177,7 +257,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Figured bass',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -190,9 +270,9 @@ const content: TopicBundle = {
         de: 'Generalbass',
       },
       body: {
-        en: 'Figures attached to a bass indicate intervals for a harmonic realization. They are not interchangeable with modern chord symbols.',
+        en: 'Figures attached to a bass part indicate intervals above the bass, from which the player builds the other voices. For example, the figure 6 indicates a sixth above the bass. These figures are not interchangeable with modern chord symbols.',
         ru: 'Цифры при басовом голосе указывают интервалы над басом, по которым исполнитель строит остальные голоса. Например, цифра 6 указывает сексту над басом. Эти обозначения нельзя напрямую заменять современными буквенными обозначениями аккордов.',
-        de: 'Ziffern zu einer Bassstimme geben Intervalle für die harmonische Aussetzung an. Sie sind nicht mit heutigen Akkordsymbolen austauschbar.',
+        de: 'Ziffern zu einer Bassstimme geben Intervalle über dem Bass an, aus denen der Spieler die übrigen Stimmen bildet. Die Ziffer 6 zum Beispiel bezeichnet eine Sexte über dem Bass. Solche Ziffern sind nicht mit heutigen Akkordsymbolen austauschbar.',
       },
       aliases: {
         en: 'thoroughbass',
@@ -268,7 +348,7 @@ const content: TopicBundle = {
     },
     {
       id: 'repeat sign',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -281,15 +361,15 @@ const content: TopicBundle = {
         de: 'Wiederholungszeichen',
       },
       body: {
-        en: 'A repeat sign is a double bar with two dots, and the dots face the music to be played again.',
-        ru: 'Знак репризы — двойная черта с двумя точками, обращёнными к музыке, которую играют повторно.',
-        de: 'Das Wiederholungszeichen ist ein Doppelstrich mit zwei Punkten, die zu der noch einmal zu spielenden Musik zeigen.',
+        en: 'A repeat sign is a thin and a thick bar line with two dots; the dots face the music to be played again.',
+        ru: 'Знак репризы — тонкая и жирная черты с двумя точками, обращёнными к музыке, которую играют повторно.',
+        de: 'Das Wiederholungszeichen besteht aus einem dünnen und einem dicken Strich mit zwei Punkten, die zu der noch einmal zu spielenden Musik zeigen.',
       },
       sourceId: 'source-016',
     },
     {
       id: 'first and second endings',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -302,9 +382,9 @@ const content: TopicBundle = {
         de: 'Wiederholungsklammer',
       },
       body: {
-        en: 'First and second endings are bracketed bars that give the repeat a different continuation.',
-        ru: 'Вольты — отмеченные скобками такты, дающие повторению другое продолжение.',
-        de: 'Wiederholungsklammern sind eingeklammerte Takte, die der Wiederholung einen anderen Fortgang geben.',
+        en: 'First and second endings are bars under numbered brackets (1., 2.) that give the repeat a different continuation.',
+        ru: 'Вольты — такты под скобками с цифрами 1 и 2, дающие повторению другое продолжение.',
+        de: 'Wiederholungsklammern (1., 2.) stehen über den Takten, die der Wiederholung einen anderen Fortgang geben.',
       },
       sourceId: 'source-016',
     },

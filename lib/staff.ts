@@ -21,7 +21,7 @@ export const diatonic = (
 
 /**
  * The diatonic value that sits on each clef's bottom line. Treble puts g′ on
- * the second line, which places e′ on the first; bass puts F on the fourth,
+ * the second line, which places e′ on the first; bass puts f on the fourth,
  * which places G on the first; both C clefs put c′ on the line they name.
  */
 const bottomLine: Record<Clef, number> = {
@@ -108,7 +108,10 @@ export function ledgerSteps(step: number): number[] {
   return lines;
 }
 
-/** Stems point away from the middle line; a note on it turns its stem down. */
+/**
+ * Stems point toward the middle of the staff: notes below the middle line stem
+ * up, notes on or above it stem down.
+ */
 export const stemDirection = (step: number): 'up' | 'down' =>
   step < 4 ? 'up' : 'down';
 

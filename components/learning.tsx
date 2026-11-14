@@ -12,6 +12,7 @@ import { practiceHints } from '@/lib/practice-hints';
 import { PracticeHints, AttemptNotice, checkLabel } from './practice-coach';
 import {
   CourseIndex,
+  CourseResume,
   LessonConnections,
   LessonNavigation,
 } from './course-navigation';
@@ -22,7 +23,6 @@ import { translator, type Translate } from '@/lib/i18n';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { count } from '@/lib/plural';
 import {
-  ArrowLeft,
   ArrowRight,
   ArrowUpRight,
   Check,
@@ -34,6 +34,7 @@ import {
   X,
 } from 'lucide-react';
 import { exerciseExplanations, lessons, terms } from '@/lib/learning';
+import { lessonGuides } from '@/lib/content/adapters';
 import {
   TOPIC_IDS,
   TOPIC_KINDS,
@@ -64,6 +65,9 @@ import { NotationFigure } from './notation-figure';
 import { NotationResponse } from './notation-response';
 import { NotationReading } from './notation-reading';
 import { NoteText } from './note-text';
+import { AnswerMark } from './answer-mark';
+import { LessonListen } from './lesson-listen';
+import type { ListenPlan } from '@/lib/lesson-listening';
 import type { Wave } from '@/lib/music';
 type Lang = import('@/lib/client-store').Lang;
 
@@ -187,12 +191,15 @@ function InlineExercise({
           <button
             key={option.id}
             disabled={chosen !== null}
+            // As in the drill: once answered, the right option is marked
+            // whether or not it was the one chosen. A miss used to show only
+            // that it was a miss and never what the answer was.
             className={
-              chosen === option.id
-                ? verdict?.correct
-                  ? 'answer-correct'
-                  : 'answer-wrong'
-                : ''
+              chosen !== null && option.id === item.answer
+                ? 'answer-correct'
+                : chosen === option.id
+                  ? 'answer-wrong'
+                  : ''
             }
             onClick={() => {
               if (chosen !== null) return;
@@ -204,11 +211,22 @@ function InlineExercise({
               setChosen(option.id);
             }}
           >
-            <NoteText
-              text={option.label}
-              markup={option.labelMarkup}
-              lang={lang}
-            />
+            {/* One box for the label: a Russian label is several runs of text
+                and italic note names, and the button spreads its children. */}
+            <span>
+              <NoteText
+                text={option.label}
+                markup={option.labelMarkup}
+                lang={lang}
+              />
+            </span>
+            {/* A mark and words as well as a tint: the two tints are equally
+                dark, and a tint says nothing to a screen reader. */}
+            {chosen !== null && option.id === item.answer ? (
+              <AnswerMark kind="correct" lang={lang} />
+            ) : chosen === option.id ? (
+              <AnswerMark kind="chosen" lang={lang} />
+            ) : null}
           </button>
         ))}
       </div>
@@ -218,7 +236,16 @@ function InlineExercise({
             verdict.correct ? 'answer-feedback' : 'answer-feedback incorrect'
           }
         >
-          <NoteText text={exerciseExplanations[verdict.tag]} lang={lang} />
+          {/* The verdict in words first, so it does not rest on colour. */}
+          <strong>
+            {verdict.correct
+              ? t('That’s right.', 'Верно.')
+              : t('Not quite.', 'Не совсем.')}
+          </strong>{' '}
+          {/* The sentence for the kind of mistake; a right answer needs none. */}
+          {!verdict.correct && (
+            <NoteText text={exerciseExplanations[verdict.tag]} lang={lang} />
+          )}
           {item.explanation && (
             <span>
               {' '}
@@ -252,28 +279,43 @@ function InlineExercise({
   );
 }
 
+const guideLabels = {
+  question: nt('The question', 'Вопрос урока', 'Die Frage'),
+  example: nt('Step by step', 'Разберём по шагам', 'Schritt für Schritt'),
+  listen: nt('Listen for', 'На что обратить внимание', 'Darauf achten'),
+  mistake: nt('A common mix-up', 'Частая ошибка', 'Häufige Verwechslung'),
+  takeaways: nt('Keep in mind', 'Запомните', 'Merke dir'),
+};
+
 export function Theory({
   lang,
   lessonId,
-  setLessonId,
   openLab,
   anchor,
+  recent = null,
+  listen,
+  stopSound,
 }: {
   lang: Lang;
   lessonId: string | null;
-  setLessonId: (id: string | null) => void;
   openLab: (hz: number, wave: Wave, lessonId: string) => void;
   anchor: string | null;
+  /** The lesson last opened for reading, which the index offers to continue. */
+  recent?: string | null;
+  /**
+   * Starts one of the lesson's own sound examples. Without it the lesson is
+   * text and figures only and says nothing about sound it cannot make.
+   */
+  listen?: (plan: ListenPlan) => Promise<void>;
+  stopSound?: () => void;
 }) {
   const t = translator(lang);
   const lesson = lessons.find((l) => l.id === lessonId);
-  if (lesson)
+  if (lesson) {
+    // Every lesson has a walk-through: the content schema requires one.
+    const guide = lessonGuides[lesson.id as TopicId];
     return (
       <article className="lens-read lesson-article">
-        <button className="text-button" onClick={() => setLessonId(null)}>
-          <ArrowLeft size={16} />
-          {t('All foundations', 'Все основы')}
-        </button>
         <LessonConnections topic={lesson.id as TopicId} lang={lang} />
         <section className="lesson-goal">
           <h2>
@@ -287,6 +329,11 @@ export function Theory({
             <NoteText text={lesson.summary} lang={lang} />
           </p>
         </section>
+        {/* The question the explanation answers, asked before it begins. */}
+        <p className="lesson-question">
+          <span>{guideLabels.question[lang]}</span>
+          <NoteText text={guide.question} lang={lang} />
+        </p>
         <h2>
           {nt('How it works', 'Как это устроено', 'So funktioniert es')[lang]}
         </h2>
@@ -295,29 +342,63 @@ export function Theory({
             <NoteText text={p} lang={lang} />
           </p>
         ))}
+        {/* One example, one step at a time, with the lesson's own numbers. */}
+        <section className="lesson-example">
+          <h2>{guideLabels.example[lang]}</h2>
+          {/* An explicit list role: the markers are drawn, and a list
+              without native markers is not announced as one everywhere. */}
+          <ol role="list">
+            {guide.example.map((step, index) => (
+              <li key={index}>
+                {/* One box beside the number. A Russian step is several
+                    runs of text and italic note names; set straight into
+                    the row's grid, each run became a cell of its own and
+                    the sentence fell apart into one line per note name. */}
+                <span>
+                  <NoteText text={step} lang={lang} />
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
         <h2>
-          {nt('At a glance', 'Главное на примере', 'Auf einen Blick')[lang]}
+          {nt('At a glance', 'Коротко о главном', 'Auf einen Blick')[lang]}
         </h2>
         <div className="formula">
           <NoteText text={lesson.formula} lang={lang} />
         </div>
         <NotationReading topic={lesson.id} lang={lang} />
-        <LessonProgress topic={lesson.id as TopicId} lang={lang} />
-        {/* Explain and show the musical example before asking the reader to apply it. */}
-        <InlineExercise
-          key={`${lesson.id}-${anchor ?? ''}-${lang}`}
-          lang={lang}
-          topic={lesson.id}
-          anchor={anchor}
-        />
-        {/* The experiment card links the explanation to its laboratory. */}
-        <aside className="breakout lesson-experiment">
-          <div className="eyebrow">{t('MAKE IT AUDIBLE', 'УСЛЫШЬТЕ ЭТО')}</div>
-          <Headphones size={32} />
-          <h3>{t('Try it in the lab', 'Попробуйте в лаборатории')}</h3>
+        {/* Hearing comes before the question: the reader meets the sound the
+            text describes, then is asked about it. On a wide page this card
+            stays beside the text for the whole lesson. */}
+        <aside className="lesson-experiment">
+          <div className="eyebrow">
+            <Headphones size={16} aria-hidden="true" />
+            {t('MAKE IT AUDIBLE', 'УСЛЫШЬТЕ ЭТО')}
+          </div>
+          {/* A second-level heading like its siblings: as the page's only h3
+              it read as a subsection of whatever happened to precede it. */}
+          <h2>{t('Try it in the lab', 'Попробуйте в лаборатории')}</h2>
           <p>
             <NoteText text={lesson.experiment} lang={lang} />
           </p>
+          {/* What the ear should look for, beside the buttons that sound it. */}
+          <p className="listen-for">
+            <strong>{guideLabels.listen[lang]}:</strong>{' '}
+            <NoteText text={guide.listen} lang={lang} />
+          </p>
+          {listen &&
+            stopSound && (
+              // Keyed on the lesson: the next lesson's first button must not
+              // inherit "sounding" from the example that was playing in this one.
+              <LessonListen
+                key={lesson.id}
+                topic={lesson.id as TopicId}
+                lang={lang}
+                play={listen}
+                stop={stopSound}
+              />
+            )}
           <div className="lesson-experiment-actions">
             <button
               className="primary-button"
@@ -331,6 +412,32 @@ export function Theory({
                 one button up. A second link to the same place is not a route. */}
           </div>
         </aside>
+        {/* The confusion this lesson's own feedback corrects, named before the
+            reader meets it in a question. */}
+        <aside className="lesson-mistake">
+          <h2>{guideLabels.mistake[lang]}</h2>
+          <p>
+            <NoteText text={guide.mistake} lang={lang} />
+          </p>
+        </aside>
+        {/* Explain, show and sound the musical example before asking the reader to apply it. */}
+        <InlineExercise
+          key={`${lesson.id}-${anchor ?? ''}-${lang}`}
+          lang={lang}
+          topic={lesson.id}
+          anchor={anchor}
+        />
+        {/* What to carry into the next lesson, in the lesson's own words. */}
+        <section className="lesson-takeaways">
+          <h2>{guideLabels.takeaways[lang]}</h2>
+          <ul role="list">
+            {guide.takeaways.map((point, index) => (
+              <li key={index}>
+                <NoteText text={point} lang={lang} />
+              </li>
+            ))}
+          </ul>
+        </section>
         <a
           className="source-link"
           href={lesson.source}
@@ -340,11 +447,15 @@ export function Theory({
           {t('Further reading', 'Для дальнейшего чтения')}
           <ArrowUpRight size={15} />
         </a>
+        {/* The reader's own marker belongs at the end of the lesson it marks. */}
+        <LessonProgress topic={lesson.id as TopicId} lang={lang} />
         <LessonNavigation topic={lesson.id as TopicId} lang={lang} />
       </article>
     );
+  }
   return (
-    <div className="lens-read">
+    <div className="lens-read course-home">
+      <CourseResume lang={lang} recent={recent} />
       <CourseIndex route={{ lang, lens: 'read', topic: null, anchor: null }} />
       <p className="culture-note">
         {t(
@@ -400,6 +511,7 @@ export function Encyclopedia({
   const [opened, setOpened] = useState<string | null>(
     () => terms.find((term) => termAnchor(term) === anchor)?.title.en ?? null,
   );
+  const entryRef = useRef<HTMLElement>(null);
   // The index opens alphabetically, which is what a reference is for.
   const [sortBy, setSortBy] = useState<SortBy>('term');
   const [ascending, setAscending] = useState(true);
@@ -421,7 +533,7 @@ export function Encyclopedia({
   const hint: Record<Lang, string> = {
     en: 'Try “pitch”, “interval”, or a shorter search.',
     ru: 'Попробуйте «высота», «строй» или более короткий запрос.',
-    de: 'Versuchen Sie „Tonhöhe“, „Stimmung“ oder eine kürzere Suche.',
+    de: 'Versuche „Tonhöhe“, „Stimmung“ oder eine kürzere Suche.',
   };
 
   // The two facets are not independent — a kind is a set of topics — so
@@ -566,7 +678,15 @@ export function Encyclopedia({
                   type="button"
                   className={term === entry ? 'term-row selected' : 'term-row'}
                   aria-pressed={term === entry}
-                  onClick={() => setOpened(term.title.en)}
+                  onClick={() => {
+                    setOpened(term.title.en);
+                    // On a narrow page the entry is below the list. Bring it
+                    // into view once it has rendered; beside the list it is
+                    // already visible and nothing moves.
+                    requestAnimationFrame(() =>
+                      entryRef.current?.scrollIntoView?.({ block: 'nearest' }),
+                    );
+                  }}
                 >
                   {/* Hue never carries the meaning alone: the kind is also
                       written out, so the index survives deuteranopia and print. */}
@@ -615,7 +735,7 @@ export function Encyclopedia({
         </div>
 
         {entry && (
-          <article className="term-entry">
+          <article className="term-entry" ref={entryRef}>
             <p className="term-entry-kind">
               <span className="kind-bar" data-kind={kindOf(entry)} />
               {kindName[kindOf(entry)]} ·{' '}
@@ -836,12 +956,22 @@ export function Practice({
             )[lang]
           }
         </p>
-        <a href={hashOf({ lang, topic, lens: 'play', anchor: null })}>
-          {nt('Open the lab', 'Открыть лабораторию', 'Labor öffnen')[lang]}
-        </a>
-        <a href={hashOf({ lang, topic, lens: 'read', anchor: null })}>
-          {nt('Read the lesson', 'Читать урок', 'Lektion lesen')[lang]}
-        </a>
+        {/* Two ways on, drawn as the two actions they are: bare links here
+            took the page's ink and ran together as one unreadable phrase. */}
+        <div className="practice-unavailable-actions">
+          <a
+            className="primary-button"
+            href={hashOf({ lang, topic, lens: 'play', anchor: null })}
+          >
+            {nt('Open the lab', 'Открыть лабораторию', 'Labor öffnen')[lang]}
+          </a>
+          <a
+            className="text-button"
+            href={hashOf({ lang, topic, lens: 'read', anchor: null })}
+          >
+            {nt('Read the lesson', 'Читать урок', 'Lektion lesen')[lang]}
+          </a>
+        </div>
       </section>
     );
   return (

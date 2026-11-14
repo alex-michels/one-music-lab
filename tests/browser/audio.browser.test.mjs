@@ -163,6 +163,86 @@ midRenderTest('Stopping fades the tone out and leaves silence', async () => {
   expect(rms(channel, seconds(0.4), seconds(0.6))).toBeLessThan(0.0005);
 });
 
+midRenderTest(
+  'An interrupted preview note is released without a click and then stays silent',
+  async () => {
+    // A low square wave is the worst case: its level sits at full scale all
+    // the time, so cutting it anywhere is a full-height step in the signal.
+    const engine = offlineEngine(0.6);
+    await engine.preview([110], 'square', 1, 0.5);
+    const suspended = engine.context.suspend(0.2);
+    const rendering = engine.context.render();
+    await suspended;
+    engine.stopAll();
+    void engine.context.resume();
+    const channel = (await rendering).getChannelData(0);
+
+    const sounding = rms(channel, seconds(0.1), seconds(0.19));
+    expect(sounding).toBeGreaterThan(0.01);
+    // The envelope falls steadily after the stop: each 10 ms is quieter than
+    // the one before, instead of the level dropping to zero in one sample.
+    const window = (from) => rms(channel, seconds(from), seconds(from + 0.01));
+    expect(window(0.2)).toBeGreaterThan(window(0.21));
+    expect(window(0.21)).toBeGreaterThan(window(0.23));
+    // A cut would leave nothing 5 ms later; a release is still audible there
+    // and well below the note.
+    const tail = rms(channel, seconds(0.203), seconds(0.208));
+    expect(tail).toBeGreaterThan(sounding * 0.2);
+    expect(tail).toBeLessThan(sounding);
+    // And it is over quickly: silence long before the note's own end at 0.5 s.
+    expect(rms(channel, seconds(0.3), seconds(0.6))).toBeLessThan(0.0005);
+  },
+);
+
+midRenderTest(
+  'A sequence stopped just before its next note stays silent: the note that was due is never heard',
+  async () => {
+    // Two notes half a second apart. The second is due at 0.51 s; the stop
+    // comes at 0.5 s, ten milliseconds before it. Released like a sounding
+    // voice, it would lose its "start from silence" and be heard as a blip.
+    const engine = offlineEngine(0.9);
+    await engine.preview([110, 110], 'square', 1, 0.3, 0.5);
+    const suspended = engine.context.suspend(0.5);
+    const rendering = engine.context.render();
+    await suspended;
+    engine.stopAll();
+    void engine.context.resume();
+    const channel = (await rendering).getChannelData(0);
+
+    // The first note sounded, and had ended by itself before the stop.
+    expect(rms(channel, seconds(0.1), seconds(0.25))).toBeGreaterThan(0.01);
+    // Nothing at all from the stop onwards, where the second note would be.
+    expect(peak(channel, seconds(0.5), seconds(0.9))).toBeLessThan(0.0005);
+  },
+);
+
+midRenderTest(
+  'A note stopped while it is still rising ends smoothly, without a step in the signal',
+  async () => {
+    // The stop comes 10 ms into the 20 ms rise. Cancelling the rise would
+    // snap the level back to zero in one sample.
+    const engine = offlineEngine(0.3);
+    await engine.preview([440], 'sine', 1, 0.25);
+    const suspended = engine.context.suspend(0.02);
+    const rendering = engine.context.render();
+    await suspended;
+    engine.stopAll();
+    void engine.context.resume();
+    const channel = (await rendering).getChannelData(0);
+
+    const loudest = peak(channel);
+    expect(loudest).toBeGreaterThan(0.01);
+    // A 440 Hz sine moves at most 2π·440/48000 ≈ 5.8% of its height per
+    // sample. A cut is a jump of most of the height at once.
+    let jump = 0;
+    for (let i = 1; i < channel.length; i++)
+      jump = Math.max(jump, Math.abs(channel[i] - channel[i - 1]));
+    expect(jump).toBeLessThan(loudest * 0.12);
+    // It is over promptly: silence well before the note's own end at 0.26 s.
+    expect(peak(channel, seconds(0.16), seconds(0.3))).toBeLessThan(0.0005);
+  },
+);
+
 audioTest(
   'A frequency above the Nyquist limit is clamped, not aliased',
   async () => {

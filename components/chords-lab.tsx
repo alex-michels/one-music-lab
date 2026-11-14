@@ -600,7 +600,9 @@ export function ChordsLab({
                 aria-label={`${t('Chord', 'Аккорд')} ${i + 1}: ${chordSymbol(key, item, lang)}${
                   moved(item) === 0
                     ? ''
-                    : `, ${count(Math.abs(moved(item)), lang, 'octaves')} ${
+                    : // Russian counts the distance in the accusative after
+                      // «на»: «на 1 октаву вверх», not «1 октаву вверх».
+                      `, ${lang === 'ru' ? 'на ' : ''}${count(Math.abs(moved(item)), lang, 'octaves')} ${
                         moved(item) > 0 ? t('up', 'вверх') : t('down', 'вниз')
                       }`
                 }`}
@@ -653,48 +655,57 @@ export function ChordsLab({
             {t('Selected', 'Выбран')} {selected + 1} / {chords.length}
             {draft.edited ? t(' · edited', ' · изменено') : ''}
           </output>
+          {/* Icon-only buttons: each is named for assistive technology and,
+              through `title`, says the same thing to a pointer that rests on
+              it. Six unlabelled glyphs in a row were a guessing game. */}
           <div>
             <button
               aria-label={t('Undo', 'Отменить')}
+              title={t('Undo', 'Отменить')}
               disabled={history.past.length === 0}
               onClick={undo}
             >
-              <Undo2 size={16} />
+              <Undo2 size={16} aria-hidden="true" />
             </button>
             <button
               aria-label={t('Redo', 'Вернуть')}
+              title={t('Redo', 'Вернуть')}
               disabled={history.future.length === 0}
               onClick={redo}
             >
-              <Redo2 size={16} />
+              <Redo2 size={16} aria-hidden="true" />
             </button>
             <button
               aria-label={t('Move chord left', 'Переместить аккорд влево')}
+              title={t('Move chord left', 'Переместить аккорд влево')}
               disabled={selected === 0}
               onClick={() => move(-1)}
             >
-              <ArrowLeft size={16} />
+              <ArrowLeft size={16} aria-hidden="true" />
             </button>
             <button
               aria-label={t('Move chord right', 'Переместить аккорд вправо')}
+              title={t('Move chord right', 'Переместить аккорд вправо')}
               disabled={selected === chords.length - 1}
               onClick={() => move(1)}
             >
-              <ArrowRight size={16} />
+              <ArrowRight size={16} aria-hidden="true" />
             </button>
             <button
               aria-label={t('Duplicate chord', 'Дублировать аккорд')}
+              title={t('Duplicate chord', 'Дублировать аккорд')}
               disabled={chords.length >= MAX_CHORDS}
               onClick={duplicateChord}
             >
-              <Copy size={16} />
+              <Copy size={16} aria-hidden="true" />
             </button>
             <button
               aria-label={t('Remove chord', 'Удалить аккорд')}
+              title={t('Remove chord', 'Удалить аккорд')}
               disabled={chords.length === 1}
               onClick={removeChord}
             >
-              <Trash2 size={16} />
+              <Trash2 size={16} aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -733,7 +744,12 @@ export function ChordsLab({
               min={40}
               max={200}
               value={tempo}
-              onValue={(n) => commit((d) => ({ ...d, tempo: n }))}
+              // The field reports its value again when it loses focus. Only a
+              // real change is an edit: an unchanged value used to stop the
+              // playback, clear Redo and add an Undo step that undid nothing.
+              onValue={(n) => {
+                if (n !== tempo) commit((d) => ({ ...d, tempo: n }));
+              }}
             />
             <span>BPM</span>
           </label>
@@ -1258,7 +1274,7 @@ export function ChordsLab({
                 <p>
                   {t(
                     'This lab uses 12-tone equal temperament, A4 = 440 Hz, and straight 4/4. The examples are harmonic starting points drawn from the readings below. They do not model every tradition, phrasing, or rule of voice leading, and a chord pattern alone does not establish a style or certify a cadence.',
-                    'Здесь используются равномерная темперация из 12 ступеней, ля первой октавы = 440 Гц и ровный размер 4/4. Примеры — гармонические отправные точки из приведённых ниже источников. Они не моделируют все традиции, фразировку и правила голосоведения, а сама последовательность аккордов не определяет ни стиль, ни каденцию.',
+                    'Здесь используются двенадцатиступенная равномерная темперация, ля первой октавы = 440 Гц и размер 4/4 без свинга. Примеры — гармонические отправные точки из приведённых ниже источников. Они не моделируют все традиции, фразировку и правила голосоведения, а сама последовательность аккордов не определяет ни стиль, ни каденцию.',
                   )}
                 </p>
               </div>

@@ -184,6 +184,52 @@ test('Tempo, dynamic and repeat answers use independent arithmetic and route ora
   expect(routesSeen.size).toBe(5);
 });
 
+test('A repeat question states a neutral condition and saves the bar-by-bar route for the explanation', () => {
+  // Words that only a walk-through uses: the signs by name, and the return.
+  const signs = /Fine|Coda|D\.C\.|D\.S\.|[Ss]egno|сеньо|вольт|Klammer/;
+  const returning = { en: /return/, ru: /возврат/, de: /Rücksprung/ };
+  const printed = {
+    'repeat-dc-fine': ['D.C.', 'Fine'],
+    'repeat-ds-coda': ['D.S.', 'To Coda'],
+  };
+  for (const lang of ['en', 'ru', 'de']) {
+    const conditions = new Map();
+    for (let seed = 0; seed < 400; seed++) {
+      const item = generateFrom('performance-marks', 3, seed, lang);
+      // The tremolo comparison shares the rule but is an unscored reflection.
+      if (item.rule !== 'follow-repeat-route' || item.review) continue;
+      // The stem used to print the route itself (“D.C. returns to measure 1 …
+      // stop after measure 2”), so the figure never had to be read. A bar
+      // number or a sign's name in the stem is a step of the answer.
+      expect(item.prompt, item.figure).not.toMatch(/\d/);
+      expect(item.prompt, item.figure).not.toMatch(signs);
+      const condition = item.prompt.slice(item.prompt.indexOf(': ') + 2);
+      expect(condition.length).toBeGreaterThan(20);
+      conditions.set(item.figure, condition);
+      // The percent bar sends nobody back, so its stem may not say it does.
+      expect(returning[lang].test(condition), item.figure).toBe(
+        item.figure !== 'repeat-abbreviation',
+      );
+      // The walk-through still reaches the reader, after the answer is in, and
+      // it is a different sentence from the stem, not the stem said twice.
+      const route = ` ${item.answer}.`;
+      expect(item.explanation.endsWith(route)).toBe(true);
+      const walk = item.explanation.slice(0, -route.length);
+      expect(walk.length, item.figure).toBeGreaterThan(30);
+      expect(walk).not.toContain(condition);
+      // It names the instructions the figure prints. The Russian one used to
+      // describe them («вернитесь к знаку») without ever saying D.C. or Fine.
+      for (const word of printed[item.figure] ?? [])
+        expect(walk, `${lang} ${item.figure}`).toContain(word);
+      expect(grade(item, item.answer).correct).toBe(true);
+    }
+    expect(conditions.size).toBe(5);
+    // Two stems in all: one for the four routes that travel, one for the bar
+    // that is only an abbreviation.
+    expect(new Set(conditions.values()).size).toBe(2);
+  }
+});
+
 test('Level-one excerpts preserve four natural quarters in EN/RU/DE, including H and octave boundaries', () => {
   for (const lang of ['en', 'ru', 'de'])
     for (let seed = 1; seed < 90; seed++) {

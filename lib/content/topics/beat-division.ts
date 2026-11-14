@@ -26,7 +26,7 @@ const content: TopicBundle = {
   },
   lesson: {
     id: 'beat-division',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
@@ -47,31 +47,97 @@ const content: TopicBundle = {
       de: 'Dreiteilungen kennzeichnen und Balkengruppen lesen.',
     },
     formula: {
-      en: 'triplet = 3 in the time of 2  ·  ratio 7:4',
-      ru: 'триоль = 3 вместо 2  ·  отношение 7:4',
-      de: 'Triole = 3 statt 2  ·  Verhältnis 7:4',
+      en: 'triplet = 3 in the time of 2  ·  7:4 = 7 in the time of 4',
+      ru: 'триоль = 3 вместо 2  ·  7:4 = 7 вместо 4',
+      de: 'Triole = 3 statt 2  ·  7:4 = 7 statt 4',
     },
     paragraphs: [
       {
         en: 'Ordinary values halve successively. A tuplet changes that division: 3:2 means three written values in the time of two of the same value. The ratio, not the number of notes alone, determines the duration. Both 7:4 and 7:8 can occur; read the stated ratio and the surrounding meter.',
-        ru: 'Обычные длительности последовательно делятся пополам. Особое деление меняет этот порядок: 3:2 означает три записанные длительности за время двух таких же. Длительность определяет отношение, а не одно число нот. Встречаются и 7:4, и 7:8; учитывайте указанное отношение и размер.',
+        ru: 'Обычные длительности последовательно делятся пополам. Особое деление меняет этот порядок: 3:2 означает три записанные длительности за время двух таких же. Длительность группы определяется отношением, а не одним лишь числом нот. Встречаются и 7:4, и 7:8; учитывайте указанное отношение и размер.',
         de: 'Reguläre Werte werden fortlaufend halbiert. Eine unregelmäßige Teilung verändert dieses Verhältnis: 3:2 bedeutet drei notierte Werte in der Zeit von zwei gleichen Werten. Das Verhältnis, nicht die Notenzahl allein, bestimmt die Dauer. Sowohl 7:4 als auch 7:8 kommen vor; lies das angegebene Verhältnis im Taktzusammenhang.',
       },
       {
-        en: 'A beam replaces the flags on notes shorter than a quarter: one beam for each flag the note would carry. Beams group notes so that the beat can be seen at a glance, which is why grouping follows the metre rather than the melody. Modern vocal music is beamed by beat, like instrumental music.',
+        en: 'A beam replaces the flags on notes shorter than a quarter: one beam for each flag the note would carry. Beams group notes so that the beat can be seen at a glance, which is why grouping follows the metre rather than the melody. Modern vocal music is beamed by beat, like instrumental music; beaming by syllable is an older practice.',
         ru: 'Ребро заменяет флажки у нот короче четверти: одно ребро на каждый флажок. Группировка под ребром показывает доли, поэтому она следует метру, а не рисунку мелодии. Современная вокальная музыка группируется по долям так же, как инструментальная; группировка по слогам — более старая практика.',
         de: 'Ein Balken ersetzt die Fähnchen bei Noten unter dem Viertelwert: ein Balken für jedes Fähnchen. Die Balkengruppen machen die Zählzeiten auf einen Blick sichtbar, deshalb richtet sich die Gruppierung nach dem Metrum und nicht nach der Melodie. Moderne Vokalmusik wird wie Instrumentalmusik nach Zählzeiten gebalkt; die Balkung nach Silben ist ältere Praxis.',
       },
     ],
+    guide: {
+      question: {
+        en: 'How do you write three notes in the time that two of the same value normally take?',
+        ru: 'Как записать три ноты, звучащие за время, которое обычно занимают две такие же?',
+        de: 'Wie notierst du drei Noten in der Zeit, die sonst zwei desselben Wertes einnehmen?',
+      },
+      example: [
+        {
+          en: 'Take one beat that is a quarter note long. Ordinary values halve it: two eighths fill the quarter.',
+          ru: 'Возьмите одну долю длиной в четверть. Обычные длительности делят её пополам: четверть заполняют две восьмые.',
+          de: 'Nimm eine Zählzeit von der Länge einer Viertel. Reguläre Werte halbieren sie: Zwei Achtel füllen die Viertel.',
+        },
+        {
+          en: 'A triplet with the ratio 3:2 puts three eighths into that same time: three triplet eighths fill the same quarter.',
+          ru: 'Триоль с отношением 3:2 помещает в это же время три восьмые: три триольные восьмые заполняют ту же четверть.',
+          de: 'Eine Triole im Verhältnis 3:2 setzt drei Achtel in dieselbe Zeit: Drei Triolenachtel füllen dieselbe Viertel.',
+        },
+        {
+          en: 'So each triplet eighth lasts one third of the quarter, while an ordinary eighth lasts one half of it.',
+          ru: 'Значит, каждая триольная восьмая длится треть четверти, а обычная восьмая — её половину.',
+          de: 'Jede Triolenachtel dauert also ein Drittel der Viertel, eine reguläre Achtel dagegen die Hälfte.',
+        },
+        {
+          en: 'The reverse case is the duplet: two eighths at 2:3 fill a dotted quarter, the time of three ordinary eighths.',
+          ru: 'Обратный случай — дуоль: две восьмые при 2:3 заполняют четверть с точкой, то есть время трёх обычных восьмых.',
+          de: 'Der umgekehrte Fall ist die Duole: Zwei Achtel bei 2:3 füllen eine punktierte Viertel, also die Zeit von drei regulären Achteln.',
+        },
+        {
+          en: 'Now a group of seven notes. At 7:4 they take the time of four of the same value; at 7:8, the time of eight. The numeral 7 alone does not tell you which.',
+          ru: 'Теперь группа из семи нот. При 7:4 они занимают время четырёх таких же длительностей, при 7:8 — время восьми. По одному числу 7 этого не узнать.',
+          de: 'Nun eine Gruppe von sieben Noten. Bei 7:4 nehmen sie die Zeit von vier gleichen Werten ein, bei 7:8 die Zeit von acht. Die Zahl 7 allein verrät dir das nicht.',
+        },
+      ],
+      listen: {
+        en: 'Play Two eighths per beat, then Three triplet eighths per beat. The tempo is the same and both fill four beats: the first has two notes in each beat, eight in all; the second has three, twelve in all. The beats stay where they are; only the division changes.',
+        ru: 'Послушайте «Две восьмые на долю», затем «Три триольные восьмые на долю». Темп один и тот же, и оба примера заполняют четыре доли: в первом на каждую долю приходятся две ноты, всего восемь, во втором — три, всего двенадцать. Доли остаются на месте, меняется только деление.',
+        de: 'Spiele „Zwei Achtel je Zählzeit“, dann „Drei Triolenachtel je Zählzeit“. Bei gleichem Tempo füllen beide vier Zählzeiten: im ersten Beispiel zwei Noten je Zählzeit, zusammen acht, im zweiten drei, zusammen zwölf. Die Zählzeiten bleiben, wo sie sind; nur die Unterteilung ändert sich.',
+      },
+      mistake: {
+        en: 'Three triplet eighths look like three ordinary eighths, so it is tempting to give them the time of three eighths. That is wrong: in a 3:2 group, three written eighths fill the time of two ordinary eighths, one quarter. Read the ratio first, then count the notes.',
+        ru: 'Три триольные восьмые выглядят как три обычные, и хочется отвести им время трёх восьмых. Это неверно: в группе 3:2 три записанные восьмые занимают время двух обычных восьмых, то есть четверть. Сначала прочитайте отношение, затем считайте ноты.',
+        de: 'Drei Triolenachtel sehen aus wie drei reguläre Achtel; da liegt es nahe, ihnen auch die Zeit von drei Achteln zu geben. Das stimmt nicht: In einer 3:2-Gruppe stehen drei notierte Achtel für die Dauer von zwei regulären Achteln, also einer Viertel. Lies zuerst das Verhältnis und zähle dann die Noten.',
+      },
+      takeaways: [
+        {
+          en: 'A ratio n:m means n written values in the time of m of the same value.',
+          ru: 'Отношение n:m означает n записанных длительностей за время m таких же.',
+          de: 'Ein Verhältnis n:m bedeutet n notierte Werte in der Zeit von m solchen Werten.',
+        },
+        {
+          en: 'A triplet is 3:2: three notes in the time normally taken by two of that value.',
+          ru: 'Триоль — это 3:2: три ноты за время, которое обычно занимают две такие же.',
+          de: 'Eine Triole ist 3:2: drei Noten in der Zeit, die sonst zwei desselben Wertes einnehmen.',
+        },
+        {
+          en: 'The ratio, not the number of notes alone, determines the duration; both 7:4 and 7:8 occur.',
+          ru: 'Длительность группы определяется отношением, а не одним лишь числом нот; встречаются и 7:4, и 7:8.',
+          de: 'Das Verhältnis, nicht die Notenzahl allein, bestimmt die Dauer; 7:4 und 7:8 kommen beide vor.',
+        },
+        {
+          en: 'A beam replaces flags, one beam per flag; beamed groups show the beat, so grouping follows the metre.',
+          ru: 'Ребро заменяет флажки, по одному ребру на флажок; группы под ребром показывают доли, поэтому группировка следует метру.',
+          de: 'Ein Balken ersetzt die Fähnchen, ein Balken je Fähnchen; Balkengruppen zeigen die Zählzeiten, deshalb folgt die Gruppierung dem Metrum.',
+        },
+      ],
+    },
     sourceId: 'source-051',
     experimentId: 'beat-division',
     reading: {
       pages: '12, 14–16',
       sourceId: 'source-052',
       text: {
-        en: 'Read an explicit n:m as n written values in the time of m of those values. Three triplet eighths at 3:2 fill one quarter; two eighths at 2:3 fill a dotted quarter. Ratios such as 5:4, 7:4 and 13:12 must be stated in context. A tuplet may contain rests, subdivisions or ties. Beaming should reveal the chosen meter; historical vocal beaming can instead follow syllables.',
-        ru: 'Явное отношение n:m означает n записанных длительностей за время m таких же длительностей. Три восьмые при 3:2 заполняют четверть; две восьмые при 2:3 — четверть с точкой. Отношения 5:4, 7:4 и 13:12 читают в указанном контексте. В особом делении возможны паузы, дробление и лиги. Рёбра помогают видеть размер; историческая вокальная группировка может следовать слогам.',
-        de: 'Ein ausdrückliches Verhältnis n:m bedeutet n notierte Werte in der Zeit von m solchen Werten. Drei Achtel bei 3:2 füllen eine Viertel; zwei Achtel bei 2:3 eine punktierte Viertel. Verhältnisse wie 5:4, 7:4 und 13:12 müssen im Kontext angegeben sein. Eine unregelmäßige Teilung kann Pausen, Unterteilungen oder Haltebögen enthalten. Balken sollen die Taktgliederung zeigen; ältere Vokalnotation kann stattdessen Silben folgen.',
+        en: 'Read an explicit n:m as n written values in the time of m of those values. Three triplet eighths at 3:2 fill one quarter; two eighths at 2:3 fill a dotted quarter. Ratios such as 5:4, 7:4 and 13:12 are written in full wherever the single numeral could be misread. A tuplet may contain rests, subdivisions or ties. Beaming should reveal the chosen meter; historical vocal beaming can instead follow syllables.',
+        ru: 'Явное отношение n:m означает n записанных длительностей за время m таких же длительностей. Три восьмые при 3:2 заполняют четверть; две восьмые при 2:3 — четверть с точкой. Отношения вроде 5:4, 7:4 и 13:12 выписывают полностью там, где одно число можно прочесть неверно. В особом делении возможны паузы, дробление и лиги. Рёбра помогают видеть размер; историческая вокальная группировка может следовать слогам.',
+        de: 'Ein ausdrückliches Verhältnis n:m bedeutet n notierte Werte in der Zeit von m solchen Werten. Drei Achtel bei 3:2 füllen eine Viertel; zwei Achtel bei 2:3 eine punktierte Viertel. Verhältnisse wie 5:4, 7:4 und 13:12 werden vollständig angegeben, wo die einzelne Zahl missverstanden werden könnte. Eine unregelmäßige Teilung kann Pausen, Unterteilungen oder Haltebögen enthalten. Balken sollen die Taktgliederung zeigen; ältere Vokalnotation kann stattdessen Silben folgen.',
       },
       assetIds: [
         'figure-beamed',
@@ -150,7 +216,7 @@ const content: TopicBundle = {
   concepts: [
     {
       id: 'Tuplet families',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -164,19 +230,19 @@ const content: TopicBundle = {
       },
       aliases: {
         en: 'quintuplet; sextuplet; septuplet; nonuplet; 11-tuplet; 13-tuplet; 15-tuplet; 17-tuplet; quadruplet; octuplet',
-        ru: 'квинтоль; секстоль; септоль; ноноль; квартоль; октоль',
+        ru: 'квинтоль; секстоль; септоль; новемоль; нонемоль; квартоль; октоль',
         de: 'Quintole; Sextole; Septole; Nonole; Quartole; Oktole',
       },
       body: {
         en: 'Quintuplet, sextuplet, septuplet and nonuplet refer to groups of five, six, seven and nine. Larger numerals such as 11, 13, 15 or 17 also occur. They do not determine the replacement duration by themselves. At 13:12, thirteen written values occupy twelve such values. Duplets, quadruplets and octuplets can divide a dotted span evenly; compare their explicit ratios rather than inventing a universal convention.',
-        ru: 'Квинтоль, секстоль, септоль и ноноль обозначают группы из пяти, шести, семи и девяти элементов. Встречаются также числа 11, 13, 15 и 17. Одно число ещё не определяет замещаемую длительность. При 13:12 тринадцать записанных длительностей занимают время двенадцати таких же. Дуоль, квартоль и октоль могут делить длительность с точкой на равные части; сравнивайте явные отношения.',
+        ru: 'Квинтоль, секстоль, септоль и новемоль обозначают группы из пяти, шести, семи и девяти нот. Встречаются также числа 11, 13, 15 и 17. Одно число ещё не определяет замещаемую длительность. При 13:12 тринадцать записанных длительностей занимают время двенадцати таких же. Дуоль, квартоль и октоль могут делить длительность с точкой на равные части; сравнивайте явные отношения.',
         de: 'Quintole, Sextole, Septole und Nonole benennen Gruppen von fünf, sechs, sieben und neun. Auch Zahlen wie 11, 13, 15 oder 17 kommen vor. Die Zahl allein bestimmt die ersetzte Dauer nicht. Bei 13:12 nehmen dreizehn notierte Werte die Zeit von zwölf solchen Werten ein. Duolen, Quartolen und Oktolen können einen punktierten Wert gleichmäßig teilen; vergleiche die ausdrücklichen Verhältnisse.',
       },
       sourceId: 'source-018',
     },
     {
       id: 'Beat',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -191,13 +257,13 @@ const content: TopicBundle = {
       body: {
         en: 'The unit of pulse that the written note values are counted against.',
         ru: 'Единица пульса, по которой отсчитываются записанные длительности.',
-        de: 'Die Einheit des Pulses, gegen die die geschriebenen Notenwerte gezählt werden.',
+        de: 'Die Einheit des Pulses, an der die notierten Werte gemessen werden.',
       },
       sourceId: 'source-018',
     },
     {
       id: 'Triplet',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -211,14 +277,14 @@ const content: TopicBundle = {
       },
       body: {
         en: 'Three notes written in the time normally taken by two of that value.',
-        ru: 'Три ноты, записанные во времени, которое обычно занимают две такие же.',
+        ru: 'Три ноты, звучащие за время, которое обычно занимают две такие же.',
         de: 'Drei Noten in der Zeit, die sonst zwei desselben Wertes einnehmen.',
       },
       sourceId: 'source-018',
     },
     {
       id: 'Duplet',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -232,7 +298,7 @@ const content: TopicBundle = {
       },
       body: {
         en: 'Two notes written in the time normally taken by three of that value.',
-        ru: 'Две ноты, записанные во времени, которое обычно занимают три такие же.',
+        ru: 'Две ноты, звучащие за время, которое обычно занимают три такие же.',
         de: 'Zwei Noten in der Zeit, die sonst drei desselben Wertes einnehmen.',
       },
       sourceId: 'source-018',
@@ -281,7 +347,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Beam',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -294,15 +360,15 @@ const content: TopicBundle = {
         de: 'Balken',
       },
       body: {
-        en: 'A thick line replacing flags; one beam stands for one flag.',
-        ru: 'Толстая линия вместо флажков: одно ребро соответствует одному флажку.',
-        de: 'Ein dicker Strich anstelle der Fähnchen; ein Balken steht für ein Fähnchen.',
+        en: 'A thick line that joins the stems of neighbouring notes in place of their flags; one beam stands for one flag.',
+        ru: 'Толстая линия, соединяющая штили соседних нот вместо флажков: одно ребро соответствует одному флажку.',
+        de: 'Ein dicker Strich, der die Hälse benachbarter Noten anstelle der Fähnchen verbindet; ein Balken steht für ein Fähnchen.',
       },
       sourceId: 'source-014',
     },
     {
       id: 'Grouping',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -317,7 +383,7 @@ const content: TopicBundle = {
       body: {
         en: 'The choice of which notes share a beam, so that the beat stays visible.',
         ru: 'Выбор нот под общим ребром, при котором доля остаётся видимой.',
-        de: 'Die Wahl, welche Noten einen Balken teilen, damit die Zählzeit sichtbar bleibt.',
+        de: 'Die Entscheidung, welche Noten unter einem gemeinsamen Balken stehen, damit die Zählzeit sichtbar bleibt.',
       },
       sourceId: 'source-014',
     },

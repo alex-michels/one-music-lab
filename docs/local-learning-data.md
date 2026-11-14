@@ -2,10 +2,18 @@
 
 ## Using it
 
-Open **Learning data / Учебные данные / Lerndaten** under the chapter navigation.
-The browser saves changes automatically. A checkbox in each lesson marks it as
-personally worked through; you can uncheck it. The panel links to marked lessons
+Open **Learning data / Учебные данные / Lerndaten** at the end of any page; it
+used to stand between every page's title and its content and now closes the
+page instead. The browser saves changes automatically. A checkbox at the end of
+each lesson marks it as personally worked through; you can uncheck it. The same
+markers appear as checks in the course map in the navigation panel and on the
+chapter cards of the index, with a count; they remain your own statement, not a
+grade ([learning shell](learning-shell.md)). The panel links to marked lessons
 and shows answered/incorrect counts by the stable practice rule, in EN/RU/DE.
+The theme can be changed with the three buttons in the top bar and is saved
+with the other preferences. The Chords lab now saves a ninth chord with its
+ninth in the bass; that choice was rejected by the saved-data limits before and
+stopped autosaving.
 Opening the site without a hash resumes the last position. An explicit link
 takes priority; a locale path such as `/de/` keeps its language when resuming.
 

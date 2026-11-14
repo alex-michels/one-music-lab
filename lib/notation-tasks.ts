@@ -134,6 +134,87 @@ export function valueIdentification(
   };
 }
 
+/** Joins a figure's own sentences to the closing its family shares. */
+const rubric = (
+  shown: ReturnType<typeof taskText>,
+  closing: ReturnType<typeof taskText>,
+) =>
+  taskText(
+    `${shown.en} ${closing.en}`,
+    `${shown.ru} ${closing.ru}`,
+    `${shown.de} ${closing.de}`,
+  );
+const noOneGrouping = taskText(
+  'Discuss beat, voice, text and readability; no grouping has one universal correct layout. Unscored.',
+  'Обсудите долю, голос, текст и читаемость; единственной универсальной группировки нет. Без оценки.',
+  'Begründe mit Zählzeit, Stimme, Text und Lesbarkeit; es gibt kein universelles Balkenbild. Ohne Bewertung.',
+);
+const printedRatio = taskText(
+  'Read the printed ratio rather than inferring it from the group’s name. Unscored.',
+  'Читайте указанное отношение, а не выводите его из названия группы. Без оценки.',
+  'Lies das angegebene Verhältnis, statt es aus dem Namen der Gruppe abzuleiten. Ohne Bewertung.',
+);
+// The page draws the other grouping beside whichever of `beamed` and `flagged`
+// was picked, so both read the same comparison.
+const flagsAndBeam = rubric(
+  taskText(
+    'Compare flags and the beam: durations do not change.',
+    'Сравните флажки и ребро: длительности не меняются.',
+    'Vergleiche Fähnchen und Balken: Die Dauern bleiben gleich.',
+  ),
+  noOneGrouping,
+);
+/**
+ * One rubric per figure, because one figure is on screen. A single text for
+ * the whole family said “Here 2:3 eighths, 4:3 eighths and 8:6 sixteenths”
+ * under whichever one of the three had been drawn, and described a text
+ * underlay beneath two plain eighths.
+ */
+const beamingRubric = {
+  beamed: flagsAndBeam,
+  flagged: flagsAndBeam,
+  'beamed-mixed': rubric(
+    taskText(
+      'Compare the mixed eighth and sixteenth values and the secondary-beam break: durations do not change.',
+      'Сравните смешанные восьмые и шестнадцатые и разрыв второго ребра: длительности не меняются.',
+      'Vergleiche gemischte Achtel und Sechzehntel und den unterbrochenen zweiten Balken: Die Dauern bleiben gleich.',
+    ),
+    noOneGrouping,
+  ),
+  'beamed-syllables': rubric(
+    taskText(
+      'In this text example two syllables have separate flags, then one syllable spans a beamed pair. This historical vocal convention is not compulsory today.',
+      'В этом примере подтекстовки два слога имеют отдельные флажки, затем один слог объединяет пару под ребром. Эта историческая вокальная практика сегодня не обязательна.',
+      'In diesem Textbeispiel stehen zwei Silben unter Noten mit eigenem Fähnchen, dann eine Silbe unter einem verbalkten Paar. Diese historische vokale Praxis ist heute nicht verpflichtend.',
+    ),
+    noOneGrouping,
+  ),
+  duplet: rubric(
+    taskText(
+      'Here two eighths take the time of three (2:3) and fill one dotted quarter.',
+      'Здесь две восьмые занимают время трёх (2:3) и заполняют одну четверть с точкой.',
+      'Hier nehmen zwei Achtel die Zeit von dreien ein (2:3) und füllen eine punktierte Viertel.',
+    ),
+    printedRatio,
+  ),
+  quartole: rubric(
+    taskText(
+      'Here four eighths take the time of three (4:3) and fill one dotted quarter.',
+      'Здесь четыре восьмые занимают время трёх (4:3) и заполняют одну четверть с точкой.',
+      'Hier nehmen vier Achtel die Zeit von dreien ein (4:3) und füllen eine punktierte Viertel.',
+    ),
+    printedRatio,
+  ),
+  octole: rubric(
+    taskText(
+      'Here eight sixteenths take the time of six (8:6) and fill one dotted quarter.',
+      'Здесь восемь шестнадцатых занимают время шести (8:6) и заполняют одну четверть с точкой.',
+      'Hier nehmen acht Sechzehntel die Zeit von sechs ein (8:6) und füllen eine punktierte Viertel.',
+    ),
+    printedRatio,
+  ),
+};
+
 export function beamingReview(
   next: () => number,
   _level: Level,
@@ -147,7 +228,7 @@ export function beamingReview(
     'duplet',
     'quartole',
     'octole',
-  ]);
+  ] as const);
   const irregular = ['duplet', 'quartole', 'octole'].includes(figure);
   return {
     rule: 'compare-beaming',
@@ -159,24 +240,14 @@ export function beamingReview(
       ? taskText(
           'Compare this explicit irregular division with an ordinary dotted beat. What remains equal, and what changes?',
           'Сравните это явно указанное особое деление с обычной долей с точкой. Что остаётся равным, а что меняется?',
-          'Vergleiche diese ausdrücklich bezeichnete Teilung mit einem gewöhnlichen punktierten Schlag. Was bleibt gleich, was ändert sich?',
+          'Vergleiche diese ausdrücklich bezeichnete unregelmäßige Teilung mit einem gewöhnlichen punktierten Schlag. Was bleibt gleich, was ändert sich?',
         )[lang]
       : taskText(
           'Read the values, then discuss this beaming or text-underlay choice. Could another grouping communicate the same durations?',
           'Прочитайте длительности, затем обсудите рёбра или подтекстовку. Может ли другая группировка передать те же длительности?',
           'Lies die Werte und besprich Balken oder Textunterlegung. Könnte eine andere Gruppierung dieselben Dauern vermitteln?',
         )[lang],
-    explanation: irregular
-      ? taskText(
-          'Here 2:3 eighths, 4:3 eighths and 8:6 sixteenths each fill a dotted quarter. The equal subdivisions differ. State the displayed ratio rather than inferring a universal denominator from the group name. This comparison is unscored.',
-          'Здесь восьмые 2:3, восьмые 4:3 и шестнадцатые 8:6 заполняют четверть с точкой, но делят её по-разному. Читайте указанное отношение: название группы не задаёт универсального знаменателя. Сравнение без оценки.',
-          'Hier füllen Achtel 2:3, Achtel 4:3 und Sechzehntel 8:6 jeweils eine punktierte Viertel, teilen sie aber unterschiedlich. Lies das angegebene Verhältnis, statt aus dem Namen einen universellen Nenner abzuleiten. Ohne Bewertung.',
-        )[lang]
-      : taskText(
-          'Compare flags, mixed eighth/sixteenth values and the secondary-beam break: durations do not change. In the text example two syllables have separate flags, then one syllable spans a beamed pair. This historical vocal convention is not compulsory today. Discuss beat, voice, text and readability; neither an internal break nor syllabic beaming has one universal correct layout. Unscored.',
-          'Сравните флажки, смешанные восьмые и шестнадцатые и разрыв второго ребра: длительности не меняются. В примере подтекстовки два слога имеют отдельные флажки, затем один слог объединяет пару под ребром. Эта историческая вокальная практика сегодня не обязательна. Обсудите долю, голос, текст и читаемость; единственной универсальной группировки нет. Без оценки.',
-          'Vergleiche Fähnchen, gemischte Achtel/Sechzehntel und den sekundären Balkenbruch: Die Dauern bleiben gleich. Im Textbeispiel stehen zwei Silben unter einzeln gefähnten Noten, dann eine Silbe unter einem verbalkten Paar. Diese historische vokale Praxis ist heute nicht verpflichtend. Begründe mit Zählzeit, Stimme, Text und Lesbarkeit; es gibt kein universelles Balkenbild. Ohne Bewertung.',
-        )[lang],
+    explanation: beamingRubric[figure][lang],
     source: irregular ? notationSources.tuplets : notationSources.beams,
   };
 }
@@ -225,6 +296,16 @@ export const ornaments = [
     title: taskText('Arpeggio sign', 'Знак арпеджиато', 'Arpeggiozeichen'),
   },
 ] as const;
+const ornamentRubric = taskText(
+  'This is the modern sign convention shown here. Consult the edition, period, instrument and surrounding harmony for starting note, auxiliary pitch, timing and speed. Recognition does not prescribe a single realization.',
+  'Здесь показана современная форма знака. Начальный и вспомогательный звуки, момент вступления и скорость уточняют по редакции, эпохе, инструменту и гармонии. Единственный вариант исполнения не задан.',
+  'Hier ist die moderne Zeichenform gemeint. Ausgabe, Epoche, Instrument und Harmonie bestimmen Anfangs- und Nebenton, Einsatz und Geschwindigkeit. Eine allein gültige Ausführung ist damit nicht vorgeschrieben.',
+);
+const acciaccaturaNote = taskText(
+  'A slashed grace is often called acciaccatura today; the historical keyboard acciaccatura was a dissonant note struck with a principal chord and immediately released, not a universal synonym for every short grace.',
+  'Современный перечёркнутый форшлаг часто называют аччаккатурой; историческая клавирная аччаккатура — диссонирующий звук, взятый вместе с основным аккордом и сразу отпущенный, а не общее название любого короткого форшлага.',
+  'Der durchstrichene Vorschlag heißt heute oft Acciaccatura; die historische Tasten-Acciaccatura war ein mit dem Hauptakkord angeschlagener, sofort losgelassener dissonanter Ton, kein universelles Synonym für jeden kurzen Vorschlag.',
+);
 export function ornamentReview(
   next: () => number,
   _level: Level,
@@ -248,7 +329,10 @@ export function ornamentReview(
       'Назовите украшение и объясните, что нужно выяснить перед исполнением.',
       'Benenne die Verzierung. Was musst du vor ihrer Ausführung klären?',
     )[lang],
-    explanation: `${row.title[lang]}. ${taskText('This is the modern sign convention shown here. Consult the edition, period, instrument and surrounding harmony for starting note, auxiliary pitch, timing and speed. Recognition does not prescribe a single realization. A slashed grace is often called acciaccatura today; the historical keyboard acciaccatura was a dissonant note struck with a principal chord and immediately released, not a universal synonym for every short grace.', 'Здесь показана современная форма знака. Начальный и вспомогательный звуки, момент вступления и скорость уточняют по редакции, эпохе, инструменту и гармонии. Единственный вариант исполнения не задан. Современный перечёркнутый форшлаг часто называют аччаккатурой; историческая клавирная аччаккатура — диссонирующий звук, взятый вместе с основным аккордом и сразу отпущенный, а не общее название любого короткого форшлага.', 'Hier ist die moderne Zeichenform gemeint. Ausgabe, Epoche, Instrument und Harmonie bestimmen Anfangs- und Nebenton, Einsatz und Geschwindigkeit. Keine einzige Ausführung wird vorgeschrieben. Der durchstrichene Vorschlag heißt heute oft Acciaccatura; die historische Tasten-Acciaccatura war ein mit dem Hauptakkord angeschlagener, sofort losgelassener dissonanter Ton, kein universelles Synonym für jeden kurzen Vorschlag.')[lang]}`,
+    // The acciaccatura note belongs to the slashed grace alone. Appended to
+    // every ornament, it answered a trill or an arpeggio sign with two lines
+    // about a note that was not on the page.
+    explanation: `${row.title[lang]}. ${ornamentRubric[lang]}${row.figure === 'grace' ? ` ${acciaccaturaNote[lang]}` : ''}`,
     source: notationSources.ornaments,
   };
 }
@@ -290,6 +374,15 @@ export function performanceMarks(
   if (['tempo-return', 'dynamic-context', 'phrase'].includes(shape)) {
     const tempo = shape === 'tempo-return';
     const dynamic = shape === 'dynamic-context';
+    // Drawn here, not inside the object below: the question and the rubric
+    // both have to know which of the two figures is on screen. One figure
+    // prints fp, sfz and rfz and no hairpin; the other prints a hairpin from p
+    // to f and none of the three. A text about all four explained a hairpin
+    // under the first and asked about fp under the second.
+    const hairpin =
+      dynamic &&
+      pick(next, ['dynamic-fp', 'dynamic-hairpin'] as const) ===
+        'dynamic-hairpin';
     return {
       rule: tempo
         ? 'metronome-unit'
@@ -299,7 +392,9 @@ export function performanceMarks(
       figure: tempo
         ? 'tempo-return'
         : dynamic
-          ? pick(next, ['dynamic-fp', 'dynamic-hairpin'])
+          ? hairpin
+            ? 'dynamic-hairpin'
+            : 'dynamic-fp'
           : 'articulation-phrase',
       review: true,
       answer: '',
@@ -307,32 +402,44 @@ export function performanceMarks(
       prompt: tempo
         ? taskText(
             'Explain what a tempo and Tempo I restore in this explicitly labelled two-tempo example.',
-            'Объясните, какой темп возвращают указания «в прежнем темпе» и «первоначальный темп» в этом примере с двумя явно заданными темпами.',
+            'Объясните, какой темп возвращают указания a tempo и Tempo I в этом примере, где оба темпа обозначены явно.',
             'Erkläre, welches Tempo a tempo und Tempo I in diesem ausdrücklich beschrifteten Beispiel wiederherstellen.',
           )[lang]
         : dynamic
-          ? taskText(
-              'Compare a sustained dynamic level, fp, sfz/rfz and a hairpin. Which describes an onset and which a change over time?',
-              'Сравните устойчивую динамику, fp, sfz/rfz и вилку. Что относится к началу звука, а что — к изменению во времени?',
-              'Vergleiche eine anhaltende Dynamikstufe, fp, sfz/rfz und eine Gabel. Was betrifft den Einsatz, was eine Veränderung im Verlauf?',
-            )[lang]
+          ? hairpin
+            ? taskText(
+                'Follow this hairpin from p to f. Where does the change begin and end, and how does it differ from a sudden change of level?',
+                'Проследите вилку от p до f. Где изменение начинается и заканчивается и чем оно отличается от внезапной смены динамики?',
+                'Verfolge diese Gabel von p nach f. Wo beginnt und endet die Veränderung, und worin unterscheidet sie sich von einem plötzlichen Wechsel der Lautstärke?',
+              )[lang]
+            : taskText(
+                'Compare fp, sfz and rfz in this example. Which describes an onset followed by a new level, and which an emphasis within the level in force?',
+                'Сравните fp, sfz и rfz в этом примере. Что описывает начало звука с последующим новым уровнем, а что — выделение внутри действующей динамики?',
+                'Vergleiche fp, sfz und rfz in diesem Beispiel. Was beschreibt einen Einsatz mit anschließend neuer Lautstärke, was eine Hervorhebung innerhalb der geltenden Dynamik?',
+              )[lang]
           : taskText(
               'Compare staccato, tenuto, accent, staccatissimo, the slur and the breath. What does each mark leave to the performer?',
-              'Сравните стаккато, тенуто, акцент, стаккатиссимо, лигу и цезуру для дыхания. Что каждый знак оставляет на усмотрение исполнителя?',
+              'Сравните стаккато, тенуто, акцент, стаккатиссимо, фразировочную лигу и знак дыхания. Что каждый знак оставляет на усмотрение исполнителя?',
               'Vergleiche Staccato, Tenuto, Akzent, Staccatissimo, Bogen und Atemzeichen. Was bleibt jeweils der Ausführung überlassen?',
             )[lang],
       explanation: tempo
         ? taskText(
             'In this example: Tempo I is quarter = 96; Tempo II is quarter = 72. After rit. in Tempo II, a tempo restores 72; the later Tempo I restores 96. Do not rank tempo words or assume that every return means the opening tempo. This semantic discussion is unscored, not a metronome-arithmetic result.',
-            'В этом примере: первый темп — четверть = 96, второй — четверть = 72. После замедления во втором темпе указание о возврате восстанавливает 72; позднейший возврат к первому темпу — 96. Не выстраивайте темповые слова в абсолютный ряд и не считайте любой возврат возвратом к началу. Обсуждение смысла без оценки; это не метрономическая арифметика.',
+            'В этом примере Tempo I — четверть = 96, Tempo II — четверть = 72. После rit. в Tempo II указание a tempo возвращает 72, а стоящее позже Tempo I — 96. Не выстраивайте темповые слова в абсолютный ряд и не считайте любой возврат возвратом к начальному темпу. Обсуждение смысла без оценки; это не метрономическая арифметика.',
             'In diesem Beispiel: Tempo I bedeutet Viertel = 96, Tempo II Viertel = 72. Nach rit. in Tempo II stellt a tempo 72 wieder her; das spätere Tempo I dagegen 96. Tempowörter bilden keine absolute Rangfolge, und nicht jede Rückkehr meint das Anfangstempo. Unbewertete Bedeutungsfrage, keine Metronomrechnung.',
           )[lang]
         : dynamic
-          ? taskText(
-              'The p–f hairpin asks for a gradual increase across its span. fp asks for a strong onset followed by soft continuation; sfz and rfz ask for emphasis, whose extent depends on context. They are not extra rungs of a calibrated loudness ladder. Compare the surrounding phrase and instrument; no unique gain envelope is prescribed. Unscored.',
-              'Вилка от p к f требует постепенного усиления на своём протяжении. fp — сильное начало с последующим тихим продолжением; sfz и rfz — выделение, область действия которого зависит от контекста. Это не дополнительные ступени калиброванной громкости. Учтите фразу и инструмент; единственная огибающая громкости не задана. Без оценки.',
-              'Die Gabel von p nach f verlangt eine allmähliche Zunahme über ihre Spanne. fp fordert einen starken Einsatz mit leiser Fortsetzung; sfz und rfz eine kontextabhängige Hervorhebung. Das sind keine zusätzlichen Stufen einer kalibrierten Lautstärkeskala. Phrase und Instrument sind zu berücksichtigen; keine eindeutige Hüllkurve ist vorgegeben. Ohne Bewertung.',
-            )[lang]
+          ? hairpin
+            ? taskText(
+                'The hairpin starts at the p on the first note and ends at the f on the last: it asks for a gradual increase across that span, not a sudden jump to f. Compare the surrounding phrase and instrument; no unique gain envelope is prescribed. Unscored.',
+                'Вилка начинается от p на первой ноте и заканчивается на f на последней: она требует постепенного усиления на всём этом участке, а не внезапного перехода к f. Учтите фразу и инструмент; единственная огибающая громкости не задана. Без оценки.',
+                'Die Gabel beginnt beim p auf der ersten Note und endet beim f auf der letzten: Sie verlangt eine allmähliche Zunahme über diese Spanne, keinen plötzlichen Sprung ins f. Phrase und Instrument sind zu berücksichtigen; keine eindeutige Hüllkurve ist vorgegeben. Ohne Bewertung.',
+              )[lang]
+            : taskText(
+                'fp asks for a strong onset followed by soft continuation; sfz and rfz ask for emphasis, whose extent depends on context. They are not extra rungs of a calibrated loudness ladder. Compare the surrounding phrase and instrument; no unique gain envelope is prescribed. Unscored.',
+                'fp — сильное начало с последующим тихим продолжением; sfz и rfz — выделение, область действия которого зависит от контекста. Это не дополнительные ступени калиброванной громкости. Учтите фразу и инструмент; единственная огибающая громкости не задана. Без оценки.',
+                'fp fordert einen starken Einsatz mit leiser Fortsetzung; sfz und rfz eine kontextabhängige Hervorhebung. Das sind keine zusätzlichen Stufen einer kalibrierten Lautstärkeskala. Phrase und Instrument sind zu berücksichtigen; keine eindeutige Hüllkurve ist vorgegeben. Ohne Bewertung.',
+              )[lang]
           : taskText(
               'Dots and wedges indicate degrees of separation, tenuto sustaining or weighting, and an accent emphasis. A slur may indicate connected articulation or a phrase; it is not a tie between different pitches. The breath invites a break without specifying a universal number of milliseconds. Signs can coexist; instrument, style and phrase settle their realization. Unscored.',
               'Точки и клинья обозначают степени отрывистости, тенуто — выдерживание или вес, акцент — выделение. Лига может указывать связность или фразу; между разными высотами это не лига продления. Знак дыхания предлагает разделение, но не универсальную длительность в миллисекундах. Знаки могут сочетаться; исполнение зависит от инструмента, стиля и фразы. Без оценки.',
@@ -354,6 +461,7 @@ export function performanceMarks(
       { glyph: '𝅗𝅥', num: 1, den: 2 },
     ]);
     const beats = level === 1 ? 1 : pick(next, [1, 2, 4]);
+    const quarter = unit.num === 1 && unit.den === 4;
     const total = `${beats * unit.num}/${unit.den}`;
     const show = (value: number) =>
       String(Number(value.toFixed(3))).replace('.', lang === 'en' ? '.' : ',');
@@ -391,10 +499,14 @@ export function performanceMarks(
         next,
         'tempo-unit',
       ),
+      // One click is counted in the singular, and the unit is contrasted with
+      // a quarter only when it is not one: the sentence used to read “= 1
+      // clicks”, “1 seconds” and “1/4 of a whole note, not necessarily a
+      // quarter”. The abbreviation for seconds needs no number agreement.
       explanation: taskText(
-        `The metronome unit is ${unit.num}/${unit.den} of a whole note, not necessarily a quarter: (${total}) ÷ (${unit.num}/${unit.den}) = ${beats} clicks; ${beats} × 60 / ${bpm} = ${answer} seconds.`,
-        `Единица метронома — ${unit.num}/${unit.den} целой ноты, не обязательно четверть: (${total}) ÷ (${unit.num}/${unit.den}) = ${beats}; ${beats} × 60 / ${bpm} = ${answer} с.`,
-        `Die Metronomeinheit ist ${unit.num}/${unit.den} einer ganzen Note, nicht zwingend eine Viertel: (${total}) ÷ (${unit.num}/${unit.den}) = ${beats} Schläge; ${beats} × 60 / ${bpm} = ${answer} Sekunden.`,
+        `One metronome click is ${unit.num}/${unit.den} of a whole note${quarter ? '' : ', not a quarter'}: (${total}) ÷ (${unit.num}/${unit.den}) = ${beats} ${beats === 1 ? 'click' : 'clicks'}; ${beats} × 60 / ${bpm} = ${answer} s.`,
+        `Один отсчёт метронома — ${unit.num}/${unit.den} целой ноты${quarter ? '' : ', а не четверть'}: (${total}) ÷ (${unit.num}/${unit.den}) = ${beats} (число отсчётов); ${beats} × 60 / ${bpm} = ${answer} с.`,
+        `Ein Metronomschlag entspricht ${unit.num}/${unit.den} einer ganzen Note${quarter ? '' : ', nicht einer Viertel'}: (${total}) ÷ (${unit.num}/${unit.den}) = ${beats} ${beats === 1 ? 'Schlag' : 'Schläge'}; ${beats} × 60 / ${bpm} = ${answer} s.`,
       )[lang],
       source: notationSources.tempo,
     };
@@ -489,7 +601,7 @@ export function performanceMarks(
       wrong: ['1–2', '1–2–3–1–2–3'],
       convention: taskText(
         'Ignore Fine on the first pass. D.C. returns to measure 1; on this return stop at Fine after measure 2.',
-        'В первом проведении пройдите мимо конца, отмеченного в такте 2. Возврат к началу из такта 3 выполняется один раз; после возврата остановитесь в конце такта 2.',
+        'В первом проведении Fine пропускается. D.C. возвращает к такту 1; после возврата остановитесь у Fine в конце такта 2.',
         'Fine im ersten Durchgang übergehen. D.C. führt zu Takt 1; bei dieser Rückkehr nach Takt 2 am Fine enden.',
       ),
     },
@@ -499,7 +611,7 @@ export function performanceMarks(
       wrong: ['1–2–3–5', '1–2–3–4–1–2–3–5'],
       convention: taskText(
         'Ignore To Coda on pass 1. D.S. returns to the segno at 2 once; then transfer after 3 to coda 5 and stop. Do not visit 4 again.',
-        'При первом проведении не переходите к коде. Из такта 4 вернитесь к знаку в такте 2 один раз; после такта 3 перейдите в коду 5 и остановитесь. Повторно такт 4 не играйте.',
+        'В первом проведении To Coda пропускается. D.S. один раз возвращает к сеньо в такте 2; после такта 3 перейдите в коду (такт 5) и закончите. Такт 4 второй раз не играется.',
         'To Coda zunächst übergehen. D.S. führt einmal zum Segno in 2; danach nach 3 zur Coda 5 springen und enden. Takt 4 nicht erneut spielen.',
       ),
     },
@@ -510,15 +622,31 @@ export function performanceMarks(
       convention: taskText(
         'Give the source measure for each written bar. The percent sign in bar 2 repeats bar 1; bar 3 is the written-out comparison, played once. It is not a backward navigation sign.',
         'Укажите такт-источник для каждого записанного такта. Знак в такте 2 повторяет содержание такта 1; такт 3 — выписанное сравнение, исполняемое один раз. Это не знак возврата.',
-        'Gib den Quelltakt für jeden notierten Takt an. Das Prozentzeichen in 2 wiederholt den Inhalt von 1; Takt 3 ist der ausgeschriebene Vergleich, einmal gespielt. Kein Rücksprungzeichen.',
+        'Gib den Quelltakt für jeden notierten Takt an. Das Taktwiederholungszeichen in Takt 2 wiederholt den Inhalt von Takt 1; Takt 3 ist der ausgeschriebene Vergleich und wird einmal gespielt. Es ist kein Rücksprungzeichen.',
       ),
     },
   ]);
   const answer = route.answer;
+  // The scored stem states a neutral condition only. `route.convention` names
+  // the bars one by one, so printing it here let the route be answered without
+  // reading the figure, and the feedback then repeated the stem. It is kept for
+  // the explanation, where a walk-through belongs.
+  const condition =
+    route.figure === 'repeat-abbreviation'
+      ? taskText(
+          'For each written bar, give the number of the bar whose music sounds.',
+          'Для каждого записанного такта укажите номер такта, музыка которого звучит.',
+          'Gib für jeden notierten Takt die Nummer des Taktes an, dessen Musik erklingt.',
+        )
+      : taskText(
+          'Every repeat and every return instruction is carried out once.',
+          'Каждый повтор и каждое указание о возврате выполняется один раз.',
+          'Jede Wiederholung und jede Rücksprunganweisung wird einmal ausgeführt.',
+        );
   return {
     rule: 'follow-repeat-route',
     figure: route.figure,
-    prompt: `${taskText('Read the notated example. Give the measure sequence under this convention:', 'Прочитайте нотный пример. Укажите порядок тактов при следующем условии:', 'Lies das Notenbeispiel. Gib die Taktfolge nach dieser Konvention an:')[lang]} ${route.convention[lang]}`,
+    prompt: `${taskText('Read the notated example. Give the measure sequence under this convention:', 'Прочитайте нотный пример. Укажите порядок тактов при следующем условии:', 'Lies das Notenbeispiel. Gib die Taktfolge nach dieser Konvention an:')[lang]} ${condition[lang]}`,
     answer,
     options: options(answer, route.wrong, next, 'repeat-route'),
     explanation: `${route.convention[lang]} ${answer}.`,
@@ -546,6 +674,20 @@ export function shortExcerpt(
     const step = pitch.letter + 7 * pitch.octave;
     const wrong = pitchAtStep(0, clef);
     const baseline = wrong.letter + 7 * wrong.octave;
+    const name = (offset: number) =>
+      pitchLabel(pitchAtStep(step - baseline + offset, clef), lang);
+    // Four consecutive lines and spaces, with the answer drawn into any of the
+    // four places. The window used to be fixed at one step below to two above,
+    // so the answer was always the second-lowest name offered and could be
+    // picked without looking at the staff.
+    const offsets = pick(next, [
+      [-3, -2, -1],
+      [-2, -1, 1],
+      [-1, 1, 2],
+      [1, 2, 3],
+    ] as const);
+    // “That is the neighbouring step” is true one step away and nowhere else.
+    const neighbours = [name(-1), name(1)];
     return {
       kind: 'pitch' as const,
       prompt: taskText(
@@ -556,11 +698,10 @@ export function shortExcerpt(
       answer,
       options: options(
         answer,
-        [-1, 1, 2].map((offset) =>
-          pitchLabel(pitchAtStep(step - baseline + offset, clef), lang),
-        ),
+        offsets.map((offset) => name(offset)),
         next,
-        'wrong-letter',
+        (label) =>
+          neighbours.includes(label) ? 'wrong-letter' : 'wrong-written-note',
       ),
     };
   });
@@ -680,6 +821,24 @@ export function accidentalContext(
     previous.octave === pitch.octave
       ? spelling(previous.accidental)
       : null;
+  // A third named mistake: reading here a sign that was written earlier in the
+  // same bar on the same letter in a different octave. That is the one error
+  // the octave figure exists to catch, so it gets its own answer.
+  const asked = scenario.events[index];
+  const elsewhere = scenario.events
+    .slice(0, index)
+    .filter(
+      (event) =>
+        event.accidental !== null &&
+        event.measure === asked.measure &&
+        event.pitch.letter === asked.pitch.letter &&
+        event.pitch.octave !== asked.pitch.octave,
+    )
+    .at(-1);
+  const otherOctave =
+    elsewhere && elsewhere.accidental !== null
+      ? spelling(elsewhere.accidental)
+      : null;
   return {
     rule: scenario.stops
       ? 'sign-stops-at-the-barline'
@@ -687,8 +846,8 @@ export function accidentalContext(
     figure: scenario.figure,
     prompt: taskText(
       `Name written event ${index + 1} as it sounds, retaining its letter and octave. Use this single-voice modern convention: the signature applies in every octave; a local sign replaces it only at the same letter and octave within the bar; ties carry the previous pitch without establishing a new-bar local sign.`,
-      `Назовите звучащую высоту события ${index + 1}, сохранив написание и октаву. Условие для одного голоса: ключевые знаки действуют во всех октавах; случайный знак заменяет их только на той же ступени в той же октаве до конца такта; лига продлевает прежнюю высоту, не устанавливая случайный знак в новом такте.`,
-      `Benenne Ereignis ${index + 1} in seiner klingenden Höhe mit notiertem Stammton und Register. Einstimmige moderne Konvention: Vorzeichen der Tonart gelten in allen Oktaven; ein Versetzungszeichen ersetzt sie nur für denselben Stammton in derselben Oktave im Takt; eine Bindung setzt den alten Ton fort, ohne ein Versetzungszeichen im neuen Takt zu etablieren.`,
+      `Назовите звучащую высоту события ${index + 1}, сохранив написание и октаву. Современное правило для одного голоса: ключевые знаки действуют во всех октавах; случайный знак заменяет их только на той же ступени в той же октаве до конца такта; лига продления сохраняет прежнюю высоту, но не устанавливает случайный знак в новом такте.`,
+      `Benenne Ereignis ${index + 1} in seiner klingenden Höhe mit notiertem Stammton und Register. Einstimmige moderne Konvention: Vorzeichen der Tonart gelten in allen Oktaven; ein Versetzungszeichen ersetzt sie nur für denselben Stammton in derselben Oktave im Takt; ein Haltebogen setzt den alten Ton fort, ohne ein Versetzungszeichen im neuen Takt zu etablieren.`,
     )[lang],
     answer,
     options: options(
@@ -710,18 +869,21 @@ export function accidentalContext(
       // its sign", which is true of exactly one of them: a double sharp is
       // emphatically not the note with its sign ignored. Name the mistake the
       // reader actually made — the signature reading, the pitch carried past
-      // the barline, or simply the wrong alteration.
+      // the barline, a sign borrowed from another octave, or simply the wrong
+      // alteration.
       (label) =>
         label === signatureReading
           ? 'ignored-the-sign'
           : scenario.stops && label === carriedOver
             ? 'carried-the-sign-too-far'
-            : 'wrong-alteration',
+            : label === otherOctave
+              ? 'carried-the-sign-to-another-octave'
+              : 'wrong-alteration',
     ),
     explanation: taskText(
       `Event ${index + 1}: ${answer}. A natural or a single accidental replaces, never adds to, a signature or double accidental. Local scope does not jump octaves. At a barline the signature resumes for fresh attacks; only the actual tied continuation retains the old sound. These rule labels describe the stated convention, not every historical accidental practice.`,
-      `Событие ${index + 1}: ${answer}. Бекар или одиночный знак заменяет, а не суммирует ключевой или двойной знак. Случайный знак не переносится в другую октаву. После тактовой черты новые атаки подчиняются ключевым знакам; лишь связанное продолжение сохраняет прежнюю высоту. Правило относится к данному условию, не ко всем историческим практикам.`,
-      `Ereignis ${index + 1}: ${answer}. Auflösungszeichen oder einfaches Versetzungszeichen ersetzen Tonart- oder Doppelvorzeichen, statt sich zu addieren. Lokale Geltung springt nicht in andere Oktaven. Nach dem Taktstrich gilt für neue Anschläge die Tonart; nur die gebundene Fortsetzung behält den alten Ton. Dies bezeichnet die genannte Konvention, nicht jede historische Praxis.`,
+      `Событие ${index + 1}: ${answer}. Бекар или одиночный знак заменяет ключевой или двойной знак, а не складывается с ним. Случайный знак не переносится в другую октаву. После тактовой черты новые атаки подчиняются ключевым знакам; лишь связанное продолжение сохраняет прежнюю высоту. Правило относится к данному условию, не ко всем историческим практикам.`,
+      `Ereignis ${index + 1}: ${answer}. Ein Auflösungszeichen oder ein einfaches Versetzungszeichen ersetzt das Vorzeichen der Tonart oder ein doppeltes Versetzungszeichen; die Zeichen addieren sich nicht. Lokale Geltung springt nicht in andere Oktaven. Nach dem Taktstrich gilt für neue Anschläge wieder die Vorzeichnung; nur die übergebundene Fortsetzung behält den alten Ton. Dies bezeichnet die genannte Konvention, nicht jede historische Praxis.`,
     )[lang],
     source: notationSources.accidentals,
   };
@@ -762,13 +924,34 @@ export function tupletContext(
     tied: taskText(
       'the tied pair of eighths in the second 3:2 group',
       'связанная пара восьмых во второй группе 3:2',
-      'das gebundene Achtelpaar in der zweiten 3:2-Gruppe',
+      'das übergebundene Achtelpaar in der zweiten 3:2-Gruppe',
     ),
     group: taskText(
       'the entire first mixed 3:2 group',
       'вся первая смешанная группа 3:2',
       'die gesamte erste gemischte 3:2-Gruppe',
     ),
+  }[target];
+  // What the asked part reads as before the ratio is applied: the one
+  // misreading `counted-the-written-value` names, so it is always offered and
+  // it alone is answered with that sentence.
+  const written = {
+    thirteen: '13/16',
+    rest: '1/8',
+    subdivision: '1/16',
+    tied: '1/4',
+    group: '3/8',
+  }[target];
+  // The other wrong values stay inside the figure's own bar (3/4 for 13:12,
+  // 2/4 for the mixed groups). One fixed pool for both figures offered 3/4
+  // and 13/16 under a 2/4 bar and often left the written value out. 1/2 is
+  // thirteen sixteenths read as 13:8.
+  const others = {
+    thirteen: ['1/2', '3/8', '5/8'],
+    rest: ['1/16', '1/6', '1/4'],
+    subdivision: ['1/12', '1/32', '1/8'],
+    tied: ['1/12', '1/8', '1/3'],
+    group: ['1/6', '1/8', '1/2'],
   }[target];
   return {
     rule: 'irregular-group-written-value',
@@ -779,13 +962,8 @@ export function tupletContext(
       `Welchen Anteil einer ganzen Note umfasst ${subject.de}? Wende das gedruckte Verhältnis auf Noten, Pausen und Unterteilungen an.`,
     )[lang],
     answer,
-    options: options(
-      answer,
-      ['3/4', '13/16', '1/4', '1/6', '1/8', '1/12', '1/24']
-        .filter((x) => x !== answer)
-        .slice(0, 4),
-      next,
-      'counted-the-written-value',
+    options: options(answer, [written, ...others], next, (label) =>
+      label === written ? 'counted-the-written-value' : 'added-wrong',
     ),
     explanation: thirteen
       ? taskText(
@@ -796,7 +974,7 @@ export function tupletContext(
       : taskText(
           'Scale every written value by 2/3. First group: (1/4 + 1/8) × 2/3 = 1/4, including the rest. Second: (1/16 + 1/16 + 1/8 + 1/8) × 2/3 = 1/4. Each sixteenth lasts 1/24; the tied eighth pair sounds for 1/6 with one attack. A tuplet need not contain equal noteheads or only notes.',
           'Умножьте каждую записанную длительность на 2/3. Первая группа: (1/4 + 1/8) × 2/3 = 1/4, включая паузу. Вторая: (1/16 + 1/16 + 1/8 + 1/8) × 2/3 = 1/4. Шестнадцатая длится 1/24, связанная пара восьмых — 1/6 с одной атакой. В особой группе допустимы разные длительности и паузы.',
-          'Multipliziere jeden notierten Wert mit 2/3. Erste Gruppe: (1/4 + 1/8) × 2/3 = 1/4 einschließlich Pause. Zweite: (1/16 + 1/16 + 1/8 + 1/8) × 2/3 = 1/4. Eine Sechzehntel dauert 1/24, das gebundene Achtelpaar 1/6 mit einem Anschlag. Eine N-tole darf ungleiche Notenwerte und Pausen enthalten.',
+          'Multipliziere jeden notierten Wert mit 2/3. Erste Gruppe: (1/4 + 1/8) × 2/3 = 1/4 einschließlich Pause. Zweite: (1/16 + 1/16 + 1/8 + 1/8) × 2/3 = 1/4. Eine Sechzehntel dauert 1/24, das übergebundene Achtelpaar 1/6 mit einem Anschlag. Eine N-tole darf ungleiche Notenwerte und Pausen enthalten.',
         )[lang],
     source: notationSources.tuplets,
   };
@@ -855,6 +1033,7 @@ function contextualExcerpt(
     0,
   );
   const parts: NonNullable<Item['parts']> = [];
+  const heard: { pitch: SpelledPitch; measure: number }[] = [];
   let pitchIndex = 0;
   events.forEach((event, index) => {
     if (event.letter !== null) {
@@ -864,6 +1043,27 @@ function contextualExcerpt(
         { ...pitch, octave: pitch.octave + 1, midi: pitch.midi + 12 },
         lang,
       );
+      // The same line or space as it sounded in an earlier bar. Offered for a
+      // note in a later bar, that spelling is the sign carried over the
+      // barline, not just any wrong sign.
+      const { measure } = event;
+      const before = heard.findLast(
+        (earlier) =>
+          earlier.measure < measure &&
+          earlier.pitch.letter === pitch.letter &&
+          earlier.pitch.octave === pitch.octave,
+      );
+      const carriedOver = before
+        ? pitchLabel(
+            {
+              ...pitch,
+              accidental: before.pitch.accidental,
+              midi: pitch.midi - pitch.accidental + before.pitch.accidental,
+            },
+            lang,
+          )
+        : null;
+      heard.push({ pitch, measure });
       parts.push({
         kind: 'pitch',
         prompt: taskText(
@@ -892,12 +1092,16 @@ function contextualExcerpt(
           // are both right and only the register is wrong, which is exactly
           // what `neighbour-register` says and `wrong-alteration` denies.
           (label) =>
-            label === octaveAbove ? 'neighbour-register' : 'wrong-alteration',
+            label === octaveAbove
+              ? 'neighbour-register'
+              : label === carriedOver
+                ? 'carried-the-sign-too-far'
+                : 'wrong-alteration',
         ),
         explanation: taskText(
           `${answer}: keep the written letter and register. ${event.tieFromPrevious ? 'This is a tied continuation of the previous pitch, not a new attack.' : 'Apply explicit accidentals at this register; after a barline a fresh attack returns to the signature (none here).'} A correct rhythm cannot cancel a pitch-reading error.`,
           `${answer}: сохраните записанную ступень и октаву. ${event.tieFromPrevious ? 'Это связанное продолжение прежней высоты, а не новая атака.' : 'Учтите явные знаки в этой октаве; после тактовой черты новая атака подчиняется ключевым знакам (знаков здесь нет).'} Правильный ритм не отменяет ошибки высоты.`,
-          `${answer}: Stammton und Register beibehalten. ${event.tieFromPrevious ? 'Gebundene Fortsetzung des vorigen Tons, kein neuer Anschlag.' : 'Explizite Zeichen in diesem Register beachten; nach dem Taktstrich gilt beim Neuanschlag wieder die Tonart (hier ohne Vorzeichen).'} Ein richtiger Rhythmus gleicht keinen Tonhöhenfehler aus.`,
+          `${answer}: Stammton und Register beibehalten. ${event.tieFromPrevious ? 'Übergebundene Fortsetzung des vorigen Tons, kein neuer Anschlag.' : 'Explizite Zeichen in diesem Register beachten; nach dem Taktstrich gilt beim Neuanschlag wieder die Vorzeichnung (hier ohne Vorzeichen).'} Ein richtiger Rhythmus gleicht keinen Tonhöhenfehler aus.`,
         )[lang],
       });
     }
@@ -916,9 +1120,9 @@ function contextualExcerpt(
         'duration-symbol',
       ),
       explanation: taskText(
-        `${event.duration} of a whole note. ${event.letter === null ? 'This is silence, but it still occupies measured time.' : event.tieFromPrevious ? 'Count this written segment in its own bar; the tie continues the sound without another attack.' : 'Count the written value including any dot; a following tie joins durations, not extra attacks.'} Rhythm is assessed separately from pitch.`,
-        `${event.duration} целой ноты. ${event.letter === null ? 'Это тишина, но она занимает измеряемое время.' : event.tieFromPrevious ? 'Считайте этот записанный отрезок в своём такте; лига продолжает звук без новой атаки.' : 'Учтите записанную длительность и точку; последующая лига складывает время, а не атаки.'} Ритм оценивается отдельно от высоты.`,
-        `${event.duration} einer ganzen Note. ${event.letter === null ? 'Stille beansprucht ebenfalls gemessene Zeit.' : event.tieFromPrevious ? 'Diesen notierten Abschnitt in seinem eigenen Takt zählen; der Bogen setzt den Ton ohne neuen Anschlag fort.' : 'Den Wert samt Punkt zählen; ein folgender Haltebogen addiert Dauern, keine Anschläge.'} Rhythmus wird getrennt von Tonhöhe beurteilt.`,
+        `${event.duration} of a whole note. ${event.letter === null ? 'This is silence, but it still occupies measured time.' : event.tieFromPrevious ? 'Count this written segment on its own; the tie continues the sound without another attack.' : 'Count the written value including any dot; a following tie joins durations, not extra attacks.'} Rhythm is assessed separately from pitch.`,
+        `${event.duration} целой ноты. ${event.letter === null ? 'Это тишина, но она занимает измеряемое время.' : event.tieFromPrevious ? 'Считайте этот записанный отрезок отдельно; лига продления продолжает звук без новой атаки.' : 'Учтите записанную длительность и точку; последующая лига продления складывает длительности, а не атаки.'} Ритм оценивается отдельно от высоты.`,
+        `${event.duration} einer ganzen Note. ${event.letter === null ? 'Stille beansprucht ebenfalls gemessene Zeit.' : event.tieFromPrevious ? 'Diesen notierten Abschnitt für sich zählen; der Haltebogen setzt den Ton ohne neuen Anschlag fort.' : 'Den Wert samt Punkt zählen; ein folgender Haltebogen addiert Dauern, keine Anschläge.'} Rhythmus wird getrennt von Tonhöhe beurteilt.`,
       )[lang],
     });
   });
@@ -928,7 +1132,7 @@ function contextualExcerpt(
     prompt: taskText(
       'Read each event from left to right, including rests and tied continuations. Name sounding pitches with their written spelling; give each written duration separately. Pitch and rhythm receive independent feedback.',
       'Прочитайте события слева направо, включая паузы и связанные продолжения. Назовите звучащие высоты с сохранением написания; отдельно укажите каждую записанную длительность. Высота и ритм получают независимую обратную связь.',
-      'Lies jedes Ereignis von links nach rechts, einschließlich Pausen und gebundener Fortsetzungen. Benenne klingende Tonhöhen mit ihrer Schreibweise und jeden notierten Wert einzeln. Tonhöhe und Rhythmus erhalten getrennte Rückmeldungen.',
+      'Lies jedes Ereignis von links nach rechts, einschließlich Pausen und übergebundener Fortsetzungen. Benenne klingende Tonhöhen mit ihrer Schreibweise und jeden notierten Wert einzeln. Tonhöhe und Rhythmus erhalten getrennte Rückmeldungen.',
     )[lang],
     parts,
     answer: parts[0].answer,

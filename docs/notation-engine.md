@@ -39,6 +39,7 @@ After `npm ci`, run `npm run dev` and open the printed local URL.
 Typed answers require a **note name**, not an octave: `Eb`/`E♭`, `ми-бемоль`,
 `Es`. Capitalization, whitespace and hyphen variants are accepted; enharmonic
 substitution is not. German `H` and `B` are distinct; English `B` is natural.
+German accepts `Asas` beside the displayed `Ases`: both name A double-flat.
 For placement, the prompt includes the register. Click the required line/space,
 or focus the staff and use arrows (Home/End for the endpoints), then check.
 A valid wrong answer gets feedback and the correct spelling; an invalid name

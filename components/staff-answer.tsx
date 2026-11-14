@@ -80,8 +80,8 @@ export const staffWords = {
     check: 'Antwort prüfen',
     input: 'Tonname',
     hint: 'Beispiele: C, Cis, Es, Fisis, H, B. Der Tonname genügt.',
-    invalid: 'Geben Sie einen deutschen Tonnamen mit seiner Alteration ein.',
-    placePrompt: 'Setzen Sie diesen Ton:',
+    invalid: 'Gib einen deutschen Tonnamen mit seiner Alteration ein.',
+    placePrompt: 'Setze diesen Ton:',
     position: 'Position im Notensystem',
     line: 'Linie',
     space: 'Zwischenraum',
@@ -90,7 +90,7 @@ export const staffWords = {
     clef: 'Schlüssel',
     sign: 'Versetzungszeichen',
     signs: ['Doppel-Be', 'Be', 'ohne', 'Kreuz', 'Doppelkreuz'],
-    help: 'Klicken Sie auf eine Position oder verwenden Sie die Pfeiltasten. Pos1 und Ende erreichen die tiefste und höchste Position. Prüfen Sie dann Ihre Antwort.',
+    help: 'Klicke auf eine Position oder verwende die Pfeiltasten. Pos1 und Ende erreichen die tiefste und höchste Position. Prüfe dann deine Antwort.',
     answer: 'Richtiger Ton:',
     unsolved: 'Der zu benennende Ton',
     clefs: {
@@ -145,7 +145,14 @@ export function StaffPosition({
         className="staff-position"
         aria-label={t.position}
         aria-describedby={helpId}
-        style={{ width: plan.width * 26, height: plan.height * 26 }}
+        // A ratio, not a fixed height: when a narrow column clamps the width
+        // the drawing scales down, and the click rows, which are placed in
+        // percent of the box, have to scale with it. With a fixed height they
+        // stayed where they were and drifted off the lines they stand for.
+        style={{
+          width: plan.width * 26,
+          aspectRatio: `${plan.width} / ${plan.height}`,
+        }}
       >
         <Staff
           pitches={pitches}
@@ -220,6 +227,9 @@ export function StaffAnswer({
           <button
             key={value}
             type="button"
+            // Drawn as chosen as well as announced: the three modes looked
+            // alike, so the reader could not see which one they were in.
+            className={mode === value ? 'selected' : undefined}
             aria-pressed={mode === value}
             onClick={() => {
               setMode(value);

@@ -66,7 +66,6 @@ test('Lessons and glossary distinguish notes from adjacent instances of до wit
     lang: 'ru',
     lessonId: 'note-names',
     anchor: null,
-    setLessonId: vi.fn(),
     openLab: vi.fn(),
   });
   const experiment = container.querySelector('.lesson-experiment p');

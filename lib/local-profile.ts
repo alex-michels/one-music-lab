@@ -45,7 +45,10 @@ const chord = z
     quality: z.enum(
       Object.keys(chordQualities) as [keyof typeof chordQualities],
     ),
-    inversion: integer(0, 3),
+    // Up to the fifth chord tone in the bass: a ninth chord has five tones,
+    // and the lab offers each of them. The refinement below still bounds the
+    // value by the size of the chosen chord.
+    inversion: integer(0, 4),
     beats: integer(1, 8),
     octave: integer(1, 6).optional(),
   })

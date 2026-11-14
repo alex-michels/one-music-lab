@@ -38,7 +38,7 @@ const content: TopicBundle = {
   },
   lesson: {
     id: 'articulation',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
@@ -66,15 +66,83 @@ const content: TopicBundle = {
     paragraphs: [
       {
         en: 'Articulation shapes a note’s attack, duration and connection with its neighbours. A slur usually groups notes for connected playing; on some instruments it also indicates a specific technique. A staccato dot above or below a note asks for detached playing. Shortening the sound creates a gap within its written value; the next note still starts at its written time. A dot to the right has a different meaning: it lengthens the note.',
-        ru: 'Артикуляция определяет начало звука, его выдерживание и связь с соседними звуками. Лига обычно объединяет ноты для связного исполнения; на некоторых инструментах она также указывает приём игры. Точка стаккато над или под нотой требует отрывистого исполнения. Укороченный звук оставляет паузу внутри своей записанной длительности; следующая нота вступает в положенный момент. Точка справа означает другое: она увеличивает длительность.',
+        ru: 'Артикуляция определяет начало звука, его выдерживание и связь с соседними звуками. Артикуляционная лига (не лига продления) обычно объединяет ноты для связного исполнения; на некоторых инструментах она также указывает приём игры. Точка стаккато над или под нотой требует отрывистого исполнения. Укороченный звук оставляет паузу внутри своей записанной длительности; следующая нота вступает в положенный момент. Точка справа означает другое: она увеличивает длительность.',
         de: 'Artikulation gestaltet Tonansatz, Tondauer und die Verbindung zu benachbarten Tönen. Ein Bindebogen fasst gewöhnlich Noten zum gebundenen Spiel zusammen; auf manchen Instrumenten bezeichnet er auch eine bestimmte Spieltechnik. Ein Staccatopunkt über oder unter der Note verlangt abgesetztes Spiel. Der verkürzte Ton lässt innerhalb seines Notenwerts eine Lücke; der nächste Einsatz bleibt an seiner notierten Stelle. Ein Punkt rechts neben der Note bedeutet dagegen eine Verlängerung.',
       },
       {
-        en: 'Tenuto asks for a held note; portato combines a slur with separation, and non legato asks that successive notes not be joined. Modern engraving distinguishes a staccato dot from a staccatissimo wedge. Neither is a universal numerical duration: consult the edition and instrument. An unmarked line still requires an articulation choice.',
-        ru: 'Тенуто требует выдержать ноту; портато сочетает лигу с разделением, а нон легато — несвязное исполнение соседних звуков. Современная графика различает точку стаккато и клин стаккатиссимо. Ни один знак не задаёт универсальной числовой длительности: учитывайте редакцию и инструмент. В неразмеченной строке также нужно выбрать артикуляцию.',
-        de: 'Tenuto verlangt Aushalten; Portato verbindet einen Bogen mit Trennung, Non legato verlangt unverbundene Töne. Moderne Notation unterscheidet Staccatopunkt und Staccatissimokeil. Keines der Zeichen bestimmt eine allgemeingültige zahlenmäßige Dauer: beachte Ausgabe und Instrument. Auch eine unbezeichnete Linie verlangt eine Artikulationsentscheidung.',
+        en: 'Tenuto asks for a held note; portato combines a slur with separation, and non legato asks that successive notes not be joined. Modern engraving distinguishes a staccato dot from a staccatissimo wedge. Neither sign fixes a universal numerical duration: consult the edition and instrument. An unmarked line still requires an articulation choice.',
+        ru: 'Тенуто требует выдержать ноту; портато сочетает артикуляционную лигу с разделением звуков, а нон легато требует несвязного исполнения соседних звуков. Современная нотная графика различает точку стаккато и клин стаккатиссимо. Ни один из этих знаков не задаёт универсальной числовой длительности: учитывайте редакцию и инструмент. Там, где обозначений нет, артикуляцию всё равно приходится выбирать.',
+        de: 'Tenuto verlangt Aushalten; Portato verbindet einen Bogen mit Trennung, Non legato verlangt unverbundene Töne. Moderne Notation unterscheidet Staccatopunkt und Staccatissimokeil. Keines der Zeichen bestimmt eine allgemeingültige zahlenmäßige Dauer: Beachte Ausgabe und Instrument. Auch wo nichts bezeichnet ist, musst du dich für eine Artikulation entscheiden.',
       },
     ],
+    guide: {
+      question: {
+        en: 'What changes in the sound of the same notes when they are played joined or separated?',
+        ru: 'Что меняется в звучании одних и тех же нот, когда их играют слитно или раздельно?',
+        de: 'Was ändert sich am Klang derselben Noten, wenn du sie gebunden oder getrennt spielst?',
+      },
+      example: [
+        {
+          en: 'Take four quarter notes, C4, D4, E4 and F4, one per beat at ♩ = 60. Each beat lasts one second, so the notes start at 0, 1, 2 and 3 seconds.',
+          ru: 'Возьмите четыре четверти — до, ре, ми и фа первой октавы — по одной на долю при ♩ = 60. Доля длится одну секунду, поэтому ноты вступают в моменты 0, 1, 2 и 3 с.',
+          de: 'Nimm vier Viertelnoten, c′, d′, e′ und f′, eine je Zählzeit bei ♩ = 60. Eine Zählzeit dauert eine Sekunde, also setzen die Töne bei 0, 1, 2 und 3 Sekunden ein.',
+          ruMarkup:
+            'Возьмите четыре четверти — [[до]], [[ре]], [[ми]] и [[фа]] первой октавы — по одной на долю при ♩ = 60. Доля длится одну секунду, поэтому ноты вступают в моменты 0, 1, 2 и 3 с.',
+        },
+        {
+          en: 'Play them full length: each tone fills its whole second, and the next one starts just as it ends. No gap is left between the notes, so they sound connected, as legato asks.',
+          ru: 'Сыграйте их в полную длительность: каждый звук занимает всю свою секунду, а следующий вступает сразу за ним. Между звуками не остаётся паузы, и они звучат связно, как того требует легато.',
+          de: 'Spiele sie in voller Dauer: Jeder Ton füllt seine ganze Sekunde, und der nächste schließt unmittelbar an. Zwischen den Tönen bleibt keine Lücke, also klingen sie gebunden, wie es das Legato verlangt.',
+        },
+        {
+          en: 'Now shorten each tone to 0.25 seconds, as the “Short detached tones” example does. The tone stops early, and a gap of 0.75 seconds is left within the same written value.',
+          ru: 'Теперь укоротите каждый звук до 0,25 с, как в примере «Короткие отрывистые звуки». Звук заканчивается раньше, и внутри той же записанной длительности остаётся пауза в 0,75 с.',
+          de: 'Verkürze nun jeden Ton auf 0,25 Sekunden, wie im Beispiel „Kurze abgesetzte Töne“. Der Ton endet früher, und innerhalb desselben Notenwerts bleibt eine Lücke von 0,75 Sekunden.',
+        },
+        {
+          en: 'The notes still start at 0, 1, 2 and 3 seconds, exactly as before. Only the length of each sound has changed, not the moment the next note begins.',
+          ru: 'Ноты по-прежнему вступают в моменты 0, 1, 2 и 3 с. Изменилась только длина каждого звука, а не момент вступления следующей ноты.',
+          de: 'Die Töne setzen weiterhin bei 0, 1, 2 und 3 Sekunden ein, genau wie zuvor. Geändert hat sich nur die Länge jedes Tons, nicht der Zeitpunkt, an dem der nächste einsetzt.',
+        },
+        {
+          en: 'A length of 0.25 seconds is this example’s choice, not a rule: the staccato dot itself fixes no universal numerical duration.',
+          ru: 'Длина 0,25 с — выбор этого примера, а не правило: сама точка стаккато не задаёт универсальной числовой длительности.',
+          de: 'Die Länge von 0,25 Sekunden ist die Wahl dieses Beispiels, keine Regel: Der Staccatopunkt selbst bestimmt keine allgemeingültige zahlenmäßige Dauer.',
+        },
+      ],
+      listen: {
+        en: 'Play “Full-length tones”, then “Short detached tones”. Count along: in both examples the four notes start at the same moments. In the second, listen for the silence after each tone; it lies within the note’s written value.',
+        ru: 'Послушайте пример «Звуки полной длительности», затем «Короткие отрывистые звуки». Считайте доли: в обоих примерах четыре ноты вступают в одни и те же моменты. Во втором вслушайтесь в тишину после каждого звука: она остаётся внутри записанной длительности ноты.',
+        de: 'Spiele „Töne in voller Dauer“ und dann „Kurze abgesetzte Töne“. Zähle mit: In beiden Beispielen setzen die vier Töne zu denselben Zeitpunkten ein. Achte im zweiten auf die Stille nach jedem Ton: Sie liegt innerhalb des Notenwerts.',
+      },
+      mistake: {
+        en: 'A dot does not always mean staccato; its place decides. Above or below the note it is a staccato dot and asks for detached playing. To the right of the note it has a different meaning: it lengthens the note.',
+        ru: 'Точка не всегда означает стаккато: всё решает её место. Над нотой или под ней это точка стаккато, она требует отрывистого исполнения. Точка справа от ноты означает другое: она увеличивает длительность.',
+        de: 'Ein Punkt bedeutet nicht immer Staccato: Entscheidend ist, wo er steht. Über oder unter der Note ist er ein Staccatopunkt und verlangt abgesetztes Spiel. Rechts neben der Note bedeutet er dagegen eine Verlängerung.',
+      },
+      takeaways: [
+        {
+          en: 'Articulation shapes a note’s attack, its duration and its connection with the neighbouring notes.',
+          ru: 'Артикуляция определяет начало звука, его выдерживание и связь с соседними звуками.',
+          de: 'Artikulation gestaltet Tonansatz, Tondauer und die Verbindung zu den benachbarten Tönen.',
+        },
+        {
+          en: 'A shortened sound leaves a gap within its written value; the next note still starts at its written time.',
+          ru: 'Укороченный звук оставляет паузу внутри своей записанной длительности; следующая нота вступает в положенный момент.',
+          de: 'Der verkürzte Ton lässt innerhalb seines Notenwerts eine Lücke; der nächste Ton setzt an seiner notierten Stelle ein.',
+        },
+        {
+          en: 'A slur usually asks for connected playing, a dot above or below the note for detached playing, a tenuto line for a held note, and dots under a slur for portato, a gentle separation.',
+          ru: 'Артикуляционная лига обычно означает связное исполнение, точка над или под нотой — отрывистое, черта тенуто — выдержанный звук, а точки под лигой — портато, мягкое разделение звуков.',
+          de: 'Ein Bindebogen verlangt gewöhnlich gebundenes Spiel, ein Punkt über oder unter der Note abgesetztes Spiel und ein Tenutostrich das Aushalten des Tons; Punkte unter einem Bogen bedeuten Portato, eine sanfte Trennung.',
+        },
+        {
+          en: 'Neither the staccato dot nor the staccatissimo wedge fixes a universal numerical duration: consult the edition and the instrument.',
+          ru: 'Ни точка стаккато, ни клин стаккатиссимо не задают универсальной числовой длительности: учитывайте редакцию и инструмент.',
+          de: 'Weder der Staccatopunkt noch der Staccatissimokeil bestimmt eine allgemeingültige zahlenmäßige Dauer: Beachte Ausgabe und Instrument.',
+        },
+      ],
+    },
     sourceId: 'source-055',
     experimentId: 'articulation',
     reading: {
@@ -83,7 +151,7 @@ const content: TopicBundle = {
       text: {
         en: 'Distinguish articulation, phrasing and ornaments. Legato connects; staccato separates; tenuto asks that a note be held. Portato combines connection with gentle separation. A breath mark or caesura interrupts the line. A dot versus a wedge is not a universal numerical length rule across periods. Ornament recognition here is a reference exercise; realization needs the edition, period and instrument.',
         ru: 'Различайте артикуляцию, фразировку и украшения. Легато связывает, стаккато разделяет, тенуто требует выдержать звук. Портато сочетает связность с мягким разделением. Знак дыхания или цезура прерывает линию. Точка и клин не задают универсального числового соотношения длительностей во всех эпохах. Здесь упражнение на украшения проверяет узнавание; исполнение зависит от редакции, эпохи и инструмента.',
-        de: 'Unterscheide Artikulation, Phrasierung und Verzierungen. Legato verbindet, staccato trennt, tenuto verlangt Aushalten. Portato verbindet mit sanfter Trennung. Atemzeichen oder Zäsur unterbrechen die Linie. Punkt und Keil legen epochenübergreifend kein zahlenmäßiges Längenverhältnis fest. Die Verzierungsübung dient dem Erkennen; die Ausführung hängt von Ausgabe, Epoche und Instrument ab.',
+        de: 'Unterscheide Artikulation, Phrasierung und Verzierungen. Legato verbindet, staccato trennt, tenuto verlangt Aushalten. Portato vereint Bindung und sanfte Trennung. Atemzeichen oder Zäsur unterbrechen die Linie. Punkt und Keil legen epochenübergreifend kein zahlenmäßiges Längenverhältnis fest. Die Verzierungsübung dient dem Erkennen; die Ausführung hängt von Ausgabe, Epoche und Instrument ab.',
       },
       assetIds: [
         'figure-detached',
@@ -103,14 +171,14 @@ const content: TopicBundle = {
   },
   experiment: {
     id: 'articulation',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
     topicId: 'articulation',
     instructions: {
       en: 'Compare Full-length tones and Short detached tones at the same tempo. Listen to the gaps while the onsets stay in the same places. Instrumental articulation needs its own technique.',
-      ru: 'При одном темпе сравните тоны полной длительности и короткие раздельные тоны. Атаки остаются на тех же местах, а паузы меняются. Исполнение штрихов на инструменте требует своей техники.',
+      ru: 'При одном темпе сравните звуки полной длительности и короткие отрывистые звуки. Атаки остаются на тех же местах, а паузы меняются. Исполнение штрихов на инструменте требует своей техники.',
       de: 'Vergleiche bei gleichem Tempo Töne in voller Dauer und kurze abgesetzte Töne. Die Einsätze bleiben an denselben Stellen, die Pausen ändern sich. Instrumentale Artikulation erfordert die jeweilige Spieltechnik.',
     },
     engine: 'sound-lab',
@@ -164,7 +232,7 @@ const content: TopicBundle = {
   concepts: [
     {
       id: 'Unmarked articulation',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -183,7 +251,7 @@ const content: TopicBundle = {
       },
       body: {
         en: 'Missing slurs or dots do not prescribe identical playing in every period. Brian Blood contrasts Türk’s 1789 keyboard advice, which leaves a small gap in ordinary playing, with Clementi’s 1801 preference for sustained values. These are specific keyboard traditions, not a rule for all instruments or all eighteenth- and nineteenth-century music. Check the edition and performance context before choosing a default articulation.',
-        ru: 'Отсутствие лиг и точек не предписывает одинакового исполнения во все эпохи. Брайан Блад сопоставляет клавирные рекомендации Тюрка 1789 года, допускающие небольшой промежуток при обычном исполнении, с предпочтением Клементи 1801 года выдерживать длительности. Это конкретные клавирные традиции, а не правило для всех инструментов и всей музыки XVIII–XIX веков. Уточняйте редакцию и исполнительский контекст.',
+        ru: 'Отсутствие артикуляционных лиг и точек не предписывает одинакового исполнения во все эпохи. Брайан Блад сопоставляет клавирные рекомендации Тюрка 1789 года, допускающие небольшой промежуток при обычном исполнении, с предпочтением Клементи 1801 года выдерживать длительности. Это конкретные клавирные традиции, а не правило для всех инструментов и всей музыки XVIII–XIX веков. Уточняйте редакцию и исполнительский контекст.',
         de: 'Fehlende Bögen oder Punkte verlangen nicht in jeder Epoche dasselbe Spiel. Brian Blood stellt Türks Klavierlehre von 1789, die beim gewöhnlichen Vortrag eine kleine Trennung vorsieht, Clementis Empfehlung von 1801 zum Aushalten der Notenwerte gegenüber. Das sind bestimmte Klaviertraditionen, keine Regel für alle Instrumente oder die gesamte Musik des 18. und 19. Jahrhunderts. Prüfe Ausgabe und Aufführungskontext.',
       },
       sourceId: 'source-041',
@@ -232,7 +300,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Mordent',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -240,14 +308,14 @@ const content: TopicBundle = {
       order: 8,
       reference: true,
       title: {
-        en: 'Mordent',
-        ru: 'Мордент',
+        en: 'Upper and lower mordent',
+        ru: 'Мордент: неперечёркнутый и перечёркнутый',
         de: 'Mordent und Pralltriller',
       },
       body: {
-        en: 'Specify upper or lower mordent rather than relying on the name alone. In the modern signs shown here, the unstruck form uses the upper neighbor, the struck-through form the lower. This identifies the sign, not a universal starting note or rhythm.',
+        en: 'Say upper mordent or lower mordent; the bare name is ambiguous. In the modern signs shown here, the sign without a stroke uses the upper neighbour and the sign with a vertical stroke uses the lower. This identifies the sign, not a universal starting note or rhythm.',
         ru: 'Уточняйте вид: неперечёркнутый мордент связан с верхним вспомогательным звуком, перечёркнутый — с нижним. Здесь речь о показанных современных знаках, а не об универсальном начальном звуке или ритме исполнения.',
-        de: 'Unterscheide den Pralltriller mit oberem Nebenton vom Mordent mit unterem Nebenton. Bei den hier gezeigten modernen Zeichen trägt die untere Form einen Strich. Damit ist das Zeichen bestimmt, nicht allgemein Anfangston oder Rhythmus.',
+        de: 'Unterscheide den Pralltriller mit oberem Nebenton vom Mordent mit unterem Nebenton. Bei den hier gezeigten modernen Zeichen hat das Mordentzeichen einen senkrechten Strich, das Pralltrillerzeichen keinen. Damit ist das Zeichen bestimmt, nicht allgemein Anfangston oder Rhythmus.',
       },
       aliases: {
         en: 'upper mordent; lower mordent',
@@ -258,7 +326,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Turn',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -271,9 +339,9 @@ const content: TopicBundle = {
         de: 'Doppelschlag',
       },
       body: {
-        en: 'A neighboring-note figure indicated by a turn sign; its placement relative to a note matters for timing.',
-        ru: 'Фигура из основных и соседних звуков, обозначенная знаком группетто; положение знака относительно ноты существенно для времени исполнения.',
-        de: 'Eine Nebentonfigur mit Doppelschlagzeichen; seine Stellung zur Note ist für den Zeitpunkt der Ausführung wesentlich.',
+        en: 'A figure that circles the principal note through its upper and lower neighbours, shown by a turn sign; where the sign stands relative to the note decides when the figure is played.',
+        ru: 'Фигура, опевающая основной звук верхним и нижним вспомогательными звуками; обозначается знаком группетто. Положение знака относительно ноты определяет, когда фигура исполняется.',
+        de: 'Eine Figur, die den Hauptton mit oberem und unterem Nebenton umspielt und durch das Doppelschlagzeichen angezeigt wird; die Stellung des Zeichens zur Note bestimmt den Zeitpunkt der Ausführung.',
       },
       sourceId: 'source-015',
     },
@@ -321,7 +389,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Slide ornament',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -334,9 +402,9 @@ const content: TopicBundle = {
         de: 'Schleifer',
       },
       body: {
-        en: 'A short stepwise approach to a principal tone; its historical execution is not inferred from a generic playback preset.',
-        ru: 'Короткий поступенный подход к основному звуку; историческое исполнение не выводят из универсальной настройки воспроизведения.',
-        de: 'Eine kurze schrittweise Hinführung zum Hauptton; ihre historische Ausführung folgt keinem allgemeinen Wiedergabepreset.',
+        en: 'A short stepwise approach to a principal tone. How it is played depends on the period and the edition; it cannot be inferred from automatic playback.',
+        ru: 'Короткий поступенный подход к основному звуку. Его исполнение зависит от эпохи и редакции; по автоматическому воспроизведению о нём судить нельзя.',
+        de: 'Eine kurze schrittweise Hinführung zum Hauptton. Ihre Ausführung richtet sich nach Epoche und Ausgabe; aus einer automatischen Wiedergabe lässt sie sich nicht ableiten.',
       },
       sourceId: 'source-036',
     },
@@ -363,7 +431,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Breath mark and caesura',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -376,9 +444,9 @@ const content: TopicBundle = {
         de: 'Atemzeichen und Zäsur',
       },
       body: {
-        en: 'They mark a breath or break in the musical line. Unlike a numbered rest, their duration is not specified by a note value alone.',
-        ru: 'Обозначают вдох или разрыв музыкальной линии. В отличие от паузы с определённой длительностью, время не задаётся одним нотным значением.',
-        de: 'Sie kennzeichnen Atemholen oder einen Einschnitt in der musikalischen Linie. Anders als eine Pause mit festem Wert bestimmen sie die Dauer nicht allein durch einen Notenwert.',
+        en: 'They mark a breath or a break in the musical line. Unlike a rest with a definite value, they do not state how long the break lasts.',
+        ru: 'Обозначают вдох или разрыв музыкальной линии. В отличие от паузы с определённой длительностью, они не указывают, сколько длится этот разрыв.',
+        de: 'Sie kennzeichnen das Atemholen oder einen Einschnitt in der musikalischen Linie. Anders als eine Pause mit festem Wert geben sie nicht an, wie lange die Unterbrechung dauert.',
       },
       sourceId: 'source-008',
     },
@@ -454,7 +522,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Non legato and leggiero',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -463,18 +531,18 @@ const content: TopicBundle = {
       reference: true,
       title: {
         en: 'Non legato and leggiero',
-        ru: 'Нон легато и легджиеро',
+        ru: 'Нон легато и леджьеро',
         de: 'Non legato und leggiero',
       },
       aliases: {
         en: 'non legato; leggiero; leggero',
-        ru: 'нон легато; легджиеро; легко',
+        ru: 'нон легато; леджьеро; леджеро; легко',
         de: 'non legato; leggiero; leggero',
       },
       body: {
-        en: 'Non legato asks for notes that are not joined. Leggiero (also leggero) asks for lightness of delivery, not automatically shorter written values. A light phrase can still be connected. Read these words together with any slurs, dots and dynamic marks.',
-        ru: 'Нон легато требует несвязного исполнения нот. Leggiero (также leggero) означает лёгкость подачи, а не автоматическое сокращение записанных длительностей. Лёгкая фраза может оставаться связной. Учитывайте лиги, точки и динамические знаки рядом с этими словами.',
-        de: 'Non legato verlangt unverbundene Töne. Leggiero (auch leggero) verlangt Leichtigkeit, nicht automatisch kürzere Notenwerte. Eine leichte Phrase kann dennoch gebunden sein. Lies die Wörter zusammen mit Bögen, Punkten und dynamischen Angaben.',
+        en: 'Non legato asks for notes that are not joined. Leggiero (also leggero) asks for a light touch; it does not by itself shorten the notes. A light phrase can still be connected. Read these words together with any slurs, dots and dynamic marks.',
+        ru: 'Нон легато требует несвязного исполнения нот. Leggiero (также leggero) означает лёгкость исполнения, а не автоматическое укорачивание звуков. Лёгкая фраза может оставаться связной. Учитывайте артикуляционные лиги, точки и динамические знаки рядом с этими словами.',
+        de: 'Non legato verlangt unverbundene Töne. Leggiero (auch leggero) verlangt Leichtigkeit, nicht automatisch kürzere Töne. Eine leichte Phrase kann dennoch gebunden sein. Lies die Wörter zusammen mit Bögen, Punkten und dynamischen Angaben.',
       },
       sourceId: 'source-003',
     },
@@ -564,7 +632,7 @@ const content: TopicBundle = {
     },
     {
       id: 'portato',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -577,9 +645,9 @@ const content: TopicBundle = {
         de: 'Portato',
       },
       body: {
-        en: 'Portato writes dots under a slur and asks for notes that are separated but not sharply detached.',
-        ru: 'Портато записывают точками под лигой: звуки отделяются, но не резко.',
-        de: 'Portato schreibt Punkte unter einem Bogen und verlangt Töne, die getrennt, aber nicht scharf abgesetzt sind.',
+        en: 'Portato is written as dots under a slur and asks for notes that are separated but not sharply detached.',
+        ru: 'Портато записывают точками под артикуляционной лигой: звуки отделяются, но не резко.',
+        de: 'Portato wird mit Punkten unter einem Bogen notiert und verlangt Töne, die getrennt, aber nicht scharf abgesetzt sind.',
       },
       sourceId: 'source-015',
     },

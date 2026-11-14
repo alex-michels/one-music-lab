@@ -57,6 +57,23 @@ export const topicSchema = z.strictObject({
   exerciseIds: ids,
   conceptIds: ids,
 });
+/**
+ * How a lesson leads its reader, as opposed to what it states.
+ *
+ * Every field restates or applies what the lesson, its experiment, its
+ * exercises and its definitions already say: a guide may not introduce a fact
+ * that needs a source of its own. It asks the question the lesson answers,
+ * walks through one example with the lesson's own numbers or notes, says what
+ * to notice in the listening examples, names one confusion the lesson's own
+ * feedback corrects, and closes with what to keep.
+ */
+export const guideSchema = z.strictObject({
+  question: localTextSchema,
+  example: z.array(localTextSchema).min(3).max(5),
+  listen: localTextSchema,
+  mistake: localTextSchema,
+  takeaways: z.array(localTextSchema).min(3).max(4),
+});
 export const lessonSchema = z.strictObject({
   ...localized,
   topicId: id,
@@ -65,6 +82,8 @@ export const lessonSchema = z.strictObject({
   summary: localTextSchema,
   formula: localTextSchema,
   paragraphs: z.array(localTextSchema).min(1),
+  // Required: a lesson that only states its facts is not finished.
+  guide: guideSchema,
   sourceId: id,
   experimentId: id,
   reading: z
@@ -200,6 +219,7 @@ export const catalogSchema = z.strictObject({
 });
 export type Topic = z.infer<typeof topicSchema>;
 export type Lesson = z.infer<typeof lessonSchema>;
+export type LessonGuide = z.infer<typeof guideSchema>;
 export type Experiment = z.infer<typeof experimentSchema>;
 export type Exercise = z.infer<typeof exerciseSchema>;
 export type Concept = z.infer<typeof conceptSchema>;

@@ -509,7 +509,7 @@ const content: Asset[] = [
   },
   {
     id: 'figure-duplet',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: [],
@@ -1267,7 +1267,7 @@ const content: Asset[] = [
   },
   {
     id: 'figure-accidental-replacement',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: [],
@@ -1333,7 +1333,7 @@ const content: Asset[] = [
   },
   {
     id: 'figure-beamed-mixed',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: [],
@@ -1343,7 +1343,7 @@ const content: Asset[] = [
     description: {
       en: 'Mixed short values can share a beam. Count their total and locate the beat before judging the grouping.',
       ru: 'Разные короткие длительности могут иметь общее ребро. Сосчитайте сумму и найдите долю, прежде чем оценивать группировку.',
-      de: 'Verschiedene kurze Werte können einen Balken teilen. Zähle die Gesamtdauer und finde die Zählzeit, bevor du die Gruppierung beurteilst.',
+      de: 'Verschiedene kurze Werte können unter einem gemeinsamen Balken stehen. Zähle die Gesamtdauer und finde die Zählzeit, bevor du die Gruppierung beurteilst.',
     },
     rights: [
       {
@@ -1522,7 +1522,7 @@ const content: Asset[] = [
   },
   {
     id: 'figure-cross-bar-tie',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: [],
@@ -1630,7 +1630,7 @@ const content: Asset[] = [
   },
   {
     id: 'figure-repeat-dc-fine',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: [],
@@ -1640,7 +1640,7 @@ const content: Asset[] = [
     description: {
       en: 'D.C. al Fine returns to the beginning and stops at Fine on the return, not on the first traversal.',
       ru: 'D.C. al Fine возвращает к началу и останавливает у Fine после возврата, а не при первом прохождении.',
-      de: 'D.C. al Fine führt zum Anfang zurück und endet beim Rücklauf bei Fine, nicht beim ersten Durchgang.',
+      de: 'D.C. al Fine führt zum Anfang zurück und endet nach dem Rücksprung bei Fine, nicht beim ersten Durchgang.',
     },
     rights: [
       {
@@ -1684,7 +1684,7 @@ const content: Asset[] = [
   },
   {
     id: 'figure-repeat-abbreviation',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: [],
@@ -1692,9 +1692,9 @@ const content: Asset[] = [
     path: 'lib/notation-figures.json',
     entry: 'repeat-abbreviation',
     description: {
-      en: 'The repeat abbreviation replaces a previously written pattern. Its duration still occupies the indicated measure.',
-      ru: 'Сокращение заменяет ранее записанный рисунок. Его длительность по-прежнему занимает указанный такт.',
-      de: 'Das Wiederholungskürzel ersetzt ein bereits notiertes Muster. Seine Dauer füllt weiterhin den angegebenen Takt.',
+      en: 'The repeat abbreviation means: play the previously written pattern again. Its duration still occupies the indicated measure.',
+      ru: 'Сокращение означает: сыграть ранее записанный рисунок ещё раз. Его длительность по-прежнему занимает указанный такт.',
+      de: 'Das Wiederholungskürzel bedeutet: das bereits notierte Muster noch einmal spielen. Seine Dauer füllt weiterhin den angegebenen Takt.',
     },
     rights: [
       {
@@ -1738,7 +1738,7 @@ const content: Asset[] = [
   },
   {
     id: 'figure-upper-mordent',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: [],
@@ -1746,7 +1746,7 @@ const content: Asset[] = [
     path: 'lib/notation-figures.json',
     entry: 'upper-mordent',
     description: {
-      en: 'The unstruck neighboring-note sign identifies the upper-neighbor form here; it does not prescribe one historical realization.',
+      en: 'The neighbouring-note sign without a stroke identifies the upper-neighbour form here; it does not prescribe one historical realization.',
       ru: 'Неперечёркнутый знак здесь обозначает мордент с верхним вспомогательным звуком; он не предписывает единственное историческое исполнение.',
       de: 'Das nicht durchstrichene Nebentonzeichen bezeichnet hier den Pralltriller mit oberem Nebenton, keine einzige historische Ausführung.',
     },

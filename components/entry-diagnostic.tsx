@@ -5,6 +5,7 @@ import { hashOf, type Lang } from '@/lib/client-store';
 import { diagnosticQuestions, diagnosticResult } from '@/lib/entry-diagnostic';
 import { topicById } from '@/lib/topics';
 import { NoteText } from './note-text';
+import { AnswerMark } from './answer-mark';
 
 export function EntryDiagnostic({ lang }: { lang: Lang }) {
   const [step, setStep] = useState(0);
@@ -61,10 +62,29 @@ export function EntryDiagnostic({ lang }: { lang: Lang }) {
                 type="button"
                 key={option.id}
                 disabled={answered}
+                // Once answered, the right option is marked, and a wrong
+                // choice too: the check used to show an explanation without
+                // ever saying whether the answer had been right.
+                className={
+                  !answered
+                    ? undefined
+                    : option.id === question.answer
+                      ? 'answer-correct'
+                      : answers[step] === option.id
+                        ? 'answer-wrong'
+                        : undefined
+                }
                 aria-pressed={answered && answers[step] === option.id}
                 onClick={() => setAnswers([...answers, option.id])}
               >
-                {option.label[lang]}
+                <span>{option.label[lang]}</span>
+                {/* The same mark as the lesson question: after "I'm not sure"
+                    nothing else says which option was right without colour. */}
+                {!answered ? null : option.id === question.answer ? (
+                  <AnswerMark kind="correct" lang={lang} />
+                ) : answers[step] === option.id ? (
+                  <AnswerMark kind="chosen" lang={lang} />
+                ) : null}
               </button>
             ))}
           </div>
@@ -80,6 +100,17 @@ export function EntryDiagnostic({ lang }: { lang: Lang }) {
           {answered && (
             <output className="diagnostic-feedback">
               <p>
+                {/* The verdict in words, so it does not depend on colour. An
+                    honest "not sure" is neither right nor wrong. */}
+                {selected && (
+                  <strong>
+                    {
+                      (selected.id === question.answer
+                        ? text('Correct.', 'Верно.', 'Richtig.')
+                        : text('Not quite.', 'Не совсем.', 'Nicht ganz.'))[lang]
+                    }{' '}
+                  </strong>
+                )}
                 {selected?.feedback[lang] ??
                   text(
                     'Mark this for review; no guess is needed.',

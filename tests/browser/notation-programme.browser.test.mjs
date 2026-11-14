@@ -49,7 +49,7 @@ for (const { lang, headings } of [
   },
   {
     lang: 'ru',
-    headings: ['Чему вы научитесь', 'Как это устроено', 'Главное на примере'],
+    headings: ['Чему вы научитесь', 'Как это устроено', 'Коротко о главном'],
   },
   {
     lang: 'de',
@@ -63,7 +63,6 @@ for (const { lang, headings } of [
         lang,
         lessonId: lesson.id,
         anchor: null,
-        setLessonId: vi.fn(),
         openLab,
       });
       expect(
@@ -104,7 +103,6 @@ for (const { lang, headings } of [
       lang,
       lessonId: 'dots-ties',
       anchor: 'second-dot-adds-half-the-first',
-      setLessonId: vi.fn(),
       openLab,
     });
     expect(container.querySelector('.inline-exercise').id).toBe(
@@ -284,7 +282,6 @@ test('An inline question reached through a rule anchor actually tests that rule'
     lang: 'en',
     lessonId: 'dots-ties',
     anchor: 'second-dot-adds-half-the-first',
-    setLessonId: vi.fn(),
     openLab: vi.fn(),
   });
   expect(container.querySelector('.inline-exercise').id).toBe(

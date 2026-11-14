@@ -27,7 +27,7 @@ const content: TopicBundle = {
   },
   lesson: {
     id: 'durations',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
@@ -55,15 +55,81 @@ const content: TopicBundle = {
     paragraphs: [
       {
         en: 'A note value says how long a note lasts in relation to the others, not in seconds. Each value is two of the next smaller one. The chain runs whole, half, quarter, eighth, sixteenth, and continues by halving. Only a tempo turns these relations into clock time.',
-        ru: 'Длительность показывает, как долго звучит нота по отношению к другим, а не в секундах. Каждая длительность вмещает две следующие меньшие: целая, половинная, четверть, восьмая, шестнадцатая — и дальше делением пополам. Только темп превращает эти отношения в реальное время.',
+        ru: 'Длительность показывает, как долго звучит нота по сравнению с другими, а не в секундах. Каждая длительность вдвое длиннее следующей, более мелкой: целая равна двум половинным, половинная — двум четвертям. Ряд идёт так: целая, половинная, четверть, восьмая, шестнадцатая — и дальше тем же делением пополам. Только темп превращает эти соотношения в реальное время.',
         de: 'Ein Notenwert sagt, wie lange eine Note im Verhältnis zu den anderen klingt, nicht in Sekunden. Jeder Wert enthält zwei des nächstkleineren: ganze Note, halbe Note, Viertelnote, Achtelnote, Sechzehntelnote und so weiter durch Halbieren. Erst das Tempo macht daraus messbare Zeit.',
       },
       {
-        en: 'The shape of a note carries its value. An open head without a stem is a whole note; with a stem it is a half; a filled head a quarter, and each added flag halves the value again. Every value has its own rest, and the whole rest also stands for a silent bar.',
-        ru: 'Форма ноты задаёт её длительность. Пустая головка без штиля — целая, со штилем — половинная, закрашенная головка — четверть, и каждый следующий флажок снова делит длительность пополам. У каждой длительности есть своя пауза, а целая пауза обозначает и молчание всего такта любого размера.',
-        de: 'Die Form der Note trägt ihren Wert. Ein leerer Kopf ohne Hals ist eine ganze Note, mit Hals eine halbe, ein ausgefüllter Kopf eine Viertelnote, und jedes weitere Fähnchen halbiert den Wert erneut. Zu jedem Wert gehört eine eigene Pause; die ganze Pause gilt außerdem als Taktpause, gleich wie lang der Takt ist.',
+        en: 'The shape of a note carries its value. An open head without a stem is a whole note; add a stem and it is a half; fill the head, keeping the stem, and it is a quarter. Each flag added to the stem halves the value again. Every value has its own rest. The whole rest has a second job: alone in a bar, it makes the whole bar silent — in 3/4 that is three quarters, not four.',
+        ru: 'Форма ноты показывает её длительность. Пустая головка без штиля — целая; со штилем — половинная; закрашенная головка со штилем — четверть. Каждый флажок на штиле снова делит длительность пополам. У каждой длительности есть своя пауза. У целой паузы есть и вторая роль: если в такте стоит только она, молчит весь такт — в размере 3/4 это три четверти, а не четыре.',
+        de: 'Die Form der Note trägt ihren Wert. Ein leerer Kopf ohne Hals ist eine ganze Note; mit Hals ist es eine halbe; ein ausgefüllter Kopf mit Hals ist eine Viertelnote. Jedes Fähnchen am Hals halbiert den Wert erneut. Zu jedem Wert gehört eine eigene Pause. Die ganze Pause hat eine zweite Aufgabe: Steht sie allein im Takt, schweigt der ganze Takt – im 3/4-Takt sind das drei Viertel, nicht vier.',
       },
     ],
+    guide: {
+      question: {
+        en: 'How can you tell from the shape of a written note how long it lasts compared with the others?',
+        ru: 'Как по форме записанной ноты понять, сколько она длится по сравнению с другими?',
+        de: 'Woran erkennst du an der Form einer geschriebenen Note, wie lange sie im Vergleich zu den anderen dauert?',
+      },
+      example: [
+        {
+          en: 'Start with a whole note: an open head and no stem. In the example “One whole note” it fills four quarter-note beats.',
+          ru: 'Начните с целой ноты: это пустая головка без штиля. В примере «Одна целая» она занимает четыре четвертные доли.',
+          de: 'Beginne mit der ganzen Note: ein leerer Kopf ohne Hals. Im Beispiel „Eine ganze Note“ füllt sie vier Viertelzählzeiten.',
+        },
+        {
+          en: 'Add a stem and you have a half note. A whole note is two halves, so each half note fills two of those beats.',
+          ru: 'Добавьте штиль — получится половинная. Целая равна двум половинным, поэтому каждая половинная занимает две такие доли.',
+          de: 'Setze einen Hals an, und du hast eine halbe Note. Eine Ganze enthält zwei Halbe, also füllt jede halbe Note zwei dieser Zählzeiten.',
+        },
+        {
+          en: 'Fill the head, keeping the stem, and you have a quarter note. A half is two quarters, so four quarter notes fill the same four beats.',
+          ru: 'Закрасьте головку, оставив штиль, — получится четверть. Половинная равна двум четвертям, поэтому четыре четверти занимают те же четыре доли.',
+          de: 'Fülle den Kopf aus und behalte den Hals: Das ist eine Viertelnote. Eine Halbe enthält zwei Viertel, also füllen vier Viertelnoten dieselben vier Zählzeiten.',
+        },
+        {
+          en: 'Add a flag to the stem and the value halves again: an eighth note. Two eighths fill one quarter, so eight of them fill the whole note.',
+          ru: 'Добавьте к штилю флажок, и длительность снова разделится пополам: это восьмая. Две восьмые равны одной четверти, а восемь восьмых — целой.',
+          de: 'Setze ein Fähnchen an den Hals, und der Wert halbiert sich erneut: eine Achtelnote. Zwei Achtel füllen ein Viertel, acht Achtel die ganze Note.',
+        },
+        {
+          en: 'A second flag halves the value once more: a sixteenth note. Two sixteenths fill one eighth, so sixteen of them fill the whole note.',
+          ru: 'Второй флажок делит длительность пополам ещё раз: это шестнадцатая. Две шестнадцатые равны одной восьмой, а шестнадцать шестнадцатых — целой.',
+          de: 'Ein zweites Fähnchen halbiert den Wert noch einmal: eine Sechzehntelnote. Zwei Sechzehntel füllen ein Achtel, sechzehn Sechzehntel die ganze Note.',
+        },
+      ],
+      listen: {
+        en: 'Play “One whole note”, “Two half notes” and “Four quarter notes”. At the same tempo all three fill the same four quarter-note beats. Count the attacks, the moments where a sound begins: one, then two, then four.',
+        ru: 'Послушайте примеры «Одна целая», «Две половинные» и «Четыре четверти». При одном и том же темпе все три занимают одни и те же четыре четвертные доли. Считайте атаки — моменты, когда звук начинается заново: одна, затем две, затем четыре.',
+        de: 'Spiele „Eine ganze Note“, „Zwei halbe Noten“ und „Vier Viertelnoten“. Bei gleichem Tempo füllen alle drei dieselben vier Viertelzählzeiten. Zähle die Toneinsätze, also die Momente, in denen ein Ton beginnt: einer, dann zwei, dann vier.',
+      },
+      mistake: {
+        en: 'A whole rest that stands alone in a bar is easy to read as four quarters. There it makes the whole bar silent, so its length follows the time signature: three quarters in 3/4, six eighths in 6/8. Look at the time signature before you name the value.',
+        ru: 'Целую паузу, которая стоит в такте одна, легко принять за четыре четверти. В этом случае молчит весь такт, поэтому её длительность зависит от размера: три четверти в 3/4, шесть восьмых в 6/8. Прежде чем назвать длительность, посмотрите на размер.',
+        de: 'Eine ganze Pause, die allein im Takt steht, liest man leicht als vier Viertel. Dort schweigt der ganze Takt, also richtet sich ihre Dauer nach der Taktart: drei Viertel im 3/4-Takt, sechs Achtel im 6/8-Takt. Sieh dir die Taktart an, bevor du den Wert nennst.',
+      },
+      takeaways: [
+        {
+          en: 'A note value is a length in relation to the other values, not in seconds; only a tempo turns it into clock time.',
+          ru: 'Длительность показывает, как долго звучит нота по сравнению с другими, а не в секундах; в реальное время её превращает только темп.',
+          de: 'Ein Notenwert gibt eine Dauer im Verhältnis zu den anderen Werten an, nicht in Sekunden; erst das Tempo macht daraus messbare Zeit.',
+        },
+        {
+          en: 'Each value is two of the next smaller one, so a whole note lasts as long as 2 halves, 4 quarters, 8 eighths or 16 sixteenths.',
+          ru: 'Каждая длительность вдвое длиннее следующей, более мелкой, поэтому целая длится столько же, сколько 2 половинные, 4 четверти, 8 восьмых или 16 шестнадцатых.',
+          de: 'Jeder Wert enthält zwei des nächstkleineren, deshalb dauert eine Ganze so lange wie 2 Halbe, 4 Viertel, 8 Achtel oder 16 Sechzehntel.',
+        },
+        {
+          en: 'The shape carries the value: open head without a stem, open head with a stem, filled head with a stem, then one more flag for each halving.',
+          ru: 'Длительность видна по форме: пустая головка без штиля, пустая со штилем, закрашенная со штилем, а дальше — по флажку на каждое деление пополам.',
+          de: 'Die Form trägt den Wert: leerer Kopf ohne Hals, leerer Kopf mit Hals, ausgefüllter Kopf mit Hals, danach ein Fähnchen mehr für jede Halbierung.',
+        },
+        {
+          en: 'Every value has its own rest; a whole rest alone in a bar makes the whole bar silent, which in 3/4 is three quarters.',
+          ru: 'У каждой длительности есть своя пауза; целая пауза, стоящая в такте одна, означает молчание всего такта — в размере 3/4 это три четверти.',
+          de: 'Zu jedem Wert gehört eine eigene Pause; steht die ganze Pause allein im Takt, schweigt der ganze Takt – im 3/4-Takt sind das drei Viertel.',
+        },
+      ],
+    },
     sourceId: 'source-009',
     experimentId: 'durations',
     reading: {
@@ -71,8 +137,8 @@ const content: TopicBundle = {
       sourceId: 'source-009',
       text: {
         en: 'Read the halving chain through the 128th. Every additional flag or beam halves a filled note’s value. Rests have corresponding values; a whole-bar rest instead fills the stated meter. In 3/4 it lasts three quarters; in 6/8, six eighths. A multi-measure rest carries the number of complete bars. English pairs include whole/semibreve, half/minim, quarter/crotchet and eighth/quaver.',
-        ru: 'Читайте последовательное деление длительностей пополам вплоть до сто двадцать восьмой. Каждый дополнительный флажок или ребро вдвое сокращает длительность закрашенной ноты. Паузам соответствуют те же значения; тактовая пауза заполняет весь указанный такт: три четверти в 3/4, шесть восьмых в 6/8. Число над многотактовой паузой обозначает количество целых тактов.',
-        de: 'Lies die Halbierungsfolge bis zur Hundertachtundzwanzigstelnote. Jedes zusätzliche Fähnchen oder jeder weitere Balken halbiert den Wert einer ausgefüllten Note. Pausen haben entsprechende Werte; die Ganztaktpause füllt dagegen den angegebenen Takt: drei Viertel in 3/4, sechs Achtel in 6/8. Die Zahl über einer Mehrtaktpause nennt die Anzahl ganzer Takte.',
+        ru: 'Проследите, как длительности делятся пополам вплоть до сто двадцать восьмой. Каждый новый флажок или ребро вдвое сокращает длительность закрашенной ноты. У пауз те же длительности; исключение — тактовая пауза: она заполняет весь такт в указанном размере — три четверти в 3/4, шесть восьмых в 6/8. Число над многотактовой паузой показывает, сколько целых тактов длится молчание.',
+        de: 'Lies die Halbierungsfolge bis zur Hundertachtundzwanzigstelnote. Jedes zusätzliche Fähnchen oder jeder weitere Balken halbiert den Wert einer ausgefüllten Note. Pausen haben entsprechende Werte; die Taktpause (auch Ganztaktpause genannt) füllt dagegen einen ganzen Takt der angegebenen Taktart: drei Viertel in 3/4, sechs Achtel in 6/8. Die Zahl über einer Mehrtaktpause nennt die Anzahl ganzer Takte.',
       },
       assetIds: [
         'figure-note-1',
@@ -101,14 +167,14 @@ const content: TopicBundle = {
   },
   experiment: {
     id: 'durations',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
     topicId: 'durations',
     instructions: {
       en: 'Compare One whole note, Two half notes and Four quarter notes at the same tempo. The written values fill the same four quarter-note beats; count the attacks.',
-      ru: 'При одном темпе сравните «Одна целая», «Две половинные» и «Четыре четверти». Записанные длительности заполняют одинаковые четыре четвертные доли; считайте атаки.',
+      ru: 'При одном и том же темпе сравните примеры «Одна целая», «Две половинные» и «Четыре четверти». Все три занимают одни и те же четыре четвертные доли; считайте, сколько раз звук начинается заново (атаки).',
       de: 'Vergleiche bei gleichem Tempo eine ganze Note, zwei halbe Noten und vier Viertelnoten. Die notierten Werte füllen dieselben vier Viertelzählzeiten; zähle die Toneinsätze.',
     },
     engine: 'sound-lab',
@@ -146,7 +212,7 @@ const content: TopicBundle = {
   concepts: [
     {
       id: 'Multi-measure rest',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -161,13 +227,13 @@ const content: TopicBundle = {
       body: {
         en: 'Its number counts complete silent measures, not note values.',
         ru: 'Число указывает количество целых тактов молчания, а не длительностей нот.',
-        de: 'Ihre Zahl zählt vollständige pausierende Takte, nicht Notenwerte.',
+        de: 'Ihre Zahl zählt ganze Pausentakte, nicht Notenwerte.',
       },
       sourceId: 'source-019',
     },
     {
       id: 'Stem direction',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -181,7 +247,7 @@ const content: TopicBundle = {
       },
       body: {
         en: 'An upward stem attaches to the right of the head, a downward stem to the left. For isolated notes in one voice, stems normally point toward the staff center; the middle-line note normally points down. Beamed groups, chords and multiple voices can override this convention: opposite stems can identify separate voices rather than different durations.',
-        ru: 'Штиль вверх примыкает к головке справа, вниз — слева. У отдельных нот одного голоса штиль обычно направлен к середине стана; на средней линейке — вниз. Группировка, аккорды и многоголосие могут менять это правило: встречные штили способны обозначать разные голоса, а не разные длительности.',
+        ru: 'Штиль вверх примыкает к головке справа, вниз — слева. У отдельных нот одного голоса штиль обычно направлен к середине стана; у ноты на средней линейке — как правило, вниз. В группах под общим ребром, в аккордах и при многоголосии это правило может нарушаться: штили, направленные в разные стороны, могут обозначать разные голоса, а не разные длительности.',
         de: 'Ein aufwärts gerichteter Hals sitzt rechts am Kopf, ein abwärts gerichteter links. Bei einzelnen Noten einer Stimme zeigt er meist zur Systemmitte; auf der Mittellinie gewöhnlich nach unten. Balkengruppen, Akkorde und mehrere Stimmen können davon abweichen: Gegenläufige Hälse können Stimmen unterscheiden, nicht Notenwerte.',
       },
       sourceId: 'source-024',
@@ -214,7 +280,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Historical multi-measure rests',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -229,14 +295,14 @@ const content: TopicBundle = {
       body: {
         en: 'Some editions combine longa-, breve- and whole-rest shapes to show a short run of silent measures. A modern horizontal multi-rest with a number is another representation. Read the measure count and edition convention; do not mistake these combined symbols for a single ordinary rest value.',
         ru: 'В некоторых изданиях короткую последовательность пустых тактов показывают сочетанием знаков пауз лонги, бревиса и целой. Другой способ — современная многотактовая пауза с числом. Учитывайте количество тактов и правила издания; не принимайте сочетание знаков за одну обычную длительность паузы.',
-        de: 'Manche Ausgaben kombinieren Longa-, Brevis- und Ganzpausenzeichen für wenige pausierende Takte. Eine waagerechte Mehrtaktpause mit Zahl ist eine andere Darstellung. Lies die Taktzahl und die Konvention der Ausgabe; verwechsle die kombinierten Zeichen nicht mit einem einzelnen gewöhnlichen Pausenwert.',
+        de: 'Manche Ausgaben kombinieren Longa-, Brevis- und Ganzpausenzeichen für wenige Pausentakte. Eine waagerechte Mehrtaktpause mit Zahl ist eine andere Darstellung. Lies die Taktzahl und die Konvention der Ausgabe; verwechsle die kombinierten Zeichen nicht mit einem einzelnen gewöhnlichen Pausenwert.',
       },
       forwardModules: ['N04'],
       sourceId: 'source-021',
     },
     {
       id: 'Note value',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -251,13 +317,13 @@ const content: TopicBundle = {
       body: {
         en: 'The written length of a note, given in relation to the other values rather than in seconds.',
         ru: 'Записанная протяжённость ноты, заданная по отношению к другим длительностям, а не в секундах.',
-        de: 'Die geschriebene Dauer einer Note, die im Verhältnis zu den anderen Werten steht und nicht in Sekunden.',
+        de: 'Die geschriebene Dauer einer Note – angegeben im Verhältnis zu den anderen Werten, nicht in Sekunden.',
       },
       sourceId: 'source-018',
     },
     {
       id: 'Whole note',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -271,14 +337,14 @@ const content: TopicBundle = {
       },
       body: {
         en: 'A note value equal to two half notes or four quarter notes. It is drawn with an open head and no stem. Longer values, such as the breve, also exist; a whole note is not always a whole bar.',
-        ru: 'Длительность, равная двум половинным или четырём четвертям. Записывается незакрашенной головкой без штиля. Существуют и более долгие значения, например бревис; целая нота не всегда занимает ровно такт.',
+        ru: 'Длительность, равная двум половинным или четырём четвертям. Записывается незакрашенной головкой без штиля. Существуют и более крупные длительности, например бревис; целая нота не всегда занимает ровно такт.',
         de: 'Ein Notenwert von zwei Halben oder vier Vierteln, mit offenem Kopf ohne Hals. Längere Werte wie die Brevis gibt es ebenfalls; eine ganze Note füllt nicht in jeder Taktart einen ganzen Takt.',
       },
       sourceId: 'source-018',
     },
     {
       id: 'Rest',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -292,14 +358,14 @@ const content: TopicBundle = {
       },
       body: {
         en: 'A sign for silence that lasts a stated note value.',
-        ru: 'Знак молчания, длящегося указанную длительность.',
-        de: 'Ein Zeichen für Schweigen von einem bestimmten Notenwert.',
+        ru: 'Знак молчания определённой длительности.',
+        de: 'Ein Zeichen für Stille von der Dauer eines bestimmten Notenwerts.',
       },
       sourceId: 'source-019',
     },
     {
       id: 'Whole-bar rest',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -312,9 +378,9 @@ const content: TopicBundle = {
         de: 'Taktpause',
       },
       body: {
-        en: 'The whole rest used for a silent bar, whatever the length of that bar.',
-        ru: 'Целая пауза, обозначающая молчание всего такта независимо от его размера.',
-        de: 'Die ganze Pause für einen schweigenden Takt, gleich wie lang dieser Takt ist.',
+        en: 'The whole rest standing alone in a bar to show that the whole bar is silent. It then lasts one bar of the meter in force (three quarters in 3/4, six eighths in 6/8), not four quarters. In very long bars — 4/2, 8/4 and longer — many editions print a breve rest instead.',
+        ru: 'Целая пауза, которая стоит в такте одна и обозначает молчание всего такта. Тогда она длится столько же, сколько сам такт (три четверти в размере 3/4, шесть восьмых в 6/8), а не четыре четверти. В очень длинных тактах — 4/2, 8/4 и больше — во многих изданиях вместо неё ставят паузу бревис (двойную целую).',
+        de: 'Die ganze Pause, die allein im Takt steht und einen ganzen Takt Pause anzeigt. Sie dauert dann so lange wie ein Takt der geltenden Taktart (drei Viertel im 3/4-Takt, sechs Achtel im 6/8-Takt), nicht vier Viertel. In sehr langen Takten – 4/2, 8/4 und länger – setzen viele Ausgaben stattdessen eine Brevispause (doppelte ganze Pause).',
       },
       sourceId: 'source-019',
     },

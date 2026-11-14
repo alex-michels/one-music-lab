@@ -17,7 +17,7 @@ const content: TopicBundle = {
   },
   lesson: {
     id: 'chords',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
@@ -44,18 +44,100 @@ const content: TopicBundle = {
     },
     paragraphs: [
       {
-        en: 'A triad has three different chord tones that can be arranged in thirds. A major triad has a major third and a perfect fifth above its root: C–E–G, for example. Lower the third by a semitone and C–E♭–G becomes a minor triad. Doubling a tone in another octave adds a voice, but no new chord member.',
+        en: 'A triad has three different chord tones that can be arranged in thirds. A major triad has a major third and a perfect fifth above its root: C–E–G, for example. Lower the third by a semitone and you get C–E♭–G, a minor triad. Doubling a tone in another octave adds a voice, but no new chord member.',
         ru: 'В трезвучии три разных звука, которые можно расположить по терциям. В мажорном трезвучии от основного тона строятся большая терция и чистая квинта: например, до — ми — соль. Понизьте терцовый тон на полутон — получится минорное трезвучие до — ми-бемоль — соль. Удвоение звука в другой октаве добавляет голос, но не новый звук в состав аккорда.',
         de: 'Ein Dreiklang enthält drei verschiedene Akkordtöne, die sich in Terzen anordnen lassen. Beim Durdreiklang liegen eine große Terz und eine reine Quinte über dem Grundton, etwa C–E–G. Erniedrige den Terzton um einen Halbton: C–Es–G ist ein Molldreiklang. Eine Oktavverdopplung fügt eine Stimme hinzu, aber keinen neuen Akkordton.',
         ruMarkup:
           'В трезвучии три разных звука, которые можно расположить по терциям. В мажорном трезвучии от основного тона строятся большая терция и чистая квинта: например, [[до]] — [[ми]] — [[соль]]. Понизьте терцовый тон на полутон — получится минорное трезвучие [[до]] — [[ми-бемоль]] — [[соль]]. Удвоение звука в другой октаве добавляет голос, но не новый звук в состав аккорда.',
       },
       {
-        en: 'Add a seventh for a four-note chord. A dominant seventh uses offsets 0, 4, 7 and 10 semitones in equal temperament. Chord meaning also depends on context, voicing, rhythm and voice leading. An isolated chord cannot explain a whole harmonic style.',
-        ru: 'Добавление септимы образует четырёхзвучный аккорд. Малый мажорный септаккорд использует смещения 0, 4, 7 и 10 полутонов в равномерном строе. Значение аккорда зависит и от контекста, расположения голосов, ритма и голосоведения. Отдельный аккорд не объясняет гармонический стиль целиком.',
-        de: 'Mit einer zusätzlichen Septime entsteht ein Vierklang. Ein Dominantseptakkord hat in gleichstufiger Stimmung die Halbtonabstände 0, 4, 7 und 10 vom Grundton. Die Bedeutung eines Akkords hängt auch von Kontext, Lage, Rhythmus und Stimmführung ab. Ein einzelner Akkord erklärt noch keinen harmonischen Stil.',
+        en: 'Add one more third above the fifth and you get a four-note chord, a seventh chord. The dominant seventh type is a major triad plus a minor seventh: its tones lie 0, 4, 7 and 10 semitones above the root in twelve-tone equal temperament (C–E–G–B♭). Chord meaning also depends on context, voicing, rhythm and voice leading. An isolated chord cannot explain a whole harmonic style.',
+        ru: 'Добавьте к трезвучию ещё одну терцию над квинтовым тоном — получится аккорд из четырёх звуков, септаккорд. Малый мажорный септаккорд (такое строение имеет доминантсептаккорд) — это мажорное трезвучие с малой септимой: его звуки отстоят от основного тона на 0, 4, 7 и 10 полутонов в двенадцатиступенной равномерной темперации (до — ми — соль — си-бемоль). Значение аккорда зависит и от контекста, расположения голосов, ритма и голосоведения. Отдельный аккорд не объясняет гармонический стиль целиком.',
+        de: 'Schichtest du über der Quinte eine weitere Terz, entsteht ein Vierklang, der Septakkord. Der Dominantseptakkord ist ein Durdreiklang mit kleiner Septime: Seine Töne liegen in zwölfstufiger gleichstufiger Stimmung 0, 4, 7 und 10 Halbtöne über dem Grundton (C–E–G–B). Die Bedeutung eines Akkords hängt auch von Kontext, Lage, Rhythmus und Stimmführung ab. Ein einzelner Akkord erklärt noch keinen harmonischen Stil.',
+        ruMarkup:
+          'Добавьте к трезвучию ещё одну терцию над квинтовым тоном — получится аккорд из четырёх звуков, септаккорд. Малый мажорный септаккорд (такое строение имеет доминантсептаккорд) — это мажорное трезвучие с малой септимой: его звуки отстоят от основного тона на 0, 4, 7 и 10 полутонов в двенадцатиступенной равномерной темперации ([[до]] — [[ми]] — [[соль]] — [[си-бемоль]]). Значение аккорда зависит и от контекста, расположения голосов, ритма и голосоведения. Отдельный аккорд не объясняет гармонический стиль целиком.',
       },
     ],
+    guide: {
+      question: {
+        en: 'Which one note has to change to turn the major triad C–E–G into a minor triad?',
+        ru: 'Какой один звук нужно изменить, чтобы мажорное трезвучие до — ми — соль стало минорным?',
+        de: 'Welchen einen Ton musst du ändern, damit aus dem Durdreiklang C–E–G ein Molldreiklang wird?',
+        ruMarkup:
+          'Какой один звук нужно изменить, чтобы мажорное трезвучие [[до]] — [[ми]] — [[соль]] стало минорным?',
+      },
+      example: [
+        {
+          en: 'Take C as the root. The formula for a major triad is 0 · 4 · 7: the root itself, a tone 4 semitones above it and a tone 7 semitones above it.',
+          ru: 'Возьмите до как основной тон. Формула мажорного трезвучия — 0 · 4 · 7: сам основной тон, звук на 4 полутона выше него и звук на 7 полутонов выше него.',
+          de: 'Nimm C als Grundton. Die Formel des Durdreiklangs lautet 0 · 4 · 7: der Grundton selbst, ein Ton 4 Halbtöne darüber und ein Ton 7 Halbtöne darüber.',
+          ruMarkup:
+            'Возьмите [[до]] как основной тон. Формула мажорного трезвучия — 0 · 4 · 7: сам основной тон, звук на 4 полутона выше него и звук на 7 полутонов выше него.',
+        },
+        {
+          en: 'Four semitones above C is E, the third, and seven semitones above C is G, the fifth. The major triad is C–E–G.',
+          ru: 'На 4 полутона выше до находится ми, терцовый тон, а на 7 полутонов выше до — соль, квинтовый тон. Получилось мажорное трезвучие до — ми — соль.',
+          de: 'Vier Halbtöne über C liegt E, der Terzton, und sieben Halbtöne über C liegt G, der Quintton. Der Durdreiklang lautet C–E–G.',
+          ruMarkup:
+            'На 4 полутона выше [[до]] находится [[ми]], терцовый тон, а на 7 полутонов выше [[до]] — [[соль]], квинтовый тон. Получилось мажорное трезвучие [[до]] — [[ми]] — [[соль]].',
+        },
+        {
+          en: 'The formula for a minor triad is 0 · 3 · 7. Only the middle number is different, so only the third moves: E is lowered by a semitone to E♭.',
+          ru: 'Формула минорного трезвучия — 0 · 3 · 7. Отличается только среднее число, поэтому меняется только терцовый тон: вместо ми берётся ми-бемоль, на полутон ниже.',
+          de: 'Die Formel des Molldreiklangs lautet 0 · 3 · 7. Nur die mittlere Zahl ist anders, also bewegt sich nur der Terzton: E wird um einen Halbton zu Es erniedrigt.',
+          ruMarkup:
+            'Формула минорного трезвучия — 0 · 3 · 7. Отличается только среднее число, поэтому меняется только терцовый тон: вместо [[ми]] берётся [[ми-бемоль]], на полутон ниже.',
+        },
+        {
+          en: 'The minor triad is C–E♭–G. The root C and the fifth G are the same in both chords.',
+          ru: 'Получилось минорное трезвучие до — ми-бемоль — соль. Основной тон до и квинтовый тон соль в обоих аккордах одни и те же.',
+          de: 'Der Molldreiklang lautet C–Es–G. Grundton C und Quintton G sind in beiden Akkorden dieselben.',
+          ruMarkup:
+            'Получилось минорное трезвучие [[до]] — [[ми-бемоль]] — [[соль]]. Основной тон [[до]] и квинтовый тон [[соль]] в обоих аккордах одни и те же.',
+        },
+        {
+          en: 'Go back to the major triad C–E–G. One more third above its fifth makes a four-note chord, a seventh chord. With B♭, 10 semitones above C in twelve-tone equal temperament, you get the dominant seventh type: C–E–G–B♭.',
+          ru: 'Вернитесь к мажорному трезвучию до — ми — соль. Ещё одна терция над его квинтовым тоном даёт аккорд из четырёх звуков — септаккорд. Со звуком си-бемоль, на 10 полутонов выше до в двенадцатиступенной равномерной темперации, получается малый мажорный септаккорд до — ми — соль — си-бемоль.',
+          de: 'Kehre zum Durdreiklang C–E–G zurück. Eine weitere Terz über seinem Quintton ergibt einen Vierklang, den Septakkord. Mit B, in zwölfstufiger gleichstufiger Stimmung 10 Halbtöne über C, erhältst du den Dominantseptakkord C–E–G–B.',
+          ruMarkup:
+            'Вернитесь к мажорному трезвучию [[до]] — [[ми]] — [[соль]]. Ещё одна терция над его квинтовым тоном даёт аккорд из четырёх звуков — септаккорд. Со звуком [[си-бемоль]], на 10 полутонов выше [[до]] в двенадцатиступенной равномерной темперации, получается малый мажорный септаккорд [[до]] — [[ми]] — [[соль]] — [[си-бемоль]].',
+        },
+      ],
+      listen: {
+        en: 'Play the major triad note by note, then the minor triad note by note: only the middle note changes, from E to E♭. Then play each triad with its three notes together and listen for the same difference inside the whole chord.',
+        ru: 'Послушайте мажорное трезвучие по одному звуку, затем минорное по одному звуку: меняется только средний звук — вместо ми звучит ми-бемоль. Потом послушайте каждое трезвучие, когда три его звука берутся одновременно, и расслышьте то же различие внутри целого аккорда.',
+        de: 'Spiele den Durdreiklang Ton für Ton und danach den Molldreiklang Ton für Ton: Nur der mittlere Ton ändert sich, von E zu Es. Spiele dann bei jedem Dreiklang alle drei Töne zusammen und höre denselben Unterschied im ganzen Akkord heraus.',
+        ruMarkup:
+          'Послушайте мажорное трезвучие по одному звуку, затем минорное по одному звуку: меняется только средний звук — вместо [[ми]] звучит [[ми-бемоль]]. Потом послушайте каждое трезвучие, когда три его звука берутся одновременно, и расслышьте то же различие внутри целого аккорда.',
+      },
+      mistake: {
+        en: 'Do not assume the lowest note of a chord is always its root. That is true when the three tones of a triad are arranged in consecutive thirds: root, third and fifth from bottom to top. An inversion can put a different chord tone in the bass.',
+        ru: 'Не считайте, что нижний звук аккорда — всегда основной тон. Это верно, когда три звука трезвучия расположены по терциям: снизу вверх идут основной, терцовый и квинтовый тоны. В обращении в басу может оказаться другой аккордовый звук.',
+        de: 'Nimm nicht an, dass der unterste Ton eines Akkords immer der Grundton ist. Das stimmt, wenn die drei Töne eines Dreiklangs in aufeinanderfolgenden Terzen angeordnet sind: von unten Grundton, Terzton und Quintton. Bei einer Umkehrung kann ein anderer Akkordton im Bass stehen.',
+      },
+      takeaways: [
+        {
+          en: 'A triad has three different chord tones that can be arranged in thirds: root, third and fifth.',
+          ru: 'В трезвучии три разных звука, которые можно расположить по терциям: основной, терцовый и квинтовый тоны.',
+          de: 'Ein Dreiklang enthält drei verschiedene Akkordtöne, die sich in Terzen anordnen lassen: Grundton, Terzton und Quintton.',
+        },
+        {
+          en: 'The tones of a major triad lie 0 · 4 · 7 semitones above the root and those of a minor triad 0 · 3 · 7, so only the third differs.',
+          ru: 'Звуки мажорного трезвучия отстоят от основного тона на 0 · 4 · 7 полутонов, минорного — на 0 · 3 · 7: различается только терцовый тон.',
+          de: 'Die Töne des Durdreiklangs liegen 0 · 4 · 7 Halbtöne über dem Grundton, die des Molldreiklangs 0 · 3 · 7: Nur der Terzton ist verschieden.',
+        },
+        {
+          en: 'Doubling a tone in another octave adds a voice, but no new chord member.',
+          ru: 'Удвоение звука в другой октаве добавляет голос, но не новый звук в состав аккорда.',
+          de: 'Eine Oktavverdopplung fügt eine Stimme hinzu, aber keinen neuen Akkordton.',
+        },
+        {
+          en: 'What a chord means also depends on context, voicing, rhythm and voice leading.',
+          ru: 'Значение аккорда зависит также от контекста, расположения голосов, ритма и голосоведения.',
+          de: 'Die Bedeutung eines Akkords hängt auch von Kontext, Lage, Rhythmus und Stimmführung ab.',
+        },
+      ],
+    },
     sourceId: 'source-047',
     experimentId: 'chords',
   },
@@ -162,7 +244,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Triad',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -175,9 +257,9 @@ const content: TopicBundle = {
         de: 'Dreiklang',
       },
       body: {
-        en: 'A three-pitch-class chord that can be arranged as two stacked thirds.',
-        ru: 'Аккорд из трёх классов высот, которые можно расположить по терциям.',
-        de: 'Ein Akkord aus drei Tonklassen, die sich als zwei übereinandergeschichtete Terzen anordnen lassen.',
+        en: 'A chord of three different notes that can be arranged as two stacked thirds. A note doubled in another octave does not count as a new one.',
+        ru: 'Аккорд из трёх разных звуков, которые расположены или могут быть расположены по терциям. Октавное удвоение не считается новым звуком.',
+        de: 'Ein Akkord aus drei verschiedenen Tönen, die sich als zwei übereinandergeschichtete Terzen anordnen lassen. Eine Oktavverdopplung zählt nicht als neuer Ton.',
       },
     },
     {

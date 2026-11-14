@@ -202,6 +202,9 @@ test('Russian notation, root/bass feedback and source tabs stay usable at phone 
     .getByRole('tab', { name: 'Термины и источники', exact: true })
     .click();
   expect(container.textContent).toContain('равномерная темперация');
+  // The model's scope reads as sentences: the pulse is named as unswung, and
+  // the next sentence starts after a space.
+  expect(container.textContent).toContain('размер 4/4 без свинга. Примеры');
   expect(
     container.querySelectorAll('.chord-source-links a').length,
   ).toBeGreaterThanOrEqual(6);
@@ -539,13 +542,50 @@ test('A card is marked as an applied dominant only while the next chord proves i
   await button('Undo').click();
   expect(applied()).toEqual(['V7/V']);
 
-  // The jazz blues carries two of them, on the same degree, four bars apart.
+  // The jazz blues carries two of them on the same degree: in bar eight and in
+  // the turnaround that closes the form.
   await choose(
     'Starting point',
     'Jazz blues · ii–V inside the form · I7 … VI7–ii7–V7',
   );
-  expect(applied()).toEqual(['V7/ii']);
+  expect(applied()).toEqual(['V7/ii', 'V7/ii']);
   expect(cards()[7]).toBe('A7');
+});
+
+test('A moved chord’s card says how far it moved in the grammar of each language', async () => {
+  const label = () =>
+    container.querySelectorAll('.chord-card')[0].getAttribute('aria-label');
+  // The two register buttons: down, then up.
+  const press = (index) =>
+    act(async () =>
+      container.querySelectorAll('.chord-register button')[index].click(),
+    );
+  for (const [lang, once, twice, below] of [
+    // Russian needs «на» and the accusative; it used to read «1 октаву вверх».
+    [
+      'ru',
+      /, на 1 октаву вверх$/,
+      /, на 2 октавы вверх$/,
+      /, на 1 октаву вниз$/,
+    ],
+    ['en', /, 1 octave up$/, /, 2 octaves up$/, /, 1 octave down$/],
+    ['de', /, 1 Oktave höher$/, /, 2 Oktaven höher$/, /, 1 Oktave tiefer$/],
+  ]) {
+    mount(lang);
+    // Unmoved, the card says nothing about a distance.
+    expect(label()).not.toMatch(/,/);
+    await press(1);
+    expect(label(), lang).toMatch(once);
+    await press(1);
+    expect(label(), lang).toMatch(twice);
+    await press(0);
+    await press(0);
+    await press(0);
+    expect(label(), lang).toMatch(below);
+    await act(async () => root.unmount());
+    container.remove();
+    root = null;
+  }
 });
 
 test('The octave buttons move one chord and leave its neighbours alone', async () => {
