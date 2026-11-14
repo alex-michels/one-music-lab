@@ -17,7 +17,7 @@ const content: TopicBundle = {
   },
   lesson: {
     id: 'sound',
-    version: 1,
+    version: 2,
     scopeId: 'acoustics',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
@@ -50,10 +50,71 @@ const content: TopicBundle = {
       },
       {
         en: 'Pitch is our perception of how high or low a sound is. Frequency strongly influences pitch, but a complex sound can contain many frequencies. Timbre depends on their relative strength and on how the sound develops over time.',
-        ru: 'Высота — ощущение того, насколько звук высокий или низкий. Частота сильно влияет на высоту, но сложный звук может содержать много частот. Тембр зависит от их соотношения и от того, как звук развивается во времени.',
+        ru: 'Высота — ощущение того, насколько звук высокий или низкий. Частота сильно влияет на высоту, но сложный звук может содержать много частот. Тембр зависит от соотношения их силы и от того, как звук развивается во времени.',
         de: 'Tonhöhe bezeichnet, wie hoch oder tief wir einen Klang wahrnehmen. Die Frequenz beeinflusst sie stark, doch ein komplexer Klang enthält viele Frequenzen. Die Klangfarbe hängt von deren Stärkeverhältnis und vom zeitlichen Verlauf ab.',
       },
     ],
+    guide: {
+      question: {
+        en: 'How is the pitch you hear connected to the number of vibrations per second?',
+        ru: 'Как высота звука, которую вы слышите, связана с числом колебаний в секунду?',
+        de: 'Wie hängt die Tonhöhe, die du hörst, mit der Zahl der Schwingungen pro Sekunde zusammen?',
+      },
+      example: [
+        {
+          en: 'A periodic tone completes 440 cycles of vibration in one second. That count is its frequency: f = 440 Hz.',
+          ru: 'Периодический тон совершает 440 колебаний за одну секунду. Это число — его частота: f = 440 Гц.',
+          de: 'Ein periodischer Ton führt in einer Sekunde 440 Schwingungen aus. Diese Zahl ist seine Frequenz: f = 440 Hz.',
+        },
+        {
+          en: 'One cycle therefore takes 1/440 of a second. That time is the period: T = 1 / 440 ≈ 0.00227 s.',
+          ru: 'Значит, одно колебание занимает 1/440 секунды. Это время — период: T = 1 / 440 ≈ 0,00227 с.',
+          de: 'Eine Schwingung dauert also 1/440 Sekunde. Diese Zeit ist die Periodendauer: T = 1 / 440 ≈ 0,00227 s.',
+        },
+        {
+          en: 'Now take 220 Hz. Half as many cycles fit into one second, so each one lasts twice as long: T = 1 / 220 ≈ 0.00455 s.',
+          ru: 'Теперь возьмём 220 Гц. В одну секунду умещается вдвое меньше колебаний, поэтому каждое длится вдвое дольше: T = 1 / 220 ≈ 0,00455 с.',
+          de: 'Nimm nun 220 Hz. In eine Sekunde passen halb so viele Schwingungen, also dauert jede doppelt so lang: T = 1 / 220 ≈ 0,00455 s.',
+        },
+        {
+          en: 'Frequency and period always move in opposite directions: double one and the other is halved.',
+          ru: 'Частота и период всегда меняются в противоположных направлениях: если одну величину удвоить, другая уменьшится вдвое.',
+          de: 'Frequenz und Periodendauer verändern sich immer gegenläufig: Verdoppelst du die eine, halbiert sich die andere.',
+        },
+      ],
+      listen: {
+        en: 'Play 220 Hz and 440 Hz one after the other and listen to how much higher the second tone sounds. It is one octave higher, and its frequency is twice that of the first.',
+        ru: 'Послушайте 220 Гц и 440 Гц друг за другом и обратите внимание, насколько выше звучит второй тон. Он выше на октаву, а его частота вдвое больше, чем у первого.',
+        de: 'Höre dir 220 Hz und 440 Hz nacheinander an und achte darauf, wie viel höher der zweite Ton klingt. Er liegt eine Oktave höher, und seine Frequenz ist doppelt so groß wie die des ersten.',
+      },
+      mistake: {
+        en: 'Hertz and seconds measure different things. When a tone completes 440 cycles in one second, 440 counts the cycles, and 1/440 s is the time one cycle takes. Its frequency is 440 Hz, not “440 seconds” and not “1/440 Hz”.',
+        ru: 'Герцы и секунды измеряют разное. Если тон совершает 440 колебаний за одну секунду, то 440 — это число колебаний, а 1/440 с — время одного колебания. Его частота — 440 Гц, а не «440 секунд» и не «1/440 Гц».',
+        de: 'Hertz und Sekunden messen Verschiedenes. Führt ein Ton in einer Sekunde 440 Schwingungen aus, dann zählt 440 die Schwingungen, und 1/440 s ist die Dauer einer Schwingung. Seine Frequenz beträgt 440 Hz, nicht „440 Sekunden“ und nicht „1/440 Hz“.',
+      },
+      takeaways: [
+        {
+          en: 'For a periodic tone, frequency counts the cycles per second, in hertz; the period is the time of one cycle, in seconds.',
+          ru: 'Частота периодического тона — число колебаний за секунду, в герцах; период — время одного колебания, в секундах.',
+          de: 'Bei einem periodischen Ton zählt die Frequenz die Schwingungen pro Sekunde, in Hertz; die Periodendauer ist die Zeit einer Schwingung, in Sekunden.',
+        },
+        {
+          en: 'T = 1 / f: the higher the frequency, the shorter the period.',
+          ru: 'T = 1 / f: чем выше частота, тем короче период.',
+          de: 'T = 1 / f: Je höher die Frequenz, desto kürzer die Periodendauer.',
+        },
+        {
+          en: 'Pitch is what you hear: frequency strongly influences it, but the two are not the same thing.',
+          ru: 'Высота звука — это то, что вы слышите: частота сильно на неё влияет, но это не одно и то же.',
+          de: 'Tonhöhe ist das, was du hörst: Die Frequenz beeinflusst sie stark, ist aber nicht dasselbe.',
+        },
+        {
+          en: 'Doubling the frequency, as from 220 Hz to 440 Hz, raises a tone by one octave.',
+          ru: 'Удвоение частоты, например с 220 до 440 Гц, повышает тон на октаву.',
+          de: 'Eine Verdopplung der Frequenz, etwa von 220 Hz auf 440 Hz, hebt einen Ton um eine Oktave an.',
+        },
+      ],
+    },
     sourceId: 'source-043',
     experimentId: 'sound',
   },

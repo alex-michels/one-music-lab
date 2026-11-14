@@ -220,7 +220,7 @@ Columns: **§** = chapter section · **ID** = roadmap topic · **Dest** = T*n* t
 | 02 | Note head; notes read left→right; vertical alignment means simultaneity | Allg. | 2.1 | T1 N E |
 | 03 | Hilfslinien: spacing, slightly wider than a head, five to six above/below | 3 | 2.1 | T1 N P E |
 | 04 | Why a clef is needed: eleven staff positions cannot address 52 Stammtöne | 2 | 2.2 | T1 E |
-| 05 | Every clef names one pitch — G-clef line 2 = g′, F-clef line 4 = F, C-clef = c′ | 2 | 2.2 | T1 N P E |
+| 05 | Every clef names one pitch — G-clef line 2 = g′, F-clef line 4 = f, C-clef = c′ | 2 | 2.2 | T1 N P E |
 | 06 | Reading the Violinschlüssel | 2 | 2.2 | T2 N P |
 | 07 | Reading the Bassschlüssel | 2 | 2.2 | T2 N P |
 | 08 | Altschlüssel (line 3) and Tenorschlüssel (line 4): recognition, locate c′ | 2 | 2.2 | T2 E (recognition only — see §1.4) |
@@ -709,7 +709,7 @@ Follow `tests/music-properties.test.mjs` — seeded generator, hundreds of runs,
 
 **Type-specific oracles, written independently of the generator:**
 
-- Clef→pitch: the diatonic formula against a hand-written table of the four anchors (G/2 = g′, F/4 = F, C/3 = c′, C/4 = c′). Two implementations, one assertion. **Add the treble-8vb row** or explicitly scope it out — it is standard for tenor voice and guitar, and a four-row table mis-teaches exactly those readers.
+- Clef→pitch: the diatonic formula against a hand-written table of the four anchors (G/2 = g′, F/4 = f, C/3 = c′, C/4 = c′). Two implementations, one assertion. **Add the treble-8vb row** or explicitly scope it out — it is standard for tenor voice and guitar, and a four-row table mis-teaches exactly those readers.
 - Accidental scope: a brute-force evaluator walking the bar keeping a map keyed by `(letter, octave)`, resetting at the barline and honouring tie carry-over, written separately, agreeing with the generator on every seed; exactly one rule tag decides each item. Generator invariant: **single voice, single clef inside the item** — German practice repeats the sign for a second voice in a divided system and after a mid-bar clef change, and the second bears directly on T4.
 - Accidentals do not add: for every signature × every written accidental on the same letter, the result is the written one and `|result| ≤ 2`.
 - Durations: no floats; tuplet members sum exactly; bars sum exactly; nothing crosses a barline except as a tied pair.
@@ -745,13 +745,13 @@ The English column **is the `lib/german.ts` key set** — `Translate = (en: Germ
 | repeat sign / volta | Wiederholungszeichen / Klammer (1., 2.) | repeat sign / first-and-second ending | знак репризы / вольта |
 | ornaments | die Verzierungen | ornaments | мелизмы |
 | turn | der Doppelschlag | turn | **группетто** (not a calque) |
-| agogics / fermata / metronome mark | Agogik / Fermate / Metronomzahl | agogics / fermata / metronome mark | агогика / фермата / метрономическое обозначение |
+| agogics / fermata / metronome mark | Agogik / Fermate / Metronomangabe | agogics / fermata / metronome mark | агогика / фермата / метрономическое обозначение |
 | dynamics / hairpin | Dynamik / **Gabel** | dynamics / **hairpin** | динамика / **вилочка** |
 | articulation types | Artikulationsarten / Spielarten | articulations | **штрихи** (a Russian category German and English lack) |
 | figured bass | der **Generalbass** | figured bass (thoroughbass) | генерал-бас / цифрованный бас |
-| equal temperament | **gleichstufige Stimmung** | 12-tone equal temperament | равномерный строй |
+| equal temperament | **gleichstufige Stimmung** | 12-tone equal temperament | равномерная темперация |
 
-Note the last row: **reuse the shipped keys.** `lib/german.ts` already has `'12-tone equal temperament': 'Zwölfstufige gleichstufige Stimmung'` and `lib/learning.ts` already ships `Equal temperament` / `Равномерный строй`. Introducing "die temperierte Stimmung" / "равномерная темперация" would be a literal mapping *and* a competing key.
+Note the last row: **reuse the shipped keys.** `lib/german.ts` already has `'12-tone equal temperament': 'Zwölfstufige gleichstufige Stimmung'`, and the glossary entry `Equal temperament` (`lib/content/topics/tuning.ts`) ships the headword `Равномерная темперация` with «равномерно темперированный строй» and «равномерный строй» as aliases. Introducing "die temperierte Stimmung" would be a literal mapping *and* a competing key. In Russian running text the system is named «(двенадцатиступенная) равномерная темперация» throughout: lessons, glossary, trainer prompts and hints, the listening note and the Chords lab.
 
 **German orthography:** the book predates the 1996 reform (`Baßschlüssel`, `Generalbaß`). The repo's German is post-reform throughout (`außerhalb`, `Größe`). Normalise: `Bassschlüssel`, `Generalbass`, `Schlussstrich`.
 

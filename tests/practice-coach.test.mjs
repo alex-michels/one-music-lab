@@ -14,6 +14,8 @@ import {
   hearingQuestion,
 } from '../lib/practice-coach.ts';
 import { practiceHints, hearingHints } from '../lib/practice-hints.ts';
+import { plainNoteText } from '../lib/note-text.ts';
+import { playedIntervalLabels } from '../components/ear-training.tsx';
 import {
   emptyProfile,
   parseBackup,
@@ -136,6 +138,81 @@ test('Every scored rule can produce a changed problem, independent of locale and
         expect(hint[lang].length).toBeGreaterThan(15);
   }
 });
+test('Hints describe the task they belong to and keep each language’s terms apart', () => {
+  // An octave shift has no written note to locate and no sign to apply: the
+  // hint counts registers, as the task does.
+  const [, octaves] = practiceHints['octave-region'];
+  expect(octaves.en).toMatch(/one octave at a time/);
+  expect(octaves.ru).toMatch(/по одной октаве/);
+  expect(octaves.de).toMatch(/Oktave für Oktave/);
+  // German separates the key signature (Vorzeichnung) from the sign in front
+  // of a note (Versetzungszeichen); the loose “Vorzeichen” names neither.
+  const all = [...Object.values(practiceHints), hearingHints].flat();
+  for (const hint of all) expect(hint.de).not.toMatch(/Vorzeichen\b/);
+  expect(practiceHints['accidental-scope'][1].de).toMatch(
+    /Vorzeichnung oder Versetzungszeichen/,
+  );
+  // A dot lengthens notes and rests alike, so the German hint names neither.
+  const dot = practiceHints['dotted-value'][1].de;
+  expect(dot).toMatch(/verlängert den Grundwert um die Hälfte/);
+  expect(dot).not.toMatch(/Note|Pause|ergänzt/);
+  // The barline that matters lies between the sign and the note.
+  expect(practiceHints['accidental-scope'][1].ru).toMatch(
+    /между знаком и нотой/,
+  );
+  // Russian uses the taught terms: основная ступень, равномерная темперация.
+  expect(practiceHints['accidental-name'][0].ru).toMatch(/основную ступень/);
+  expect(practiceHints.enharmonic[1].ru).toMatch(/равномерной темперации/);
+  for (const hint of all) {
+    expect(hint.ru).not.toMatch(/равномерн\S* стро/);
+    expect(hint.ru).not.toContain('[[');
+    if (hint.ruMarkup) expect(plainNoteText(hint.ruMarkup)).toBe(hint.ru);
+  }
+  // Natural-note items name no sign, so their second hint gives the series.
+  const [, series] = practiceHints['accidental-name'];
+  expect(series.en).toContain('C, D, E, F, G, A, B, then C again');
+  expect(series.de).toContain('C, D, E, F, G, A, H und wieder C');
+  expect(series.ru).toContain('до, ре, ми, фа, соль, ля, си и снова до');
+  expect(series.ruMarkup).toContain('[[си]] и снова [[до]]');
+});
+
+test('Listening feedback spells the played pair as the interval it names, in every language', () => {
+  const semitone = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+  const shift = { '𝄫': -2, '♭': -1, '': 0, '♯': 1, '𝄪': 2 };
+  const read = (label) => {
+    const [, letter, sign, octave] = label.match(/^([A-G])(𝄫|♭|♯|𝄪|)(\d)$/u);
+    return {
+      letter: 'CDEFGAB'.indexOf(letter),
+      midi: (Number(octave) + 1) * 12 + semitone[letter] + shift[sign],
+    };
+  };
+  // Minor third, major third, perfect fifth, octave: letters up and semitones.
+  const intervals = [
+    [2, 3],
+    [2, 4],
+    [4, 7],
+    [0, 12],
+  ];
+  for (let root = 57; root <= 68; root += 1)
+    for (const [index, [letters, semitones]] of intervals.entries()) {
+      const [low, high] = playedIntervalLabels(root, index, 'en').map(read);
+      expect(low.midi).toBe(root);
+      expect(high.midi - low.midi).toBe(semitones);
+      // A third spans three letter names, a fifth five, whatever the key.
+      expect((high.letter - low.letter + 7) % 7).toBe(letters);
+      // Russian keeps the same international labels in this display.
+      expect(playedIntervalLabels(root, index, 'ru')).toEqual(
+        playedIntervalLabels(root, index, 'en'),
+      );
+    }
+  // The cases a sharps-only keyboard label named as other intervals.
+  expect(playedIntervalLabels(60, 0, 'en')).toEqual(['C4', 'E♭4']);
+  expect(playedIntervalLabels(61, 1, 'en')).toEqual(['C♯4', 'E♯4']);
+  expect(playedIntervalLabels(58, 2, 'ru')).toEqual(['A♯3', 'E♯4']);
+  expect(playedIntervalLabels(59, 0, 'de')).toEqual(['h', 'd′']);
+  expect(playedIntervalLabels(58, 1, 'de')).toEqual(['ais', 'cisis′']);
+});
+
 test('A generator with no new example does not falsely certify transfer, and a missing rule fails explicitly', () => {
   const item = itemForRule('natural-name', 1, 'en');
   const spy = vi.spyOn(exercises, 'generateFrom').mockReturnValue(item);

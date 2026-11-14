@@ -8,6 +8,43 @@ disagrees with your memory of the code, the code was measured.
 
 ---
 
+## Learning shell — review of the running site, 2026-11-14
+
+The sections below were written before the site had been looked at as a learner
+uses it. A walk through the running application in a browser changed six of
+their decisions; where this section and a later one disagree, this one is
+current. Use and evidence are in [learning-shell.md](learning-shell.md).
+
+- **The navigation panel carries the book.** The promotional card is replaced
+  by a course map: sections, chapters as disclosures, lessons as links, the
+  open lesson marked, the reader's own markers as checks with a count. The five
+  areas above it are a named `nav` landmark with `aria-current`.
+- **The top bar is sticky** and holds the language and a three-button theme
+  switch at its end. Its height is the token `--topbar-h`; every sticky element
+  and every scroll target starts below it.
+- **The read lens is left-anchored, not centred.** The lesson column
+  (`--m-lesson`, 36 rem) shares the title's left edge. With room, decided by a
+  container query on the main area rather than the viewport, a second column
+  (`--m-aside`) holds the listening card, sticky for the whole lesson. The
+  twice-the-measure breakout is no longer used by lessons.
+- **A lesson has section headings with weight** (`--t-h3`, bold), a goal
+  callout, a guided walk-through and card-shaped previous/next links. The
+  walk-through is sans, the explanation stays in the reading serif.
+- **Learning data closes the page** rather than preceding its content.
+- **The focused title draws no ring.** It still takes focus on every move for
+  the announcement; it is not a control and is never in the Tab order. The one
+  site-wide ring on controls is unchanged, and chrome surfaces inside the dark
+  bed now restate the chrome ring (`--focus-chrome`) because the bed's pale ring
+  was being drawn on white panels at about 1.5:1.
+
+Also from that review: the document's theme is resolved by an inline script
+before the first paint and the not-yet-ready shell is hidden until the reader's
+own language and page are known (`lib/theme-boot.ts`); a print style maps the
+chrome inks onto the score's paper and ink and drops the controls; the drill's
+two columns follow the main container, not the window.
+
+---
+
 ## Connected chapters and the Notes lab — owner update, 2026-09-09
 
 The learning structure must read like a book: sections, chapters and ordered
@@ -433,7 +470,9 @@ Noto/Liberation/DejaVu Serif as the Linux backstop. Mono carries only numbers, p
 and rule ids — never Russian prose — so SFMono-Regular's partial Cyrillic is acceptable.
 The macOS mono face is named `SFMono-Regular`, not `SF Mono`: the latter is its display
 name and does not resolve from CSS, and the repo already had the working spelling.
-363 of the 735 German catalog entries contain umlauts or ß; every stack covers Latin-1.
+363 of the 735 German catalog entries contained umlauts or ß when this was measured (150 of
+388 after the copies of lesson, experiment and glossary text were removed on 2026-11-14); every stack covers
+Latin-1.
 
 **The one real font hole is not letters — fixed in step 7.** The English accidental buttons
 were U+1D12B and U+1D12A, Supplementary-Plane characters absent from Segoe UI and Arial, so
@@ -1277,7 +1316,9 @@ translated — the roadmap module cards, the old lesson tiles, the ear-training 
 trainer's score panel, three superseded exercise explanations, ten lesson experiment sentences,
 a definition of octave numbering and a paragraph about ledger lines. A reviewer opening
 `lib/german.ts` could not tell which German was live, which means a translation nobody could
-check. 718 entries remain, all of them said by the site.
+check. 718 entries remained, all of them said by the site. (On 2026-11-14 the gate was
+tightened to leave out `lib/content/`, whose records carry their own German, and the
+catalogue came down to 388 entries; see [german-localization.md](german-localization.md).)
 
 **The corpus is `git ls-files`, not the directory tree**, and the first version got that wrong
 in a way only CI could see. Walking the tree reads whatever happens to be on the machine: this

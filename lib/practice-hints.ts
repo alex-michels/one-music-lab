@@ -11,7 +11,7 @@ const pitch = [
   text(
     'Read the note name, then check its accidental and octave separately.',
     'Определите название ноты, затем отдельно проверьте знак альтерации и октаву.',
-    'Lies den Notennamen; prüfe dann Vorzeichen und Oktave getrennt.',
+    'Lies den Notennamen; prüfe dann Versetzungszeichen und Oktave getrennt.',
   ),
 ] as const;
 const rhythm = [
@@ -37,21 +37,23 @@ export const practiceHints: Record<
       'Trenne Notenname und Register.',
     ),
     text(
-      'Locate the written note within its octave before applying any accidental.',
-      'Найдите записанную ноту в её октаве до применения знака альтерации.',
-      'Ordne die geschriebene Note ihrer Oktave zu, bevor du das Vorzeichen anwendest.',
+      'Count one octave at a time in the given direction; the note name and its accidental stay the same.',
+      'Отсчитывайте по одной октаве в указанном направлении; название ноты и знак альтерации не меняются.',
+      'Zähle Oktave für Oktave in der angegebenen Richtung; Tonname und Versetzungszeichen bleiben gleich.',
     ),
   ],
   'accidental-name': [
     text(
       'Read the basic note name first.',
-      'Сначала прочитайте основное название ноты.',
+      'Сначала определите основную ступень — название ноты без знака.',
       'Lies zuerst den Stammton.',
     ),
+    // The second sentence serves the natural-note items, which name a
+    // neighbour and a direction instead of a sign.
     text(
-      'Check the sign separately: does it raise, lower or cancel an alteration?',
-      'Отдельно проверьте знак: он повышает, понижает или отменяет альтерацию?',
-      'Prüfe das Zeichen getrennt: erhöht, erniedrigt oder löst es eine Alteration auf?',
+      'Check the sign separately: does it raise, lower or cancel an alteration? If no sign is named, step through the natural notes in order: C, D, E, F, G, A, B, then C again.',
+      'Отдельно проверьте знак: он повышает, понижает или отменяет альтерацию? Если знак не назван, идите по основным ступеням по порядку: [[до]], [[ре]], [[ми]], [[фа]], [[соль]], [[ля]], [[си]] и снова [[до]].',
+      'Prüfe das Zeichen getrennt: erhöht, erniedrigt oder löst es eine Alteration auf? Ist kein Zeichen genannt, gehe die Stammtöne der Reihe nach durch: C, D, E, F, G, A, H und wieder C.',
     ),
   ],
   enharmonic: [
@@ -62,8 +64,8 @@ export const practiceHints: Record<
     ),
     text(
       'Start with the requested note name; choose the accidental that reaches the same key in this 12-TET model.',
-      'Начните с требуемого названия; подберите знак, ведущий к той же клавише в этой модели равномерного строя.',
-      'Beginne beim geforderten Stammton und suche das Vorzeichen für dieselbe Taste in diesem gleichstufigen Modell.',
+      'Начните с требуемого названия; подберите знак, ведущий к той же клавише в этой модели равномерной темперации.',
+      'Beginne beim geforderten Stammton und suche das Versetzungszeichen, das in diesem gleichstufigen Modell zur selben Taste führt.',
     ),
   ],
   'dotted-value': [
@@ -71,7 +73,7 @@ export const practiceHints: Record<
     text(
       'The first dot adds half the base value; a second dot adds half of the first dot’s addition.',
       'Первая точка добавляет половину основной длительности; вторая — половину прибавки первой.',
-      'Der erste Punkt ergänzt die Hälfte des Grundwerts; ein zweiter Punkt ergänzt die Hälfte des ersten Zusatzes.',
+      'Der erste Punkt verlängert den Grundwert um die Hälfte; ein zweiter Punkt verlängert ihn zusätzlich um die Hälfte dieser Verlängerung.',
     ),
   ],
   tuplet: [
@@ -100,8 +102,8 @@ export const practiceHints: Record<
     ),
     text(
       'Check which sign applies at this exact written position and whether a barline intervenes.',
-      'Проверьте, какой знак действует в этой позиции и есть ли перед ней тактовая черта.',
-      'Prüfe, welches Vorzeichen an dieser Notenposition gilt und ob ein Taktstrich dazwischenliegt.',
+      'Проверьте, какой знак действует в этой позиции и нет ли тактовой черты между знаком и нотой.',
+      'Prüfe, welches Zeichen an dieser Notenposition gilt – Vorzeichnung oder Versetzungszeichen – und ob ein Taktstrich dazwischenliegt.',
     ),
   ],
   'value-identification': rhythm,

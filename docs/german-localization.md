@@ -110,6 +110,10 @@ Originaler Programmcode: Apache-2.0; eigene Lehrtexte einschließlich deutscher
 ## Developer contract and validation
 
 `lib/german.ts` contains the German catalog keyed by the English source text.
+It holds only the strings that `translator`, `localText` or `german[…]` look
+up. The German of lesson text, experiment instructions and glossary entries is
+the `de` field of their records in `lib/content`, and a text written as
+`nt(en, ru, de)` carries its own; neither reads the catalog.
 `translator` and `localText` accept only catalog keys, so a new UI string without
 a German translation fails TypeScript instead of silently falling back to EN.
 Data records expose EN/RU/DE; counted nouns use `lib/plural.ts`. The language
@@ -123,7 +127,10 @@ Regression tests cover the H/B distinction, all 35 German accidental names,
 all available scale/tonic combinations, classical octave boundaries, slash
 chords, counter grammar, invalid MIDI inputs, language persistence, translated
 lessons and glossary search, practice feedback, audio failures and mobile
-navigation. The existing audio suites continue measuring real rendered sound.
+navigation. A further test fails on any catalog entry whose English text the
+tracked source no longer says; it leaves out the tests and `lib/content/`, so a
+stale copy of lesson text cannot keep an entry alive.
+The existing audio suites continue measuring real rendered sound.
 Run the cross-platform commands in CONTRIBUTING.md; no locale package or new
 runtime dependency is required. Repository-wide coverage debt stays measured
 under P00, including the newly maintained sidebar copy.

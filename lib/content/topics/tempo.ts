@@ -33,7 +33,7 @@ const content: TopicBundle = {
   },
   lesson: {
     id: 'tempo',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
@@ -66,10 +66,71 @@ const content: TopicBundle = {
       },
       {
         en: 'A metronome mark pairs a note value with a number: ♩ = 120 means 120 quarter notes per minute, so one quarter lasts 60 / 120 = 0.5 seconds. Accelerando asks for a gradual acceleration; ritardando for a gradual slowing. A tempo returns to the preceding tempo, while Tempo I returns to the initial tempo. A fermata prolongs a note or rest without a fixed multiplier; its length depends on the musical context.',
-        ru: 'Метрономическое обозначение соединяет длительность и число: ♩ = 120 означает 120 четвертей в минуту, поэтому одна четверть длится 60 / 120 = 0,5 секунды. Accelerando предписывает постепенное ускорение, ritardando — замедление. A tempo возвращает предшествующий темп, а Tempo I — первоначальный. Фермата продлевает ноту или паузу без фиксированного множителя; степень продления зависит от музыкального контекста.',
+        ru: 'Метрономическое обозначение соединяет длительность и число: ♩ = 120 означает 120 четвертей в минуту, поэтому одна четверть длится 60 / 120 = 0,5 секунды. Accelerando предписывает постепенное ускорение, ritardando — постепенное замедление. A tempo возвращает предшествующий темп, а Tempo I — первоначальный. Фермата продлевает ноту или паузу без фиксированного множителя; степень продления зависит от музыкального контекста.',
         de: 'Eine Metronomangabe verbindet einen Notenwert mit einer Zahl: ♩ = 120 bedeutet 120 Viertelnoten pro Minute; eine Viertel dauert also 60 / 120 = 0,5 Sekunden. Accelerando verlangt allmähliches Beschleunigen, ritardando allmähliches Verlangsamen. A tempo führt zum vorigen Tempo zurück, Tempo I zum Anfangstempo. Eine Fermate verlängert eine Note oder Pause ohne festen Faktor; ihre Dauer richtet sich nach dem musikalischen Zusammenhang.',
       },
     ],
+    guide: {
+      question: {
+        en: 'How fast should the music go, and how many seconds does one beat last?',
+        ru: 'Насколько быстро должна идти музыка и сколько секунд длится одна доля?',
+        de: 'Wie schnell soll die Musik gehen, und wie viele Sekunden dauert eine Zählzeit?',
+      },
+      example: [
+        {
+          en: 'A metronome mark pairs a note value with a number. ♩ = 60 means 60 quarter notes per minute.',
+          ru: 'Метрономическое обозначение соединяет длительность и число. ♩ = 60 означает 60 четвертей в минуту.',
+          de: 'Eine Metronomangabe verbindet einen Notenwert mit einer Zahl. ♩ = 60 bedeutet 60 Viertelnoten pro Minute.',
+        },
+        {
+          en: 'A minute has 60 seconds, so one quarter lasts 60 / 60 = 1 second. Four beats take 4 seconds.',
+          ru: 'В минуте 60 секунд, поэтому одна четверть длится 60 / 60 = 1 секунду. Четыре доли занимают 4 секунды.',
+          de: 'Eine Minute hat 60 Sekunden, also dauert eine Viertel 60 / 60 = 1 Sekunde. Vier Zählzeiten dauern 4 Sekunden.',
+        },
+        {
+          en: 'Now ♩ = 120: 120 quarter notes per minute, so one quarter lasts 60 / 120 = 0.5 seconds. Four beats take 2 seconds.',
+          ru: 'Теперь ♩ = 120: это 120 четвертей в минуту, и одна четверть длится 60 / 120 = 0,5 секунды. Четыре доли занимают 2 секунды.',
+          de: 'Nun ♩ = 120: Das sind 120 Viertelnoten pro Minute, eine Viertel dauert also 60 / 120 = 0,5 Sekunden. Vier Zählzeiten dauern 2 Sekunden.',
+        },
+        {
+          en: 'Go back to the number 60 but change the note value: at ♪ = 60 it is the eighth that lasts one second. A quarter is as long as two eighths, so it now lasts two seconds, not one.',
+          ru: 'Вернитесь к числу 60, но замените длительность: при ♪ = 60 секунду длится уже восьмая. Четверть равна двум восьмым, поэтому теперь она длится две секунды, а не одну.',
+          de: 'Gehe zurück zur Zahl 60, tausche aber den Notenwert: Bei ♪ = 60 dauert die Achtel eine Sekunde. Eine Viertel ist so lang wie zwei Achtel und dauert jetzt also zwei Sekunden statt einer.',
+        },
+      ],
+      listen: {
+        en: 'Play Four steady beats · ♩ = 60, then Four steady beats · ♩ = 120, and count four beats each time. At 60 the beats are one second apart; at 120, half a second. The same four beats follow one another twice as quickly.',
+        ru: 'Включите «Четыре ровные доли · ♩ = 60», затем «Четыре ровные доли · ♩ = 120» и каждый раз отсчитайте четыре доли. При 60 доли идут через секунду, при 120 — через полсекунды. Те же четыре доли следуют друг за другом вдвое быстрее.',
+        de: 'Spiele „Vier gleichmäßige Zählzeiten · ♩ = 60“ ab, dann „Vier gleichmäßige Zählzeiten · ♩ = 120“, und zähle jedes Mal vier Zählzeiten. Bei 60 liegen sie eine Sekunde auseinander, bei 120 eine halbe. Dieselben vier Zählzeiten folgen doppelt so schnell aufeinander.',
+      },
+      mistake: {
+        en: 'It is easy to assume the number always counts quarter notes. It counts the note value printed beside it: at ♪ = 60 the eighth lasts one second, at ♩ = 60 the quarter does. Read the marked note value first, then divide 60 by the metronome number.',
+        ru: 'Легко решить, что число всегда относится к четвертям. На самом деле оно относится к длительности, указанной рядом: при ♪ = 60 секунду длится восьмая, при ♩ = 60 — четверть. Сначала прочитайте указанную длительность, затем разделите 60 на число метронома.',
+        de: 'Es liegt nahe anzunehmen, die Zahl zähle immer Viertelnoten. Sie gilt aber für den Notenwert, der neben ihr steht: Bei ♪ = 60 dauert die Achtel eine Sekunde, bei ♩ = 60 die Viertel. Lies zuerst den angegebenen Notenwert und teile dann 60 durch die Metronomzahl.',
+      },
+      takeaways: [
+        {
+          en: 'A metronome mark is a note value with a number; the number says how many of that value fill one minute.',
+          ru: 'Метрономическое обозначение — длительность с числом; число показывает, сколько таких длительностей укладывается в минуту.',
+          de: 'Eine Metronomangabe ist ein Notenwert mit einer Zahl; die Zahl sagt, wie viele dieser Werte auf eine Minute gehen.',
+        },
+        {
+          en: 'To find how long one marked note lasts in seconds, divide 60 by the metronome number: at ♩ = 120 a quarter lasts 0.5 s.',
+          ru: 'Чтобы узнать, сколько секунд звучит указанная длительность, разделите 60 на число метронома: при ♩ = 120 четверть длится 0,5 с.',
+          de: 'Teile 60 durch die Metronomzahl, um die Dauer des angegebenen Notenwerts in Sekunden zu erhalten: Bei ♩ = 120 dauert eine Viertel 0,5 s.',
+        },
+        {
+          en: 'Words such as Adagio, Andante, Moderato and Allegro suggest speed and character; they overlap and are not exact BPM ranges.',
+          ru: 'Такие слова, как Adagio, Andante, Moderato и Allegro, передают и скорость, и характер; их значения пересекаются и не задают точных диапазонов метронома.',
+          de: 'Wörter wie Adagio, Andante, Moderato und Allegro geben Tempo und Charakter an; sie überschneiden sich und sind keine exakten BPM-Bereiche.',
+        },
+        {
+          en: 'A tempo returns to the preceding tempo; Tempo I returns to the initial tempo.',
+          ru: 'A tempo возвращает предшествующий темп, Tempo I — первоначальный.',
+          de: 'A tempo führt zum vorigen Tempo zurück, Tempo I zum Anfangstempo.',
+        },
+      ],
+    },
     sourceId: 'source-053',
     experimentId: 'tempo',
     reading: {
@@ -85,7 +146,7 @@ const content: TopicBundle = {
   },
   experiment: {
     id: 'tempo',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
@@ -93,7 +154,7 @@ const content: TopicBundle = {
     instructions: {
       en: 'Choose ♩ = 60 and play Four steady beats, then repeat at ♩ = 120. Count four beats each time and compare their spacing.',
       ru: 'Выберите ♩ = 60 и запустите «Четыре ровные доли», затем повторите при ♩ = 120. Каждый раз отсчитайте четыре доли и сравните расстояние между атаками.',
-      de: 'Wähle ♩ = 60 und spielen Sie vier gleichmäßige Zählzeiten, dann wiederhole bei ♩ = 120. Zähle jeweils vier Zählzeiten und vergleiche die Abstände der Einsätze.',
+      de: 'Wähle ♩ = 60 und spiele „Vier gleichmäßige Zählzeiten“ ab, dann wiederhole das bei ♩ = 120. Zähle jeweils vier Zählzeiten und vergleiche die Abstände der Einsätze.',
     },
     engine: 'sound-lab',
     preset: {
@@ -177,7 +238,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Tempo I',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -186,8 +247,13 @@ const content: TopicBundle = {
       reference: true,
       title: {
         en: 'Tempo I',
-        ru: 'Первоначальный темп',
+        ru: 'Tempo I (первоначальный темп)',
         de: 'Tempo I',
+      },
+      aliases: {
+        en: 'Tempo primo',
+        ru: 'Tempo primo; темпо примо; первоначальный темп',
+        de: 'Tempo primo',
       },
       body: {
         en: 'Return to the initial tempo, which need not be the most recent tempo before a change.',
@@ -198,7 +264,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Slow and moderate tempo words',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -217,15 +283,15 @@ const content: TopicBundle = {
       },
       body: {
         en: 'Largo suggests breadth, Lento slowness, Adagio a slow, settled movement; Andante evokes walking and Moderato moderation. Diminutive forms such as Larghetto, Adagietto and Andantino qualify movement and character, but do not provide a dependable numerical conversion. Read them with the meter, phrase and edition; these overlapping descriptions are not a ranked BPM table.',
-        ru: 'Largo передаёт широту, Lento — медленность, Adagio — спокойное медленное движение; Andante напоминает шаг, Moderato указывает на умеренность. Уменьшительные формы Larghetto, Adagietto и Andantino уточняют движение и характер, но не дают надёжного числового пересчёта. Учитывайте размер, фразу и редакцию; это не таблица ранжированных значений метронома.',
-        de: 'Largo vermittelt Breite, Lento Langsamkeit, Adagio ruhiges langsames Bewegen; Andante erinnert ans Gehen, Moderato an Mäßigung. Verkleinerungsformen wie Larghetto, Adagietto und Andantino verändern Bewegung und Charakter, liefern aber keine zuverlässige Zahlenumrechnung. Lies sie mit Takt, Phrase und Ausgabe; die Beschreibungen bilden keine BPM-Rangliste.',
+        ru: 'Largo значит «широко», Lento — «медленно», Adagio — спокойное медленное движение; Andante напоминает шаг, Moderato значит «умеренно». Уменьшительные формы Larghetto, Adagietto и Andantino уточняют движение и характер, но не дают надёжного числового пересчёта. Читайте их с учётом размера, фразы и редакции: эти описания пересекаются и не образуют шкалы метрономических значений.',
+        de: 'Largo bedeutet breit, Lento langsam, Adagio eine ruhige, langsame Bewegung; Andante erinnert ans Gehen, Moderato heißt gemäßigt. Verkleinerungsformen wie Larghetto, Adagietto und Andantino verändern Bewegung und Charakter, liefern aber keine zuverlässige Zahlenumrechnung. Lies sie im Zusammenhang von Taktart, Phrase und Ausgabe; die Beschreibungen überschneiden sich und bilden keine BPM-Rangliste.',
       },
       sourceId: 'source-003',
       furtherSourceIds: ['source-013'],
     },
     {
       id: 'Lively and fast tempo words',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -243,16 +309,16 @@ const content: TopicBundle = {
         de: 'Allegro; Allegretto; Allegro molto; Vivace; Vivo; Presto; Prestissimo',
       },
       body: {
-        en: 'Allegro asks for lively, usually fast movement; Allegretto often softens that character. Vivace or vivo emphasizes animation, Presto speed, and Prestissimo extreme speed. Molto intensifies the word it accompanies. None names an exact metronome value or overrides a separately printed note-unit marking.',
-        ru: 'Allegro означает оживлённое, обычно быстрое движение; Allegretto часто смягчает этот характер. Vivace или vivo подчёркивает живость, Presto — быстроту, Prestissimo — предельную быстроту. Molto усиливает сопровождаемое слово. Ни одно слово не задаёт точного значения метронома и не отменяет отдельно указанную длительность отсчёта.',
-        de: 'Allegro verlangt lebhafte, meist schnelle Bewegung; Allegretto mildert häufig diesen Charakter. Vivace oder vivo betont Lebhaftigkeit, Presto Schnelligkeit, Prestissimo äußerste Schnelligkeit. Molto verstärkt das begleitete Wort. Keines nennt einen exakten Metronomwert oder ersetzt einen ausdrücklich angegebenen Zählwert.',
+        en: 'Allegro asks for lively, usually fast movement; Allegretto often softens that character. Vivace or vivo emphasizes animation, Presto speed, and Prestissimo extreme speed. Molto intensifies the word it accompanies. None of these words names an exact metronome value, and none overrides a metronome mark printed beside it.',
+        ru: 'Allegro означает оживлённое, обычно быстрое движение; Allegretto часто смягчает этот характер. Vivace или vivo подчёркивает живость, Presto — быстроту, Prestissimo — предельную быстроту. Molto усиливает сопровождаемое слово. Ни одно из этих слов не задаёт точного значения метронома и не отменяет стоящего рядом метрономического обозначения.',
+        de: 'Allegro verlangt lebhafte, meist schnelle Bewegung; Allegretto mildert häufig diesen Charakter. Vivace oder vivo betont Lebhaftigkeit, Presto Schnelligkeit, Prestissimo äußerste Schnelligkeit. Molto verstärkt das begleitete Wort. Keines dieser Wörter nennt einen exakten Metronomwert, und keines hebt eine daneben stehende Metronomangabe auf.',
       },
       sourceId: 'source-003',
       furtherSourceIds: ['source-013'],
     },
     {
       id: 'Qualifying a direction',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -272,13 +338,13 @@ const content: TopicBundle = {
       body: {
         en: 'Più and meno mean more and less; molto/assai intensify, poco limits, poco a poco makes a change gradual, and non troppo limits excess. Quasi means “as if”. Comodo suggests ease, sostenuto sustained delivery, con moto movement and con fuoco fire. Appassionato or con passione asks for passion. Identify what each qualifier modifies before changing speed, attack or loudness.',
         ru: 'Più и meno — больше и меньше; molto/assai усиливают, poco ограничивает, poco a poco означает постепенность, non troppo — «не слишком». Quasi — «как бы». Comodo предполагает удобное, непринуждённое движение, sostenuto — выдержанность, con moto — подвижность, con fuoco — огонь. Appassionato или con passione требует страстности. Сначала определите, что уточняется: темп, атака или сила звука.',
-        de: 'Più und meno bedeuten mehr und weniger; molto/assai verstärken, poco begrenzt, poco a poco macht eine Änderung allmählich, non troppo begrenzt das Übermaß. Quasi bedeutet „gleichsam“. Comodo legt Bequemlichkeit nahe, sostenuto getragenes Spiel, con moto Bewegung, con fuoco Feuer. Appassionato oder con passione verlangt Leidenschaft. Bestimme zuerst, worauf sich der Zusatz bezieht.',
+        de: 'Più und meno bedeuten mehr und weniger; molto/assai verstärken, poco begrenzt, poco a poco macht eine Änderung allmählich, non troppo begrenzt das Übermaß. Quasi bedeutet „gleichsam“. Comodo legt Bequemlichkeit nahe, sostenuto getragenes Spiel, con moto Bewegung, con fuoco Feuer. Appassionato oder con passione verlangt Leidenschaft. Bestimme zuerst, worauf sich der Zusatz bezieht: auf Tempo, Toneinsatz oder Lautstärke.',
       },
       sourceId: 'source-003',
     },
     {
       id: 'Tempo changes and agogics',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -296,9 +362,9 @@ const content: TopicBundle = {
         de: 'rallentando; ritenuto; allargando; stringendo; stretto; rubato; più mosso; meno mosso; in tempo',
       },
       body: {
-        en: 'Ritardando/rallentando slow the motion; ritenuto holds it back, often more immediately. Allargando broadens; stringendo presses forward, and stretto can urge the close onward. Più/meno mosso asks for more/less movement. Rubato permits expressive flexibility, not a new time signature. A tempo returns to the preceding tempo, Tempo I to the initial one; read in tempo as a contextual return to regular time. A spaced-out word or line marks a span, not an automatic reset at every barline.',
-        ru: 'Ritardando/rallentando замедляет движение; ritenuto сдерживает его, часто более непосредственно. Allargando расширяет, stringendo подгоняет, stretto может устремлять к завершению. Più/meno mosso — более/менее подвижно. Rubato допускает выразительную свободу времени, но не меняет размер. A tempo возвращает предшествующий темп, Tempo I — первоначальный; in tempo читают как контекстное возвращение к регулярному движению. Растянутое слово или линия обозначает участок, а не автоматическую отмену на каждой тактовой черте.',
-        de: 'Ritardando/rallentando verlangsamt; ritenuto hält die Bewegung oft unmittelbarer zurück. Allargando verbreitert, stringendo drängt vorwärts; stretto kann zum Schluss hindrängen. Più/meno mosso verlangt mehr/weniger Bewegung. Rubato erlaubt zeitliche Ausdrucksfreiheit, keinen neuen Takt. A tempo kehrt zum vorigen, Tempo I zum Anfangstempo zurück; in tempo verlangt kontextabhängig wieder regelmäßiges Zeitmaß. Ein auseinandergezogenes Wort oder eine Linie bezeichnet eine Strecke, keinen automatischen Widerruf an jedem Taktstrich.',
+        en: 'Ritardando/rallentando slow the motion; ritenuto holds it back, often at once rather than gradually. Allargando broadens; stringendo presses forward, and stretto can urge the close onward. Più/meno mosso asks for more/less movement. Rubato permits expressive flexibility, not a new time signature. A tempo returns to the preceding tempo, Tempo I to the initial one; read in tempo as a contextual return to regular time. A direction spread out across several bars (ri - tar - dan - do) or followed by a dashed line lasts as far as the syllables or dashes reach; a barline does not cancel it.',
+        ru: 'Ritardando/rallentando замедляет движение; ritenuto сдерживает его — нередко сразу, а не постепенно. Allargando расширяет движение, stringendo ускоряет его, stretto может ускорять движение к завершению. Più/meno mosso — более/менее подвижно. Rubato допускает выразительную свободу времени, но не меняет размер. A tempo возвращает предшествующий темп, Tempo I — первоначальный; in tempo читают как контекстное возвращение к регулярному движению. Указание, растянутое по слогам на несколько тактов (ri - tar - dan - do) или продолженное пунктиром, действует до конца слогов или пунктира; тактовая черта его не отменяет.',
+        de: 'Ritardando/rallentando verlangsamt; ritenuto hält die Bewegung zurück, oft sofort statt allmählich. Allargando verbreitert, stringendo drängt vorwärts; stretto kann zum Schluss hindrängen. Più/meno mosso verlangt mehr/weniger Bewegung. Rubato erlaubt zeitliche Ausdrucksfreiheit, keinen neuen Takt. A tempo kehrt zum vorigen, Tempo I zum Anfangstempo zurück; in tempo verlangt kontextabhängig wieder regelmäßiges Zeitmaß. Eine über mehrere Takte in Silben auseinandergezogene Angabe (ri - tar - dan - do) oder eine mit gestrichelter Linie verlängerte Angabe gilt so weit, wie Silben oder Linie reichen; ein Taktstrich hebt sie nicht auf.',
       },
       sourceId: 'source-003',
       furtherSourceIds: ['source-013'],
@@ -326,7 +392,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Metronome mark',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -336,7 +402,7 @@ const content: TopicBundle = {
       title: {
         en: 'Metronome mark',
         ru: 'Метрономическое обозначение',
-        de: 'Metronomzahl',
+        de: 'Metronomangabe',
       },
       body: {
         en: 'A note value with a number, fixing how many such beats fill one minute.',
@@ -452,7 +518,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Agogics',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -466,7 +532,7 @@ const content: TopicBundle = {
       },
       body: {
         en: 'The small changes of speed that shape a performance.',
-        ru: 'Небольшие изменения темпа, формирующие исполнение.',
+        ru: 'Небольшие отклонения от ровного темпа, придающие исполнению выразительность.',
         de: 'Die kleinen Tempoänderungen, die einen Vortrag gestalten.',
       },
       sourceId: 'source-003',

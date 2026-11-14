@@ -13,7 +13,20 @@ pending. The page metadata uses
 The OML abbreviation, saved language preference, and WAV filename prefix remain
 compatible with the existing prototype.
 
-**Learning data** below the chapter navigation saves your current position,
+**Finding your place and hearing the lesson:** the navigation panel shows the
+whole course as a map — sections, chapters, lessons, the lesson you are in and
+your own *worked through* markers — and the Read index opens with the lesson to
+continue. Every lesson leads through its topic: the question it answers, the
+explanation, one example step by step, the rule at a glance, a card to try and
+hear it, a common mix-up, a question where the topic has one (13 of the 19
+lessons) and what to keep. The buttons on that
+**Try it in the lab** card play the sounds the lesson describes without leaving
+the page, beside the text on a wide screen; a lesson's Play view repeats its
+task above the instrument. The top bar stays in view with the language and the
+light, dark or device theme. See the [learning shell guide](docs/learning-shell.md)
+for use, sound limits, accessibility and evidence.
+
+**Learning data** at the end of every page saves your current position,
 personal lesson markers, graded theory/Drill answer counts, language, theme,
 navigation width and main laboratory settings in this browser. Open it to export
 a JSON backup, import one with a replacement confirmation, or reset everything
@@ -62,13 +75,21 @@ The [learning-route guide](docs/learning-routes.md) explains the order, diagnost
 returning to experiments and how to add future lessons. The full numbered
 curriculum remains separate from this structure for the available material.
 
-Lessons present a learning goal, explanation and worked example before practice.
+Lessons present a learning goal, a guiding question, the explanation and a
+step-by-step example before practice, then name a common mix-up and close with
+what to keep. The walk-through may only restate or apply its lesson's own text;
+an editorial check, not a test, guards that (see the
+[content schema](docs/content-schema.md)).
 The practice ledger groups skills by topic with headings in the selected language;
 glossary headings use consistent capitalization and retain existing article links.
 Russian note names in learning text and exercises are italicized — «от *до* до
 *соль*» — so they can be distinguished from ordinary words and prepositions.
 The [EN/RU/DE editorial review](docs/learning-editorial-review.md) records the
-terminology, explanation and example corrections across the shipped material.
+terminology, explanation and example corrections across the shipped material;
+the [accuracy review of 2026-11-14](docs/content-review-2026-11.md) lists the
+201 confirmed findings of the later pass with an abridged basis for each, and
+what is still open. Both are AI-assisted
+reviews for personal learning, not external approval or source verification.
 
 - **Chords lab** (`/#chords`): editable and transposable progressions with full undo and redo, 16 chord types through ninths, inversions, EN/RU/DE pitch spelling, a visual keyboard, applied-dominant marking, and a sourced library of 22 starting points — cadences, classical schemas, pop and rock loops, jazz turnarounds, blues forms and mode mixture — with a per-chord register control, one-click fitting of a progression to its scale, eight accompaniment figures (block chords, arpeggios, Alberti bass, afterbeats, offbeats) and root-identification feedback. See the [user guide, research and limitations](docs/chords-lab.md).
 - Continuous 20–20,000 Hz oscillator, four waveforms, logarithmic frequency control, cents readout and live analyser waveform.
@@ -232,7 +253,7 @@ its existing sharp-based pitch labels.
 
 ## Validation limits
 
-Automated checks cover numerical calculations, WAV structure and scheduling logic. Actual browser audio output and interactive browser QA were not performed; the user did not request browser testing. Optional WebMCP tools (`read_sound_lab`, `configure_sound_lab`, `stop_lab_audio`) are feature-detected and use the same application state. No supported live WebMCP test context was available, so those integration contracts have not been verified in a live browser.
+Automated checks cover numerical calculations, WAV structure and scheduling logic, and the browser suites render the audio graph offline and measure the result. An interactive review of the running application was carried out on 2026-11-14 in a desktop browser at desktop and phone widths, in both themes, in Russian ([what it found and changed](docs/learning-shell.md)); nobody listened to the output in that review, so audible quality on real speakers, and Safari, iOS and Android devices, remain unchecked. Optional WebMCP tools (`read_sound_lab`, `configure_sound_lab`, `stop_lab_audio`) are feature-detected and use the same application state. No supported live WebMCP test context was available, so those integration contracts have not been verified in a live browser.
 
 ## References
 

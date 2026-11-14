@@ -2,7 +2,7 @@ import { contentCatalog } from './catalog';
 import { NOTATION_TOPIC_IDS, type NotationTopic, type TopicId } from './ids';
 import type { LocalText } from '../i18n';
 import type { ExerciseKind, Rule } from '../exercises';
-import type { Concept, Lesson } from './schema';
+import type { Concept, Lesson, LessonGuide } from './schema';
 import type { NotesLabState } from '../notation-experiments';
 
 const sources = Object.fromEntries(
@@ -37,6 +37,15 @@ export const lessons = contentCatalog.lessons.map((lesson) => ({
   ...experiments[lesson.experimentId].preset,
   source: sources[lesson.sourceId].url,
 }));
+
+/**
+ * The guided walk-through of each lesson. Kept beside `lessons` rather than
+ * inside it, so the existing lesson view stays exactly the text the migration
+ * fingerprint was taken from.
+ */
+export const lessonGuides = Object.fromEntries(
+  contentCatalog.lessons.map((lesson) => [lesson.id, lesson.guide]),
+) as Record<TopicId, LessonGuide>;
 
 export function termView(concept: Concept) {
   return {

@@ -25,7 +25,7 @@ const content: TopicBundle = {
   },
   lesson: {
     id: 'enharmonics',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
@@ -42,43 +42,120 @@ const content: TopicBundle = {
     },
     summary: {
       en: 'Tell enharmonic spellings apart and know why the spelling matters.',
-      ru: 'Различайте энгармонические записи и понимайте, зачем нужна каждая.',
+      ru: 'Различайте энгармонически равные ноты и понимайте, зачем нужна каждая запись.',
       de: 'Enharmonische Schreibweisen unterscheiden und ihren Sinn verstehen.',
     },
     formula: {
       en: 'C♯ = D♭ · F♯ = G♭ · E = F♭ · in equal temperament',
-      ru: 'до-диез = ре-бемоль · фа-диез = соль-бемоль · ми = фа-бемоль · в равномерном строе',
+      ru: 'до-диез = ре-бемоль · фа-диез = соль-бемоль · ми = фа-бемоль · в равномерной темперации',
       de: 'Cis = Des · Fis = Ges · E = Fes · in gleichstufiger Stimmung',
       ruMarkup:
-        '[[до-диез]] = [[ре-бемоль]] · [[фа-диез]] = [[соль-бемоль]] · [[ми]] = [[фа-бемоль]] · в равномерном строе',
+        '[[до-диез]] = [[ре-бемоль]] · [[фа-диез]] = [[соль-бемоль]] · [[ми]] = [[фа-бемоль]] · в равномерной темперации',
     },
     paragraphs: [
       {
         en: 'In twelve-tone equal temperament one pitch can be written in more than one way. C sharp and D flat sound the same; so do F sharp and G flat, and E and F flat. Each spelling names a different letter, and the letter decides which scale degree the note occupies.',
-        ru: 'В двенадцатиступенном равномерном строе один и тот же звук можно записать по-разному. До-диез и ре-бемоль звучат одинаково; так же соотносятся фа-диез и соль-бемоль, ми и фа-бемоль. Каждая запись называет свою ступень, и именно ступень определяет место ноты в звукоряде.',
+        ru: 'В двенадцатиступенной равномерной темперации один и тот же звук можно записать по-разному. До-диез и ре-бемоль звучат одинаково; так же соотносятся фа-диез и соль-бемоль, ми и фа-бемоль. Каждая запись называет свою основную ступень, и именно она определяет место ноты в звукоряде.',
         de: 'In der zwölfstufigen gleichstufigen Stimmung lässt sich derselbe Klang unterschiedlich schreiben. Cis und Des klingen gleich, ebenso Fis und Ges oder E und Fes. Jede Schreibweise nennt einen anderen Stammton, und der Stammton bestimmt, welche Stufe der Ton in der Tonleiter einnimmt.',
         ruMarkup:
-          'В двенадцатиступенном равномерном строе один и тот же звук можно записать по-разному. [[До-диез]] и [[ре-бемоль]] звучат одинаково; так же соотносятся [[фа-диез]] и [[соль-бемоль]], [[ми]] и [[фа-бемоль]]. Каждая запись называет свою ступень, и именно ступень определяет место ноты в звукоряде.',
+          'В двенадцатиступенной равномерной темперации один и тот же звук можно записать по-разному. [[До-диез]] и [[ре-бемоль]] звучат одинаково; так же соотносятся [[фа-диез]] и [[соль-бемоль]], [[ми]] и [[фа-бемоль]]. Каждая запись называет свою основную ступень, и именно она определяет место ноты в звукоряде.',
       },
       {
-        en: 'Spelling identifies the written interval and its harmonic context. C–D sharp is an augmented second; C–E flat is a minor third. A sharp or flat alone does not determine the direction of the next note.',
-        ru: 'Запись определяет название интервала и проясняет гармонический контекст. До — ре-диез — увеличенная секунда, до — ми-бемоль — малая терция. Диез или бемоль сами по себе не определяют направление следующей ноты.',
-        de: 'Die Schreibweise bezeichnet das notierte Intervall und verdeutlicht den harmonischen Zusammenhang. C–Dis ist eine übermäßige Sekunde, C–Es eine kleine Terz. Ein Kreuz oder Be allein bestimmt nicht die Richtung des nächsten Tons.',
+        en: 'Spelling identifies the written interval and its harmonic context. C–D sharp spans two letters and is an augmented second; C–E flat spans three letters and is a minor third. A sharp does not oblige the next note to rise, and a flat does not oblige it to fall.',
+        ru: 'Запись определяет название интервала и проясняет гармонический контекст. До и ре-диез — соседние ступени, это увеличенная секунда; до и ми-бемоль — ступени через одну, это малая терция. Диез не обязывает следующую ноту идти вверх, а бемоль — вниз.',
+        de: 'Die Schreibweise bezeichnet das notierte Intervall und verdeutlicht den harmonischen Zusammenhang. C–Dis umfasst zwei Stammtöne und ist eine übermäßige Sekunde; C–Es umfasst drei Stammtöne und ist eine kleine Terz. Ein Kreuz zwingt den nächsten Ton nicht nach oben, ein Be nicht nach unten.',
         ruMarkup:
-          'Запись определяет название интервала и проясняет гармонический контекст. [[До]] — [[ре-диез]] — увеличенная секунда, [[до]] — [[ми-бемоль]] — малая терция. Диез или бемоль сами по себе не определяют направление следующей ноты.',
+          'Запись определяет название интервала и проясняет гармонический контекст. [[До]] и [[ре-диез]] — соседние ступени, это увеличенная секунда; [[до]] и [[ми-бемоль]] — ступени через одну, это малая терция. Диез не обязывает следующую ноту идти вверх, а бемоль — вниз.',
       },
     ],
+    guide: {
+      question: {
+        en: 'If F sharp and G flat are the same key, why does it have two names, and how do I know which one to write?',
+        ru: 'Если фа-диез и соль-бемоль — одна и та же клавиша, зачем ей два названия и как понять, какое из них писать?',
+        de: 'Wenn Fis und Ges dieselbe Taste sind, warum hat sie dann zwei Namen, und woher weiß ich, welchen ich schreiben soll?',
+        ruMarkup:
+          'Если [[фа-диез]] и [[соль-бемоль]] — одна и та же клавиша, зачем ей два названия и как понять, какое из них писать?',
+      },
+      example: [
+        {
+          en: 'Start on C and count three semitones up. In twelve-tone equal temperament you arrive at one key, and that key can be written in more than one way.',
+          ru: 'Начните с до и отсчитайте три полутона вверх. В двенадцатиступенной равномерной темперации вы придёте к одной клавише, а записать её можно по-разному.',
+          de: 'Beginne bei C und zähle drei Halbtöne aufwärts. In der zwölfstufigen gleichstufigen Stimmung kommst du bei einer einzigen Taste an, und sie lässt sich unterschiedlich schreiben.',
+          ruMarkup:
+            'Начните с [[до]] и отсчитайте три полутона вверх. В двенадцатиступенной равномерной темперации вы придёте к одной клавише, а записать её можно по-разному.',
+        },
+        {
+          en: 'Write it with the letter D: D sharp. C–D sharp spans two letters, C and D, and is an augmented second.',
+          ru: 'Запишите её как ре-диез: основная ступень здесь ре. До и ре-диез — соседние ступени, это увеличенная секунда.',
+          de: 'Schreibe sie mit dem Stammton D: Dis. C–Dis umfasst zwei Stammtöne, C und D, und ist eine übermäßige Sekunde.',
+          ruMarkup:
+            'Запишите её как [[ре-диез]]: основная ступень здесь [[ре]]. [[До]] и [[ре-диез]] — соседние ступени, это увеличенная секунда.',
+        },
+        {
+          en: 'Now write it with the letter E: E flat. C–E flat spans three letters, C, D and E, and is a minor third.',
+          ru: 'Теперь запишите её как ми-бемоль: основная ступень здесь ми. До и ми-бемоль — ступени через одну, это малая терция.',
+          de: 'Schreibe sie nun mit dem Stammton E: Es. C–Es umfasst drei Stammtöne, C, D und E, und ist eine kleine Terz.',
+          ruMarkup:
+            'Теперь запишите её как [[ми-бемоль]]: основная ступень здесь [[ми]]. [[До]] и [[ми-бемоль]] — ступени через одну, это малая терция.',
+        },
+        {
+          en: 'Both spellings sound alike here, so the sounding key alone cannot choose between them. The letters decide the name of the written interval, and the harmonic context decides which spelling is written.',
+          ru: 'Звучат обе записи здесь одинаково, поэтому по одной звучащей клавише запись не выбрать. Название интервала определяют основные ступени, а запись выбирают по гармоническому контексту.',
+          de: 'Beide Schreibweisen klingen hier gleich, die klingende Taste allein bestimmt die Schreibweise also nicht. Die Stammtöne bestimmen den Namen des notierten Intervalls; über die Schreibweise entscheidet der harmonische Zusammenhang.',
+        },
+      ],
+      listen: {
+        en: 'Play “F♯4, the same key as G♭4”. It is a single sound: in equal temperament the two spellings do not differ to the ear. In the lab, set F♯4, then look for G♭4: both names point at one frequency.',
+        ru: 'Послушайте «фа-диез первой октавы — та же клавиша, что соль-бемоль». Звук здесь один: в равномерной темперации две записи на слух не различаются. В лаборатории установите фа-диез первой октавы, затем найдите соль-бемоль: оба названия указывают на одну частоту.',
+        de: 'Spiele „fis′, dieselbe Taste wie ges′“. Es ist ein einziger Klang: In gleichstufiger Stimmung unterscheiden sich die beiden Schreibweisen für das Ohr nicht. Stelle im Labor fis′ ein und suche danach ges′: Beide Namen führen auf dieselbe Frequenz.',
+        ruMarkup:
+          'Послушайте «[[фа-диез]] первой октавы — та же клавиша, что [[соль-бемоль]]». Звук здесь один: в равномерной темперации две записи на слух не различаются. В лаборатории установите [[фа-диез]] первой октавы, затем найдите [[соль-бемоль]]: оба названия указывают на одну частоту.',
+      },
+      mistake: {
+        en: 'Because F sharp and G flat sound the same in equal temperament, it is tempting to treat them as one note. They are written on different letters, so when a task asks for one spelling, the other is not the answer. Keep the requested spelling in view, not only the sound.',
+        ru: 'Раз фа-диез и соль-бемоль в равномерной темперации звучат одинаково, хочется считать их одной нотой. Но они записаны на разных ступенях, и если в задании нужна одна запись, другая ответом не будет. Учитывайте требуемое написание, а не только звучание.',
+        de: 'Weil Fis und Ges in gleichstufiger Stimmung gleich klingen, liegt es nahe, sie für denselben Ton zu halten. Beide gehören aber zu verschiedenen Stammtönen: Verlangt eine Aufgabe die eine Schreibweise, ist die andere nicht die Antwort. Achte auf die geforderte Schreibweise, nicht nur auf den Klang.',
+        ruMarkup:
+          'Раз [[фа-диез]] и [[соль-бемоль]] в равномерной темперации звучат одинаково, хочется считать их одной нотой. Но они записаны на разных ступенях, и если в задании нужна одна запись, другая ответом не будет. Учитывайте требуемое написание, а не только звучание.',
+      },
+      takeaways: [
+        {
+          en: 'In twelve-tone equal temperament one pitch can be written in more than one way: C sharp and D flat sound the same.',
+          ru: 'В двенадцатиступенной равномерной темперации один и тот же звук можно записать по-разному: до-диез и ре-бемоль звучат одинаково.',
+          de: 'In der zwölfstufigen gleichstufigen Stimmung lässt sich derselbe Klang unterschiedlich schreiben: Cis und Des klingen gleich.',
+          ruMarkup:
+            'В двенадцатиступенной равномерной темперации один и тот же звук можно записать по-разному: [[до-диез]] и [[ре-бемоль]] звучат одинаково.',
+        },
+        {
+          en: 'Each spelling names a different letter, and the letter decides which scale degree the note occupies.',
+          ru: 'Каждая запись называет свою основную ступень, и именно она определяет место ноты в звукоряде.',
+          de: 'Jede Schreibweise nennt einen anderen Stammton, und der Stammton bestimmt, welche Stufe der Ton in der Tonleiter einnimmt.',
+        },
+        {
+          en: 'The letters decide the name of the written interval (C–D sharp is an augmented second, C–E flat a minor third), and the harmonic context decides which spelling is written.',
+          ru: 'Название интервала определяют основные ступени (до и ре-диез — увеличенная секунда, до и ми-бемоль — малая терция), а запись выбирают по гармоническому контексту.',
+          de: 'Die Stammtöne bestimmen den Namen des notierten Intervalls (C–Dis ist eine übermäßige Sekunde, C–Es eine kleine Terz); welche Schreibweise gewählt wird, entscheidet der harmonische Zusammenhang.',
+          ruMarkup:
+            'Название интервала определяют основные ступени ([[до]] и [[ре-диез]] — увеличенная секунда, [[до]] и [[ми-бемоль]] — малая терция), а запись выбирают по гармоническому контексту.',
+        },
+        {
+          en: 'A sharp does not oblige the next note to rise, and a flat does not oblige it to fall.',
+          ru: 'Диез не обязывает следующую ноту идти вверх, а бемоль — вниз.',
+          de: 'Ein Kreuz zwingt den nächsten Ton nicht nach oben, ein Be nicht nach unten.',
+        },
+      ],
+    },
     sourceId: 'source-049',
     experimentId: 'enharmonics',
     reading: {
       pages: '10',
       sourceId: 'source-001',
       text: {
-        en: 'A sounding key alone cannot select a spelling. In 12-TET, C–D♯ is an augmented second, while C–E♭ is a minor third. The letters and harmonic context decide the written interval. Neither a sharp nor a flat universally dictates the direction of the next note.',
-        ru: 'По одной звучащей клавише нельзя выбрать запись. В равномерном строе до — ре-диез образуют увеличенную секунду, а до — ми-бемоль — малую терцию. Записанный интервал определяется ступенями и гармоническим контекстом. Диез или бемоль сами по себе не предписывают направление следующей ноты.',
-        de: 'Die klingende Taste allein bestimmt die Schreibweise nicht. In gleichstufiger Stimmung ist C–Dis eine übermäßige Sekunde, C–Es eine kleine Terz. Buchstaben und harmonischer Zusammenhang bestimmen das notierte Intervall. Ein Kreuz oder Be schreibt nicht allgemein die Richtung des folgenden Tons vor.',
+        en: 'A sounding key alone cannot select a spelling. C–D♯ is written as an augmented second and C–E♭ as a minor third: the letters decide the name of the written interval. In 12-TET both span three semitones and sound alike, so the harmonic context decides which spelling is written. A sharp does not oblige the next note to rise, nor a flat to fall.',
+        ru: 'По одной звучащей клавише нельзя выбрать запись. До и ре-диез образуют увеличенную секунду, а до и ми-бемоль — малую терцию: название интервала определяют основные ступени. В равномерной темперации оба интервала содержат три полутона и звучат одинаково, поэтому запись выбирают по гармоническому контексту. Диез не обязывает следующую ноту идти вверх, а бемоль — вниз.',
+        de: 'Die klingende Taste allein bestimmt die Schreibweise nicht. C–Dis wird als übermäßige Sekunde notiert, C–Es als kleine Terz: Die Stammtöne bestimmen den Namen des notierten Intervalls. In gleichstufiger Stimmung umfassen beide drei Halbtöne und klingen gleich; welche Schreibweise gewählt wird, entscheidet der harmonische Zusammenhang. Ein Kreuz zwingt den folgenden Ton nicht nach oben, ein Be nicht nach unten.',
         ruMarkup:
-          'По одной звучащей клавише нельзя выбрать запись. В равномерном строе [[до]] — [[ре-диез]] образуют увеличенную секунду, а [[до]] — [[ми-бемоль]] — малую терцию. Записанный интервал определяется ступенями и гармоническим контекстом. Диез или бемоль сами по себе не предписывают направление следующей ноты.',
+          'По одной звучащей клавише нельзя выбрать запись. [[До]] и [[ре-диез]] образуют увеличенную секунду, а [[до]] и [[ми-бемоль]] — малую терцию: название интервала определяют основные ступени. В равномерной темперации оба интервала содержат три полутона и звучат одинаково, поэтому запись выбирают по гармоническому контексту. Диез не обязывает следующую ноту идти вверх, а бемоль — вниз.',
       },
       assetIds: [],
     },
@@ -132,7 +209,7 @@ const content: TopicBundle = {
   concepts: [
     {
       id: 'Enharmonic spelling',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -141,19 +218,21 @@ const content: TopicBundle = {
       reference: false,
       title: {
         en: 'Enharmonic spelling',
-        ru: 'Энгармоническая запись',
+        ru: 'Энгармонизм',
         de: 'Enharmonische Verwechslung',
       },
       body: {
         en: 'Two different written notes that sound as one pitch in equal temperament.',
-        ru: 'Две разные записи, дающие в равномерном строе одну и ту же высоту.',
-        de: 'Zwei verschiedene Schreibweisen, die in gleichstufiger Stimmung denselben Klang ergeben.',
+        ru: 'Совпадение по высоте звуков, разных по названию и записи: в равномерной темперации до-диез и ре-бемоль звучат одинаково. Такие звуки называют энгармонически равными.',
+        de: 'Das Umschreiben eines Tons in einen anders benannten Ton, der in gleichstufiger Stimmung gleich hoch klingt, etwa Cis in Des.',
+        ruMarkup:
+          'Совпадение по высоте звуков, разных по названию и записи: в равномерной темперации [[до-диез]] и [[ре-бемоль]] звучат одинаково. Такие звуки называют энгармонически равными.',
       },
       sourceId: 'source-001',
     },
     {
       id: 'Letter name',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -166,9 +245,11 @@ const content: TopicBundle = {
         de: 'Stammtonname',
       },
       body: {
-        en: 'The plain name of a note before any accidental is added.',
-        ru: 'Основное название ноты до прибавления знака альтерации.',
-        de: 'Der unveränderte Tonname vor jedem Versetzungszeichen.',
+        en: 'The plain name of a note with no accidental: C, D, E, F, G, A or B.',
+        ru: 'Название ноты без знака альтерации: до, ре, ми, фа, соль, ля или си.',
+        de: 'Der Name des Tons ohne Versetzungszeichen: C, D, E, F, G, A oder H.',
+        ruMarkup:
+          'Название ноты без знака альтерации: [[до]], [[ре]], [[ми]], [[фа]], [[соль]], [[ля]] или [[си]].',
       },
       sourceId: 'source-001',
     },
@@ -195,7 +276,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Raised degree',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -209,10 +290,10 @@ const content: TopicBundle = {
       },
       body: {
         en: 'A degree raised relative to the scale being discussed, usually by a semitone: G becomes G♯ when the seventh degree of A natural minor is raised.',
-        ru: 'Ступень, повышенная относительно рассматриваемой гаммы, обычно на полутон: при повышении VII ступени ля натурального минора соль превращается в соль-диез.',
+        ru: 'Ступень, повышенная относительно рассматриваемой гаммы, обычно на полутон: при повышении VII ступени натурального ля минора соль превращается в соль-диез.',
         de: 'Eine gegenüber der betrachteten Tonleiter erhöhte Stufe, meist um einen Halbton: Wird die siebte Stufe der natürlichen a-Moll-Tonleiter erhöht, wird G zu Gis.',
         ruMarkup:
-          'Ступень, повышенная относительно рассматриваемой гаммы, обычно на полутон: при повышении VII ступени [[ля]] натурального минора [[соль]] превращается в [[соль-диез]].',
+          'Ступень, повышенная относительно рассматриваемой гаммы, обычно на полутон: при повышении VII ступени натурального [[ля]] минора [[соль]] превращается в [[соль-диез]].',
       },
       sourceId: 'source-001',
     },

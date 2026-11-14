@@ -195,6 +195,13 @@ test('The diagnostic explains each wrong answer, survives a language change and 
       expect(
         container.querySelector('.diagnostic-feedback').textContent,
       ).toContain('no guess is needed');
+      // Not sure is neither right nor wrong: no verdict word and no option
+      // marked as a mistake, but the answer is shown.
+      expect(container.querySelector('.diagnostic-feedback strong')).toBeNull();
+      expect(container.querySelector('.answer-wrong')).toBeNull();
+      expect(container.querySelector('.answer-correct').textContent).toBe(
+        `${question.options.find((entry) => entry.id === question.answer).label.en}correct answer`,
+      );
     } else {
       const option = question.options.find(
         (candidate) => candidate.id !== question.answer,
@@ -208,6 +215,25 @@ test('The diagnostic explains each wrong answer, survives a language change and 
           (node) => node.disabled,
         ),
       ).toBe(true);
+      // The verdict is said in words, and both the mistake and the right
+      // answer are marked: an explanation alone never said which was which.
+      expect(
+        container.querySelector('.diagnostic-feedback strong').textContent,
+      ).toContain('Not quite.');
+      // Each mark is an icon plus words, so it does not depend on colour.
+      expect(container.querySelector('.answer-wrong').textContent).toBe(
+        `${option.label.en}your answer`,
+      );
+      expect(
+        container.querySelectorAll(
+          '.answer-grid button svg[aria-hidden="true"]',
+        ),
+      ).toHaveLength(2);
+      expect(container.querySelector('.answer-correct').textContent).toBe(
+        `${question.options.find((entry) => entry.id === question.answer).label.en}correct answer`,
+      );
+      expect(container.querySelectorAll('.answer-wrong')).toHaveLength(1);
+      expect(container.querySelectorAll('.answer-correct')).toHaveLength(1);
     }
     expect(container.querySelector('.diagnostic-feedback a').hash).toBe(
       `#/en/t/${question.topic}/read`,
@@ -217,9 +243,15 @@ test('The diagnostic explains each wrong answer, survives a language change and 
       expect(container.querySelector('.diagnostic-feedback a').hash).toBe(
         '#/de/t/clefs/read',
       );
+      // The chosen option and its mark follow the language together.
       expect(container.querySelector('[aria-pressed="true"]').textContent).toBe(
-        question.options.find((option) => option.id !== question.answer).label
-          .de,
+        `${
+          question.options.find((option) => option.id !== question.answer).label
+            .de
+        }deine Antwort`,
+      );
+      expect(container.querySelector('.answer-correct').textContent).toMatch(
+        /richtige Antwort$/,
       );
       await mount(EntryDiagnostic, { lang: 'en' });
     }
@@ -243,10 +275,23 @@ test('Correct diagnostic answers do not claim mastery or force a later chapter',
     const correct = question.options.find(
       (option) => option.id === question.answer,
     );
+    // Before answering nothing is marked either way.
+    expect(
+      container.querySelector('.answer-correct, .answer-wrong'),
+    ).toBeNull();
     await click(button(correct.label.en));
     expect(
       container.querySelector('.diagnostic-feedback').textContent,
     ).toContain(correct.feedback.en);
+    expect(
+      container.querySelector('.diagnostic-feedback strong').textContent,
+    ).toContain('Correct.');
+    expect(container.querySelector('.answer-correct').textContent).toBe(
+      `${correct.label.en}correct answer`,
+    );
+    // One mark only: the other options stay as they were.
+    expect(container.querySelectorAll('.answer-grid .sr-only')).toHaveLength(1);
+    expect(container.querySelector('.answer-wrong')).toBeNull();
     await click(button(i === 4 ? 'See the suggestion' : 'Next check'));
   }
   expect(container.querySelector('.diagnostic-result').textContent).toContain(

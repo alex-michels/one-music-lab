@@ -8,7 +8,7 @@ import {
 } from './notation';
 import { markPitchName, noteTextValue, plainNoteText } from './note-text';
 import { count } from './plural';
-import { pitchAtStep, type Clef } from './staff';
+import { pitchAtStep, staffStep, type Clef } from './staff';
 import {
   valueIdentification,
   beamingReview,
@@ -68,6 +68,7 @@ export type ErrorTag =
   | 'read-the-other-clef'
   | 'ignored-the-sign'
   | 'carried-the-sign-too-far'
+  | 'carried-the-sign-to-another-octave'
   | 'wrong-written-note'
   | 'duration-symbol'
   | 'tempo-unit'
@@ -287,6 +288,32 @@ const valueNames: Record<MusicLanguage, Record<number, string>> = {
   },
 };
 
+/**
+ * Rests have names of their own, so a dotted rest is named the way a dotted
+ * note is, not paraphrased as “a rest of base value 1/4”. Only the values a
+ * dotted item draws from are listed.
+ */
+const restNames: Record<MusicLanguage, Record<number, string>> = {
+  en: {
+    1: 'whole rest',
+    2: 'half rest',
+    4: 'quarter rest',
+    8: 'eighth rest',
+  },
+  ru: {
+    1: 'целая пауза',
+    2: 'половинная пауза',
+    4: 'четвертная пауза',
+    8: 'восьмая пауза',
+  },
+  de: {
+    1: 'ganze Pause',
+    2: 'halbe Pause',
+    4: 'Viertelpause',
+    8: 'Achtelpause',
+  },
+};
+
 /** Forms used after “how many” in a question, rather than standalone value names. */
 const countedValueNames: Record<MusicLanguage, Record<number, string>> = {
   en: {
@@ -362,13 +389,15 @@ const prompts: Record<MusicLanguage, Record<string, string>> = {
     'octave-region':
       'Start on {pitch}, then move {distance} {direction}. Which register contains the resulting note?',
     'accidental-name': 'What is this note called?',
+    'natural-neighbour':
+      'Which natural note is the next one {side} {neighbour}?',
     enharmonic:
       'Respell {pitch} using the letter {letter}, keeping the sounding pitch (12-tone equal temperament).',
     'dotted-value': 'How many {unit} have the same duration as {value}?',
     tuplet:
       'Starting value: {base}. Equal parts: {count}, written as a {ratio} tuplet. Which basic note value is used inside the group?',
     'tie-sum':
-      'Two notes of the same pitch are tied: {a} and {b}. What is their combined duration?',
+      'Two notes of the same pitch are tied: {a} and {b}. How many {unit} does the tied sound last?',
     'read-pitch': 'Name the note on the staff.',
     'clef-transform':
       'The same place on the staff, read in the {clef}. Which note is it?',
@@ -379,16 +408,18 @@ const prompts: Record<MusicLanguage, Record<string, string>> = {
     'octave-region':
       'Исходная нота: {pitch}. Перенесите её на {distance} {direction}. В какой октаве окажется нота?',
     'accidental-name': 'Как называется эта нота?',
+    'natural-neighbour':
+      'Назовите основную ступень, соседнюю с нотой {neighbour} {side}.',
     enharmonic:
-      'Перепишите ноту {pitch} от ступени {letter}, сохранив высоту звучания (12-ступенный равномерный строй).',
+      'Исходная нота: {pitch}. Замените её энгармонически равной нотой от основной ступени {letter} (двенадцатиступенная равномерная темперация).',
     'dotted-value': 'Дано: {value}. Сколько это {unit}?',
     tuplet:
       'Исходная длительность: {base}. Число равных частей: {count}, отношение особого деления — {ratio}. Какой базовой длительностью записываются ноты группы?',
     'tie-sum':
-      'Две ноты одной высоты соединены связующей лигой: {a} и {b}. Какова их общая длительность?',
+      'Две ноты одной высоты соединены связующей лигой: {a} и {b}. Сколько {unit} длится получившийся звук?',
     'read-pitch': 'Назовите ноту, записанную на стане.',
     'clef-transform':
-      'То же место на стане, прочитанное в ключе: {clef}. Какая это нота?',
+      'То же место на стане прочитайте в {clef} ключе. Какая это нота?',
     'accidental-scope':
       'Какая нота стоит последней? Учтите, до каких пор действует знак перед первой нотой.',
   },
@@ -396,13 +427,15 @@ const prompts: Record<MusicLanguage, Record<string, string>> = {
     'octave-region':
       'Ausgangston: {pitch}. Versetze ihn um {distance} {direction}. In welcher Oktavlage liegt der Zielton?',
     'accidental-name': 'Wie heißt dieser Ton?',
+    'natural-neighbour':
+      'Welcher Stammton liegt eine Stufe {side} {neighbour}?',
     enharmonic:
       'Schreibe {pitch} mit dem Stammton {letter} enharmonisch um, bei gleicher klingender Tonhöhe (12-stufige gleichstufige Stimmung).',
     'dotted-value': 'Wie viele {unit} sind zusammen so lang wie {value}?',
     tuplet:
       'Ausgangswert: {base}. Gleiche Teile: {count}, als N-tole im Verhältnis {ratio}. Mit welchem Notenwert werden die Noten der Gruppe notiert?',
     'tie-sum':
-      'Zwei Noten gleicher Tonhöhe sind übergebunden: {a} und {b}. Wie lang ist ihre Gesamtdauer?',
+      'Zwei Noten gleicher Tonhöhe sind übergebunden: {a} und {b}. Wie viele {unit} dauert der Ton insgesamt?',
     'read-pitch': 'Benenne den notierten Ton.',
     'clef-transform':
       'Dieselbe Stelle im System, im {clef} gelesen. Welcher Ton ist das?',
@@ -476,6 +509,9 @@ function accidentalName(
     alterations.filter((a) => a !== 0).length ? alterations : [0],
   );
   const octave = 3 + Math.floor(next() * 3);
+  // Describing an unaltered note (“C, unaltered”) prints the answer in the
+  // stem, so a natural note is asked for through its neighbour instead.
+  if (accidental === 0) return naturalNeighbour(next, letter, lang);
   const pitch = spelled(letter, accidental, octave);
   const correct = pitchName(pitch, lang);
   const options: Option[] = [{ id: 'a', label: correct, tag: 'correct' }];
@@ -504,32 +540,73 @@ function accidentalName(
     prompt: `${prompts[lang]['accidental-name']} — ${describeSpelling(pitch, lang)}`,
     options: shuffle(next, options),
     answer: 'a',
-    rule: accidental === 0 ? 'natural-name' : 'alteration-name',
+    rule: 'alteration-name',
   };
 }
 
-/** The stem of a naming item, in the reader's own vocabulary. */
+/** “Below” and “above”, in the form each stem needs after its verb. */
+const neighbourSides: Record<MusicLanguage, readonly [string, string]> = {
+  en: ['below', 'above'],
+  ru: ['снизу', 'сверху'],
+  de: ['unter', 'über'],
+};
+
+/**
+ * Names a natural note by its place in the series C D E F G A B, which wraps
+ * from B to C: the reader is given the neighbour and a direction, never the
+ * answer itself. Octaves play no part, only the seven names and their order.
+ */
+function naturalNeighbour(
+  next: () => number,
+  letter: number,
+  lang: MusicLanguage,
+): Omit<Item, 'kind' | 'level' | 'seed' | 'lang'> {
+  const up = next() < 0.5;
+  const toward = up ? 1 : -1;
+  const name = (offset: number) =>
+    pitchName(spelled((((letter + offset) % 7) + 7) % 7, 0, 4), lang);
+  const options: Option[] = [
+    { id: 'a', label: name(0), tag: 'correct' },
+    // Each distractor is one step out, so “the neighbouring step” is true of
+    // all three: the given note itself, the neighbour on its other side (the
+    // direction was reversed) and the note one step past the answer.
+    { id: 'b', label: name(-toward), tag: 'wrong-letter' },
+    { id: 'c', label: name(-2 * toward), tag: 'wrong-letter' },
+    { id: 'd', label: name(toward), tag: 'wrong-letter' },
+  ];
+  return {
+    prompt: fill(prompts[lang]['natural-neighbour'], {
+      neighbour: name(-toward),
+      side: neighbourSides[lang][up ? 1 : 0],
+    }),
+    options: shuffle(next, options),
+    answer: 'a',
+    rule: 'natural-name',
+  };
+}
+
+/**
+ * The stem of an altered-note item, in the reader's own vocabulary. An
+ * unaltered note never comes here: see `naturalNeighbour`.
+ */
 function describeSpelling(pitch: SpelledPitch, lang: MusicLanguage): string {
   const natural = pitchName({ ...pitch, accidental: 0 }, lang);
   const move: Record<MusicLanguage, Record<number, string>> = {
     en: {
       [-2]: `${natural} lowered by a whole tone`,
       [-1]: `${natural} lowered by a semitone`,
-      0: `${natural}, unaltered`,
       1: `${natural} raised by a semitone`,
       2: `${natural} raised by a whole tone`,
     },
     ru: {
       [-2]: `${natural}, пониженная на тон`,
       [-1]: `${natural}, пониженная на полутон`,
-      0: `${natural} без знака`,
       1: `${natural}, повышенная на полутон`,
       2: `${natural}, повышенная на тон`,
     },
     de: {
       [-2]: `${natural} um einen Ganzton erniedrigt`,
       [-1]: `${natural} um einen Halbton erniedrigt`,
-      0: `${natural} ohne Vorzeichen`,
       1: `${natural} um einen Halbton erhöht`,
       2: `${natural} um einen Ganzton erhöht`,
     },
@@ -634,14 +711,14 @@ function dottedValue(
     const labels = nt(
       'Fits|Overflows',
       'Помещается|Не помещается',
-      'Passt|Überschreitet',
+      'Passt|Passt nicht',
     )[lang].split('|');
     return {
       rule: dots === 1 ? 'dot-adds-half' : 'second-dot-adds-half-the-first',
       prompt: nt(
         `The bar has ${remaining.num}/${remaining.den} of a whole note remaining. Does a ${dots === 2 ? 'double-' : ''}dotted ${rest ? 'rest' : 'note'} of base value 1/${den} fit without crossing the barline?`,
         `В такте осталось ${remaining.num}/${remaining.den} целой ноты. Поместится ли ${rest ? 'пауза' : 'нота'} с ${dots === 2 ? 'двумя точками' : 'точкой'} и основной длительностью 1/${den}, не пересекая тактовую черту?`,
-        `Im Takt bleiben ${remaining.num}/${remaining.den} einer ganzen Note. Passt eine ${dots === 2 ? 'doppelt ' : ''}punktierte ${rest ? 'Pause' : 'Note'} mit Grundwert 1/${den}, ohne den Taktstrich zu überschreiten?`,
+        `Im Takt ist noch Platz für ${remaining.num}/${remaining.den} einer ganzen Note. Passt eine ${dots === 2 ? 'doppelt ' : ''}punktierte ${rest ? 'Pause' : 'Note'} mit dem Grundwert 1/${den} hinein, ohne den Taktstrich zu überschreiten?`,
       )[lang],
       answer: 'a',
       options: shuffle(next, [
@@ -656,18 +733,13 @@ function dottedValue(
       source: notationSources.ties,
     };
   }
+  // A rest is named like a note: “a dotted quarter rest”, «четвертная пауза с
+  // точкой», „eine punktierte Viertelpause“.
+  const named = (rest ? restNames : valueNames)[lang][den];
   return {
     prompt: fill(prompts[lang]['dotted-value'], {
       unit: countedValueNames[lang][unit.den],
-      value: rest
-        ? nt(
-            `a ${dots === 2 ? 'double-' : ''}dotted rest of base value 1/${den}`,
-            `пауза с ${dots === 2 ? 'двумя точками' : 'точкой'} (основная длительность — 1/${den})`,
-            `eine ${dots === 2 ? 'doppelt ' : ''}punktierte Pause des Grundwerts 1/${den}`,
-          )[lang]
-        : lang === 'ru'
-          ? `${valueNames.ru[den]} ${dotWord.ru}`
-          : dotWord[lang] + valueNames[lang][den],
+      value: lang === 'ru' ? `${named} ${dotWord.ru}` : dotWord[lang] + named,
     }),
     options: shuffle(next, unique),
     answer: 'a',
@@ -714,8 +786,8 @@ function tuplet(
     {
       id: 'b',
       label: valueNames[lang][written / 2],
-      // One step longer than the group uses. The opposite mistake from c, so
-      // it cannot share c's explanation.
+      // Twice as long as the value the group is written in. The opposite
+      // mistake from c, so it cannot share c's explanation.
       tag: 'one-step-too-long',
     },
     {
@@ -737,9 +809,9 @@ function tuplet(
     answer: 'a',
     rule: 'irregular-group-written-value',
     explanation: nt(
-      `Under the stated ${count}:${regular} ratio, the group occupies ${regular} written values. Other ratios are possible; the group number alone does not select a universal denominator.`,
-      `При указанном отношении ${count}:${regular} группа занимает ${regular} записанных длительностей. Возможны другие отношения; одно число группы не определяет универсальный знаменатель.`,
-      `Beim angegebenen Verhältnis ${count}:${regular} umfasst die Gruppe ${regular} notierte Werte. Andere Verhältnisse sind möglich; die Gruppenzahl allein bestimmt keinen universellen Nenner.`,
+      `Under the stated ${count}:${regular} ratio, the ${count} notes of the group take the time of ${regular} ordinary notes of the same written value. Other ratios are possible; the group number alone does not select a universal denominator.`,
+      `При указанном отношении ${count}:${regular} группа из ${count} нот занимает время ${regular} обычных нот той же записанной длительности. Возможны другие отношения; одно число группы не определяет универсальный знаменатель.`,
+      `Beim angegebenen Verhältnis ${count}:${regular} dauern die ${count} Noten der Gruppe so lang wie ${regular} gewöhnliche Noten desselben Notenwerts. Andere Verhältnisse sind möglich; die Gruppenzahl allein bestimmt keinen universellen Nenner.`,
     )[lang],
     source: notationSources.tuplets,
   };
@@ -767,13 +839,13 @@ function tieSum(
       ),
       prompt: nt(
         `In this 3/4 example, give ${target === 'total' ? 'the total duration of the tied sound' : target === 'first' ? 'the portion of the tied sound in bar 1' : 'the portion of the tied sound in bar 2'} as a fraction of a whole note.`,
-        `В примере 3/4 укажите ${target === 'total' ? 'полную длительность связанного звука' : target === 'first' ? 'часть связанного звука в такте 1' : 'часть связанного звука в такте 2'} как долю целой ноты.`,
-        `Gib in diesem 3/4-Beispiel ${target === 'total' ? 'die Gesamtdauer des gebundenen Tons' : target === 'first' ? 'den Anteil des gebundenen Tons in Takt 1' : 'den Anteil des gebundenen Tons in Takt 2'} als Anteil einer ganzen Note an.`,
+        `В этом примере в размере 3/4 укажите ${target === 'total' ? 'полную длительность связанного звука' : target === 'first' ? 'часть связанного звука в такте 1' : 'часть связанного звука в такте 2'} как долю целой ноты.`,
+        `Gib in diesem 3/4-Beispiel ${target === 'total' ? 'die Gesamtdauer des übergebundenen Tons' : target === 'first' ? 'den Anteil des übergebundenen Tons in Takt 1' : 'den Anteil des übergebundenen Tons in Takt 2'} als Anteil einer ganzen Note an.`,
       )[lang],
       explanation: nt(
-        'Bar 1: half rest + quarter = 3/4. Bar 2: tied quarter + half rest = 3/4. The sound lasts 1/4 + 1/4 = 1/2, with one attack; the tie allocates it across the barline without adding a beat.',
-        'Такт 1: половинная пауза + четверть = 3/4. Такт 2: связанная четверть + половинная пауза = 3/4. Звук длится 1/4 + 1/4 = 1/2 с одной атакой; лига распределяет его между тактами, не добавляя долю.',
-        'Takt 1: halbe Pause + Viertel = 3/4. Takt 2: gebundene Viertel + halbe Pause = 3/4. Der Ton dauert 1/4 + 1/4 = 1/2 mit einem Anschlag; der Haltebogen verteilt ihn über den Taktstrich, ohne eine Zählzeit hinzuzufügen.',
+        'Bar 1: two quarter rests + quarter = 3/4. Bar 2: tied quarter + two quarter rests = 3/4. The sound lasts 1/4 + 1/4 = 1/2, with one attack; the tie allocates it across the barline without adding a beat.',
+        'Такт 1: две четвертные паузы + четверть = 3/4. Такт 2: связанная четверть + две четвертные паузы = 3/4. Звук длится 1/4 + 1/4 = 1/2 с одной атакой; лига распределяет его между тактами, не добавляя долю.',
+        'Takt 1: zwei Viertelpausen + Viertel = 3/4. Takt 2: übergebundene Viertel + zwei Viertelpausen = 3/4. Der Ton dauert 1/4 + 1/4 = 1/2 mit einem Anschlag; der Haltebogen verteilt ihn über den Taktstrich, ohne eine Zählzeit hinzuzufügen.',
       )[lang],
       source: notationSources.ties,
     };
@@ -794,16 +866,23 @@ function tieSum(
     (o, i) => options.findIndex((x) => x.label === o.label) === i,
   );
   return {
+    // The unit the options count in is asked for in words, not appended as a
+    // parenthesis that reads like an answer.
     prompt: fill(prompts[lang]['tie-sum'], {
       a: valueNames[lang][first],
       b: valueNames[lang][second],
-    }).concat(` (${valueNames[lang][unit.den]})`),
+      unit: countedValueNames[lang][unit.den],
+    }),
     options: shuffle(next, unique),
     answer: 'a',
     rule: 'tied-values-add',
   };
 }
 
+/**
+ * Clef names in the form the clef-transform stem needs. Russian is in the
+ * prepositional case, because the stem reads «в басовом ключе».
+ */
 const clefNames: Record<MusicLanguage, Record<Clef, string>> = {
   en: {
     treble: 'treble clef',
@@ -812,10 +891,10 @@ const clefNames: Record<MusicLanguage, Record<Clef, string>> = {
     tenor: 'tenor clef',
   },
   ru: {
-    treble: 'скрипичный',
-    bass: 'басовый',
-    alto: 'альтовый',
-    tenor: 'теноровый',
+    treble: 'скрипичном',
+    bass: 'басовом',
+    alto: 'альтовом',
+    tenor: 'теноровом',
   },
   de: {
     treble: 'Violinschlüssel',
@@ -974,8 +1053,11 @@ function accidentalScope(
   const sign = pick(next, level === 1 ? [1, -1] : [1, -1, 2, -2]);
   const base = readablePitch(next, clef, [0]);
   const altered = spelled(base.letter, sign, base.octave);
-  // A neighbour so the bar is a bar rather than one note repeated.
-  const other = spelled((base.letter + 1) % 7, 0, base.octave);
+  // A neighbour so the bar is a bar rather than one note repeated: the next
+  // staff step up, or down at the top of the readable band. Counting letters
+  // modulo seven sent B to the C a seventh below, onto ledger lines of its own.
+  const step = staffStep(base, clef);
+  const other = pitchAtStep(step < READ_HIGH ? step + 1 : step - 1, clef);
   // Beyond the barline the sign is spent; inside it, it still holds.
   const beyond = next() < 0.5;
   const pitches = [altered, other, beyond ? base : altered];

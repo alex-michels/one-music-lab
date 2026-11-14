@@ -159,7 +159,6 @@ test('All six German lessons include translated prose, experiments and formulas,
     await render(Theory, {
       lang: 'de',
       lessonId,
-      setLessonId: vi.fn(),
       openLab,
       anchor: null,
     });
@@ -177,7 +176,6 @@ test('All six German lessons include translated prose, experiments and formulas,
   await render(Theory, {
     lang: 'de',
     lessonId: null,
-    setLessonId: vi.fn(),
     openLab: vi.fn(),
     anchor: null,
   });

@@ -63,6 +63,22 @@ test('Editorial examples match the played lament descent and minor-dominant subs
   expect(names(C, authentic.steps.at(-1))).toEqual(['C', 'E', 'G']);
 });
 
+test('A note that sends the learner to another template quotes the name the picker shows', () => {
+  // The German half-cadence note once named a „Authentische Kadenz“ template,
+  // which the German picker lists as „Authentischer Ganzschluss“.
+  const half = progressionTemplates.find((t) => t.id === 'half');
+  const authentic = progressionTemplates.find((t) => t.id === 'authentic');
+  expect(half.note.en).toContain(authentic.en.split(' · ')[0]);
+  for (const [lang, quoted] of [
+    ['ru', /«([^»]+)»/],
+    ['de', /„([^“]+)“/],
+  ]) {
+    const name = half.note[lang].match(quoted)?.[1];
+    expect(name, lang).toBeTruthy();
+    expect(authentic[lang].split(' · ')[0], lang).toBe(name);
+  }
+});
+
 test('C-root chords retain their interval spelling, including ninths and diminished sevenths', () => {
   const expected = {
     major: ['C', 'E', 'G'],
@@ -284,6 +300,8 @@ const expectedTemplates = {
     'G7',
     'C7',
     'A7',
+    'Dm7',
+    'G7',
   ],
   borrowedFour: ['C', 'F', 'Fm', 'C'],
   appliedDominant: ['C', 'D7', 'G', 'C'],
@@ -386,15 +404,103 @@ test('Every template is playable inside the editor and audio bounds it declares'
     expect(source.href).toMatch(/^https:\/\//);
 });
 
+// The chord symbols of a template in C, grouped into bars of four beats.
+const barsOf = (template) => {
+  const key = { ...C, mode: template.mode };
+  const bars = [];
+  let beat = 0;
+  for (const c of template.steps) {
+    (bars[Math.floor(beat / 4)] ??= []).push(chordSymbol(key, c));
+    beat += c.beats;
+  }
+  return bars;
+};
+
 test('The twelve-bar forms are twelve bars of four beats, not twelve beats', () => {
   for (const id of ['blues', 'bluesQuickChange', 'minorBlues', 'jazzBlues']) {
     const template = progressionTemplates.find((p) => p.id === id);
-    expect(template.steps, id).toHaveLength(12);
+    // One chord to the bar, except the jazz blues, whose last two bars hold
+    // the turnaround at two chords each.
+    expect(template.steps, id).toHaveLength(id === 'jazzBlues' ? 14 : 12);
+    expect(barsOf(template), id).toHaveLength(12);
     expect(
       template.steps.reduce((sum, c) => sum + c.beats, 0),
       id,
     ).toBe(48);
   }
+});
+
+test('The jazz blues ends on the whole turnaround, and each VI7 is confirmed by the ii7 after it', () => {
+  // Open Music Theory, “Blues Harmony”, Example 5, bars 11–12: C–A7 | Dm7–G7.
+  // The template once stopped on a lone A7 in bar twelve, which fell back to
+  // C7 unresolved on the repeat and showed a bare VI7 with nothing to prove it.
+  const template = progressionTemplates.find((p) => p.id === 'jazzBlues');
+  const { steps } = template;
+  expect(barsOf(template)).toEqual([
+    ['C7'],
+    ['F7'],
+    ['C7'],
+    ['C7'],
+    ['F7'],
+    ['F7'],
+    ['C7'],
+    ['A7'],
+    ['Dm7'],
+    ['G7'],
+    ['C7', 'A7'],
+    ['Dm7', 'G7'],
+  ]);
+  // The form ends on the dominant, so the repeat returns to the tonic.
+  expect(romanNumeral(C, steps.at(-1))).toBe('V7');
+  expect(romanNumeral(C, steps[0])).toBe('I7');
+  // The note sends the learner to the V7/ii label on each VI7: both carry it,
+  // and no other card does.
+  const numerals = steps.map((c) => romanNumeral(C, c));
+  expect(numerals.filter((numeral) => numeral === 'VI7')).toHaveLength(2);
+  expect(steps.map((c, i) => appliedDominant(C, c, steps[i + 1]))).toEqual(
+    numerals.map((numeral) => (numeral === 'VI7' ? 'V7/ii' : null)),
+  );
+  // Every language names the turnaround and the label; the German note once
+  // still sent the reader to „den achten Akkord“ alone.
+  for (const lang of ['en', 'ru', 'de']) {
+    expect(template.note[lang], lang).toContain('I–VI7–ii7–V7');
+    expect(template.note[lang], lang).toContain('V7/ii');
+  }
+  expect(template.note.de).not.toContain('achten Akkord');
+});
+
+test('The minor blues note writes the replaced subdominant in the case the lab shows it in', () => {
+  // The minor subdominant is lowercase on its card, so a note that calls the
+  // same chord IV contradicts the screen beside it.
+  const template = progressionTemplates.find((p) => p.id === 'minorBlues');
+  const Cm = { tonic: 0, mode: 'minor' };
+  const subdominant = romanNumeral(Cm, paletteChord('minor', 3));
+  expect(subdominant).toBe('iv');
+  expect(romanNumeral(Cm, template.steps[4])).toBe('iv7');
+  for (const lang of ['en', 'ru', 'de']) {
+    expect(template.note[lang], lang).toContain(`V–${subdominant}–i`);
+    expect(template.note[lang], lang).not.toContain('V–IV–i');
+  }
+});
+
+test('Russian names of chords with a major ninth never borrow the name of the minor-ninth chord', () => {
+  // In Russian usage a ninth chord is named by its ninth: «большой нонаккорд»
+  // has a major ninth and «малый нонаккорд» a minor one. Every ninth this lab
+  // offers is major (14 semitones), so none may be called «малый … нонаккорд»,
+  // which a Russian-trained reader would take for C7♭9.
+  const ninths = Object.entries(chordQualities).filter(
+    ([, quality]) => quality.steps.includes(14) && quality.steps.length === 5,
+  );
+  expect(ninths.map(([id]) => id)).toEqual(['ninth', 'maj9', 'min9']);
+  for (const [id, quality] of ninths) {
+    expect(quality.steps, id).not.toContain(13);
+    expect(quality.ru, id).not.toMatch(/малый[^,]*нонаккорд/i);
+    expect(quality.ru, id).toContain('с большой ноной');
+  }
+  // The seventh-chord part of each name still says which seventh chord it is.
+  expect(chordQualities.ninth.ru).toContain(chordQualities.seventh.ru);
+  expect(chordQualities.maj9.ru).toContain(chordQualities.maj7.ru);
+  expect(chordQualities.min9.ru).toContain(chordQualities.min7.ru);
 });
 
 test('An applied dominant is labelled only when the next chord proves it', () => {
@@ -447,6 +553,44 @@ test('An applied dominant is labelled only when the next chord proves it', () =>
   // A minor or suspended chord is never a dominant, whatever follows it.
   for (const quality of ['min7', 'sus4', 'diminished', 'halfDim7'])
     expect(appliedDominant(C, chord(quality, { degree: 1 }), five)).toBeNull();
+  // Neither is a chord with a major seventh above its root, although its triad
+  // is major: Dmaj7 or Dmaj9 moving to G is not V/V (Hutchinson §17.3 allows
+  // major triads and major–minor sevenths only).
+  for (const quality of ['maj7', 'maj9'])
+    expect(
+      appliedDominant(C, chord(quality, { degree: 1 }), five),
+      quality,
+    ).toBeNull();
+  // The ninth above a major–minor seventh, or above a plain triad, does not
+  // change what the chord is.
+  expect(appliedDominant(C, chord('ninth', { degree: 1 }), five)).toBe('V7/V');
+  expect(appliedDominant(C, chord('add9', { degree: 1 }), five)).toBe('V/V');
+  // Only a major or minor chord can be tonicized. E major falling a fifth to A
+  // minor is V/vi; to a diminished chord on A it proves nothing, and neither
+  // does a target with no third or an augmented fifth.
+  const three = chord('major', { degree: 2 });
+  expect(appliedDominant(C, three, chord('minor', { degree: 5 }))).toBe('V/vi');
+  expect(appliedDominant(C, three, chord('minMaj7', { degree: 5 }))).toBe(
+    'V/vi',
+  );
+  for (const quality of [
+    'diminished',
+    'halfDim7',
+    'dim7',
+    'augmented',
+    'sus2',
+    'sus4',
+  ])
+    expect(
+      appliedDominant(C, three, chord(quality, { degree: 5 })),
+      quality,
+    ).toBeNull();
+  // A major target on the same root is still tonicized, sevenths included.
+  for (const quality of ['major', 'seventh', 'maj7', 'ninth'])
+    expect(
+      appliedDominant(C, dominantOfFive, chord(quality, { degree: 4 })),
+      quality,
+    ).toBe('V7/V');
   // In minor a major tonic pointing at iv is an applied dominant of iv.
   expect(
     appliedDominant(Cm, chord('seventh'), chord('minor', { degree: 3 })),

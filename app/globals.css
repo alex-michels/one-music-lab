@@ -2,15 +2,19 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
+/* Saved work and backups close the page: they are about the reader's browser,
+   not about the lesson, so they follow the content rather than preceding it. */
 .local-data {
-  border-block: 1px solid var(--c-rule);
-  padding: 12px 0;
-  margin-bottom: 24px;
+  border-top: 1px solid var(--c-rule);
+  padding: var(--sp-4) 0 0;
+  margin-top: var(--sp-8);
   overflow-wrap: anywhere;
 }
 .local-data summary {
   cursor: pointer;
+  font-size: var(--t-ui);
   font-weight: 600;
+  color: var(--c-ink-2);
 }
 .local-data h2 {
   font-size: 16px;
@@ -57,12 +61,30 @@
   font-size: 14px;
   color: var(--c-ink-2);
 }
+/* The reader's own marker, as the last act of a lesson. */
 .lesson-progress {
-  padding: 16px 0;
+  padding: var(--sp-4) var(--sp-5);
+  border: var(--bw) solid var(--c-rule);
+  border-radius: var(--r-4);
+  background: var(--c-surface);
+}
+.lesson-progress label {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 32px;
+  font-weight: 600;
+  cursor: pointer;
 }
 .lesson-progress input {
-  margin-right: 6px;
-  accent-color: var(--c-ink);
+  flex: none;
+  width: 20px;
+  height: 20px;
+  accent-color: var(--c-link);
+}
+.lesson-progress p {
+  margin-bottom: 0;
+  color: var(--c-ink-3);
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -147,6 +169,9 @@
 .chord-select-content [data-slot='select-label'] {
   position: sticky;
   top: 0;
+  /* Above the options: each one is positioned, and a positioned sibling later
+     in the list would otherwise scroll over the group name instead of under. */
+  z-index: 1;
   background: var(--c-surface);
   font-weight: 650;
   letter-spacing: 0.4px;
@@ -304,6 +329,12 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 20px;
+}
+/* The Play button is centred in the row with the tempo and the status: the
+   shared button's own top margin pushed it ten pixels below them. */
+.chord-transport > .primary-button {
+  margin-top: 0;
+  min-height: 44px;
 }
 .chord-transport > .chord-field {
   flex-direction: row;
@@ -751,6 +782,10 @@
      descendant selector, so paper inside the dark bed still gets paper's ring. */
   --focus: #0b6fd6; /* 4.54:1 on ground, 4.93:1 on paper */
   --focus-halo: #0b6fd633;
+  /* The chrome ring again, by its own name: a chrome surface that sits inside
+     the bed has to take it back from the bed's override. */
+  --focus-chrome: #0b6fd6;
+  --focus-halo-chrome: #0b6fd633;
   --focus-paper: #0b6fd6;
   --focus-halo-paper: #0b6fd633;
   --focus-bed: #86e0ff; /* 10.81:1 on the bed */
@@ -821,7 +856,11 @@
   --m-break: 65rem; /* the measured 480/1025 breakout ratio, as a grid column */
   --m-drill: 40rem;
   --m-index: 73.75rem;
+  --m-lesson: 36rem; /* the lesson column: prose, figures and questions share it */
+  --m-aside: 21rem; /* the listening card beside a lesson on a wide page */
   --subject-min: 2.75rem; /* a minimum, not a height: German and Russian titles wrap */
+  --topbar-h: 64px; /* the bar stays in view, so sticky things start below it */
+  --t-nav: 0.8125rem; /* lesson titles in the course map: denser than --t-ui */
 
   --dur-1: 120ms;
   --ease-1: linear;
@@ -913,6 +952,8 @@
   --st-wrong-wash: #2a1a17;
   --focus: #6cc6ff; /* 9.66:1 */
   --focus-halo: #6cc6ff40;
+  --focus-chrome: #6cc6ff;
+  --focus-halo-chrome: #6cc6ff40;
 }
 /* The two namespaces, carried onto elements. Named .paper and not .score:
    a score is a document here, and the word is needed for one. */
@@ -933,6 +974,19 @@
   border-radius: var(--r-4);
   padding: var(--sp-5);
 }
+/* The bed's pale ring is measured against the bed. A panel on the bed paints
+   the chrome surface and the keyboard paints paper, and custom properties
+   inherit, so both were drawing that ring on white at about 1.5:1. Each
+   surface restates the ring that was measured against it. */
+.bed .panel,
+.bed .note-card {
+  --focus: var(--focus-chrome);
+  --focus-halo: var(--focus-halo-chrome);
+}
+.bed .piano-keys {
+  --focus: var(--focus-paper);
+  --focus-halo: var(--focus-halo-paper);
+}
 /* Every number on the site, in one voice. */
 .num {
   font-family: var(--type-mono);
@@ -942,6 +996,15 @@
 * {
   box-sizing: border-box;
   border-color: var(--c-rule);
+}
+/* The top bar is sticky, so the top of the viewport is not the top of what
+   can be seen. Everything the browser scrolls into view — a focused control
+   reached with Tab or Shift+Tab, a heading, a linked passage, the skip link's
+   target — stops below the bar with room for its focus ring (nine pixels)
+   instead of underneath it. One declaration for the document rather than a
+   margin on each target that somebody has to remember. */
+html {
+  scroll-padding-block-start: calc(var(--topbar-h) + var(--sp-3));
 }
 body {
   margin: 0;
@@ -1122,42 +1185,163 @@ p {
   background: var(--c-rule);
   margin: 27px 25px 12px;
 }
-.sidebar-note {
-  margin: 12px 23px;
-  padding: 20px 16px;
-  background: var(--c-surface-sunk);
-  border: 1px solid var(--c-rule);
-  border-radius: 10px;
+/* The course map: the book's contents in the panel that is on every page.
+   Sections are captions, chapters are disclosures, lessons are links. The open
+   lesson is marked with aria-current and the reader's own markers with a
+   filled check that is also said in words. */
+/* The panel's scroll area keeps a scrollbar. With the book in it the content
+   is usually taller than the window, and the imported panel hides its
+   scrollbar, so the lower chapters were out of sight with nothing to say they
+   existed. Thin and in the rule colour, on the desktop panel and the phone
+   sheet alike. */
+[data-slot='sidebar-content'] {
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-rule-strong) transparent;
 }
-.little-orbit {
-  height: 34px;
-  width: 34px;
-  display: grid;
-  place-items: center;
-  background: var(--c-surface);
-  border: 1px solid var(--c-rule);
-  border-radius: 50%;
-  margin-bottom: 14px;
+[data-slot='sidebar-content']::-webkit-scrollbar {
+  display: block;
+  width: 8px;
+}
+[data-slot='sidebar-content']::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: var(--c-rule-strong);
+}
+.course-map {
+  min-width: 0;
+  padding: 0 14px var(--sp-4);
+  overflow-wrap: anywhere;
+}
+/* The open lesson is brought into view inside the panel, clear of its edges. */
+.course-map li a {
+  scroll-margin-block: var(--sp-6);
+}
+.course-map-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-1) var(--sp-2);
+  margin: var(--sp-3) 11px var(--sp-2);
+}
+.course-map .nav-label {
+  margin: 0;
+  text-transform: uppercase;
+}
+.course-map .nav-label:hover {
   color: var(--c-link);
 }
-.sidebar-note h3 {
-  font-size: 14px;
-  font-weight: 550;
-  margin-bottom: 8px;
+.course-map-count {
+  font-size: var(--t-meta);
+  line-height: var(--lh-meta);
+  color: var(--c-ink-3);
 }
-.sidebar-note p {
-  font-size: 14px;
-  line-height: 1.65;
+.course-map-meter {
+  height: 4px;
+  margin: 0 11px var(--sp-2);
+  border-radius: 2px;
+  background: var(--c-rule);
+  overflow: hidden;
+}
+.course-map-meter > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--c-link);
+  transition: inline-size var(--dur-1) var(--ease-1);
+}
+.course-map-section > p {
+  margin: var(--sp-4) 11px var(--sp-1);
+  font-size: var(--t-caption);
+  line-height: var(--lh-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  color: var(--c-ink-3);
+}
+.course-map summary {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding: var(--sp-2) 11px;
+  border-radius: var(--r-3);
+  cursor: pointer;
+  list-style: none;
+  font-size: var(--t-ui);
+  line-height: 1.35;
   color: var(--c-ink-2);
 }
-.sidebar-note button {
+.course-map summary::-webkit-details-marker {
+  display: none;
+}
+/* The disclosure triangle, drawn so it can sit beside a wrapped title. */
+.course-map summary::before {
+  content: '';
+  flex: none;
+  align-self: center;
+  width: 6px;
+  height: 6px;
+  margin-right: 2px;
+  border-right: var(--bw-2) solid currentColor;
+  border-bottom: var(--bw-2) solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--dur-1) var(--ease-1);
+}
+.course-map details[open] > summary::before {
+  transform: rotate(45deg);
+}
+.course-map summary > span:first-of-type {
+  flex: 1;
+  min-width: 0;
+}
+.course-map summary .num {
+  font-size: var(--t-caption);
+  color: var(--c-ink-3);
+}
+.course-map summary:hover {
+  background: var(--c-surface-sunk);
+  color: var(--c-ink);
+}
+.course-map details[open] > summary {
+  color: var(--c-ink);
+  font-weight: var(--w-medium);
+}
+.course-map ol {
+  list-style: none;
+  margin: 2px 0 var(--sp-2);
+  padding: 0 0 0 var(--sp-3);
+}
+.course-map li a {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 18px;
-  font-size: 12px;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  padding: 6px 11px;
+  border-radius: var(--r-3);
+  font-size: var(--t-nav);
+  line-height: 1.4;
+  color: var(--c-ink-2);
+}
+.course-map li a:hover {
+  background: var(--c-surface-sunk);
+  color: var(--c-ink);
+}
+.course-map li a[aria-current='page'] {
+  background: var(--k-tone-wash);
   color: var(--c-link);
-  text-align: left;
+  font-weight: 600;
+}
+.course-map-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  border: var(--bw-2) solid var(--c-rule-strong);
+  border-radius: 50%;
+  color: var(--c-surface);
+}
+.course-map-mark[data-done] {
+  background: var(--c-link);
+  border-color: var(--c-link);
 }
 .lab-sidebar [data-slot='sidebar-footer'] {
   padding: 20px;
@@ -1191,43 +1375,103 @@ p {
   min-width: 0;
   flex: 1;
 }
+/* Until the application has read the reader's own language, theme and last
+   page, the prerendered shell is the default page of nobody in particular:
+   English, the Sound lab. The inline boot script marks the document while that
+   is pending and the shell stays out of sight until it is ready, so a returning
+   reader is not shown someone else's page first. It is already inert in that
+   state. Without JavaScript the mark is never set and the page shows as-is. */
+html[data-boot='pending'] [data-slot='sidebar-wrapper'][aria-busy='true'] {
+  visibility: hidden;
+}
+/* The bar stays at the top of the viewport: the menu on a phone, the language
+   and the theme are reachable from the middle of a long lesson, not only from
+   its first screen. Everything sticky below it starts at --topbar-h. */
 .topbar {
-  height: 76px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: var(--topbar-h);
   border-bottom: 1px solid var(--c-rule);
   background: var(--c-surface);
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 40px;
   gap: 20px;
 }
+/* The controls sit at the end of the bar whether or not the menu button is
+   shown at its start. */
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: var(--sp-4);
+  margin-left: auto;
 }
-.language-switch {
+.language-switch,
+.theme-switch {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.language-switch {
+  gap: 2px;
+  font-size: var(--t-meta);
   color: var(--c-ink-3);
 }
 .language-switch svg {
-  margin-right: 4px;
+  margin-right: var(--sp-1);
   color: var(--c-ink-3);
 }
 .language-switch button {
-  padding: 5px 0;
+  min-width: 32px;
+  padding: var(--sp-2) 6px;
+  border-radius: var(--r-2);
+}
+.language-switch button:hover {
+  color: var(--c-ink);
+  background: var(--c-surface-sunk);
 }
 .language-switch .selected {
   color: var(--c-link);
   font-weight: 650;
 }
+.theme-switch {
+  gap: 2px;
+  padding: 2px;
+  border: var(--bw) solid var(--c-rule);
+  border-radius: 999px;
+  background: var(--c-surface-sunk);
+}
+.theme-switch button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: var(--c-ink-3);
+}
+.theme-switch button:hover {
+  color: var(--c-ink);
+}
+/* The chosen theme has an outline in the link colour as well as a lighter
+   fill: the fill alone differs from the track by about 1.2:1, the outline by
+   more than 6:1 in both themes. */
+.theme-switch .selected {
+  background: var(--c-surface);
+  color: var(--c-link);
+  box-shadow: inset 0 0 0 var(--bw-2) var(--c-link);
+}
 .mobile-menu {
   display: none;
 }
+/* A named container: a lesson gains its second column from the room the page
+   actually has, which depends on the reader's own navigation width as much as
+   on the window. */
 .main-content {
+  container: main / inline-size;
   max-width: 1440px;
   margin: auto;
   padding: 36px 40px 24px;
@@ -1303,9 +1547,17 @@ h1 {
 .lens-play > .lab-footer {
   color: var(--s-on-ground);
 }
+/* The two tabs sit together at the start of the row and the caption at its
+   end. Spread across the row, the second tab floated in the middle of the bed
+   and, once the caption was hidden on a narrow page, at its far edge. */
 .lens-play > .section-tabs {
+  justify-content: flex-start;
+  gap: var(--sp-5);
   border-bottom-color: var(--s-ground-2);
   margin-bottom: 0;
+}
+.lens-play > .section-tabs > .section-caption {
+  margin-left: auto;
 }
 /* The inactive tab never had the active one's layout, so its icon sat above
    its label rather than beside it — invisible while both were near-black on
@@ -1409,12 +1661,16 @@ h1 {
   gap: 9px;
   margin: 8px 0 7px;
 }
+/* Wide enough for what it shows. A key or the slider gives values such as
+   261.6256 and 1046.5023, eight and nine characters; six clipped all but the
+   round numbers. */
 .frequency-input input {
-  width: 6ch;
+  width: 9ch;
+  max-width: 100%;
   font-family: var(--type-mono), monospace;
   font-size: var(--t-display);
   font-weight: 450;
-  letter-spacing: -3px;
+  letter-spacing: var(--ls-display);
   text-align: center;
   background: transparent;
   border: 0;
@@ -1459,12 +1715,27 @@ h1 {
 [data-slot='slider-range'] {
   background: var(--c-link);
 }
+/* Marks placed at their own positions on the logarithmic scale (the `left` is
+   set per mark), centred on the point they name; the two ends align with the
+   ends of the track instead of hanging past them. */
 .range-labels {
-  display: flex;
-  justify-content: space-between;
+  position: relative;
+  height: 1.5em;
   color: var(--c-ink-3);
   font-size: 12px;
   margin-top: 12px;
+}
+.range-labels > span {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.range-labels > span:first-child {
+  transform: none;
+}
+.range-labels > span:last-child {
+  transform: translateX(-100%);
 }
 .transport {
   display: flex;
@@ -2046,8 +2317,10 @@ h1 {
   .mobile-menu {
     display: flex;
   }
+  :root {
+    --topbar-h: 56px;
+  }
   .topbar {
-    height: 62px;
     padding: 0 18px;
   }
   .main-content {
@@ -2098,15 +2371,27 @@ h1 {
     font-size: 9px;
   }
 }
+/* The bar's controls need about 300px. Below 360px (a small phone, or a
+   desktop window zoomed to 400%) the bar tightens rather than pushing the last
+   language button off the edge; the decorative globe goes first. */
+@media (max-width: 359px) {
+  .topbar {
+    padding: 0 var(--sp-2);
+    gap: var(--sp-2);
+  }
+  .topbar-right {
+    gap: var(--sp-2);
+  }
+  .language-switch svg {
+    display: none;
+  }
+}
 @media (max-width: 430px) {
   .tuning-column {
     grid-template-columns: 1fr;
   }
   .note-card {
     display: none;
-  }
-  .frequency-input input {
-    font-size: 57px;
   }
   .wave-picker button {
     flex-direction: column;
@@ -2132,6 +2417,7 @@ h1 {
     transition: none !important;
   }
 }
+
 .secondary-button {
   display: inline-flex;
   align-items: center;
@@ -2308,113 +2594,273 @@ h1 {
   padding: 7px 18px;
   margin: 20px 0;
 }
+/* "At a glance": the lesson's one line to remember. Mono, because most of them
+   are numbers, signs and ratios; it wraps rather than scrolling sideways. */
 .formula {
   font-family: var(--type-mono), monospace;
-  font-size: 17px;
+  font-size: var(--t-body);
   line-height: 1.7;
-  background: var(--c-surface-sunk);
-  border: 1px solid var(--c-rule);
-  border-radius: 9px;
-  padding: 24px;
-  margin: 28px 0;
-  overflow-x: auto;
+  background: var(--c-surface);
+  border: var(--bw) solid var(--c-rule);
+  border-left: 3px solid var(--c-rule-strong);
+  border-radius: var(--r-1) var(--r-4) var(--r-4) var(--r-1);
+  padding: var(--sp-4) var(--sp-5);
+  overflow-wrap: anywhere;
 }
+/* Previous and next as two cards, the next one carrying the sentence that
+   connects it: the way on is the most prominent thing at the end of a lesson. */
 .lesson-navigation {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 32px;
-  padding-top: 20px;
-  border-top: 1px solid var(--c-rule);
+  gap: var(--sp-3);
+  padding-top: var(--sp-5);
+  border-top: var(--bw) solid var(--c-rule);
 }
 .lesson-navigation > p {
   grid-column: 1 / -1;
 }
-.lesson-navigation a {
-  color: var(--c-link);
+.lesson-navigation > a {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-4);
+  border: var(--bw) solid var(--c-rule);
+  border-radius: var(--r-4);
+  background: var(--c-surface);
+  color: var(--c-ink);
+  font-weight: 600;
+  line-height: 1.35;
   overflow-wrap: anywhere;
+  transition:
+    border-color var(--dur-1) var(--ease-1),
+    background var(--dur-1) var(--ease-1);
+}
+.lesson-navigation > a:hover {
+  border-color: var(--c-link);
+  background: var(--k-tone-wash);
 }
 .lesson-navigation a span {
-  display: block;
-  font-size: 12px;
-  margin-bottom: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--t-meta);
+  font-weight: var(--w-regular);
+  color: var(--c-ink-3);
 }
 .lesson-navigation a[rel='next'] {
   grid-column: 2;
-  text-align: right;
+  border-color: var(--c-rule-strong);
+}
+/* The first lesson has nothing before it, so its way on takes the whole row. */
+.lesson-navigation > p + a[rel='next'] {
+  grid-column: 1 / -1;
+}
+.lesson-navigation a[rel='next'] span {
+  color: var(--c-link);
 }
 .course-context,
 .course-browse,
 .course-index,
+.course-resume,
 .lesson-connections,
 .entry-diagnostic {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.course-context,
 .course-browse {
-  margin-bottom: 24px;
+  margin-bottom: var(--sp-5);
+}
+/* Where this page is in the book, in one line: the path on the left and the
+   chapter's contents on the right. Opened, the contents take a line of their
+   own below, so they never cover the page. */
+.course-context {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-1) var(--sp-5);
+  margin-bottom: var(--sp-5);
+  font-size: var(--t-ui);
+  line-height: var(--lh-ui);
 }
 .course-breadcrumbs ol {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 20px;
+  gap: var(--sp-1) var(--sp-2);
   list-style: none;
   padding: 0;
-  margin: 0 0 12px;
-  font-size: 14px;
+  margin: 0;
 }
+/* The separator follows its item, so a path that wraps on a narrow page never
+   starts a line with one. */
+.course-breadcrumbs li:not(:last-child)::after {
+  content: '›';
+  margin-left: var(--sp-2);
+  color: var(--c-ink-3);
+}
+.course-context a {
+  color: var(--c-link);
+}
+.course-context a:hover,
+.course-index a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.chapter-contents[open] {
+  flex-basis: 100%;
+}
+.chapter-contents > summary {
+  color: var(--c-ink-2);
+}
+.chapter-contents ol {
+  list-style: decimal;
+  margin: var(--sp-2) 0 0;
+  padding: var(--sp-2) var(--sp-4) var(--sp-2) var(--sp-7);
+  border: var(--bw) solid var(--c-rule);
+  border-radius: var(--r-4);
+  background: var(--c-surface);
+}
+.chapter-contents li {
+  padding-block: 6px;
+}
+.chapter-contents [aria-current='page'] {
+  color: var(--c-ink);
+  font-weight: 700;
+}
+/* The index of the book. Chapters are cards in a grid that falls to one column
+   on a narrow page; an empty track is kept, so a single chapter does not
+   stretch across the whole width. */
 .course-index {
-  max-width: 900px;
+  max-width: var(--m-index);
 }
 .course-section {
-  margin-block: 24px 36px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
+  gap: 0 var(--sp-4);
+  align-items: start;
+  margin-block: var(--sp-5) var(--sp-7);
+}
+.course-section > h2,
+.course-section > p {
+  grid-column: 1 / -1;
 }
 .course-section > h2 {
-  font-size: 24px;
-  font-weight: 650;
+  font-size: var(--t-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  font-weight: var(--w-bold);
+}
+.course-section > h2 a,
+.course-chapter h3 a {
+  color: var(--c-ink);
+}
+.course-section > h2 a:hover,
+.course-chapter h3 a:hover {
+  color: var(--c-link);
+}
+.course-section > p {
+  max-width: var(--m-lesson);
+  margin-block: var(--sp-2) var(--sp-5);
+  line-height: var(--lh-body);
+  color: var(--c-ink-2);
 }
 .course-chapter {
-  margin-top: 24px;
-  padding: 20px;
-  border: 1px solid var(--c-rule);
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-width: 0;
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-5);
+  border: var(--bw) solid var(--c-rule);
+  border-radius: var(--r-5);
+  background: var(--c-surface);
+}
+.course-chapter-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--sp-1) var(--sp-3);
+  font-size: var(--t-caption);
+  line-height: var(--lh-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  color: var(--c-ink-3);
+}
+.course-chapter-number {
+  color: var(--c-link);
+  font-weight: var(--w-bold);
 }
 .course-chapter h3 {
-  font-size: 19px;
-  font-weight: 600;
+  font-size: var(--t-h3);
+  line-height: var(--lh-h3);
+  font-weight: 650;
 }
-.course-section p,
+.course-chapter > p {
+  margin: 0;
+  font-size: var(--t-ui);
+  line-height: 1.6;
+  color: var(--c-ink-2);
+}
 .lesson-connections p,
 .entry-diagnostic p {
   line-height: 1.65;
   margin-block: 12px;
 }
-.course-index a,
-.course-context a,
+.chapter-prerequisites a,
 .lesson-connections a,
+.course-unavailable a,
+.course-finish a,
 .entry-diagnostic a:not(.primary-button) {
   color: var(--c-link);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.chapter-lessons,
-.chapter-contents ol {
-  list-style: decimal;
-  padding-inline-start: 24px;
-  margin-top: 12px;
+/* Lessons as rows: number, title, and the reader's own marker at the end. */
+.chapter-lessons {
+  list-style: none;
+  counter-reset: lesson;
+  margin: var(--sp-1) 0 0;
+  padding: 0;
+  border-top: var(--bw) solid var(--c-rule);
 }
-.chapter-lessons li,
-.chapter-contents li {
-  padding-block: 7px;
+.chapter-lessons > li {
+  counter-increment: lesson;
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: var(--sp-2);
+  padding-block: 10px;
+  border-bottom: var(--bw) solid var(--c-rule);
 }
-.chapter-contents [aria-current='page'] {
-  font-weight: 700;
-  text-decoration-thickness: 2px;
+.chapter-lessons > li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.chapter-lessons > li::before {
+  content: counter(lesson);
+  font-family: var(--type-mono);
+  font-size: var(--t-meta);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-ink-3);
+}
+.chapter-lessons > li > a {
+  color: var(--c-ink);
+  font-weight: var(--w-medium);
+  line-height: 1.4;
+}
+.chapter-lessons > li > a:hover {
+  color: var(--c-link);
+}
+.lesson-done {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  color: var(--st-right);
 }
 .chapter-prerequisites {
-  font-size: 14px;
+  font-size: var(--t-ui);
   line-height: 1.65;
+  color: var(--c-ink-2);
 }
 .chapter-prerequisites ul,
 .lesson-definitions ul {
@@ -2426,7 +2872,10 @@ h1 {
   list-style: none;
 }
 .course-unavailable {
-  font-size: 14px;
+  grid-column: 2 / -1;
+  margin: var(--sp-1) 0 0;
+  font-size: var(--t-ui);
+  line-height: 1.5;
   color: var(--c-ink-2);
 }
 .course-browse > summary,
@@ -2434,24 +2883,100 @@ h1 {
 .entry-diagnostic > summary,
 .lesson-definitions > summary {
   cursor: pointer;
-  padding-block: 10px;
   font-weight: 600;
   line-height: 1.5;
 }
+.course-browse > summary,
+.entry-diagnostic > summary {
+  padding-block: 10px;
+}
+/* What to open next, above the contents of the book. */
+.course-resume {
+  display: grid;
+  justify-items: start;
+  gap: var(--sp-2);
+  max-width: var(--m-break);
+  margin-bottom: var(--sp-5);
+  padding: var(--sp-5);
+  border: var(--bw) solid var(--c-rule);
+  border-radius: var(--r-5);
+  background: var(--k-tone-wash);
+}
+.course-resume h2 {
+  font-size: var(--t-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  font-weight: var(--w-bold);
+}
+.course-resume p {
+  max-width: var(--m-lesson);
+  line-height: var(--lh-body);
+}
+.course-resume-place {
+  font-size: var(--t-ui);
+  color: var(--c-ink-2);
+}
+.course-resume .primary-button {
+  margin-top: var(--sp-2);
+}
+.course-resume-progress {
+  margin-top: var(--sp-2);
+  font-size: var(--t-meta);
+  color: var(--c-ink-3);
+}
+/* The lesson opens with the sentence that connects it to the last one. */
 .lesson-connections {
-  padding-block: 12px 20px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--c-rule);
+  display: grid;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-5);
+  border-bottom: var(--bw) solid var(--c-rule);
+}
+.lesson-connections .lesson-bridge {
+  margin: 0;
+  font-size: var(--t-lead);
+  line-height: var(--lh-lead);
+  text-wrap: pretty;
+}
+.lesson-definitions > summary {
+  font-size: var(--t-ui);
+  color: var(--c-ink-2);
+}
+.lesson-definitions li a {
+  display: inline-block;
+  padding: 3px var(--sp-3);
+  border: var(--bw) solid var(--c-rule);
+  border-radius: 999px;
+  font-size: var(--t-meta);
+  line-height: var(--lh-meta);
+  text-decoration: none;
+  color: var(--c-ink-2);
+}
+.lesson-definitions li a:hover {
+  border-color: var(--c-link);
+  color: var(--c-link);
+}
+.lesson-definitions ul {
+  gap: var(--sp-2);
 }
 .entry-diagnostic {
-  padding: 16px 20px;
-  border: 1px solid var(--c-rule);
-  border-radius: 8px;
-  margin-block: 20px;
+  max-width: var(--m-break);
+  padding: var(--sp-3) var(--sp-5);
+  border: var(--bw) solid var(--c-rule);
+  border-radius: var(--r-5);
+  margin-block: var(--sp-5);
 }
 .entry-diagnostic h2 {
   font-weight: 650;
   margin-block: 18px 8px;
+}
+/* Set from the left edge like the card around it, not centred like a drill. */
+.entry-diagnostic .exercise-prompt {
+  margin: 0;
+  text-align: start;
+  font-weight: var(--w-medium);
+}
+.entry-diagnostic .answer-grid {
+  margin: var(--sp-3) 0;
 }
 .diagnostic-actions {
   display: flex;
@@ -2481,23 +3006,23 @@ h1 {
   margin: 12px 20px 0 0;
 }
 .lesson-navigation a p {
-  font-size: 14px;
-  font-weight: 400;
+  font-size: var(--t-ui);
+  font-weight: var(--w-regular);
   line-height: 1.6;
-  margin-top: 8px;
+  margin-top: var(--sp-1);
   color: var(--c-ink-2);
 }
 @media (max-width: 600px) {
   .course-chapter,
+  .course-resume,
   .entry-diagnostic {
-    padding: 12px;
+    padding: var(--sp-4);
   }
   .lesson-navigation {
     grid-template-columns: minmax(0, 1fr);
   }
   .lesson-navigation a[rel='next'] {
     grid-column: 1;
-    text-align: left;
   }
 }
 .source-link {
@@ -2509,36 +3034,152 @@ h1 {
   border-bottom: 1px solid var(--c-link);
   padding: 3px 0;
 }
+/* The listening card: what to try, the lesson's own sounds, and the way into
+   the full instrument. It stands in the lesson column on a narrow page and
+   beside the text on a wide one (see .lesson-article). */
 .lesson-experiment {
-  align-self: start;
-  background: var(--c-surface-sunk);
-  border: 1px solid var(--c-rule);
-  border-radius: 12px;
-  padding: 25px;
+  display: grid;
+  gap: var(--sp-3);
+  align-content: start;
+  background: var(--c-surface);
+  border: var(--bw) solid var(--c-rule);
+  border-radius: var(--r-5);
+  padding: var(--sp-5);
   overflow-wrap: anywhere;
 }
-.lesson-experiment > svg {
-  margin: 30px 0 20px;
+.lesson-experiment > .eyebrow {
   color: var(--c-link);
 }
-.lesson-experiment h3 {
-  font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 14px;
+.lesson-experiment h2 {
+  font-size: var(--t-h3);
+  line-height: var(--lh-h3);
+  font-weight: 650;
 }
 .lesson-experiment p {
-  font-size: 16px;
-  line-height: 1.8;
+  font-size: var(--t-body);
+  line-height: 1.65;
   color: var(--c-ink-2);
 }
 .lesson-experiment .primary-button {
   width: 100%;
+  margin-top: 0;
   padding: 12px 10px;
 }
-.lesson-experiment .text-button {
+.lesson-listen {
+  display: grid;
+  gap: var(--sp-2);
+  padding-block: var(--sp-3);
+  border-block: var(--bw) solid var(--c-rule);
+}
+.lesson-listen ul {
+  display: grid;
+  gap: var(--sp-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.listen-button {
   display: flex;
-  justify-content: center;
-  margin: 13px auto 0;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--bw) solid var(--c-rule-strong);
+  border-radius: var(--r-4);
+  background: var(--c-surface-sunk);
+  color: var(--c-ink);
+  font-size: var(--t-ui);
+  line-height: 1.4;
+  text-align: left;
+}
+.listen-button > svg {
+  flex: none;
+  color: var(--c-link);
+}
+.listen-button:hover {
+  border-color: var(--c-link);
+  background: var(--k-tone-wash);
+}
+/* Sounding is said three ways: the icon changes, the caption below names the
+   example, and the border and wash change with it. */
+.listen-button[aria-pressed='true'] {
+  border-color: var(--c-link);
+  background: var(--k-tone-wash);
+  box-shadow: var(--ring-live);
+}
+.lesson-experiment .listen-status {
+  display: block;
+  min-height: 1.5em;
+  font-size: var(--t-meta);
+  line-height: var(--lh-meta);
+  color: var(--c-link);
+}
+/* A sound that could not start is said in the alert colour, and in words. */
+.lesson-experiment .listen-status.failed {
+  color: var(--c-alert);
+}
+.lesson-experiment .listen-note {
+  font-size: var(--t-meta);
+  line-height: var(--lh-meta);
+  color: var(--c-ink-3);
+}
+/* The lesson's task, repeated on the instrument it is done with. */
+.experiment-brief {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  max-width: var(--m-break);
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  border: var(--bw) solid var(--c-rule);
+  border-left: 3px solid var(--c-link);
+  border-radius: var(--r-1) var(--r-4) var(--r-4) var(--r-1);
+  background: var(--c-surface);
+  overflow-wrap: anywhere;
+}
+.experiment-brief-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--k-tone-wash);
+  color: var(--c-link);
+}
+.experiment-brief > div {
+  min-width: 0;
+}
+.experiment-brief h2 {
+  font-size: var(--t-caption);
+  line-height: var(--lh-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  font-weight: var(--w-bold);
+  color: var(--c-link);
+}
+.experiment-brief p {
+  margin: var(--sp-1) 0 var(--sp-2);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+}
+.experiment-brief-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-5);
+  font-size: var(--t-ui);
+}
+.experiment-brief-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding-block: var(--sp-1);
+  color: var(--c-link);
+}
+.experiment-brief-links a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 .search-field {
   display: flex;
@@ -2568,7 +3209,9 @@ h1 {
    Below 900px it falls under the question, still a <details>. */
 .lens-drill {
   display: grid;
-  grid-template-columns: min(var(--m-drill), 100%) minmax(220px, 300px);
+  /* The question column can shrink: a fixed 40rem beside the ledger needs
+     884px, which a 1024px window with the navigation docked does not have. */
+  grid-template-columns: minmax(0, var(--m-drill)) minmax(220px, 300px);
   gap: var(--sp-5);
   align-items: start;
 }
@@ -2673,16 +3316,36 @@ h1 {
   background: var(--st-wrong-wash);
   color: var(--st-wrong);
 }
+/* A topic with no scored question yet: say so, and offer its two other views. */
+.practice-unavailable {
+  display: grid;
+  gap: var(--sp-3);
+  max-width: var(--m-lesson);
+  padding: var(--sp-5);
+  border: var(--bw) solid var(--c-rule);
+  border-radius: var(--r-5);
+  background: var(--c-surface);
+  line-height: var(--lh-body);
+}
+.practice-unavailable-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-5);
+}
+.practice-unavailable-actions .primary-button {
+  margin-top: 0;
+}
 /* The ledger groups skills by their teaching topic; identifiers stay in links. */
 .drill-ledger {
   position: sticky;
-  top: var(--sp-4);
+  top: calc(var(--topbar-h) + var(--sp-4));
   min-width: 0;
   border: var(--bw) solid var(--c-rule);
   border-radius: var(--r-1);
   background: var(--c-surface);
   padding: var(--sp-4);
-  max-height: calc(100vh - var(--sp-6));
+  max-height: calc(100vh - var(--topbar-h) - var(--sp-6));
   overflow-y: auto;
 }
 .drill-ledger > summary {
@@ -2728,8 +3391,21 @@ h1 {
   margin: var(--sp-2) 0 var(--sp-4);
   color: var(--c-ink-2);
 }
+/* What the lesson is for, set apart before the explanation begins. */
 .lesson-goal {
-  margin-top: var(--sp-5);
+  padding: var(--sp-4) var(--sp-5);
+  border-left: 3px solid var(--c-link);
+  border-radius: var(--r-1) var(--r-4) var(--r-4) var(--r-1);
+  background: var(--k-tone-wash);
+}
+.lesson-goal h2 {
+  margin-bottom: var(--sp-2);
+  font-size: var(--t-caption);
+  line-height: var(--lh-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  font-weight: var(--w-bold);
+  color: var(--c-link);
 }
 .russian-note-name {
   font-style: italic;
@@ -2767,12 +3443,6 @@ h1 {
   margin-bottom: var(--sp-2);
 }
 @media (max-width: 1150px) {
-  .lesson-experiment {
-    max-width: none;
-  }
-  .lesson-experiment > svg {
-    margin: 20px 0;
-  }
   .export-row {
     align-items: flex-start;
     flex-direction: column;
@@ -2795,7 +3465,19 @@ h1 {
    question. It was already a <details>, so nothing has to be re-announced. */
 @media (max-width: 900px) {
   .lens-drill {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .drill-ledger {
+    position: static;
+    max-height: none;
+  }
+}
+/* The same step by the room the page actually has. The navigation is docked
+   from 768px and takes 190-420px, so between roughly 900 and 1200px of window
+   the two columns did not fit and the page scrolled sideways. */
+@container main (max-width: 56rem) {
+  .lens-drill {
+    grid-template-columns: minmax(0, 1fr);
   }
   .drill-ledger {
     position: static;
@@ -2875,9 +3557,9 @@ h1 {
   .note-card {
     display: flex;
   }
+  /* Smaller on a phone, so nine characters and the unit fit beside each other. */
   .frequency-input input {
-    font-size: 50px;
-    width: 6.6ch;
+    font-size: var(--t-h1);
   }
   .soft-badge {
     font-size: 11px;
@@ -3288,6 +3970,9 @@ h1 {
   min-inline-size: 0;
   position: relative;
   max-width: 100%;
+  /* The height follows the width through the inline aspect ratio, so the
+     percent-placed click rows stay on the lines when the box is clamped. */
+  height: auto;
   margin: 1rem auto;
 }
 .staff-position > .staff {
@@ -3366,7 +4051,8 @@ h1 {
   color: var(--c-ink-3);
 }
 .subject-title {
-  scroll-margin-block-start: var(--sp-4);
+  /* On top of the document's own scroll padding for the bar. */
+  scroll-margin-block-start: var(--sp-3);
   font-size: var(--t-h1);
   line-height: var(--lh-h1);
   letter-spacing: var(--ls-h1);
@@ -3376,8 +4062,13 @@ h1 {
   min-height: var(--subject-min);
   margin: 0;
 }
+/* The heading takes focus on every move so that the arrival is announced and
+   the next Tab starts from the top of the page. It is not a control, it is
+   never in the Tab order, and nothing can be done with it, so it draws no ring:
+   a box around the title after every click read as a rendering fault. */
 .subject-title:focus-visible {
-  outline-offset: var(--sp-1);
+  outline: none;
+  box-shadow: none;
 }
 .lens-rail {
   margin: var(--sp-3) 0 var(--sp-6);
@@ -3603,9 +4294,20 @@ h1 {
 .index-actions p {
   margin: 0;
 }
+/* A column: the definition, then each way out on a line of its own. The links
+   were adjacent inline boxes with nothing between them, so the permalink, the
+   source and the lesson link read as one run of text. */
 .term-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-1);
   padding: var(--sp-1) var(--sp-6) var(--sp-5);
   max-width: var(--m-prose);
+  overflow-wrap: anywhere;
+}
+.term-entry > .source-link {
+  margin-block: var(--sp-1);
 }
 .term-entry h2 {
   font-size: var(--t-h2);
@@ -3640,6 +4342,15 @@ h1 {
     border-bottom: var(--bw) solid var(--c-rule);
     padding-right: 0;
     padding-bottom: var(--sp-3);
+  }
+  /* Stacked, the list must leave room for the entry it opens: at 60vh the
+     definition started below the first screen and choosing a term seemed to
+     do nothing. */
+  .term-index ul {
+    max-height: 38vh;
+  }
+  .term-entry {
+    scroll-margin-block: var(--sp-1);
   }
   .term-entry {
     padding: var(--sp-4) 0 var(--sp-5);
@@ -3683,20 +4394,176 @@ h1 {
   color: var(--c-ink);
   margin: 0;
 }
-.lens-read > .text-button {
-  justify-self: start;
-}
-.lens-read .lesson-experiment {
-  margin: var(--sp-3) 0;
-  display: grid;
-  gap: var(--sp-3);
-  align-content: start;
-}
 .lesson-experiment-actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-3);
   align-items: center;
+}
+/* The index of the book is a page of cards, not a column of prose. */
+.lens-read.course-home {
+  display: block;
+}
+/* A lesson. One column of text, figures and questions, set from the left edge
+   so it lines up with the title above it. When the page has room for a second
+   column the listening card moves into it and stays in view for the whole
+   lesson: the sound sits beside the sentence that describes it.
+
+   Spacing is margins, not a row gap. The card spans every row of the grid, and
+   a gap would be added once per spanned row, including rows that hold nothing. */
+.lens-read.lesson-article {
+  grid-template-columns: minmax(0, var(--m-lesson));
+  column-gap: var(--sp-7);
+  row-gap: 0;
+}
+.lens-read.lesson-article > * {
+  grid-column: 1;
+  min-width: 0;
+}
+.lesson-article > * + * {
+  margin-top: var(--sp-5);
+}
+.lesson-article > h2,
+.lesson-article > .notation-reading {
+  margin-top: var(--sp-6);
+}
+.lesson-article > h2,
+.lesson-article .notation-reading > h2 {
+  font-size: var(--t-h3);
+  line-height: var(--lh-h3);
+  font-weight: var(--w-bold);
+  letter-spacing: var(--ls-h2);
+}
+.lesson-article > h2 + * {
+  margin-top: var(--sp-3);
+}
+.lesson-article > .source-link {
+  justify-self: start;
+}
+/* The walk-through. A question before the explanation, one example in
+   numbered steps after it, the confusion to avoid before the reader is asked,
+   and what to keep at the end. Sans throughout, so the guide reads as the
+   teacher's voice beside the serif explanation. */
+.lesson-question {
+  font-size: var(--t-lead);
+  line-height: var(--lh-lead);
+  font-weight: var(--w-medium);
+  text-wrap: pretty;
+}
+.lesson-question > span {
+  display: block;
+  margin-bottom: var(--sp-1);
+  font-size: var(--t-caption);
+  line-height: var(--lh-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  font-weight: var(--w-bold);
+  color: var(--c-ink-3);
+}
+.lesson-example,
+.lesson-takeaways {
+  margin-top: var(--sp-6);
+}
+.lesson-example > h2,
+.lesson-takeaways > h2 {
+  margin-bottom: var(--sp-3);
+  font-size: var(--t-h3);
+  line-height: var(--lh-h3);
+  font-weight: var(--w-bold);
+  letter-spacing: var(--ls-h2);
+}
+/* Numbered steps: the number is the marker, in the site's numeric voice. */
+.lesson-example ol {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+.lesson-example li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  column-gap: var(--sp-3);
+  line-height: var(--lh-body);
+}
+.lesson-example li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: var(--bw) solid var(--c-rule-strong);
+  border-radius: 50%;
+  font-family: var(--type-mono);
+  font-size: var(--t-meta);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-ink-2);
+}
+.lesson-mistake {
+  padding: var(--sp-4) var(--sp-5);
+  border-left: 3px solid var(--k-sign);
+  border-radius: var(--r-1) var(--r-4) var(--r-4) var(--r-1);
+  background: var(--k-sign-wash);
+}
+.lesson-mistake h2 {
+  margin-bottom: var(--sp-2);
+  font-size: var(--t-caption);
+  line-height: var(--lh-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  font-weight: var(--w-bold);
+  color: var(--k-sign);
+}
+.lesson-mistake p {
+  line-height: var(--lh-body);
+}
+.lesson-takeaways ul {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lesson-takeaways li {
+  position: relative;
+  padding-left: var(--sp-5);
+  line-height: var(--lh-body);
+}
+/* A drawn check, not a glyph: device fonts disagree about ✓. */
+.lesson-takeaways li::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0.45em;
+  width: 10px;
+  height: 5px;
+  border-left: var(--bw-2) solid var(--c-link);
+  border-bottom: var(--bw-2) solid var(--c-link);
+  transform: rotate(-45deg);
+}
+.lesson-experiment .listen-for {
+  font-size: var(--t-ui);
+  line-height: 1.6;
+  color: var(--c-ink);
+}
+@container main (min-width: 60rem) {
+  .lens-read.lesson-article {
+    grid-template-columns:
+      minmax(0, var(--m-lesson))
+      minmax(16rem, var(--m-aside));
+  }
+  .lens-read.lesson-article > .lesson-experiment {
+    grid-column: 2;
+    grid-row: 1 / span 40;
+    align-self: start;
+    position: sticky;
+    top: calc(var(--topbar-h) + var(--sp-4));
+    max-height: calc(100vh - var(--topbar-h) - var(--sp-6));
+    margin-top: 0;
+    overflow-y: auto;
+  }
 }
 
 /* The index: nineteen topics in reading order, grouped by what they are about,
@@ -3753,6 +4620,30 @@ h1 {
   border-block: var(--bw) solid var(--c-rule);
   padding-block: var(--sp-5);
   border-radius: var(--r-0);
+  /* A link to this passage lands it clear of the bar, with a little air. */
+  scroll-margin-block: var(--sp-1);
+}
+/* The question is set like the lesson around it, from the left edge, and its
+   answers fill the column. Centred text and shrink-wrapped buttons belonged
+   to the drill's card; here they left a column of buttons one word wide. */
+.inline-exercise .exercise-prompt {
+  margin: 0;
+  text-align: start;
+  font-size: var(--t-lead);
+  line-height: var(--lh-lead);
+  font-weight: var(--w-medium);
+}
+.inline-exercise > .answer-grid,
+.inline-exercise > .answer-feedback {
+  justify-self: stretch;
+  margin: 0;
+}
+/* The skip link's target takes focus by script and is not a control, so it
+   draws no ring around the whole page; the next Tab lands on a real control. */
+.main-content:focus,
+.main-content:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 /* The one place the site says how big it is: a count of what exists, never a
@@ -3772,6 +4663,14 @@ h1 {
 .notation-reading,
 .notation-response {
   min-width: 0;
+}
+/* Heading, commentary, figures and source as one spaced group. */
+.notation-reading {
+  display: grid;
+  gap: var(--sp-3);
+}
+.notation-reading > .source-link {
+  justify-self: start;
 }
 .notation-reading p,
 .notation-workbench p {
@@ -3979,4 +4878,83 @@ h1 {
 }
 .coaching-history h3 {
   margin-block: 1rem 0.4rem;
+}
+/* A lesson on paper: the text, the steps and the figures, without the controls
+   that only work on a screen. The chrome inks are mapped onto the score's own
+   paper and ink, which never flip with the theme, so a reader on the dark
+   theme does not print pale text and pale notes on white. */
+@media print {
+  :root,
+  :root[data-theme='dark'] {
+    color-scheme: light;
+    --c-ground: var(--s-paper);
+    --c-surface: var(--s-paper);
+    --c-surface-sunk: var(--s-paper);
+    --c-ink: var(--s-ink);
+    --c-ink-2: var(--s-ink);
+    --c-ink-3: var(--s-ink-faint);
+    --c-rule: var(--s-rule);
+    --c-rule-strong: var(--s-rule);
+    --c-link: var(--s-ink);
+    --k-tone-wash: var(--s-paper);
+    --k-sign-wash: var(--s-paper);
+    --k-sign: var(--s-ink);
+  }
+  :root[data-theme='dark'] .staff,
+  :root[data-theme='dark'] .notation-figure,
+  :root[data-theme='dark'] .notation-signature {
+    --notation-paper: var(--s-paper);
+    --notation-ink: var(--s-ink);
+    --notation-rule: var(--s-rule);
+  }
+  .lab-sidebar,
+  [data-slot='sidebar-gap'],
+  [data-slot='sidebar-container'],
+  .topbar,
+  .skip-link,
+  .lens-rail,
+  .course-context,
+  .local-data,
+  .lesson-listen,
+  .lesson-experiment-actions,
+  .lesson-progress,
+  .lesson-navigation,
+  .practice-hints,
+  .inline-exercise .text-button,
+  .experiment-brief-links {
+    display: none;
+  }
+  .main-content {
+    max-width: none;
+    padding: 0;
+  }
+  /* One column, in reading order; the listening card keeps its instruction. */
+  .lens-read.lesson-article {
+    display: block;
+  }
+  .lens-read.lesson-article > .lesson-experiment {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    margin-top: var(--sp-5);
+  }
+  .lesson-goal,
+  .lesson-mistake,
+  .lesson-example li,
+  .lesson-takeaways,
+  .formula,
+  .notation-figure-grid figure {
+    break-inside: avoid;
+  }
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+  /* A source is an address; on paper the address has to be printed. */
+  .source-link::after {
+    content: ' (' attr(href) ')';
+    font-size: var(--t-meta);
+    overflow-wrap: anywhere;
+  }
 }

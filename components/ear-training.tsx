@@ -11,7 +11,7 @@ import { localNumber, translator } from '@/lib/i18n';
 import { german } from '@/lib/german';
 import { count } from '@/lib/plural';
 import { intervalLabels } from '@/lib/notation';
-import { frequencyForMidi, noteName, type Wave } from '@/lib/music';
+import { frequencyForMidi, type Wave } from '@/lib/music';
 type Lang = import('@/lib/client-store').Lang;
 type PlaySequence = (
   frequencies: number[],
@@ -43,6 +43,24 @@ const quizIntervals = [
   },
   { de: german['Octave'], en: 'Octave', ru: 'Октава', step: 12, degree: 7 },
 ];
+
+/**
+ * The two notes of a question, spelled as the interval is named: a minor third
+ * above C is E♭, because C–D♯ is an augmented second, and a fifth above A♯ is
+ * E♯. A keyboard label knows sharps only and would name the wrong interval.
+ * Russian keeps the international labels this Sound-lab display already uses.
+ */
+export const playedIntervalLabels = (
+  root: number,
+  index: number,
+  lang: Lang,
+): string[] =>
+  intervalLabels(
+    root,
+    quizIntervals[index].step,
+    quizIntervals[index].degree,
+    lang === 'de' ? 'de' : 'en',
+  );
 
 /**
  * Hearing the distance between two notes, as an experiment on the play lens of
@@ -225,26 +243,21 @@ export function EarTraining({
                     quizIntervals[question.index].step
                       ? nt(
                           'Your choice is narrower than the played interval.',
-                          'Выбранный интервал уже прозвучавшего.',
+                          'Вы выбрали более узкий интервал, чем прозвучавший.',
                           'Deine Auswahl ist enger als das gespielte Intervall.',
                         )
                       : nt(
                           'Your choice is wider than the played interval.',
-                          'Выбранный интервал шире прозвучавшего.',
+                          'Вы выбрали более широкий интервал, чем прозвучавший.',
                           'Deine Auswahl ist weiter als das gespielte Intervall.',
                         ))[lang]
                   }
                 </span>
               )}
               <span className="answer-detail">
-                {lang === 'de'
-                  ? intervalLabels(
-                      question.root,
-                      quizIntervals[question.index].step,
-                      quizIntervals[question.index].degree,
-                      lang,
-                    ).join(' → ')
-                  : `${noteName(question.root)} → ${noteName(question.root + quizIntervals[question.index].step)}`}{' '}
+                {playedIntervalLabels(question.root, question.index, lang).join(
+                  ' → ',
+                )}{' '}
                 · {lang === 'de' ? 'a′' : 'A4'} ={' '}
                 {localNumber(question.reference, lang)} Hz
               </span>
@@ -287,7 +300,7 @@ export function EarTraining({
         )}{' '}
         {t(
           'Exercises use 12-tone equal temperament. Your chosen A4 is captured when each question starts.',
-          'Упражнения используют 12-ступенный равномерный строй. Выбранная A4 фиксируется в начале вопроса.',
+          'В упражнениях используется двенадцатиступенная равномерная темперация. Выбранная частота A4 фиксируется в начале каждого вопроса.',
         )}
       </p>
     </div>

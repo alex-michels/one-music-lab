@@ -225,8 +225,8 @@ export function Experiments({
                 <>
                   {' '}
                   {t(
-                    'Classical melodic minor raises degrees 6 and 7 going up; going down it uses natural minor. Blues here is a fixed-key model with a lowered fifth.',
-                    'В учебной классической мелодической гамме VI и VII ступени повышаются при движении вверх; вниз звучит натуральный минор. Блюзовая гамма здесь — модель с фиксированными высотами и пониженной V ступенью.',
+                    'Classical melodic minor raises degrees 6 and 7 going up; going down it uses natural minor. Blues here is a fixed-key model: the minor pentatonic with an added lowered fifth.',
+                    'В учебной классической мелодической гамме VI и VII ступени повышаются при движении вверх; вниз звучит натуральный минор. Блюзовая гамма здесь — модель с фиксированными высотами: минорная пентатоника с добавленной пониженной V ступенью.',
                   )}{' '}
                   <a href="https://musictheory.pugetsound.edu/mt21c/MinorScales.html">
                     {t('Minor scales: §3.1', 'Виды минора: §3.1')}

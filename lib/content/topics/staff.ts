@@ -27,7 +27,7 @@ const content: TopicBundle = {
   },
   lesson: {
     id: 'staff',
-    version: 1,
+    version: 2,
     scopeId: 'western-notation',
     prerequisites: [],
     locales: ['en', 'ru', 'de'],
@@ -54,27 +54,99 @@ const content: TopicBundle = {
     },
     paragraphs: [
       {
-        en: 'A staff is five parallel lines with four spaces between them, nine places in all. Lines and spaces are both counted from the bottom: the lowest line is the first line, the lowest space the first space. A note head sits on a line, crossed by it, or inside a space.',
-        ru: 'Нотный стан — пять параллельных линеек и четыре промежутка между ними, всего девять мест. И линейки, и промежутки считают снизу вверх: нижняя линия — первая линейка, нижний промежуток — первый промежуток. Головка ноты стоит либо на линейке, которая её пересекает, либо внутри промежутка.',
+        en: 'A staff is five parallel lines with four spaces between them, nine places in all. Lines and spaces are both counted from the bottom: the lowest line is the first line, the lowest space the first space. A note head sits either on a line, with the line running through its middle, or in a space between two lines.',
+        ru: 'Нотный стан — пять параллельных линеек и четыре промежутка между ними, всего девять мест. И линейки, и промежутки считают снизу вверх: нижняя линейка — первая, нижний промежуток — тоже первый. Головка ноты стоит либо на линейке, которая её пересекает, либо внутри промежутка.',
         de: 'Das Notensystem besteht aus fünf waagerechten Linien und vier Zwischenräumen, zusammen neun Plätzen. Beide werden von unten nach oben gezählt: die unterste Linie ist die erste Linie, der unterste Zwischenraum der erste Zwischenraum. Ein Notenkopf steht auf einer Linie, die ihn durchschneidet, oder in einem Zwischenraum.',
       },
       {
-        en: 'The places just above and below the staff bring the total to eleven before ledger lines are needed. Beyond them, short ledger lines continue the same alternation of lines and spaces: the next diatonic step does not always need another line. Notes are read left to right; vertically aligned notes sound together.',
-        ru: 'Места сразу над пятой линейкой и под первой дают всего одиннадцать позиций без добавочных линеек. Дальше чередование линеек и промежутков продолжается. Например, над скрипичным станом ля второй октавы стоит на первой добавочной линейке, си — в промежутке над ней, до третьей — на второй добавочной. Ноты читают слева направо; выстроенные по вертикали ноты звучат одновременно.',
-        de: 'Die Plätze unmittelbar über und unter dem System ergeben insgesamt elf Positionen ohne Hilfslinien. Außerhalb setzen kurze Hilfslinien den Wechsel von Linien und Zwischenräumen fort: Nicht jeder nächste diatonische Schritt braucht eine weitere Linie. Noten werden von links nach rechts gelesen; senkrecht ausgerichtete Noten erklingen gleichzeitig.',
+        en: 'The places just above and below the staff bring the total to eleven before ledger lines are needed. Beyond them, short ledger lines continue the same alternation of line and space, so only every second step needs a new line. Above a treble-clef staff, for example, A5 sits on the first ledger line, B5 in the space above it and C6 on the second ledger line. Notes are read left to right; vertically aligned notes sound together.',
+        ru: 'Места сразу над пятой линейкой и под первой дают всего одиннадцать позиций без добавочных линеек. Дальше то же чередование линеек и промежутков продолжают короткие добавочные линейки, поэтому новая линейка нужна только на каждом втором шаге. Например, над станом в скрипичном ключе ля второй октавы стоит на первой добавочной линейке, си — в промежутке над ней, до третьей — на второй добавочной. Ноты читают слева направо; выстроенные по вертикали ноты звучат одновременно.',
+        de: 'Die Plätze unmittelbar über und unter dem System ergeben insgesamt elf Positionen ohne Hilfslinien. Weiter außen setzen kurze Hilfslinien den Wechsel von Linie und Zwischenraum fort; nur jeder zweite Schritt braucht also eine neue Linie. Über dem System im Violinschlüssel steht zum Beispiel a″ auf der ersten Hilfslinie, h″ im Zwischenraum darüber und c‴ auf der zweiten Hilfslinie. Noten werden von links nach rechts gelesen; senkrecht ausgerichtete Noten erklingen gleichzeitig.',
         ruMarkup:
-          'Места сразу над пятой линейкой и под первой дают всего одиннадцать позиций без добавочных линеек. Дальше чередование линеек и промежутков продолжается. Например, над скрипичным станом [[ля]] второй октавы стоит на первой добавочной линейке, [[си]] — в промежутке над ней, [[до]] третьей — на второй добавочной. Ноты читают слева направо; выстроенные по вертикали ноты звучат одновременно.',
+          'Места сразу над пятой линейкой и под первой дают всего одиннадцать позиций без добавочных линеек. Дальше то же чередование линеек и промежутков продолжают короткие добавочные линейки, поэтому новая линейка нужна только на каждом втором шаге. Например, над станом в скрипичном ключе [[ля]] второй октавы стоит на первой добавочной линейке, [[си]] — в промежутке над ней, [[до]] третьей — на второй добавочной. Ноты читают слева направо; выстроенные по вертикали ноты звучат одновременно.',
       },
     ],
+    guide: {
+      question: {
+        en: 'Where exactly can a note sit on the staff, and how is it written when it lies above or below the five lines?',
+        ru: 'Где именно на нотном стане может стоять нота и как её записывают, если она выше или ниже пяти линеек?',
+        de: 'Wo genau kann eine Note im Notensystem stehen, und wie schreibt man sie, wenn sie über oder unter den fünf Linien liegt?',
+      },
+      example: [
+        {
+          en: 'Count the five lines from the bottom: 1, 2, 3, 4, 5. The four spaces between them are counted the same way: 1, 2, 3, 4.',
+          ru: 'Сосчитайте пять линеек снизу вверх: 1, 2, 3, 4, 5. Четыре промежутка между ними считают так же: 1, 2, 3, 4.',
+          de: 'Zähle die fünf Linien von unten nach oben: 1, 2, 3, 4, 5. Die vier Zwischenräume dazwischen zählst du genauso: 1, 2, 3, 4.',
+        },
+        {
+          en: 'A note head can sit on each line and in each space. That makes 5 + 4 = 9 places.',
+          ru: 'Головка ноты может стоять на каждой линейке и в каждом промежутке. Получается 5 + 4 = 9 мест.',
+          de: 'Ein Notenkopf kann auf jeder Linie und in jedem Zwischenraum stehen. Das ergibt 5 + 4 = 9 Plätze.',
+        },
+        {
+          en: 'Add the place just above the fifth line and the place just below the first: 9 + 2 = 11 places, still without a ledger line.',
+          ru: 'Прибавьте место сразу над пятой линейкой и место сразу под первой: 9 + 2 = 11 мест, пока без добавочных линеек.',
+          de: 'Nimm den Platz unmittelbar über der fünften Linie und den unmittelbar unter der ersten hinzu: 9 + 2 = 11 Plätze, noch ohne Hilfslinie.',
+        },
+        {
+          en: 'The next step up needs a short ledger line. Above a treble-clef staff, A5 sits on the first ledger line.',
+          ru: 'Для следующего шага вверх уже нужна короткая добавочная линейка. Над станом в скрипичном ключе ля второй октавы стоит на первой добавочной линейке.',
+          de: 'Der nächste Schritt nach oben braucht eine kurze Hilfslinie. Über dem System im Violinschlüssel steht a″ auf der ersten Hilfslinie.',
+          ruMarkup:
+            'Для следующего шага вверх уже нужна короткая добавочная линейка. Над станом в скрипичном ключе [[ля]] второй октавы стоит на первой добавочной линейке.',
+        },
+        {
+          en: 'Keep climbing: B5 goes in the space above that ledger line, C6 on the second ledger line. Line, space, line: only every second step needed a new line.',
+          ru: 'Идём дальше: си второй октавы стоит в промежутке над этой линейкой, до третьей — на второй добавочной. Линейка, промежуток, линейка: новая линейка понадобилась только на каждом втором шаге.',
+          de: 'Weiter hinauf: h″ steht im Zwischenraum über dieser Hilfslinie, c‴ auf der zweiten Hilfslinie. Linie, Zwischenraum, Linie: Nur jeder zweite Schritt brauchte eine neue Linie.',
+          ruMarkup:
+            'Идём дальше: [[си]] второй октавы стоит в промежутке над этой линейкой, [[до]] третьей — на второй добавочной. Линейка, промежуток, линейка: новая линейка понадобилась только на каждом втором шаге.',
+        },
+      ],
+      listen: {
+        en: 'The “One after another” button plays C4, then G4: on the staff such notes follow each other from left to right. “Together” plays the same two notes at once: on the staff they stand one above the other. Listen for exactly that difference.',
+        ru: 'Кнопка «По очереди» играет сначала до, затем соль первой октавы: на стане такие ноты идут друг за другом слева направо. «Одновременно» играет те же две ноты вместе: на стане они стоят одна над другой. Вслушайтесь именно в это различие.',
+        de: 'Die Schaltfläche „Nacheinander“ spielt c′, dann g′: Im Notensystem folgen solche Noten von links nach rechts aufeinander. „Zusammen“ spielt dieselben zwei Töne gleichzeitig: Im Notensystem stehen sie senkrecht übereinander. Achte auf genau diesen Unterschied.',
+        ruMarkup:
+          'Кнопка «По очереди» играет сначала [[до]], затем [[соль]] первой октавы: на стане такие ноты идут друг за другом слева направо. «Одновременно» играет те же две ноты вместе: на стане они стоят одна над другой. Вслушайтесь именно в это различие.',
+      },
+      mistake: {
+        en: '“On a line” does not mean resting on top of the line. The line runs through the middle of the note head, while a head lying between two lines is in a space. Look at the centre of the head: it marks the line or space, and with it the pitch.',
+        ru: '«На линейке» не значит, что головка ноты лежит сверху на линейке. Линейка проходит через середину головки, а головка между двумя линейками стоит в промежутке. Смотрите на центр головки: он указывает линейку или промежуток и тем самым высоту.',
+        de: '„Auf einer Linie“ heißt nicht, dass der Notenkopf oben auf der Linie liegt. Die Linie läuft mitten durch den Kopf, während ein Kopf zwischen zwei Linien in einem Zwischenraum steht. Achte auf die Mitte des Kopfes: Dort liest du die Linie oder den Zwischenraum ab und damit die Tonhöhe.',
+      },
+      takeaways: [
+        {
+          en: 'A staff has five lines and four spaces, and both are counted from the bottom.',
+          ru: 'На нотном стане пять линеек и четыре промежутка; и те и другие считают снизу вверх.',
+          de: 'Das Notensystem hat fünf Linien und vier Zwischenräume; beide zählt man von unten nach oben.',
+        },
+        {
+          en: 'A note head sits either on a line, with the line through its middle, or in a space between two lines.',
+          ru: 'Головка ноты стоит либо на линейке, которая проходит через её середину, либо в промежутке между двумя линейками.',
+          de: 'Ein Notenkopf steht entweder auf einer Linie, die mitten durch ihn läuft, oder in einem Zwischenraum zwischen zwei Linien.',
+        },
+        {
+          en: 'Nine places on the staff plus one just above and one just below make eleven; beyond them, short ledger lines continue the alternation of line and space.',
+          ru: 'Девять мест на стане и по одному сразу над ним и под ним дают одиннадцать; дальше чередование линеек и промежутков продолжают короткие добавочные линейки.',
+          de: 'Neun Plätze im System und je einer direkt darüber und darunter ergeben elf; weiter außen setzen kurze Hilfslinien den Wechsel von Linie und Zwischenraum fort.',
+        },
+        {
+          en: 'Notes are read from left to right; notes aligned vertically sound together.',
+          ru: 'Ноты читают слева направо; ноты, выстроенные по вертикали, звучат одновременно.',
+          de: 'Noten liest man von links nach rechts; senkrecht ausgerichtete Noten erklingen gleichzeitig.',
+        },
+      ],
+    },
     sourceId: 'source-038',
     experimentId: 'staff',
     reading: {
       pages: '1, 4–6',
       sourceId: 'source-017',
       text: {
-        en: 'Count five lines from the bottom, with four spaces between them. Ledger lines continue the same alternation. Read successive events from left to right; aligned notes in different voices share an onset. In the placement exercise, move one staff step at a time before naming the result.',
-        ru: 'Пять линеек считают снизу; между ними четыре промежутка. Добавочные линейки продолжают тот же порядок. Последовательность читают слева направо; вертикальное совмещение нот разных голосов показывает общее время вступления. В упражнении на постановку перемещайтесь по одной позиции стана и называйте результат.',
-        de: 'Die fünf Linien werden von unten gezählt; dazwischen liegen vier Zwischenräume. Hilfslinien setzen diese Folge fort. Zeitlich aufeinanderfolgende Ereignisse liest man von links nach rechts; senkrecht ausgerichtete Noten verschiedener Stimmen haben denselben Einsatz. Bewege die Note in der Setzübung jeweils um eine Linien- oder Zwischenraumposition.',
+        en: 'Count five lines from the bottom, with four spaces between them. Ledger lines continue the same alternation. Read successive events from left to right; notes of different voices that stand exactly one above the other begin together. In the “Place a note on the staff” panel, move the note one position at a time (line to space, space to line) and name it after each move.',
+        ru: 'Пять линеек считают снизу; между ними четыре промежутка. Добавочные линейки продолжают тот же порядок. Последовательность читают слева направо; ноты разных голосов, стоящие точно друг над другом, вступают одновременно. В блоке «Поставьте ноту на стан» сдвигайте ноту на одну позицию — с линейки в промежуток, из промежутка на линейку — и после каждого шага называйте её.',
+        de: 'Die fünf Linien werden von unten gezählt; dazwischen liegen vier Zwischenräume. Hilfslinien setzen diese Folge fort. Zeitlich aufeinanderfolgende Ereignisse liest man von links nach rechts; senkrecht ausgerichtete Noten verschiedener Stimmen setzen gleichzeitig ein. Bewege die Note unter „Eine Note ins System setzen“ jeweils um eine Position weiter – von der Linie in den Zwischenraum, vom Zwischenraum auf die Linie – und benenne sie nach jedem Schritt.',
       },
       assetIds: [],
     },
@@ -144,7 +216,7 @@ const content: TopicBundle = {
   concepts: [
     {
       id: 'Tablature',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -158,7 +230,7 @@ const content: TopicBundle = {
       },
       body: {
         en: 'Instrument-specific notation can show strings and frets rather than staff pitches. Read its tuning and legend; tablature is not one universal system.',
-        ru: 'Инструментальная запись может показывать струны и лады вместо высот на стане. Проверьте настройку и условные обозначения; табулатура — не единая универсальная система.',
+        ru: 'Инструментальная запись может показывать не высоты на стане, а струны и лады. Сначала выясните строй инструмента и условные обозначения; табулатура — не единая универсальная система.',
         de: 'Instrumentbezogene Notation kann Saiten und Bünde statt Tonhöhen im Liniensystem zeigen. Prüfe Stimmung und Zeichenerklärung; Tabulatur ist kein einheitliches Universalsystem.',
       },
       forwardModules: ['N05'],
@@ -166,7 +238,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Graphic notation',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -180,7 +252,7 @@ const content: TopicBundle = {
       },
       body: {
         en: 'A score may use shapes, spatial relationships or action instructions. Read its own legend; horizontal space means elapsed time only when specified. Some choices may deliberately remain open.',
-        ru: 'Партитура может использовать формы, пространственные отношения или инструкции действий. Читайте её условные обозначения: расстояние означает время только при соответствующем указании. Некоторые решения могут намеренно оставаться открытыми.',
+        ru: 'В партитуре могут использоваться графические фигуры, пространственные соотношения или указания к действиям. Читайте её собственные условные обозначения: расстояние по горизонтали означает время, только если это оговорено. Некоторые решения могут быть намеренно оставлены открытыми.',
         de: 'Eine Partitur kann Formen, räumliche Beziehungen oder Handlungsanweisungen verwenden. Lies ihre eigene Legende: horizontaler Abstand bedeutet nur bei entsprechender Festlegung verstrichene Zeit. Manche Entscheidungen bleiben absichtlich offen.',
       },
       forwardModules: ['N05'],
@@ -188,7 +260,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Why extend notation?',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -201,9 +273,9 @@ const content: TopicBundle = {
         de: 'Warum Notation erweitern?',
       },
       aliases: {
-        en: 'proportional notation; action notation; microtones; clusters; open score',
+        en: 'proportional notation; action notation; microtones; clusters; open form',
         ru: 'пропорциональная нотация; нотация действий; микроинтервалы; кластеры; открытая форма',
-        de: 'proportionale Notation; Aktionsschrift; Mikrointervalle; Cluster; offene Partitur',
+        de: 'proportionale Notation; Aktionsschrift; Mikrointervalle; Cluster; offene Form',
       },
       body: {
         en: 'A composer may need to indicate an action, a sound mass, pitches outside a conventional scale, or timing without a regular beat. Ordinary noteheads and barlines may then need additional signs or a different layout. A graphic score can specify some choices and leave others open. Its legend decides whether distance means elapsed time, gesture or something else; this is not a single replacement system for all music.',
@@ -216,7 +288,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Staff',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -230,8 +302,8 @@ const content: TopicBundle = {
       },
       body: {
         en: 'The staff is the set of five lines and four spaces on which pitches are written.',
-        ru: 'Нотный стан, или нотоносец, — пять линеек и четыре промежутка, на которых записываются высоты.',
-        de: 'Das Notensystem ist die Folge von fünf Linien und vier Zwischenräumen, auf denen Tonhöhen notiert werden.',
+        ru: 'Нотный стан, или нотоносец, — пять линеек и четыре промежутка между ними; ноты пишут на линейках и в промежутках.',
+        de: 'Das Notensystem besteht aus fünf Linien und vier Zwischenräumen; die Noten stehen auf den Linien und in den Zwischenräumen.',
       },
       sourceId: 'source-038',
     },
@@ -258,7 +330,7 @@ const content: TopicBundle = {
     },
     {
       id: 'Space',
-      version: 1,
+      version: 2,
       scopeId: 'western-notation',
       prerequisites: [],
       locales: ['en', 'ru', 'de'],
@@ -272,7 +344,7 @@ const content: TopicBundle = {
       },
       body: {
         en: 'A space is the gap between two neighbouring lines, and it carries a note head just as a line does.',
-        ru: 'Промежуток — расстояние между соседними линейками, и нота размещается на нём так же, как на линейке.',
+        ru: 'Промежуток — место между двумя соседними линейками; ноту в нём пишут так же, как на линейке.',
         de: 'Ein Zwischenraum liegt zwischen zwei benachbarten Notenlinien und trägt einen Notenkopf ebenso wie eine Linie.',
       },
       sourceId: 'source-038',

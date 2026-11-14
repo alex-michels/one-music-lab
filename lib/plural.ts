@@ -55,7 +55,7 @@ export const nouns = {
     ru: { one: 'аккорд', few: 'аккорда', many: 'аккордов' },
   },
   lessons: {
-    de: { one: 'Lektion', other: 'Lektionen' },
+    de: { one: 'kurze Lektion', other: 'kurze Lektionen' },
     en: { one: 'short lesson', other: 'short lessons' },
     ru: {
       one: 'короткий урок',
@@ -71,6 +71,8 @@ export const nouns = {
   octaves: {
     de: { one: 'Oktave', other: 'Oktaven' },
     en: { one: 'octave', other: 'octaves' },
+    // Accusative, unlike every other noun here: the count always follows «на»
+    // («на 1 октаву выше»), so a caller has to supply that preposition.
     ru: { one: 'октаву', few: 'октавы', many: 'октав' },
   },
   questions: {

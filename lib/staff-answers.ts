@@ -19,6 +19,10 @@ export function parseNoteName(
   lang: MusicLanguage,
 ): Pick<SpelledPitch, 'letter' | 'accidental'> | null {
   const normalized = normalizeNoteName(input);
+  // German has two names for A double-flat. The displayed one stays “Ases”;
+  // the more frequent “Asas” is the same spelled pitch, not an enharmonic one.
+  if (lang === 'de' && normalized === 'asas')
+    return { letter: 5, accidental: -2 };
   for (let letter = 0; letter < 7; letter++) {
     for (let accidental = -2; accidental <= 2; accidental++) {
       const name = pitchName({ letter, accidental, octave: 4, midi: 0 }, lang);

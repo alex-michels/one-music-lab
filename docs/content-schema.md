@@ -17,7 +17,7 @@ executing files supplied by learners. There is no MDX or user-content evaluator.
 | Record | Owns | Links |
 | --- | --- | --- |
 | Topic | Kind, permanent module/task assignments, prerequisites | Lessons, experiments, exercises, concepts |
-| Lesson | Localized title, goal/summary, paragraphs, formula, optional notation reading | Topic, primary source, experiment, reading sources/assets |
+| Lesson | Localized title, goal/summary, paragraphs, formula, guided walk-through, optional notation reading | Topic, primary source, experiment, reading sources/assets |
 | Experiment | Localized instructions and bounded sound/notation presets | Topic; existing laboratory engine |
 | Exercise | Generated rule label/engine, or diagnostic prompt, choices, answer and feedback | Topic, sources |
 | Concept | Stable identity, localized heading/definition/aliases, display order | Topic, optional primary/further sources, related topics, forward modules |
@@ -40,6 +40,27 @@ appropriate scope. Topic prerequisites follow existing chapter prerequisites
 in `lib/course.ts`; tests detect drift. The course continues to own section and
 chapter organization and connecting prose.
 
+## The guided walk-through
+
+Every lesson carries a `guide`, and the schema rejects one without it: the
+question it answers, one example in three to five steps, what to notice in its
+listening examples, one common confusion and three or four things to keep. It is
+how the lesson leads its reader, not a second source of facts. **A guide may only restate or apply what the same lesson's
+paragraphs, formula, reading text, experiment, exercises, feedback and
+definitions already say, or do plain arithmetic on their numbers.** A statement
+that would need a source of its own belongs in the lesson text with that source,
+not in the guide. Scope limits of the lesson («in equal temperament», «in this
+notation») carry over. The `listen` text describes exactly the sounds in
+`lib/lesson-listening.ts` for that topic. The three languages follow the same
+conventions as all lesson text (Russian traditional note names with `ruMarkup`,
+German H/B and du-form). The schema checks the shape; `tests/lesson-guides.test.mjs`
+checks that every lesson has a guide and its form. Whether a guide adds no fact
+is an editorial review, recorded in
+[content-review-2026-11.md](content-review-2026-11.md#guided-walk-throughs).
+
+Guides are exposed as `lessonGuides` beside the existing `lessons` view rather
+than inside it, so the lesson fingerprint below keeps meaning «the lesson text».
+
 ## Identities and revisions
 
 IDs are unique within each collection. A topic and its first lesson/experiment
@@ -52,7 +73,10 @@ regenerated from array position or title. Asset IDs identify existing figures.
 
 `schemaVersion: 1` identifies the format; `version: 1` is each migrated record's
 initial revision. Increase a record's version when its content or meaning
-changes, keeping its ID. A breaking format change needs a new supported schema
+changes, keeping its ID: once per pull request, however many edits it took, so
+a changed record stands exactly one above the base branch. A lesson's version
+rises when its walk-through changes; an asset's version rises when its
+description changes or when the figure it points to is engraved differently. A breaking format change needs a new supported schema
 version, explicit migration and compatibility tests. Unknown schema versions
 currently fail validation. These revisions are not learner progress or the
 readiness states of task 531.
@@ -98,6 +122,14 @@ reordering and changed presets. For an intentional later educational edit,
 review the textual diff and sources before updating its affected fingerprint;
 never blindly rebaseline failures. Existing musical/browser tests remain the
 behavioral evidence.
+
+Fingerprints updated since the migration are listed in the fixture's `reviewed`
+array with the date, the fingerprints concerned and the record of the review.
+The first entry is 2026-11-14: lessons, terms, programme, figures, references,
+rules and diagnostic changed with the corrections in
+[content-review-2026-11.md](content-review-2026-11.md), which gives the count
+of changed, added and removed values per view; source aliases, presets and the
+course are still the fingerprints of the baseline revision.
 
 This migration does not reverify sources or complete gate G. All imported
 Source records explicitly say `inherited-unverified`. Edition/locator values

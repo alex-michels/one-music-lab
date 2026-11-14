@@ -60,10 +60,10 @@ test('Localized authoring keeps searchable text separate from Russian typography
   });
   const text = terms.find((t) => t.title.en === 'Octave register').body;
   const clef = terms.find((t) => t.title.en === 'C clef').title;
-  expect(clef.ru).toBe('До-ключ');
+  expect(clef.ru).toBe('Ключ до');
   expect(noteTextParts(clef.ruMarkup)).toEqual([
-    { text: 'До', note: true },
-    { text: '-ключ', note: false },
+    { text: 'Ключ ', note: false },
+    { text: 'до', note: true },
   ]);
   expect(text.ru).toContain('от до до ближайшего си');
   expect(

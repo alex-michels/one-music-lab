@@ -2,6 +2,7 @@
 import {
   translator,
   localText,
+  localizedText,
   siteDescription,
   type LocalText,
   type Translate,
@@ -25,6 +26,11 @@ import {
 } from '@/lib/local-profile';
 import { ChordsLab, type ChordsLabSnapshot } from '@/components/chords-lab';
 import { CourseIndex, CourseNavigation } from '@/components/course-navigation';
+import { CourseMap } from '@/components/course-map';
+import { ExperimentBrief } from '@/components/experiment-brief';
+import { ThemeSwitch } from '@/components/theme-switch';
+import type { ListenPlan } from '@/lib/lesson-listening';
+import { lessonReadAt } from '@/lib/course-progress';
 import { collectionTitle, courseAddresses } from '@/lib/course';
 import { PlayLens } from '@/components/play-lens';
 import type { ExperimentSnapshot } from '@/components/experiments';
@@ -46,7 +52,6 @@ import {
   type RefObject,
 } from 'react';
 import {
-  ArrowUpRight,
   AudioLines,
   BookOpen,
   FlaskConical,
@@ -216,6 +221,11 @@ function SidebarResizer({
  * button, because a disabled button is a promise that someone is working on it.
  */
 const LENS_ORDER = ['read', 'play', 'drill', 'define'] as const;
+const areasLabel = localizedText(
+  'Areas of the site',
+  'Разделы сайта',
+  'Bereiche der Website',
+);
 
 function SubjectLine({
   route,
@@ -295,12 +305,20 @@ function Navigation({
   page,
   navigate,
   t,
+  lang,
+  topic,
+  recent,
   width,
   setWidth,
 }: {
   page: Page;
   navigate: (p: Page) => void;
   t: Translate;
+  lang: Lang;
+  /** The open lesson, so the course map can mark it in any of its four views. */
+  topic: string | null;
+  /** The lesson last read, which the map opens at when no lesson is open. */
+  recent: string | null;
   width: number;
   setWidth: (value: number) => void;
 }) {
@@ -330,11 +348,18 @@ function Navigation({
       )}
     >
       <SidebarHeader>
+        {/* The address stays the legacy `#lab`, which the prerendered markup is
+            checked for; the click is handled here, so the browser does not
+            also follow it and add a second history entry for the same page. */}
         <a
           href="#lab"
           className="brand"
           aria-label="One Music Lab"
-          onClick={() => navigate('lab')}
+          onClick={(event) => {
+            event.preventDefault();
+            navigate('lab');
+            setOpenMobile(false);
+          }}
         >
           <span className="brand-icon">
             <AudioLines size={25} strokeWidth={1.8} />
@@ -349,48 +374,39 @@ function Navigation({
         <div className="nav-label">
           {t('YOUR MUSIC WORKSPACE', 'МУЗЫКАЛЬНОЕ ПРОСТРАНСТВО')}
         </div>
-        <SidebarMenu>
-          {items.map(({ id, icon: Icon, label }) => (
-            <SidebarMenuItem key={id}>
-              <SidebarMenuButton
-                isActive={page === id}
-                onClick={() => {
-                  navigate(id);
-                  setOpenMobile(false);
-                }}
-                className="nav-item"
-              >
-                <Icon />
-                <span>{label}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+        {/* A landmark with a name, and the open area said as well as coloured:
+            the five entries were a bare list, so a screen reader could neither
+            jump to them nor tell which one the page belongs to. */}
+        <nav aria-label={areasLabel[lang]}>
+          <SidebarMenu>
+            {items.map(({ id, icon: Icon, label }) => (
+              <SidebarMenuItem key={id}>
+                <SidebarMenuButton
+                  isActive={page === id}
+                  aria-current={page === id ? 'page' : undefined}
+                  onClick={() => {
+                    navigate(id);
+                    setOpenMobile(false);
+                  }}
+                  className="nav-item"
+                >
+                  <Icon />
+                  <span>{label}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </nav>
         <div className="sidebar-line" />
-        <div className="nav-label">
-          {t('EXPLORE BY DOING', 'ОТ ТЕОРИИ К ОПЫТУ')}
-        </div>
-        <div className="sidebar-note">
-          <span className="little-orbit">
-            <Music2 size={19} />
-          </span>
-          <h3>{t('Make theory audible.', 'Услышать теорию.')}</h3>
-          <p>
-            {t(
-              'Every sound is a place to start.',
-              'Каждый звук — начало открытия.',
-            )}
-          </p>
-          <button
-            onClick={() => {
-              navigate('theory');
-              setOpenMobile(false);
-            }}
-          >
-            {t('Explore the foundations', 'Изучить основы')}
-            <ArrowUpRight size={16} />
-          </button>
-        </div>
+        {/* The book's contents and the reader's place in it, where a promotional
+            card used to be: the panel is on every page, so it is the one place
+            a table of contents is never more than a glance away. */}
+        <CourseMap
+          lang={lang}
+          topic={topic}
+          recent={recent}
+          onNavigate={() => setOpenMobile(false)}
+        />
       </SidebarContent>
       <SidebarFooter>
         <div className="sidebar-version">
@@ -487,7 +503,20 @@ function HomeSession({
       setWave(lesson.wave as Wave);
     }
   }
+  // The lesson last opened for reading, so the contents and the index can offer
+  // it again. It starts from the saved address and follows the reader through
+  // this visit; an instrument or a drill opened on its own is not a lesson read.
+  const [recentLesson, setRecentLesson] = useState<string | null>(() =>
+    lessonReadAt(initial.lastRoute),
+  );
+  const readingLesson = lessonReadAt(hashOf(route));
+  if (readingLesson && readingLesson !== recentLesson)
+    setRecentLesson(readingLesson);
   const audio = useRef<AudioEngine | null>(null);
+  // The generator's pitch as a ratio to the reference while the reference is
+  // being edited, with the frequency that ratio last produced; null once a
+  // frequency has been chosen directly.
+  const referenceRatio = useRef<{ ratio: number; hz: number } | null>(null);
   // Only persist a client snapshot, never the prerendered server defaults.
   useEffect(() => {
     if (!ready) return;
@@ -579,6 +608,8 @@ function HomeSession({
     return audio.current;
   }
   function setHz(hz: number) {
+    // A frequency chosen directly is a new pitch, not the old one re-tuned.
+    referenceRatio.current = null;
     if (Number.isFinite(hz)) setFrequency(Math.max(20, Math.min(20000, hz)));
   }
   async function toggle() {
@@ -625,6 +656,26 @@ function HomeSession({
       );
       throw new Error('Audio unavailable');
     }
+  }
+  /**
+   * A lesson's own example, started from its text. The plan already carries
+   * every number; this only adds the reader's volume. A failure is left to the
+   * card that asked: it says so beside the button that was pressed, so the same
+   * sentence is not repeated at the top of a long lesson, where it would be out
+   * of sight and announced a second time. Each example is bounded by its plan,
+   * and navigation, a hidden page and Escape silence it like any other sound.
+   */
+  async function playLessonExample(plan: ListenPlan) {
+    audio.current?.stopAll();
+    setPlaying(false);
+    setError(null);
+    await engine().preview(
+      plan.frequencies,
+      plan.wave,
+      (volume / 100) * plan.gain,
+      plan.duration,
+      plan.spacing,
+    );
   }
   async function download() {
     setExporting(true);
@@ -693,9 +744,28 @@ function HomeSession({
     setLabTab(preset ? 'notes' : 'tone');
     if (preset) setNotesState({ ...initialNotesLabState, ...preset });
   }
+  /**
+   * A new reference moves the generator with it, so the same note keeps
+   * sounding. The pitch is held as its ratio to the reference for as long as
+   * only the reference changes, not recomputed from the last frequency: the
+   * field reports every in-range keystroke, so typing 432 passes through 43,
+   * and a low note rescaled to that was clamped at 20 Hz and then rescaled
+   * again from the clamp, ending on a different note than it started on.
+   * The clamped frequency is remembered with the ratio, so the next keystroke
+   * still recognises the tone as the one this function set.
+   */
   function changeReference(value: number) {
     if (!Number.isFinite(value) || value < 20 || value > 2000) return;
-    setHz((frequency * value) / reference);
+    // The held ratio is only good for the frequency it produced. Anything
+    // else that moved the generator since — a lesson's preset loaded by an
+    // address, a restored profile — makes it a different note, and the ratio
+    // is taken afresh from what is sounding now.
+    const held = referenceRatio.current;
+    const ratio =
+      held && held.hz === frequency ? held.ratio : frequency / reference;
+    const hz = Math.max(20, Math.min(20000, ratio * value));
+    referenceRatio.current = { ratio, hz };
+    setFrequency(hz);
     setReference(value);
   }
   function changeTuning(value: Tuning) {
@@ -747,6 +817,16 @@ function HomeSession({
       localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
     } catch {}
   }, [lang, route.topic, route.collection]);
+  // Read when a move commits, without making a change of passage a move.
+  // Only a passage that is actually on the page counts: an address whose anchor
+  // names nothing would otherwise leave the reader wherever the last page was
+  // scrolled to, looking at the middle of a lesson they have just opened.
+  const arrivedAtPassage = useEffectEvent(
+    () =>
+      route.lens === 'read' &&
+      route.anchor !== null &&
+      document.getElementById(route.anchor) !== null,
+  );
   // A single-document app changes the page without telling anyone: aria-current
   // marks the new place but announces nothing at the moment of arrival, and
   // focus stays on a control that has just re-rendered.
@@ -761,7 +841,11 @@ function HomeSession({
     // this heading focused during a pointer click, so focus alone may not
     // scroll. Move the viewport explicitly as well as announcing the topic.
     headingRef.current?.focus({ preventScroll: true });
-    headingRef.current?.scrollIntoView({ block: 'start' });
+    // An address that names a rule is a request for that passage: the lesson
+    // scrolls to it itself, and scrolling the heading into view afterwards
+    // would take the reader back to the top of the page they asked to skip.
+    if (!arrivedAtPassage())
+      headingRef.current?.scrollIntoView({ block: 'start' });
   }, [route.lens, route.topic, route.collection]);
   // The first hashchange listener this app has had. Back and Forward move
   // through the site now instead of leaving it, and a pasted address is read
@@ -856,17 +940,37 @@ function HomeSession({
       labTab !== 'tone'
     )
       return;
+    /**
+     * Which keys a focused element needs for itself. One blanket rule used to
+     * switch every shortcut off whenever anything focusable held focus, and a
+     * clicked button keeps focus: after choosing a waveform or a key, A–K and
+     * the arrows stopped working although the page still advertised them, and
+     * Space did nothing while a slider had focus.
+     *
+     * Typing targets keep every key. A control that Space or an arrow would
+     * operate keeps that key and gives up the others.
+     */
+    // A control that has already used the key, such as the width handle with
+    // its arrows, has said so; the page does not act on the same press twice.
+    if (e.defaultPrevented) return;
     const target = e.target as HTMLElement;
+    const within = (selector: string) => target.closest(selector) !== null;
+    // A dialog owns the keyboard while it is open: the navigation sheet on a
+    // phone is one, and a note key pressed there must not sound the lab behind.
     if (
-      target.closest(
-        'a,summary,input,textarea,select,button,[role="slider"],[role="combobox"],[role="tab"],[contenteditable="true"]',
+      within(
+        'input:not([type="range"]),textarea,select,[role="combobox"],[role="listbox"],[role="option"],[role="menu"],[role="menuitem"],[role="dialog"],[contenteditable="true"]',
       )
     )
       return;
     if (e.code === 'Space') {
+      // Space presses a button, follows a tab and opens a disclosure.
+      if (within('a,summary,button,[role="tab"]')) return;
       e.preventDefault();
       void toggle();
     } else if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
+      // Arrows move a slider and walk a row of tabs.
+      if (within('input[type="range"],[role="slider"],[role="tab"]')) return;
       e.preventDefault();
       setHz(
         frequency + (e.code === 'ArrowRight' ? 1 : -1) * (e.shiftKey ? 0.1 : 1),
@@ -976,7 +1080,29 @@ function HomeSession({
       {/* Seven focusable things stand between the top of the document and the
           content, and <main id="main-content"> has been waiting here for one
           of these. */}
-      <a className="skip-link" href="#main-content">
+      {/* Handled here rather than followed: the site reads every fragment as
+          an address, and `#main-content` is not one, so following the link
+          used to send the reader to the Sound lab instead of past the menu. */}
+      <a
+        className="skip-link"
+        href="#main-content"
+        onClick={(event) => {
+          event.preventDefault();
+          const main = document.getElementById('main-content');
+          if (!main) return;
+          // Focusable only for this hand-over. Left in place, the attribute
+          // would make every click on a paragraph move focus to the region,
+          // and the next Tab would start from the top of the content again.
+          main.tabIndex = -1;
+          main.addEventListener(
+            'blur',
+            () => main.removeAttribute('tabindex'),
+            { once: true },
+          );
+          main.focus({ preventScroll: true });
+          main.scrollIntoView({ block: 'start' });
+        }}
+      >
         {t('Skip to content', 'К содержанию')}
       </a>
       <SidebarProvider
@@ -991,6 +1117,9 @@ function HomeSession({
           page={page}
           navigate={navigate}
           t={t}
+          lang={lang}
+          topic={route.collection ? null : route.topic}
+          recent={recentLesson}
           width={sidebarWidth}
           setWidth={sidebarWidthStore.set}
         />
@@ -1007,6 +1136,11 @@ function HomeSession({
               aria-label={t('Open navigation', 'Открыть навигацию')}
             />
             <div className="topbar-right">
+              <ThemeSwitch
+                lang={lang}
+                theme={theme}
+                setTheme={themeStore.set}
+              />
               <fieldset
                 className="language-switch"
                 aria-label={t('Language', 'Язык')}
@@ -1063,7 +1197,10 @@ function HomeSession({
               headingRef={headingRef}
             />
             <CourseNavigation route={route} />
-            <LocalData lang={lang} onRestore={restore} />
+            {/* The lesson's task, on the instrument it is done with. */}
+            {!route.collection && (page === 'lab' || page === 'chords') && (
+              <ExperimentBrief topic={route.topic} lang={lang} />
+            )}
             {route.collection ? (
               <CourseIndex route={route} />
             ) : page === 'lab' ? (
@@ -1119,9 +1256,11 @@ function HomeSession({
               <Theory
                 lang={lang}
                 lessonId={lessonId}
-                setLessonId={setLessonId}
                 openLab={openLab}
                 anchor={route.anchor}
+                recent={recentLesson}
+                listen={playLessonExample}
+                stopSound={stopSound}
               />
             ) : page === 'practice' ? (
               <Practice lang={lang} topic={route.topic} />
@@ -1137,6 +1276,9 @@ function HomeSession({
                 anchor={route.anchor}
               />
             )}
+            {/* Saved work and backups close every page instead of standing
+                between its title and its content. */}
+            <LocalData lang={lang} onRestore={restore} />
           </main>
         </div>
       </SidebarProvider>

@@ -221,7 +221,6 @@ test('Lesson navigation is absent from the index and unknown lesson IDs', async 
       lang: 'en',
       lessonId,
       anchor: null,
-      setLessonId: vi.fn(),
       openLab: vi.fn(),
     });
     expect(container.querySelector('.lesson-navigation')).toBeNull();
@@ -253,12 +252,11 @@ test('The lesson experiment heading remains readable on its card in both themes'
           lang,
           lessonId: 'staff',
           anchor: null,
-          setLessonId: vi.fn(),
           openLab: vi.fn(),
         });
         const card = container.querySelector('.lesson-experiment');
         const [high, low] = [
-          luminance(getComputedStyle(card.querySelector('h3')).color),
+          luminance(getComputedStyle(card.querySelector('h2')).color),
           luminance(getComputedStyle(card).backgroundColor),
         ].sort((a, b) => b - a);
         expect((high + 0.05) / (low + 0.05)).toBeGreaterThanOrEqual(4.5);

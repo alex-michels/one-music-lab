@@ -97,7 +97,7 @@ generator/figure validation is recorded separately, not inferred from a name.
 | NA09 | 4 | Covered | P “Instruments and clefs”; OMT “Clefs and Ranges” and VSL Academy “Notation” sections independently confirm bassoon/trombone tenor-clef practice. Both VSL sources are available from the reference entry; N03 retains the fluency course. |
 | NA10 | 4, 6 | Covered | P “Keyboard and organ staves”; `grand-staff`, `organ-staves`; explicit three-staff organ/pedal convention and cross-staff exceptions. |
 | NA11 | 5–6 | Covered | P `clefs`/“Ottava”, W `ottava`; bracket span and octave-modifying clef figures described separately. |
-| NA12 | 1–2 | Covered | L `note-names`, N localized names, E `accidental-name`. |
+| NA12 | 1–2 | Covered | L `note-names`, N localized names, E `accidental-name`. A natural note is asked for through its neighbour in the series and is never printed in its own question. |
 | NA13 | 2 | Deferred from lessons | Optional P “Pitch-name systems” / existing “Octave notation” reference only. No cross-language naming quiz. |
 | NA14 | 2 | Covered | L `note-names`; octave repeats a name and, in the stated model, doubles frequency. |
 | NA15 | 2, 6 | Covered, bounded | L `note-names`, N nine-register naming range, Notes octave selector and E `octave-region`. The piano's incomplete end registers do not define register boundaries. |
@@ -105,9 +105,9 @@ generator/figure validation is recorded separately, not inferred from a name.
 | NA17 | 2, 6 | Covered | P `note-names`: 88-key compass versus register; no claim that the piano bounds music. |
 | NA18 | 6–9 | Covered | L/P `accidental-signs`: five signs relative to the natural; E naming and W signature replacement. |
 | NA19 | 6–8 | Covered | L/P `accidental-scope`: signature versus local accidental, separate German/Russian terminology; W. |
-| NA20 | 7–8 | Covered | T contextual scope items and W sequence resolver; `tests/notation-contexts.test.mjs` and `tests/notation-workbench.test.mjs` verify ties, re-attacks, same-octave limits, signatures and replacement of double signs. Feedback distinguishes a new attack from a tied continuation. |
+| NA20 | 7–8 | Covered | T contextual scope items and W sequence resolver; `tests/notation-contexts.test.mjs` and `tests/notation-workbench.test.mjs` verify ties, re-attacks, same-octave limits, signatures and replacement of double signs. Feedback distinguishes a new attack from a tied continuation, and a sign read from another octave of the same letter has its own answer (`carried-the-sign-to-another-octave`). |
 | NA21 | 7 | Covered | L/P signature scope, all octaves until replaced; W `underSignature`, signature examples. |
-| NA22 | 8–9 | Covered | L/P replacement rather than addition; natural restores the natural form. Modern single-sign replacement is taught instead of requiring historical natural-plus-sign combinations. |
+| NA22 | 8–9 | Covered | L/P replacement rather than addition; natural restores the natural form. Modern single-sign replacement is taught instead of requiring historical natural-plus-sign combinations. The `accidental-replacement` figure engraves the double sharp as the croix that the answer labels print. |
 | NA23 | 8 | Covered | L German accidental lesson, `lib/german.ts`, N names: productive -is/-isis forms. |
 | NA24 | 8–9 | Covered | German lesson/reference exceptions Es/As/B/Heses and Ases/Asas; existing S34 verification retained. |
 | NA25 | 9 | Covered | P sign placement; staff exercise marks and original figures do not extend ledger lines through accidentals. |
@@ -119,16 +119,16 @@ generator/figure validation is recorded separately, not inferred from a name.
 | NA31 | 11–12 | Covered | P duration sequence, F note/rest 1–128 figures; T `value-identification`. |
 | NA32 | 11 | Covered | P “Stem direction”, `stem-directions`; attachment, middle-line convention and polyphonic exceptions. |
 | NA33 | 11–13 | Covered | L/P `beat-division`; beam/flag equivalence and beat visibility; F `beamed-mixed`. |
-| NA34 | 12–13 | Covered, unscored | P captions for `beamed-mixed`/`beamed-syllables`; T `beaming-review`. Historical syllable grouping is contextual, not a modern universal rule. |
+| NA34 | 12–13 | Covered, unscored | P captions for `beamed-mixed`/`beamed-syllables`; T `beaming-review`, whose unscored rubric describes only the figure drawn. Historical syllable grouping is contextual, not a modern universal rule. |
 | NA35 | 13 | Covered | L `dots-ties`, dotted figure, E `dotted-value`; the unit is stated. |
 | NA36 | 13 | Covered | Double-dot explanation/figure and E arithmetic. |
 | NA37 | 13–14 | Covered | Exact fraction oracle in `tests/notation-contexts.test.mjs` covers notes and rests that fit, exactly fill or overflow a stated remaining bar duration. Fit is explicitly distinct from preferred engraving. |
 | NA38 | 14 | Covered | L/P explicit 3:2 definition, triplet example, E `tuplet`. |
-| NA39 | 14 | Covered | `tuplet-mixed`: the tests independently read MEI durations for subdivisions, rests, ties and the complete scaled span. |
+| NA39 | 14 | Covered | `tuplet-mixed`: the tests independently read MEI durations for subdivisions, rests, ties and the complete scaled span. Each `tuplet-mixed` and `tuplet-13-12` question offers the unscaled written value as its diagnosed misreading; no other option is longer than the figure's bar. |
 | NA40 | 14–15 | Covered, explicit ratios | T asks 3:2, 5:4, 6:4, 7:4, 7:8 and 9:8–12:8. The independent duration oracle checks the stated ratio; the numeral alone does not determine duration. |
 | NA41 | 15 | Covered | P n:m explanation and `tuplet-13-12` caption/figure. No longer represented solely by the words “13:12”. |
-| NA42 | 15 | Covered, unscored | P duplet/quartole/octole references and figures; compare the stated span/ratio without imposing one convention. |
-| NA43 | 16 | Covered | Cross-bar tie items ask each allocated portion and the total duration; tests compare MEI per-bar sums and the sounding total. |
+| NA42 | 15 | Covered, unscored | P duplet/quartole/octole references and figures. Each figure prints its 3/8 bar, one beam and its ratio (2:3, 4:3, 8:6), and the unscored rubric names only the figure drawn; compare the stated span/ratio without imposing one convention. |
+| NA43 | 16 | Covered | Cross-bar tie items ask each allocated portion and the total duration; tests compare MEI per-bar sums and the sounding total. The figure fills each 3/4 bar with two quarter rests beside the tied quarter. |
 | NA44 | 16, 28–29 | Covered | L/P tie versus articulation slur versus phrase grouping; no rule that every repeated pitch under any curve is a tie. |
 | NA45 | 16–17 | Covered | P rest figures and T `value-identification`; corresponding silent durations. |
 | NA46 | 17 | Covered, scoped | Explicit whole-bar-rest examples in 3/4 and 6/8; consult meter rather than assuming four quarter beats. Large-meter engraving may use a breve-rest form. |
@@ -136,12 +136,12 @@ generator/figure validation is recorded separately, not inferred from a name.
 | NA48 | 17 | Covered in reference | P “Historical multi-measure rests” / “Multi-measure rest”; `historical-multirests`; modern number versus older combined signs. |
 | NA49 | 7, 16, 18 | Covered, support only | Barline and bar references; no claim to teach the whole theory of meter. |
 | NA50 | 18 | Covered | L `repeats`, double/final bar references and original navigation figures. |
-| NA51 | 18 | Covered | `repeat-implicit` and explicit-repeat route items are checked against actual engraved signs and expected traversal. Shared-boundary meaning is explained in P. |
+| NA51 | 18 | Covered | `repeat-implicit` and explicit-repeat route items are checked against actual engraved signs and expected traversal. Every route question (NA51–NA54) states only a neutral condition; the bar-by-bar convention appears in the explanation after the answer. Shared-boundary meaning is explained in P. |
 | NA52 | 18 | Covered | P `repeat-volta` caption, L first/second endings; T route practice. |
 | NA53 | 19 | Covered, scoped | D.C./D.S. al Fine/al Coda routes are tested against actual figure signs and explicit traversal conventions. Historical fermata-as-end-marker usage is not imposed on modern scores. |
 | NA54 | 20 | Covered | P Simile/Segue and `repeat-abbreviation`; distinguish continued manner from an instruction to repeat an exact measure. |
 | NA55 | 20 | Covered in reference | P tremolo, `tremolo-two`; measured/unmeasured distinction without a universal speed. |
-| NA56 | 19 | Covered, recognition only | Trill, upper/lower mordent, turn, slashed/unslashed grace, after-grace, slide and arpeggio; acciaccatura modern/historical meanings distinguished. Qualified localized names, no universal realization. |
+| NA56 | 19 | Covered, recognition only | Trill, upper/lower mordent, turn, slashed/unslashed grace, after-grace, slide and arpeggio; acciaccatura modern/historical meanings distinguished; in the unscored rubric that remark follows the slashed grace only. Qualified localized names, no universal realization. |
 | NA57 | 19 | Deferred | Period-/instrument-/edition-specific realization is not automatically graded. No textbook realizations or score extracts copied. |
 | NA58 | 20–21 | Covered as stub | P Tablature plus N05 forward link; no claim to teach all historical tablatures. |
 | NA59 | 21 | Covered as stub | P Figured bass plus H04 forward link and Chords relation; no complete realization course. |
@@ -155,8 +155,8 @@ generator/figure validation is recorded separately, not inferred from a name.
 | NA67 | 25 | Covered, scoped | Fermata suspends regular timing over its event or boundary; no fixed multiplier. `tests/notation-contexts.test.mjs` validates contextual discussions and figure families. |
 | NA68 | 25–26 | Covered, bounded | Metronome arithmetic is checked in every locale for all four printed note units and positive, distinct options. P “Metronome history” cites Blood’s “Metronome Marks” distinction between development, commercialization and disputed priority; the unverified litigation story is not taught. |
 | NA69 | 26 | Covered | Relative pppp–ffff ladder, bounded soft/strong examples; no calibrated sound-pressure claim. |
-| NA70 | 26 | Covered | fp/sfz/rfz distinctions and `dynamic-fp`; tested unscored interpretation asks about onset, level and context without imposing a unique gain curve. |
-| NA71 | 27–28 | Covered | Hairpin span, cresc./decresc./dim. and gradual qualifiers; tests verify the actual hairpin and the unscored comparison rubric. |
+| NA70 | 26 | Covered | fp/sfz/rfz distinctions and `dynamic-fp`; the tested unscored question and rubric are keyed to the figure drawn and under `dynamic-fp` name fp, sfz and rfz only, asking about onset, level and context without imposing a unique gain curve. |
+| NA71 | 27–28 | Covered | Hairpin span, cresc./decresc./dim. and gradual qualifiers; under `dynamic-hairpin` the unscored question asks where the p–f change begins and ends, and tests verify the actual hairpin and that question and rubric name only the marks the figure prints. |
 | NA72 | 27–28 | Covered, contextual | Original character groups link the read Lehrklänge and Dolmetsch entries, including con passione, dolente, secco and tumultuoso. These are contextual descriptions, not numerical tempo/dynamic settings. |
 | NA73 | 28 | Covered, contextual | Current Dolmetsch dictionary and tempo/general-marking tables support mancando and the other subsiding directions. The reference distinguishes lexical fading from possible tempo relaxation and preserves the historical Wolf source as an additional link. |
 | NA74 | 28–29 | Covered, scoped | Modern dot/wedge distinction without numeric durations; unsupported universal “before 1850” statement removed from lessons. |
@@ -234,8 +234,20 @@ and the Workers/static builds. The results and measurement limits follow.
 
 `tests/notation-feedback.test.mjs` protects the in-bar replacement regression,
 key-signature/tie feedback, nearby duration distractors, positive metronome
-options and answer-order independence. The in-bar test failed before the fix
-with `carried-the-sign-too-far` on a same-bar double-sharp replacement.
+options, the grammar of the metronome explanation (one click in the singular,
+the contrast with a quarter only when the unit is not one), the level-one
+excerpt's answer position and neighbour tags, the octave-scope diagnosis (only
+the natural borrowed from the other octave, in three languages), and
+answer-order independence.
+The in-bar test failed before the fix with `carried-the-sign-too-far` on a
+same-bar double-sharp replacement. `tests/notation-contexts.test.mjs` also
+protects the croix of the double sharp, the printed ratio, 3/8 bar and beam of
+the duplet, quartole and octole, the tuplet-context options, the engraved rests
+of the cross-bar tie, the per-figure beaming and dynamics rubrics, the
+acciaccatura remark and the diagnosis of a sign carried over a barline in a
+mixed excerpt. `tests/notation-programme.test.mjs` protects the neutral
+repeat-route question, and `tests/exercises.test.mjs` the natural-note
+question.
 
 Review the reading/reference lenses in EN/RU/DE, search aliases, follow
 existing subject links and future-module document links, and inspect every

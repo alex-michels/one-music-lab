@@ -205,7 +205,6 @@ test('Inline lesson hints also schedule practice without scoring an open rubric'
     await mount(Theory, {
       lang: 'en',
       lessonId: ruleTopic[rule],
-      setLessonId: vi.fn(),
       openLab: vi.fn(),
       anchor: rule,
     });
@@ -262,7 +261,6 @@ test('Inline multipart feedback preserves individual answers and records one com
   await mount(Theory, {
     lang: 'en',
     lessonId: ruleTopic[rule],
-    setLessonId: vi.fn(),
     openLab: vi.fn(),
     anchor: rule,
   });

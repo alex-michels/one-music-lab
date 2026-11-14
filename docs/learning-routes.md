@@ -8,6 +8,12 @@ of its separate educational topic IDs. Public launch remains a separate decision
 
 ## Reading and exploring
 
+> Since 2026-11-14 the same structure is also shown as a course map in the
+> navigation panel, the index opens with the lesson to continue, chapters are
+> numbered cards with the reader's own markers, and the lesson page was
+> reordered. [Learning shell](learning-shell.md) describes those changes; the
+> order, addresses and rules below are unchanged.
+
 Open **Read** to see the section and chapter contents. Each chapter explains its
 goal, links to prerequisite lessons and lists its lessons in teaching order.
 The optional **Find a starting point** check can suggest an explanation to revisit;
@@ -76,7 +82,9 @@ an account. This extends the existing fragment routing; server-rendered topic
 paths, content splitting and the rest of №533 remain separate requirements.
 
 Contents use native details/summary, ordered lists and links. Current lessons use
-`aria-current`; navigation focuses and scrolls the topic heading into view. Text
+`aria-current`; navigation focuses and scrolls the topic heading into view,
+except on arrival at a lesson passage named in the address, which stays in view
+instead (see the [learning shell](learning-shell.md)). Text
 wraps, including long RU/DE chapter names. Mobile lesson navigation uses one
 column. Diagnostic feedback uses an output status and never advances on a timer.
 No audio, microphone, uploads, network requests, analytics or persistent storage

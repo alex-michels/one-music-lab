@@ -87,14 +87,14 @@ export const notationExamples = {
     spacing: 1 / 3,
   },
   sustained: {
-    label: b('Full-length tones', 'Тоны полной длительности'),
+    label: b('Full-length tones', 'Звуки полной длительности'),
     group: 'articulation',
     midis: [60, 62, 64, 65],
     length: 1,
     spacing: 1,
   },
   detached: {
-    label: b('Short detached tones', 'Короткие раздельные тоны'),
+    label: b('Short detached tones', 'Короткие отрывистые звуки'),
     group: 'articulation',
     midis: [60, 62, 64, 65],
     length: 0.25,

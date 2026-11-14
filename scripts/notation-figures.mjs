@@ -16,7 +16,6 @@ figures['double-dotted'] = note(4, 'dots="2"') + note(16);
 figures.beamed = `<beam>${note(8)}${note(8)}</beam>`;
 figures.flagged = note(8) + note(8);
 figures.triplet = `<tuplet num="3" numbase="2">${note(8).repeat(3)}</tuplet>`;
-figures.duplet = `<tuplet num="2" numbase="3">${note(8).repeat(2)}</tuplet>`;
 figures.tied = note(4, 'tie="i"') + note(4, 'tie="t"');
 figures.detached = note(4, 'artic="stacc"').repeat(4);
 figures.tenuto = note(4, 'artic="ten"').repeat(4);
@@ -115,7 +114,9 @@ register(
 );
 register(
   'accidental-replacement',
-  pitched('f', 4, 4, 'accid="ss"') +
+  // "x" is the croix the lessons and the answer labels print (F𝄪); "ss" would
+  // engrave two sharp signs side by side, a sign nothing here teaches.
+  pitched('f', 4, 4, 'accid="x"') +
     pitched('f', 4, 4, 'accid="s"') +
     pitched('f', 4, 2, 'accid.ges="s"'),
   { meterVisible: true },
@@ -158,6 +159,14 @@ register(
   `<tuplet num="13" numbase="12" num.format="ratio"><beam>${note(16).repeat(13)}</beam></tuplet>`,
   { meter: [3, 4], meterVisible: true },
 );
+// Like its two siblings, the duplet prints its ratio and its 3/8 bar: the
+// exercise calls the division explicit and asks for the ratio to be read, and
+// a bare "2" over an unmetred bar left both to be inferred.
+register(
+  'duplet',
+  `<tuplet num="2" numbase="3" num.format="ratio"><beam>${note(8).repeat(2)}</beam></tuplet>`,
+  { meter: [3, 8], meterVisible: true },
+);
 register(
   'quartole',
   `<tuplet num="4" numbase="3" num.format="ratio"><beam>${note(8).repeat(4)}</beam></tuplet>`,
@@ -174,8 +183,9 @@ register('dotted-rest', '<rest dur="4" dots="1"/>' + note(8), {
 });
 register(
   'cross-bar-tie',
-  measure('<rest dur="2"/>' + note(4, 'tie="i"'), 1) +
-    measure(note(4, 'tie="t"') + '<rest dur="2"/>', 2),
+  // Two quarter rests, not a half rest: in 3/4 the rests show the beats.
+  measure('<rest dur="4"/><rest dur="4"/>' + note(4, 'tie="i"'), 1) +
+    measure(note(4, 'tie="t"') + '<rest dur="4"/><rest dur="4"/>', 2),
   { section: true, meter: [3, 4], meterVisible: true },
 );
 register('historical-multirests', '<multiRest num="7" block="false"/>', {
@@ -336,11 +346,7 @@ export function figureScore(id) {
   const layout = layouts[id] ?? {};
   const meter =
     layout.meter ??
-    (id === 'whole-bar-3'
-      ? [3, 4]
-      : id === 'whole-bar-6' || id === 'duplet'
-        ? [6, 8]
-        : [4, 4]);
+    (id === 'whole-bar-3' ? [3, 4] : id === 'whole-bar-6' ? [6, 8] : [4, 4]);
   const base = id.split('-')[0];
   const ornament = ['trill', 'mordent', 'turn'].includes(base)
     ? `<${base} staff="1" startid="#n1"${base === 'mordent' ? ' form="lower"' : ''}/>`

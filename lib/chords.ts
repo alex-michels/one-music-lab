@@ -133,7 +133,7 @@ export const chordQualities = {
   ),
   ninth: quality(
     'Dominant ninth type',
-    'Малый мажорный нонаккорд',
+    'Малый мажорный септаккорд с большой ноной',
     '9',
     [0, 4, 7, 10, 14],
     [0, 2, 4, 6, 8],
@@ -141,7 +141,7 @@ export const chordQualities = {
   ),
   maj9: quality(
     'Major ninth',
-    'Большой мажорный нонаккорд',
+    'Большой мажорный септаккорд с большой ноной',
     'maj9',
     [0, 4, 7, 11, 14],
     [0, 2, 4, 6, 8],
@@ -149,7 +149,7 @@ export const chordQualities = {
   ),
   min9: quality(
     'Minor ninth',
-    'Малый минорный нонаккорд',
+    'Малый минорный септаккорд с большой ноной',
     'm9',
     [0, 3, 7, 10, 14],
     [0, 2, 4, 6, 8],
@@ -387,13 +387,17 @@ const triadQuality: Record<
 
 /**
  * The `V/x` label for a chord acting as an applied (secondary) dominant: a
- * major-quality chord on a degree whose own scale triad is not major, whose
- * root then falls a perfect fifth to the next chord. Both conditions are
- * required, because a secondary dominant is defined by where it goes and not
- * by how it sounds alone. The scale's own dominant is never labelled, and
- * neither is a blues I7 moving to IV7, whose scale triad is already major.
- * Cases this cannot prove return null instead of guessing; the lab shows the
- * degree numeral for those, which is a description rather than an analysis.
+ * major triad or a major–minor seventh, with or without a ninth, on a degree
+ * whose own scale triad is not major, whose root then falls a perfect fifth to
+ * a major or minor chord. Both conditions are required, because a secondary
+ * dominant is defined by where it goes and not by how it sounds alone. A chord
+ * with a major seventh above its root is not a dominant, and a diminished
+ * chord cannot be tonicized (Hutchinson §17.3), so neither is labelled. The
+ * scale's own dominant is never labelled, and neither is a blues I7 moving to
+ * IV7, whose scale triad is already major. Cases this cannot prove — an
+ * augmented or suspended target among them — return null instead of guessing;
+ * the lab shows the degree numeral for those, which is a description rather
+ * than an analysis.
  */
 export function appliedDominant(
   key: ChordKey,
@@ -405,6 +409,11 @@ export function appliedDominant(
   if (!next || chord.degree === 4) return null;
   validateChord(next);
   if (triadQuality[chord.quality] !== 'major') return null;
+  // A major seventh above the root is not a dominant: only major triads and
+  // major–minor sevenths (with or without a ninth) can be applied dominants.
+  if (chordQualities[chord.quality].steps.includes(11)) return null;
+  // Only a major or minor chord can be tonicized.
+  if (!['major', 'minor'].includes(triadQuality[next.quality])) return null;
   if (triadQuality[paletteChord(key.mode, chord.degree).quality] === 'major')
     return null;
   const root = chordNotes(key, { ...chord, inversion: 0 })[0].midi % 12;
@@ -639,8 +648,8 @@ export const templateGroups = [
   },
   {
     id: 'jazz',
-    de: german['Jazz turnarounds'],
-    en: 'Jazz turnarounds',
+    de: german['Jazz progressions'],
+    en: 'Jazz progressions',
     ru: 'Джазовые обороты',
   },
   {
@@ -748,7 +757,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
     note: {
       en: 'A half cadence ends a phrase on V, leaving the return to I open. Listen to the last chord, then load the Authentic cadence template and compare its ending on the tonic.',
       ru: 'Половинная каденция завершает фразу на V ступени, оставляя возвращение к тонике открытым. Послушайте последний аккорд, затем выберите шаблон «Автентическая каденция» и сравните его окончание на тонике.',
-      de: 'Ein Halbschluss beendet eine Phrase auf der Dominante; die Rückkehr zur Tonika bleibt offen. Höre den letzten Akkord an, lade dann die Vorlage „Authentische Kadenz“ und vergleiche ihren Schluss auf der Tonika.',
+      de: 'Ein Halbschluss beendet eine Phrase auf der Dominante; die Rückkehr zur Tonika bleibt offen. Höre den letzten Akkord an, lade dann die Vorlage „Authentischer Ganzschluss“ und vergleiche ihren Schluss auf der Tonika.',
     },
     source: 'cadences',
   },
@@ -896,7 +905,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
         'Open Music Theory groups the common pop loops by which chord the major tonic is approached from; here it is IV, a plagal approach. Move the first chord to the end and listen again: the same four chords can suggest a different centre through order and emphasis.'
       ],
       en: 'Open Music Theory groups the common pop loops by which chord the major tonic is approached from; here it is IV, a plagal approach. Move the first chord to the end and listen again: the same four chords can suggest a different centre through order and emphasis.',
-      ru: 'В Open Music Theory популярные петли различают по тому, откуда подходит мажорная тоника; здесь это IV — плагальный подход. Переставьте первый аккорд в конец и послушайте снова: те же четыре аккорда могут создавать ощущение другого центра благодаря порядку и акцентам.',
+      ru: 'В Open Music Theory распространённые поп-циклы различают по тому, от какого аккорда гармония приходит к мажорной тонике; здесь это IV — плагальный ход. Переставьте первый аккорд в конец и послушайте снова: те же четыре аккорда могут создавать ощущение другого центра благодаря порядку и акцентам.',
     },
     source: 'fourChord',
   },
@@ -905,7 +914,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
     group: 'pop',
     de: german['Singer/songwriter, rotated · minor or major?'],
     en: 'Singer/songwriter, rotated · minor or major?',
-    ru: 'Сингер-сонграйтер, поворот · минор или мажор?',
+    ru: 'Сингер-сонграйтер, начало с vi · минор или мажор?',
     pattern: 'vi–IV–I–V',
     mode: 'major',
     tempo: 108,
@@ -921,7 +930,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
         'The same cycle begun on vi. Open Music Theory calls this rotation tonally ambiguous: it can be heard as vi–IV–I–V in the major key or i–♭VI–♭III–♭VII in the relative minor, because neither reading gets an authentic cadence. Decide for yourself which chord sounds like home.'
       ],
       en: 'The same cycle begun on vi. Open Music Theory calls this rotation tonally ambiguous: it can be heard as vi–IV–I–V in the major key or i–♭VI–♭III–♭VII in the relative minor, because neither reading gets an authentic cadence. Decide for yourself which chord sounds like home.',
-      ru: 'Тот же цикл, начатый с vi. В Open Music Theory этот поворот назван тонально неоднозначным: его можно услышать как vi–IV–I–V в мажоре или как i–♭VI–♭III–♭VII в параллельном миноре, потому что ни в одном прочтении нет автентической каденции. Решите сами, какой аккорд звучит как дом.',
+      ru: 'Тот же цикл, начатый с vi. В Open Music Theory эта схема названа тонально неоднозначной: её можно услышать как vi–IV–I–V в мажоре или как i–♭VI–♭III–♭VII в параллельном миноре, потому что ни в одном прочтении нет автентической каденции. Решите сами, какой аккорд вы слышите как тонику.',
     },
     source: 'fourChord',
   },
@@ -996,7 +1005,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
         'Open Music Theory names this recent cycle after its root motion: two steps up, then a skip. The major tonic arrives from vi, an approach belonging to no traditional cadence, which is why the loop can turn without ever sounding closed.'
       ],
       en: 'Open Music Theory names this recent cycle after its root motion: two steps up, then a skip. The major tonic arrives from vi, an approach belonging to no traditional cadence, which is why the loop can turn without ever sounding closed.',
-      ru: 'В Open Music Theory этот недавний цикл назван по движению основных тонов: два шага вверх, затем скачок. Мажорная тоника приходит от vi — такой подход не принадлежит ни одной традиционной каденции, поэтому петля вращается, ни разу не звуча завершённой.',
+      ru: 'В Open Music Theory этот сравнительно новый цикл назван по движению основных тонов: два шага вверх, затем скачок. К мажорной тонике здесь приходят от vi — такого хода нет ни в одной традиционной каденции, поэтому цикл может повторяться, так и не прозвучав завершённо.',
     },
     source: 'fourChord',
   },
@@ -1066,7 +1075,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
     group: 'blues',
     de: german['Twelve-bar blues · the basic frame'],
     en: 'Twelve-bar blues · the basic frame',
-    ru: 'Двенадцать тактов блюза · основа',
+    ru: 'Двенадцатитактовый блюз · основная схема',
     pattern: 'I7 · IV7 · V7',
     mode: 'major',
     tempo: 104,
@@ -1123,10 +1132,10 @@ export const progressionTemplates: ProgressionTemplate[] = [
     ],
     note: {
       de: german[
-        'The tonic and subdominant become minor sevenths while the dominant keeps its major third. Because the major V falling to a minor iv sounds anticlimactic, the last phrase replaces V–IV–i with the minor ii–V–i.'
+        'The tonic and subdominant become minor sevenths while the dominant keeps its major third. Because the major V falling to a minor iv can sound anticlimactic, the last phrase replaces V–iv–i with the minor ii–V–i.'
       ],
-      en: 'The tonic and subdominant become minor sevenths while the dominant keeps its major third. Because the major V falling to a minor iv sounds anticlimactic, the last phrase replaces V–IV–i with the minor ii–V–i.',
-      ru: 'Тоника и субдоминанта становятся малыми минорными септаккордами, а доминанта сохраняет большую терцию. Поскольку переход мажорной V в минорную iv звучит спадом, в последней фразе вместо V–IV–i стоит минорный ii–V–i.',
+      en: 'The tonic and subdominant become minor sevenths while the dominant keeps its major third. Because the major V falling to a minor iv can sound anticlimactic, the last phrase replaces V–iv–i with the minor ii–V–i.',
+      ru: 'Тоника и субдоминанта становятся малыми минорными септаккордами, а доминанта сохраняет большую терцию. Поскольку переход от мажорной V к минорной iv может звучать как спад напряжения, в последней фразе вместо V–iv–i стоит минорный ii–V–i.',
     },
     source: 'bluesHarmony',
   },
@@ -1151,15 +1160,18 @@ export const progressionTemplates: ProgressionTemplate[] = [
       step(5, 'seventh'),
       step(1, 'min7'),
       step(4, 'seventh'),
-      step(0, 'seventh'),
-      step(5, 'seventh'),
+      // Bars eleven and twelve are the turnaround, two chords to the bar.
+      step(0, 'seventh', 2),
+      step(5, 'seventh', 2),
+      step(1, 'min7', 2),
+      step(4, 'seventh', 2),
     ],
     note: {
       de: german[
-        'The blues frame with jazz motion added: bar eight turns vi into a dominant that leads to ii, and the last phrase uses ii–V–I in place of the plagal V–IV–I. Watch for the V7/ii label on the eighth chord — the lab marks it only because the next chord confirms it.'
+        'The blues frame with jazz motion added: bar eight turns vi into a dominant that leads to ii, the last phrase uses ii–V–I in place of the plagal V–IV–I, and the final two bars run I–VI7–ii7–V7 as a turnaround back to the top. Watch for the V7/ii label on each VI7 — the lab marks it only because the next chord confirms it.'
       ],
-      en: 'The blues frame with jazz motion added: bar eight turns vi into a dominant that leads to ii, and the last phrase uses ii–V–I in place of the plagal V–IV–I. Watch for the V7/ii label on the eighth chord — the lab marks it only because the next chord confirms it.',
-      ru: 'Блюзовая рамка с добавленным джазовым движением: в восьмом такте vi превращается в доминанту, ведущую к ii, а в последней фразе вместо плагального V–IV–I звучит ii–V–I. Обратите внимание на отметку V7/ii у восьмого аккорда: лаборатория ставит её только потому, что следующий аккорд её подтверждает.',
+      en: 'The blues frame with jazz motion added: bar eight turns vi into a dominant that leads to ii, the last phrase uses ii–V–I in place of the plagal V–IV–I, and the final two bars run I–VI7–ii7–V7 as a turnaround back to the top. Watch for the V7/ii label on each VI7 — the lab marks it only because the next chord confirms it.',
+      ru: 'Блюзовая рамка с добавленным джазовым движением: в восьмом такте vi превращается в доминанту, ведущую к ii, в последней фразе вместо плагального V–IV–I звучит ii–V–I, а два заключительных такта — тёрнэраунд I–VI7–ii7–V7, возвращающий к началу. Обратите внимание на отметку V7/ii у каждого VI7: лаборатория ставит её только потому, что следующий аккорд её подтверждает.',
     },
     source: 'bluesHarmony',
   },
@@ -1184,7 +1196,7 @@ export const progressionTemplates: ProgressionTemplate[] = [
         'The same subdominant twice, major then minor. Hutchinson calls borrowing from the parallel minor mode mixture, and names the lowered sixth degree as its commonest carrier — that is the one note that changes here. Nothing in the key signature moves; only the chord’s third.'
       ],
       en: 'The same subdominant twice, major then minor. Hutchinson calls borrowing from the parallel minor mode mixture, and names the lowered sixth degree as its commonest carrier — that is the one note that changes here. Nothing in the key signature moves; only the chord’s third.',
-      ru: 'Одна и та же субдоминанта дважды: мажорная, затем минорная. Хатчинсон называет заимствование из одноимённого минора модальным обменом и указывает пониженную VI ступень как его самый частый носитель — именно этот звук здесь и меняется. Ключевые знаки остаются прежними; меняется только терция аккорда.',
+      ru: 'Одна и та же субдоминанта дважды: мажорная, затем минорная. Хатчинсон называет заимствование из одноимённого минора смешением ладов (mode mixture) и отмечает, что чаще всего при этом появляется пониженная VI ступень — именно этот звук здесь и меняется. Ключевые знаки остаются прежними; меняется только терция аккорда.',
     },
     source: 'mixture',
   },

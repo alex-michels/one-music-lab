@@ -79,7 +79,6 @@ test('Following another rule, lesson or language starts an unanswered inline que
     lang: 'en',
     lessonId: 'dots-ties',
     anchor: 'dot-adds-half',
-    setLessonId: vi.fn(),
     openLab: vi.fn(),
   };
   await mount(Theory, props);

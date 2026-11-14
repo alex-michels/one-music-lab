@@ -1,15 +1,30 @@
 {
   "base": "7048228e64a88a7eeedbc957b9fa5d9ac815adf8",
   "digests": {
-    "lessons": "0713d653259c18dd5f3c2e90a4ca31a882ab32ddc2e39c98e5d758eced5a429f",
-    "terms": "187aa0997cd5b102f5059c7ab2357171644b0859ad3400cb90eb45f9d973d443",
-    "programme": "fd6e901f7cc5be7ecb1b18413b6321426f2029ef34a6c5d6d99d4c2cca1c9670",
-    "figures": "254267a07f0adde23f9205d5bc6b913bb7fe0bfc4cdb4ab0d6abd517d05105b7",
-    "references": "6f52326d8764a4ce1b8cd58e6ad67dc0a0b792d2b2516788f6fde0d387c8b4ca",
+    "lessons": "e25db2c76bd648c4527e86516bd59367e029a585bc8290de2758cbe83224fee3",
+    "terms": "e0fe72e7ba669950c2dab2f6ae5b17c0f4e0a2c3f31f5f44444bae99d3cdad09",
+    "programme": "0d7659f8d2cc2292cd9b7b2d173dc0fffa1543dbad889564d50e6650fd8ccfab",
+    "figures": "b05324d7cd5e648347e05c4bb4adc9e7c3e89e5e5777d5ebe642fd1ff057cbfe",
+    "references": "17d605872aa1f692fcb75665614610b6fe54dd3a63a383cac40452b2e8eeb922",
     "sourceAliases": "fe700764251b09b9f901b4859bcf57e2a5c4c7adecc86b5eaf0e3f0275b7057e",
-    "rules": "9c766a887a83f3b1bd8ba97536051ffffb98b5b913b7929df1c6a2ab0511910d",
+    "rules": "dd89271646a81c71a799257ddead03470eca26af040c0d8446d3f22937f9ea27",
     "presets": "f1582da99779e4857255686a2ccabfd12199600d4ea406429a147d6e4d924053",
-    "diagnostic": "4464480d1a0390682ef4150c4226998d157673b67688d8f8c98b94c12174808b",
+    "diagnostic": "b8697bcf95564a43ddb9c2b7d71844112109194917fe6d0dc0bbf5956fa5f6d0",
     "course": "ad83e35a3e179efdaa297d447f9aa0a224bf67c12b3dd570277f58c3a980b01a"
-  }
+  },
+  "reviewed": [
+    {
+      "date": "2026-11-14",
+      "record": "docs/content-review-2026-11.md",
+      "fingerprints": [
+        "lessons",
+        "terms",
+        "programme",
+        "figures",
+        "references",
+        "rules",
+        "diagnostic"
+      ]
+    }
+  ]
 }

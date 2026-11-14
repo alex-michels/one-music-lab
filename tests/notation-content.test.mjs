@@ -6,6 +6,7 @@ import {
   notationFigureDescriptions,
   notationForwardLinks,
 } from '../lib/notation-programme.ts';
+import { termSearchText } from '../lib/topics.ts';
 import { readFile } from 'node:fs/promises';
 
 const languages = ['en', 'ru', 'de'];
@@ -86,6 +87,24 @@ test('Aliases retain duration equivalence and culturally qualified ornament look
       expect(entry.body[lang].trim().length).toBeGreaterThan(30);
       if ('aliases' in entry) expect(entry.aliases[lang].trim()).not.toBe('');
     }
+});
+
+test('The glossary finds the tie and equal temperament by every name the lessons use for them', () => {
+  // The tie is «связующая лига» in its own lesson and in the glossary, and
+  // «лига продления» in the articulation lesson, the Notes lab and the tasks.
+  // A reader who searches the second name must reach the same entry.
+  const tie = reference('Tie');
+  expect(tie.title.ru).toBe('Связующая лига');
+  expect(termSearchText(tie, 'ru')).toContain('лига продления');
+  expect(termSearchText(tie, 'de')).toContain('übergebunden');
+  expect(termSearchText(tie, 'en')).toContain('tied note');
+  // The headword is the term the lessons use; the older word still finds it.
+  const temperament = reference('Equal temperament');
+  expect(temperament.title.ru).toBe('Равномерная темперация');
+  expect(termSearchText(temperament, 'ru')).toContain('равномерный строй');
+  expect(termSearchText(temperament, 'ru')).toContain(
+    'равномерно темперированный строй',
+  );
 });
 
 test('Chords reuse a real subject and deferred traditions link to existing curriculum homes', async () => {

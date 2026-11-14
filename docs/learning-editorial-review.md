@@ -11,6 +11,12 @@ the existing material for №003, 012–014, 017, 019, 022–024, 124, 125, 127 
 shared learning interface under №537/542 and locale requirements №556/557. It
 does not close the remaining general chapter/navigation work or authorize publication.
 
+A second pass on 2026-11-14 checked the same material for accuracy and added a
+guided walk-through to every lesson. Its method, counts, open items and the
+table of every confirmed finding are in
+[content-review-2026-11.md](content-review-2026-11.md); where it changed a
+statement recorded below, the later record describes the current text.
+
 ## Corpus and corrections
 
 The pass covers all 19 authored lessons, 141 glossary articles, 13 notation reading

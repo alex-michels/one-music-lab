@@ -1,11 +1,21 @@
 import type { Wave } from './music';
+
+/** How long a preview voice takes to rise from silence. */
+const ATTACK_SECONDS = 0.02;
+/** Time constant of the release of an interrupted voice. */
+const RELEASE_CONSTANT = 0.012;
+/** How long after the release begins the oscillator is stopped: well past it. */
+const RELEASE_SECONDS = 0.08;
+
 export class AudioEngine {
   context: AudioContext;
   private master: GainNode;
   private analyser: AnalyserNode;
   private oscillator: OscillatorNode | null = null;
   private gain: GainNode | null = null;
-  private voices = new Set<OscillatorNode>();
+  // Each preview voice with its own gain and the time it starts, so an
+  // interrupted voice can be ended according to where it is in its envelope.
+  private voices = new Map<OscillatorNode, { gain: GainNode; start: number }>();
   private data = new Uint8Array(2048);
   private generation = 0;
   constructor() {
@@ -91,11 +101,11 @@ export class AudioEngine {
       osc.frequency.value = frequency;
       const level = spacing ? 1 : 1 / frequencies.length;
       gain.gain.setValueAtTime(0, start);
-      gain.gain.linearRampToValueAtTime(level, start + 0.02);
+      gain.gain.linearRampToValueAtTime(level, start + ATTACK_SECONDS);
       gain.gain.setTargetAtTime(0, start + duration - 0.09, 0.025);
       osc.connect(gain);
       gain.connect(this.master);
-      this.voices.add(osc);
+      this.voices.set(osc, { gain, start });
       osc.onended = () => {
         this.voices.delete(osc);
         osc.disconnect();
@@ -109,10 +119,38 @@ export class AudioEngine {
     this.analyser.getByteTimeDomainData(this.data);
     return this.data;
   }
+  /**
+   * Ends every preview voice without a click and without a late blip.
+   *
+   * Stopping an oscillator in the middle of a cycle is a step in the signal,
+   * and a step is heard as a click: every key pressed while the last note was
+   * still sounding, every Escape and every change of page produced one. What a
+   * voice needs depends on where it is in its own envelope:
+   *
+   * - **Not started yet** (a later note of a sequence): stopped at once, so it
+   *   never sounds. Its envelope is left alone. Cancelling it would drop the
+   *   scheduled "start from silence" and leave the gain at its default of 1,
+   *   and a note due within the release time would then be heard at that level.
+   * - **In its attack**: the rise is allowed to finish and the release starts
+   *   from its end. Cancelling a ramp that is under way snaps the level back
+   *   to where the ramp began, which is the very step this is here to avoid.
+   * - **Sounding**: the scheduled decay is dropped and the level released over
+   *   a few milliseconds, the same way the sustained tone ends.
+   *
+   * One engine refusing a call must not leave the other voices sounding.
+   */
   private stopVoices() {
-    this.voices.forEach((voice) => {
+    const now = this.context.currentTime;
+    this.voices.forEach(({ gain, start }, voice) => {
       try {
-        voice.stop();
+        if (start >= now) {
+          voice.stop(now);
+          return;
+        }
+        const from = Math.max(now, start + ATTACK_SECONDS + 0.001);
+        gain.gain.cancelScheduledValues(from);
+        gain.gain.setTargetAtTime(0, from, RELEASE_CONSTANT);
+        voice.stop(from + RELEASE_SECONDS);
       } catch {}
     });
     this.voices.clear();
